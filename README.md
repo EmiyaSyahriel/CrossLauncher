@@ -22,25 +22,21 @@ On my test devices, Base memory usage (without items) is about 10MB.
 With about 500Kb~1MB per item since icons will be cached in memory.
 
 ## Available Features
-- Switchable Confirm Button (Cross / Circle)
-- Android built-in and Dictionary-based Game Detection
-- Music and Video Gallery
-- A Minimal Built-in Music Player
-- Partial Gamepad Support
-- Keystroke-to-Name Item finding
-- Launcher Startup & App Launch Animation (Switchable), see [Animation Modding](https://github.com/EmiyaSyahriel/CrossLauncher#animation-modding) to modify it
+- [x] Switchable Confirm Button (Cross / Circle)
+- [x] Android built-in and Dictionary-based Game Detection
+- [x] Music and Video Gallery
+- [x] A Minimal Built-in Music Player
+- [x] Gamepad Support (partial)
+- [x] Keystroke-to-Name Item finding
+- [x] Launcher Startup & App Launch Animation (Switchable), see [Animation Modding](https://github.com/EmiyaSyahriel/CrossLauncher#animation-modding) to modify it
+- [ ] PS3-like Dialogs
+- [ ] Item Options (Just like when you press Triangle on PS3)
+- [ ] Item Hide
+- [ ] Open video file with default apps
 
-## WIP Features
-- PS3-like Dialogs
-- Item Options (Just like when you press Triangle on PS3)
-- Item Hide
-- Open video file with default apps
-
-## Planned Features
-- Item Icon and name customization
-
-## TODO:
+## TODOs:
 - Soft-coding strings
+- Some optimizations regarding file loading
 
 ## Animation Modding
 You can modify the Launcher Startup / App Launch Animation and Sound by
@@ -53,7 +49,7 @@ adding/changing files in `/sdcard/Android/data/id.psw.vshlauncher/files/`.
 | gameboot.mp3 | App launch audio|
 
 ## Releases
-None yet, Build it yourself if you want to test it.
+You can build it yourself, Or go to [Release](https://github.com/EmiyaSyahriel/CrossLauncher/releases) page for built packages
 
 ## License
 MIT License.
