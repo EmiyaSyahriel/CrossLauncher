@@ -28,7 +28,7 @@ With about 500Kb~1MB per item since icons will be cached in memory.
 - A Minimal Built-in Music Player
 - Partial Gamepad Support
 - Keystroke-to-Name Item finding
-- Launcher Startup & App Launch Animation (Switchable), see [Animation Modding][Animation Modding] to modify it
+- Launcher Startup & App Launch Animation (Switchable), see [Animation Modding](https://github.com/EmiyaSyahriel/CrossLauncher#animation-modding) to modify it
 
 ## WIP Features
 - PS3-like Dialogs
