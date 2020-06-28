@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cross Launcher</string>
+    <string name="orient_unknown">Tidak diketahui</string>
+    <string name="orient_landscape">Miring</string>
+    <string name="orient_portrait">Tegak</string>
+    <string name="orient_user">Mengikut Sistem</string>
+    <string name="item_orientation">Orientasi Layar</string>
+</resources>

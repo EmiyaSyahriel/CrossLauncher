@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Cross Launcher</string>
+  <string name="orient_unknown">Unknown Orientation</string>
+  <string name="orient_landscape">Landscape</string>
+  <string name="orient_portrait">Portrait</string>
+  <string name="orient_user">System Default</string>
+  <string name="item_orientation">Screen Orientation</string>
+</resources>
