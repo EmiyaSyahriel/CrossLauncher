@@ -9,11 +9,11 @@ The launcher is still fairly usable on Phones. Just with a bit struggle if you h
 lot of apps to navigate.
 
 ## Usage
-| Function          | Keyboard | Gamepad   | Touch            |
-|-------------------|----------|-----------|------------------|
-| Navigate Items    | Arrow Pad| D-Pad     | Swipe            |
-| Execute Item      | Enter    | X/O       | Icon touch       |
-| Hide/Show Options*| Menu/Tab | Triangle  | Two-finger Touch |
+| Function          | Keyboard | DualShock | Xbox     | Touch            |
+|-------------------|----------|-----------|----------|------------------|
+| Navigate Items    | Arrow Pad| D-Pad     | D-Pad    | Swipe            |
+| Execute Item      | Enter    | X/O       | A/B      | Icon touch       |
+| Hide/Show Options*| Menu/Tab | Triangle  | Y        | Two-finger Touch |
 
 *Not yet available
 
