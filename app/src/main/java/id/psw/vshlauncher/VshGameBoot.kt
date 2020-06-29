@@ -17,7 +17,9 @@ import kotlin.math.min
 import kotlin.random.Random
 
 /**
- * TODO: document your custom view class.
+ * View that will be shown when Launching App App from this launcher
+ *
+ * Mimics PS3 Game Launch (which is removed from present firmware)
  */
 @Suppress("DEPRECATION")
 class VshGameBoot : View {

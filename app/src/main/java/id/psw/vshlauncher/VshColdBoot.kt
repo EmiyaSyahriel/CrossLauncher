@@ -13,8 +13,11 @@ import java.io.File
 import java.util.*
 
 /**
- * TODO: document your custom view class.
+ * View that will be shown on Launcher Startup
+ *
+ * Mimics PS3 Game OS Boot Animation / Cold Boot
  */
+@Suppress("DEPRECATION")
 class VshColdBoot : View {
 
     val TAG = "coldboot.raf"
