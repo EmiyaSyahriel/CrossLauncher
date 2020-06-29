@@ -10,6 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:requestLegacyExternalStorage="true"
+        android:allowAudioPlaybackCapture="true"
         android:theme="@style/AppTheme">
         <activity android:name=".VSH" android:screenOrientation="fullUser"
             android:configChanges="keyboardHidden|keyboard|orientation|screenSize"

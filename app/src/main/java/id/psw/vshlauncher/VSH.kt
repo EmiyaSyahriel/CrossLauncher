@@ -324,9 +324,12 @@ class VSH : AppCompatActivity(){
                 vsh.setSelection(1,0)
                 retval = true
             }
-            KeyEvent.KEYCODE_ENTER, confirmButton ->{
+            KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER, confirmButton ->{
                 vsh.executeCurrentItem()
                 retval = true
+            }
+            KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_BUTTON_Y -> {
+                vsh.isOnOptions = !vsh.isOnOptions
             }
         }
 
