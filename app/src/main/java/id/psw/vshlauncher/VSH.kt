@@ -32,7 +32,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.contains
 import java.io.File
 
-@Suppress("SpellCheckingInspection")
+@Suppress("SpellCheckingInspection", "DEPRECATION")
 class VSH : AppCompatActivity(){
     companion object{
         var xMarksTheSpot = false
@@ -58,6 +58,7 @@ class VSH : AppCompatActivity(){
         const val PREF_ORIENTATION_KEY = "xmb_orientation"
         const val PREF_MIMIC_USA_CONSOLE = "xmb_PS3_FAT_CECHA00"
         const val PREF_USE_GAMEBOOT = "xmb_USE_GAMEBOOT"
+        const val PREF_DYNAMIC_TWINKLE = "xmb_DYNAMIC_P3T"
     }
 
     private var returnFromGameboot = false
@@ -66,6 +67,7 @@ class VSH : AppCompatActivity(){
     private var storageAllowed = false
     var player : MediaPlayer? = null
     private var useGameBoot = false
+    private var dynamicThemeTwinkles = true
     private var appListerThread : Thread = Thread()
     var scrOrientation : Int = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
@@ -151,6 +153,7 @@ class VSH : AppCompatActivity(){
         xMarksTheSpot = prefs.getBoolean(PREF_MIMIC_USA_CONSOLE, false)
         scrOrientation = prefs.getInt(PREF_ORIENTATION_KEY, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
         useGameBoot = prefs.getBoolean(PREF_USE_GAMEBOOT, true)
+        dynamicThemeTwinkles = prefs.getBoolean(PREF_DYNAMIC_TWINKLE, true)
     }
 
     private fun checkPermission(){
@@ -158,7 +161,6 @@ class VSH : AppCompatActivity(){
         val resultWrite = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         if(resultRead == PackageManager.PERMISSION_GRANTED && resultWrite == PackageManager.PERMISSION_GRANTED){
             storageAllowed = true
-            Toast.makeText(this, "Storage permission granted", Toast.LENGTH_LONG).show()
         }else{
             requestPermission()
         }
@@ -184,7 +186,6 @@ class VSH : AppCompatActivity(){
         when(requestCode){
             storagePermRequest -> {
                 if(grantResults.isNotEmpty() && grantResults.all{ it == PackageManager.PERMISSION_GRANTED}){
-                    Toast.makeText(this, "Storage permission granted", Toast.LENGTH_LONG).show()
                     storageAllowed = true
                 }else{
                     Toast.makeText(this, "Storage permission is not granted, players may not usable", Toast.LENGTH_LONG).show()
@@ -247,6 +248,23 @@ class VSH : AppCompatActivity(){
         useGameBootConfig.subtext = useGameBoot.choose("Yes","No")
 
         settings.items.add(useGameBootConfig)
+
+        val dynamicThemeSetting = VshY(
+            0xd1804,
+            "Show Dynamic Theme Twinkles","Yes",
+            resources.getDrawable(R.drawable.icon_dynamic_theme_effect),
+            vsh.density
+        )
+
+        dynamicThemeSetting.onClick = Runnable {
+            dynamicThemeTwinkles = !dynamicThemeTwinkles
+            prefs.edit().putBoolean(PREF_DYNAMIC_TWINKLE, useGameBoot).apply()
+            dynamicThemeSetting.subtext = dynamicThemeTwinkles.choose("Yes","No")
+        }
+        dynamicThemeSetting.subtext = dynamicThemeTwinkles.choose("Yes","No")
+
+        settings.items.add(dynamicThemeSetting)
+
         settings.items.add(
             VshY(
             0xd18034,
@@ -300,6 +318,12 @@ class VSH : AppCompatActivity(){
                     attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
                 }
             }
+        }
+    }
+
+    override fun onBackPressed() {
+        if(vsh.isOnOptions){
+            vsh.isOnOptions = false
         }
     }
 
@@ -359,8 +383,6 @@ class VSH : AppCompatActivity(){
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
         val resInfo = packageManager.queryIntentActivities(intent, 0)
 
-        val gridSize = (50 * vsh.density).toInt()
-
         resInfo.forEachIndexed { index, it ->
             if(!appListerThread.isInterrupted){
                 val isGame = packageIsGame(it.activityInfo)
@@ -396,6 +418,7 @@ class VSH : AppCompatActivity(){
         if(null != intent){
             if(useGameBoot){
                 val gameBoot = VshGameBoot(this)
+                gameBoot.showTwinkles = dynamicThemeTwinkles
                 playGamebootSound()
                 gameBoot.onFinishAnimation =  Runnable {
                     startActivity(intent)
@@ -447,7 +470,7 @@ class VSH : AppCompatActivity(){
                 }))
 
         vsh.clockAsLoadingIndicator = true
-        val musicResolver = contentResolver;
+        val musicResolver = contentResolver
         val musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val cursor = musicResolver.query(musicUri, null, null, null, null)
 

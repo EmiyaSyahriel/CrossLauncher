@@ -6,18 +6,20 @@ import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.plus
 import androidx.core.graphics.scale
 import androidx.core.graphics.withScale
 import java.lang.Exception
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.random.Random
 
 /**
  * TODO: document your custom view class.
  */
+@Suppress("DEPRECATION")
 class VshGameBoot : View {
 
     companion object{
@@ -27,6 +29,12 @@ class VshGameBoot : View {
     var finishCalled = false
     var coldbootImage : Bitmap = ColorDrawable(Color.TRANSPARENT).toBitmap(128,128)
     var paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    var twinklePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE }
+    var showTwinkles = true
+
+    private fun d(i:Float):Float{
+        return resources.displayMetrics.density * i
+    }
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -89,6 +97,7 @@ class VshGameBoot : View {
     var frame = 0
     var maxframe = 120
     var scale = 1f
+    var twinkleAlpha = 1f
 
     private fun mUpdate(canvas: Canvas){
         if(!finishCalled && frame >= maxframe){
@@ -102,19 +111,22 @@ class VshGameBoot : View {
         if(frame >= max4th * 4) {
             scale = 1f + max(0f, min(5f, (frame - (max4th * 4)) / max4th) * 5f)
             paint.alpha = 255 - (max(0f,min(1f, (frame - (max4th * 4)) / (max4th / 2f))) * 255).toInt()
+            twinkleAlpha = 1f
             canvas.drawColor(Color.argb(255, 0,0,0))
         }
         if(frame <= max4th * 4){
             scale = 1f
             paint.alpha = 255
+            twinkleAlpha = 1f
         }
         if(frame <= max4th){
             scale = 0.75f + max(0f, min(0.5f, (frame / max4th) * 0.25f))
             paint.alpha = (max(0f,min(1f, (frame/max4th))) * 255).toInt()
+            twinkleAlpha = max(0f,min(1f, (frame/max4th)))
         }
 
         canvas.drawColor(Color.argb(paint.alpha, 0,0,0))
-
+        if(showTwinkles) drawTwinkles(canvas)
 
         val xPad = (width/2f) - (coldbootImage.width/2f)
         val yPad = (height/2f) - (coldbootImage.height/2f)
@@ -122,6 +134,46 @@ class VshGameBoot : View {
             canvas.drawBitmap(coldbootImage, xPad, yPad, paint)
         }
         postInvalidate()
+    }
+
+    private data class Twinkles(var pos:PointF, var scale:Float, var move:PointF, var scaleSpeed:Float, var maxSize : Float, var color:Int)
+    private var twinkleList = arrayListOf<Twinkles>()
+    private val twinkleColorTable = arrayListOf(Color.RED, Color.GREEN, Color.BLUE, Color.RED)
+    private fun bakeTwinklePath(){
+        val pivotY = height / 2f
+        val rdm = Random(frame)
+        if(twinkleList.size < 200){
+            for(i in twinkleList.size until 200){
+                val pos = PointF(rdm.nextFloat() * width, pivotY + ((rdm.nextFloat() - 0.5f ) * (height * 0.02f)))
+                val move = PointF((rdm.nextFloat() - 0.5f) * d(2f), (rdm.nextFloat() - 0.5f) * d(2f))
+                var color = rdm.nextFloat().toMultiLerpColor(twinkleColorTable)
+                color = rdm.nextFloat().toMultiLerpColor(arrayListOf(Color.GRAY, Color.WHITE, color, Color.BLACK, Color.GRAY))
+                twinkleList.add(Twinkles(pos, rdm.nextFloat(), move, rdm.nextFloat() * 0.1f, rdm.nextFloat() * d(5f), color))
+            }
+        }
+
+        twinkleList.forEach {
+            if(it.scale >= 1){
+                it.scale = 0f
+                it.pos = PointF(rdm.nextFloat() * width, pivotY + ((rdm.nextFloat() - 0.5f ) * (height * 0.2f)))
+                it.move = PointF((rdm.nextFloat() - 0.5f) * d(2f), (rdm.nextFloat() - 0.5f) * d(2f))
+                it.scaleSpeed = rdm.nextFloat() * 0.1f
+                it.maxSize = rdm.nextFloat() * d(7f)
+            }
+
+            it.scale += it.scaleSpeed
+            it.pos += it.move
+        }
+    }
+
+    private fun drawTwinkles(canvas: Canvas){
+        bakeTwinklePath()
+        twinkleList.forEach {
+            val t = (1f - ((it.scale - 0.5f) * 2f)) * twinkleAlpha
+            twinklePaint.alpha = (t * 255).toInt()
+            twinklePaint.color = t.toLerpColor(Color.WHITE, it.color)
+            canvas.drawCircle(it.pos.x, it.pos.y, it.scale * it.maxSize, twinklePaint)
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
