@@ -6,4 +6,59 @@
     <string name="orient_portrait">Tegak</string>
     <string name="orient_user">Mengikut Sistem</string>
     <string name="item_orientation">Orientasi Layar</string>
+    <string name="first_run_instruction_title">Penggunaan Pertama</string>
+    <string name="first_run_instruction_content">
+    Karena ini adalah penggunaan pertama mu di perangkat ini…
+    \n Berikut adalah petunjuk navigasi untuk launcher ini
+    \n
+    \n Sentuh :
+    \n- Menjalankan Item : Tap pada ikon item
+    \n- Beralih kategori : Geser ke kiri atau kanan
+    \n- Beralih item : Geser ke atas atau bawah
+    \n- Membuka / menutup opsi : Tap dua jari di mana saja
+    \n- Membuka kembali menu utama : Saat menu disembunyikan, Tap di mana saja
+    \n
+    \n Keyboard / Remote TV :
+    \n- Menjalankan Item : Enter / OK
+    \n- Beralih kategori : Arah Kiri / Kanan
+    \n- Beralih item : Arah Atas / Bawah
+    \n- Membuka / menutup opsi : Tab / Menu (di kanan tombol Spasi)
+    \n- Membuka kembali menu utama : Enter
+    \n- Lompat ke item : Tombol huruf apa saja, asalkan ada item yang berawalan huruf tersebut
+    \n
+    \n Stik PlayStation:
+    \n- Menjalankan Item : Bulat / Silang (tergantung pengaturan)
+    \n- Beralih kategori : Arah Kiri / Kanan
+    \n- Beralih item : Arah Atas / Bawah
+    \n- Membuka / menutup opsi : Segitiga
+    \n- Membuka kembali menu utama : Start
+    \n
+    \n Stik Xbox:
+    \n- Menjalankan Item : A / B (tergantung pengaturan)
+    \n- Beralih kategori : Arah Kiri / Kanan
+    \n- Beralih item : Arah Atas / Bawah
+    \n- Membuka / menutup opsi : Y
+    \n- Membuka kembali menu utama : Menu
+    \n
+    \n Jika opsi "Pakai Silang / A untuk konfirmasi" aktif, maka tombol
+    \n Silang / A akan menjadi tombol untuk menjalankan fungsi item,
+    \n Jika tidak, maka ia akan memakai tombol Bulat atau B
+  </string>
+    <string name="storage_permission_not_granted">Izin akses penyimpanan ditolak, pemain musik tidak akan bisa dipakai</string>
+    <string name="setting_show_gameboot">Tampilkan logo brand saat meluncurkan aplikasi</string>
+    <string name="setting_mimic_dynamic_theme">Tampilkan kemerlap saat meluncurkan aplikasi</string>
+    <string name="setting_gameboot_custom_guide">Cara memodifikasi logo brand</string>
+    <string name="setting_coldboot_custom_guide">Cara memodifikasi logo awal</string>
+    <string name="click_here">Kilk disini</string>
+    <string name="app_not_installed">Apl tidak terpasang</string>
+    <string name="audioplayer_pause">Jeda</string>
+    <string name="audioplayer_resume">Lanjutkan</string>
+    <string name="audioplayer_stop">Hentikan</string>
+    <string name="unknown"><![CDATA[<Tidak dikenal>]]></string>
+    <string name="category_home">Halaman depan</string>
+    <string name="category_apps">Apl</string>
+    <string name="category_games">Permainan</string>
+    <string name="category_videos">Video</string>
+    <string name="category_music">Musik</string>
+    <string name="category_settings">Pengaturan</string>
 </resources>

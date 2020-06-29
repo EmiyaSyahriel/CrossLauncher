@@ -143,13 +143,13 @@ class VshView : View {
 
     @Suppress("DEPRECATION")
     fun fillCategory(){
-        val home = VshX("HOME", "Halaman Depan", resources.getDrawable(R.drawable.category_home), density)
+        val home = VshX("HOME", context.getString(R.string.category_home), resources.getDrawable(R.drawable.category_home), density)
         category.add(home)
-        category.add(VshX("APPS", "Apl", resources.getDrawable(R.drawable.category_apps), density))
-        category.add(VshX("GAME", "Permainan", resources.getDrawable(R.drawable.category_games), density))
-        category.add(VshX("FILM", "Video", resources.getDrawable(R.drawable.category_video), density))
-        category.add(VshX("SONG", "Musik", resources.getDrawable(R.drawable.category_music), density))
-        category.add(VshX("SETT", "Pengaturan", resources.getDrawable(R.drawable.category_setting), density))
+        category.add(VshX("APPS", context.getString(R.string.category_apps), resources.getDrawable(R.drawable.category_apps), density))
+        category.add(VshX("GAME", context.getString(R.string.category_games), resources.getDrawable(R.drawable.category_games), density))
+        category.add(VshX("FILM", context.getString(R.string.category_videos), resources.getDrawable(R.drawable.category_video), density))
+        category.add(VshX("SONG", context.getString(R.string.category_music), resources.getDrawable(R.drawable.category_music), density))
+        category.add(VshX("SETT", context.getString(R.string.category_settings), resources.getDrawable(R.drawable.category_setting), density))
         val debug = VshX("DBUG", "Debug", resources.getDrawable(R.drawable.category_debug), density)
         category.add(debug)
         // Debug items
@@ -164,14 +164,7 @@ class VshView : View {
         },icon = resources.getDrawable(R.drawable.category_debug), density = density
         ))
 
-        home.items.add(VshY(0x00, "Mulai", "Tap di ikon untuk menjalankan aplikasi.",
-            icon = resources.getDrawable(R.drawable.icon_start),
-            density = density,
-            onClick = Runnable {
-                setSelectionAbs(1,0)
-            }
-        ))
-        home.items.add(VshY(0x01, "Tutup", "Atau tap ikon ini untuk menyembunikan menu.",
+        home.items.add(VshY(0x01, "Hide Menu", "Tap this icon to hide menu and see your wallpaper.",
             icon = resources.getDrawable(R.drawable.icon_start),
             density = density,
             onClick = Runnable {

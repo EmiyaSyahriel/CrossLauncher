@@ -20,9 +20,4 @@ class ExampleUnitTest {
     fun testSize(){
         System.out.println(File("I:\\Builds\\PacManUnity.apk").length().toSize())
     }
-
-    @Test
-    fun marqueeTest(){
-        System.out.println("soi".marquee(3,3,5))
-    }
 }

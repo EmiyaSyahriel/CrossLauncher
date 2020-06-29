@@ -33,7 +33,7 @@ import androidx.core.graphics.contains
 import java.io.File
 
 @Suppress("SpellCheckingInspection", "DEPRECATION")
-class VSH : AppCompatActivity(){
+class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     companion object{
         var xMarksTheSpot = false
         const val SAVE = "xRegistry"
@@ -59,6 +59,7 @@ class VSH : AppCompatActivity(){
         const val PREF_MIMIC_USA_CONSOLE = "xmb_PS3_FAT_CECHA00"
         const val PREF_USE_GAMEBOOT = "xmb_USE_GAMEBOOT"
         const val PREF_DYNAMIC_TWINKLE = "xmb_DYNAMIC_P3T"
+        const val PREF_IS_FIRST_RUN = "xmb_not_new_user"
     }
 
     private var returnFromGameboot = false
@@ -84,7 +85,25 @@ class VSH : AppCompatActivity(){
         val coldboot = VshColdBoot(this)
         coldboot.fitsSystemWindows = true
         coldboot.onFinishAnimation = Runnable {
-            setContentView(vsh)
+            if(prefs.getBoolean(PREF_IS_FIRST_RUN, true)){
+                val vshDialog = VshDialogView(this)
+                setContentView(vshDialog)
+                vshDialog.titleText = getString(R.string.first_run_instruction_title)
+                vshDialog.contentText = getString(R.string.first_run_instruction_content)
+                val dialogConfirmButton = VshDialogView.Button(
+                    getString(android.R.string.ok),
+                    arrayListOf(
+                        xMarksTheSpot.choose(KeyEvent.KEYCODE_BUTTON_A, KeyEvent.KEYCODE_BUTTON_B),
+                        KeyEvent.KEYCODE_ENTER,
+                        KeyEvent.KEYCODE_DPAD_CENTER
+                    ),
+                    Runnable { setContentView(vsh) }
+                )
+                vshDialog.setButton(arrayListOf(dialogConfirmButton))
+               // prefs.edit().putBoolean(PREF_IS_FIRST_RUN, false).apply()
+            }else{
+                setContentView(vsh)
+            }
         }
 
         setContentView(coldboot)
@@ -188,7 +207,7 @@ class VSH : AppCompatActivity(){
                 if(grantResults.isNotEmpty() && grantResults.all{ it == PackageManager.PERMISSION_GRANTED}){
                     storageAllowed = true
                 }else{
-                    Toast.makeText(this, "Storage permission is not granted, players may not usable", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.storage_permission_not_granted), Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -233,7 +252,7 @@ class VSH : AppCompatActivity(){
         setOrientation(prefs.getInt(PREF_ORIENTATION_KEY, ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE), settings.getItemBy(0xd1802))
         val useGameBootConfig = VshY(
             0xd1803,
-            "Show Brand Logo on App Launch",
+            getString(R.string.setting_show_gameboot),
             "Yes",
             resources.getDrawable(R.drawable.icon_android),
             vsh.density
@@ -251,7 +270,7 @@ class VSH : AppCompatActivity(){
 
         val dynamicThemeSetting = VshY(
             0xd1804,
-            "Show Dynamic Theme Twinkles","Yes",
+            getString(R.string.setting_mimic_dynamic_theme),"Yes",
             resources.getDrawable(R.drawable.icon_dynamic_theme_effect),
             vsh.density
         )
@@ -268,8 +287,8 @@ class VSH : AppCompatActivity(){
         settings.items.add(
             VshY(
             0xd18034,
-                "Brand Logo customization guide",
-                "Click here",
+                getString(R.string.setting_gameboot_custom_guide),
+                getString(R.string.click_here),
                 resources.getDrawable(R.drawable.icon_android),
                 vsh.density
             )
@@ -277,8 +296,8 @@ class VSH : AppCompatActivity(){
         settings.items.add(
             VshY(
                 0xd18034,
-                "Launcher Startup Logo customization guide",
-                "Click here",
+                getString(R.string.setting_coldboot_custom_guide),
+                getString(R.string.click_here),
                 resources.getDrawable(R.drawable.icon_android),
                 vsh.density
             )
@@ -428,7 +447,7 @@ class VSH : AppCompatActivity(){
                 startActivity(intent)
             }
         }else{
-            Toast.makeText(this, "App is nowhere", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.app_not_installed), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -448,19 +467,19 @@ class VSH : AppCompatActivity(){
         music.items.clear()
 
         music.items.add(
-            VshY(0x8080,"Pause","",
+            VshY(0x8080,getString(R.string.audioplayer_pause),"",
                 resources.getDrawable(R.drawable.icon_player_pause),
                 vsh.density,
                 Runnable { player?.pause() }))
 
         music.items.add(
-            VshY(0x8080,"Resume","",
+            VshY(0x8080,getString(R.string.audioplayer_resume),"",
                 resources.getDrawable(R.drawable.icon_player_play),
                 vsh.density,
                 Runnable { player?.start() }))
 
         music.items.add(
-            VshY(0x8080,"Stop","",
+            VshY(0x8080,getString(R.string.audioplayer_stop),"",
                 resources.getDrawable(R.drawable.icon_player_stop),
                 vsh.density,
                 Runnable {
@@ -484,9 +503,9 @@ class VSH : AppCompatActivity(){
             do{
                 val id = cursor.getLong(idCol)
                 val title = cursor.getString(titleCol)
-                val artist = cursor.getString(artistCol) ?: "<Unknown>"
+                val artist = cursor.getString(artistCol) ?: getString(R.string.unknown)
                 val path = cursor.getString(pathCol)
-                val album = cursor.getString(albumCol) ?: "<Unknown>"
+                val album = cursor.getString(albumCol) ?: getString(R.string.unknown)
                 val albumArt = getAlbumArt(path)
                 val item = VshY(id.toInt(), title, "$album - $artist" , albumArt, vsh.density, Runnable {
                     openAudioFile(path, title, artist)
@@ -620,57 +639,69 @@ class VSH : AppCompatActivity(){
     override fun onTouchEvent(event: MotionEvent): Boolean {
         var retval = false
 
-        when(event.actionMasked){
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_POINTER_UP ->{
-                isDrag = false
-                directionLock = DIRLOCK_NONE
-
-
-                if(touchCurrentPoint.distanceTo(touchStartPoint) < touchSlop){
-
-                    if(vsh.hideMenu) {
-                        // Unhide on tap
-                        vsh.hideMenu = false
-                    }
-                    recalculateChooseRect()
-
-                    if(touchStartPoint in launchArea && !vsh.hideMenu){
-                        vsh.executeCurrentItem()
-                    }
+        if(event.pointerCount == 2){
+            if(event.actionMasked == MotionEvent.ACTION_UP){
+                if(!vsh.hideMenu){
+                    vsh.isOnOptions = !vsh.isOnOptions
                 }
-                directionLock = DIRLOCK_NONE
-                retval = true
             }
-            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_POINTER_DOWN -> {
-                touchStartPoint.x = event.x
-                touchStartPoint.y = event.y
-                touchCurrentPoint.x = event.x
-                touchCurrentPoint.y = event.y
-                touchDeltaStartPoint.x = event.x
-                touchDeltaStartPoint.y = event.y
-                isDrag = true
-                retval = true
-            }
-            MotionEvent.ACTION_MOVE ->{
-                touchCurrentPoint.set(event.x, event.y)
-                val minMove = vsh.d(75f)
-                if(isDrag){
-                    val xLen = touchCurrentPoint.x - touchDeltaStartPoint.x
-                    val yLen = touchCurrentPoint.y - touchDeltaStartPoint.y
-                    if(kotlin.math.abs(xLen) > minMove && directionLock != DIRLOCK_VERTICAL ){
-                        directionLock = DIRLOCK_HORIZONTAL
-                        vsh.setSelection((xLen > 0).choose(-1,1),0)
-                        touchDeltaStartPoint.set(touchCurrentPoint)
-                    }else if(kotlin.math.abs(yLen) > minMove && directionLock != DIRLOCK_HORIZONTAL){
-                        directionLock = DIRLOCK_VERTICAL
-                        vsh.setSelection(0,(yLen > 0).choose(-1,1))
-                        touchDeltaStartPoint.set(touchCurrentPoint)
+        }else{
+            when(event.actionMasked){
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_POINTER_UP ->{
+                    isDrag = false
+                    directionLock = DIRLOCK_NONE
+
+
+                    if(touchCurrentPoint.distanceTo(touchStartPoint) < touchSlop){
+
+                        if(vsh.hideMenu) {
+                            // Unhide on tap
+                            vsh.hideMenu = false
+                        }
+                        recalculateChooseRect()
+
+                        if(touchStartPoint in launchArea && !vsh.hideMenu){
+                            vsh.executeCurrentItem()
+                        }
                     }
+                    directionLock = DIRLOCK_NONE
                     retval = true
+                }
+                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_POINTER_DOWN -> {
+                    touchStartPoint.x = event.x
+                    touchStartPoint.y = event.y
+                    touchCurrentPoint.x = event.x
+                    touchCurrentPoint.y = event.y
+                    touchDeltaStartPoint.x = event.x
+                    touchDeltaStartPoint.y = event.y
+                    isDrag = true
+                    retval = true
+                }
+                MotionEvent.ACTION_MOVE ->{
+                    touchCurrentPoint.set(event.x, event.y)
+                    val minMove = vsh.d(75f)
+                    if(isDrag){
+                        val xLen = touchCurrentPoint.x - touchDeltaStartPoint.x
+                        val yLen = touchCurrentPoint.y - touchDeltaStartPoint.y
+                        if(kotlin.math.abs(xLen) > minMove && directionLock != DIRLOCK_VERTICAL ){
+                            directionLock = DIRLOCK_HORIZONTAL
+                            vsh.setSelection((xLen > 0).choose(-1,1),0)
+                            touchDeltaStartPoint.set(touchCurrentPoint)
+                        }else if(kotlin.math.abs(yLen) > minMove && directionLock != DIRLOCK_HORIZONTAL){
+                            directionLock = DIRLOCK_VERTICAL
+                            vsh.setSelection(0,(yLen > 0).choose(-1,1))
+                            touchDeltaStartPoint.set(touchCurrentPoint)
+                        }
+                        retval = true
+                    }
                 }
             }
         }
         return retval || super.onTouchEvent(event)
+    }
+
+    override fun onDialogBack() {
+        setContentView(vsh)
     }
 
 }

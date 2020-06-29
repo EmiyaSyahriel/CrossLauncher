@@ -51,7 +51,6 @@ class VshColdBoot : View {
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        Log.d(TAG, "Size Change detected")
         loadDefaultColdBootImage()
         loadCustomColdBootImage()
         super.onSizeChanged(w, h, oldw, oldh)
@@ -59,22 +58,20 @@ class VshColdBoot : View {
 
     private fun loadDefaultColdBootImage(){
         val coldbootBmp = context.resources.getDrawable(R.drawable.coldboot_internal).toBitmap(1280, 720)
-        val scale = (width > height).choose(width.toFloat() / coldbootBmp.width, height.toFloat() / coldbootBmp.height)
+        val scale = (width < height).choose(width.toFloat() / coldbootBmp.width, height.toFloat() / coldbootBmp.height)
         coldbootImage = coldbootBmp.scale((scale * coldbootBmp.width).toInt(), (scale * coldbootBmp.height).toInt())
     }
 
     private fun loadCustomColdBootImage(){
         try{
             val dataFolder = context.getExternalFilesDir("")?.listFiles()
-            Log.d(TAG, "Data files is located at : ${context.getExternalFilesDir(null)?.absolutePath}")
-            dataFolder?.forEach { Log.d(TAG,"Files : ${it.name}") }
             val coldboots = dataFolder?.filter { it -> it.name.toLowerCase(Locale.ROOT).endsWith("coldboot.png") }
             if(coldboots != null){
                 if(coldboots.isNotEmpty()){
                     val file = coldboots[0]
                     if(file.exists()){
                         val coldbootBmp = BitmapFactory.decodeStream(file.inputStream())
-                        val scale = (width > height).choose(width / coldbootBmp.width, height / coldbootBmp.height)
+                        val scale = (width < height).choose(width / coldbootBmp.width, height / coldbootBmp.height)
                         coldbootImage = coldbootBmp.scale(scale * coldbootBmp.width, scale * coldbootBmp.height)
                     }
                 }

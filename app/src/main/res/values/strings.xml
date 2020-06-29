@@ -6,4 +6,57 @@
   <string name="orient_portrait">Portrait</string>
   <string name="orient_user">System Default</string>
   <string name="item_orientation">Screen Orientation</string>
+  <string name="first_run_instruction_title">First Run</string>
+  <string name="first_run_instruction_content">
+    Since this is your first run, this is how you can interact with this launcher
+    \n
+    \n Touch :
+    \n- Executing Item : Tap the icon of the item
+    \n- Changing between Categories : Swipe left or right
+    \n- Changing between Items : Swipe up or down
+    \n- Show / Hide Item Options : Two-fingers tap anywhere
+    \n- Re-reveal the Menu : Tap anywhere on screen
+    \n
+    \n Keyboard / TV Remote :
+    \n- Executing Item : Enter / OK Button
+    \n- Changing between Categories : Arrow Left and Right
+    \n- Changing between Items : Arrow Up and Down
+    \n- Show / Hide Item Options : Tab Button / Menu Button (Right side of Spacebar)
+    \n- Re-reveal the Menu : Enter
+    \n- Jump to item by first letter : Any alphanumeric key
+    \n
+    \n PlayStation Controller:
+    \n- Executing Item : Cross / Circle Button (Depending on setting)
+    \n- Changing between Categories : D-Pad Left and Right
+    \n- Changing between Items : D-Pad Up and Down
+    \n- Show / Hide Item Options : Triangle Button
+    \n- Re-reveal the Menu : Start
+    \n
+    \n Xbox Controller:
+    \n- Executing Item : A / B Button (Depending on setting)
+    \n- Changing between Categories : D-Pad Left and Right
+    \n- Changing between Items : D-Pad Up and Down
+    \n- Show / Hide Item Options : Y Button
+    \n- Re-reveal the Menu : Menu
+    \n
+    \n If "Mimic Non-Asian Console" option is active, PlayStation and Xbox Controller
+    \n will use Cross / A Button to as confirm, otherwise it will use Circle / B Button
+  </string>
+  <string name="storage_permission_not_granted">Storage permission is not granted, players may not usable</string>
+  <string name="setting_show_gameboot">Show Brand Logo on App Launch</string>
+  <string name="setting_mimic_dynamic_theme">Show Dynamic Theme Twinkles</string>
+  <string name="setting_gameboot_custom_guide">Brand Logo customization guide</string>
+  <string name="setting_coldboot_custom_guide">Launcher Startup Logo customization guide</string>
+  <string name="click_here">Click here</string>
+  <string name="app_not_installed">App is not installed</string>
+  <string name="audioplayer_pause">Pause</string>
+  <string name="audioplayer_resume">Resume</string>
+  <string name="audioplayer_stop">Stop</string>
+  <string name="unknown"><![CDATA[<Unknown>]]></string>
+  <string name="category_home">Home</string>
+  <string name="category_apps">Apps</string>
+  <string name="category_games">Games</string>
+  <string name="category_videos">Videos</string>
+  <string name="category_music">Music</string>
+  <string name="category_settings">Settings</string>
 </resources>
