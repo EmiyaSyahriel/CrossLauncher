@@ -30,6 +30,8 @@ import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.contains
+import androidx.core.view.doOnAttach
+import androidx.core.view.doOnDetach
 import java.io.File
 
 @Suppress("SpellCheckingInspection", "DEPRECATION")
@@ -71,10 +73,23 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     private var dynamicThemeTwinkles = true
     private var appListerThread : Thread = Thread()
     var scrOrientation : Int = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+    private var isOnMenu = false
+
+    private val mimickedConfirmButton : Int
+        get() {
+            return xMarksTheSpot.choose(KeyEvent.KEYCODE_BUTTON_A, KeyEvent.KEYCODE_BUTTON_B)
+        }
+
+    private val mimickedCancelButton : Int
+        get() {
+            return xMarksTheSpot.choose(KeyEvent.KEYCODE_BUTTON_B, KeyEvent.KEYCODE_BUTTON_A)
+        }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         vsh = VshView(this)
+        vsh.id = R.id.vsh_view_main
         sysBarTranslucent()
         vsh.fitsSystemWindows = true
         prefs = getSharedPreferences(SAVE, Context.MODE_PRIVATE)
@@ -302,6 +317,43 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 vsh.density
             )
         )
+
+        val home = vsh.findById("HOME")
+
+        home?.items?.add(
+            VshY(
+                0xd18035,
+                "Rebuild App and Game Database",
+                "in case new app is installed, but this app does not automatically show them.",
+                resources.getDrawable(R.drawable.icon_refresh),
+                vsh.density,
+                onClick = Runnable {
+                    val alert = VshDialogView(this)
+                    alert.buttons.clear()
+                    alert.buttons.add(VshDialogView.Button("OK", arrayListOf(
+
+                        KeyEvent.KEYCODE_DPAD_CENTER,
+                        KeyEvent.KEYCODE_ENTER,
+                        mimickedConfirmButton
+
+                    ), Runnable {
+                        val thread = Thread(Runnable { loadApps() })
+                        thread.start()
+                        setContentView(vsh)
+                    }))
+                    alert.buttons.add(VshDialogView.Button("Cancel", arrayListOf(
+                        KeyEvent.KEYCODE_ESCAPE,
+                        KeyEvent.KEYCODE_BACK,
+                        mimickedCancelButton
+                    ),
+                        Runnable {  }
+                    ))
+                    alert.titleText = "Rebuilding App Database"
+                    alert.contentText = "Application database will be rebuilt, this launcher will not be usable until it finished."
+                    setContentView(alert)
+                }
+            )
+        )
     }
 
     private val orientationName = mapOf(
@@ -347,6 +399,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if(!isOnMenu) return false
         var retval = false
         val confirmButton = xMarksTheSpot.choose(KeyEvent.KEYCODE_BUTTON_A, KeyEvent.KEYCODE_BUTTON_B)
 
@@ -608,6 +661,13 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         return retval
     }
 
+    override fun onContentChanged() {
+        val data = findViewById<View>(R.id.vsh_view_main)
+        isOnMenu = null != data
+        Log.d(TAG, "Menu is ${isOnMenu.choose("Shown","Hidden")}")
+        super.onContentChanged()
+    }
+
     private fun packageIsGameByDB(appinfo : ActivityInfo) : Boolean{
         val lwr = appinfo.name.toLowerCase(originLocale)
         var retval = false
@@ -637,6 +697,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if(!isOnMenu) return false
+
         var retval = false
 
         if(event.pointerCount == 2){

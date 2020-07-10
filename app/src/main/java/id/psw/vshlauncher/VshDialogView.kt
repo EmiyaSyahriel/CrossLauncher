@@ -6,6 +6,7 @@ import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -29,12 +30,12 @@ class VshDialogView : View {
     var iconBitmap = ColorDrawable(Color.TRANSPARENT).toBitmap(1,1)
     var titleText = "Dialog"
     var contentText = "Content Text"
+    var scrollPadding = 0f
     var buttons = arrayListOf(
         Button("Close", arrayListOf(KeyEvent.KEYCODE_BUTTON_A, KeyEvent.KEYCODE_BUTTON_B), Runnable{
         if(context is IDialogBackable) (context as IDialogBackable).onDialogBack()
     }),
         Button("Placeholder", arrayListOf(KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_R), Runnable{
-
         })
     )
     private var touchSlop = 1
@@ -90,13 +91,14 @@ class VshDialogView : View {
             attrs, R.styleable.VshDialogView, defStyle, 0
         )
         a.recycle()
-
+        isFocusable = true
         density = resources.displayMetrics.density
         scaledDensity = resources.displayMetrics.scaledDensity
         generatePaint()
     }
 
     var outlinePath = Path()
+    var outlineRect = RectF(0f,0f,0f,0f)
     private fun updatePath(){
         outlinePath.reset()
         outlinePath.moveTo(-width * 0.25f, height * 0.15f )
@@ -104,6 +106,11 @@ class VshDialogView : View {
         outlinePath.lineTo(width * 1.25f, height * 0.85f)
         outlinePath.lineTo( -width * 0.25f, height * 0.85f)
         outlinePath.close()
+
+        outlineRect.set(
+            -width * 0.25f, height * 0.15f,
+            width * 1.25f, height * 0.85f
+        )
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -144,47 +151,97 @@ class VshDialogView : View {
         paintText.textAlign = Paint.Align.CENTER
         canvas.clipPath(outlinePath)
         val texts = contentText.split("\t", "\n", "\\n")
-        val textSize = paintText.textSize + d(5f)
-        val yPadding = height/2 - ((texts.size * textSize) / 2f)
+        val textSize = paintText.textSize + sd(5f)
+        val isinBound = outlineRect.height() > textSize * texts.size
+        var yPadding = isinBound
+            .choose(0.5f, scrollPadding)
+            .toLerp(
+                outlineRect.top + 0f + paintText.textSize,
+                outlineRect.top - ((textSize * texts.size) - outlineRect.height())
+            )
         texts.forEachIndexed{
             i, it ->
             canvas.drawTextWithYOffset(it, width/2f, yPadding + (i * textSize), paintText)
         }
         canvas.restore()
+
+        canvas.drawTextWithYOffset("Scroll : $scrollPadding", width/2f, sd(20f), paintText, 1f);
     }
 
     val touchStart = PointF(0f,0f)
     val touchEnd = PointF(0f,0f)
+    var touchStartScrollPos = 0f
+    val textContentSize = Rect(0,0,0,0)
+
+    private val isTouch: Boolean
+        get() {
+            return ((touchStart - touchEnd).length() < touchSlop)
+        }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         var retval = false
+        touchEnd.set(event.x, event.y)
         when(event.actionMasked){
             MotionEvent.ACTION_DOWN -> {
                 touchStart.set(event.x, event.y)
+                touchStartScrollPos = scrollPadding
                 retval = true
             }
             MotionEvent.ACTION_UP ->{
-                touchEnd.set(event.x, event.y)
-                if((touchStart - touchEnd).length() < touchSlop){
+                if(isTouch){
                     buttonRects.forEachIndexed { index, it ->
                         if(it.contains(touchEnd.x, touchEnd.y)){
                             buttons[index].runnable.run()
                         }
                     }
                 }
+                retval = true
+            }
+            MotionEvent.ACTION_MOVE ->{
+                if(!isTouch){
+                    val delta = (touchEnd.y - touchStart.y) / outlineRect.height()
+                    scrollPadding = (touchStartScrollPos - delta).coerceIn(0f, 1f)
+                    Log.d(TAG,"Scrolled ${delta * 100}%")
+                    postInvalidate()
+                }
+                retval = true
             }
         }
         return retval || super.onTouchEvent(event)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        var retval = false
+        Log.d(TAG,"Key Up: $keyCode")
         buttons.forEach {
             if(it.correspondingKeys.any { key -> key == keyCode }){
                 it.runnable.run()
+                Log.d(TAG,"Keycode matches with any of \"${it.text}\" corresponding keys")
+                retval = true
+                postInvalidate()
             }
         }
-        return super.onKeyUp(keyCode, event)
+
+        paintText.getTextBounds("A", 0, 1, textContentSize)
+        val spp = textContentSize.height() / outlineRect.height()
+
+        when(keyCode){
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                scrollPadding = (scrollPadding + spp).coerceIn(0f,1f)
+                Log.d(TAG,"DPad - Moving Down")
+                retval = true
+                postInvalidate()
+            }
+            KeyEvent.KEYCODE_DPAD_UP -> {
+                scrollPadding = (scrollPadding - spp).coerceIn(0f,1f)
+                Log.d(TAG,"DPad - Moving Up")
+                retval = true
+                postInvalidate()
+            }
+        }
+
+        return retval || super.onKeyUp(keyCode, event)
     }
 
     private fun recalculateButtonSize(){
