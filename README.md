@@ -28,15 +28,17 @@ With about 500Kb~1MB per item since icons will be cached in memory.
 - [x] A Minimal Built-in Music Player
 - [x] Gamepad Support (partial)
 - [x] Keystroke-to-Name Item finding
-- [x] Launcher Startup & App Launch Animation (Switchable), see [Animation Modding](https://github.com/EmiyaSyahriel/CrossLauncher#animation-modding) to modify it
+- [x] Launcher Startup & App Launch Animation (Switchable), see 
+[Animation Modding](https://github.com/EmiyaSyahriel/CrossLauncher#animation-modding) to modify it
 - [ ] PS3-like Dialogs
+  - [x] Preliminary state
 - [ ] Item Options (Just like when you press Triangle on PS3)
-- [ ] Item Hide
+- [ ] Item Hiding
 - [ ] Open video file with default apps
 
 ## TODOs:
 - Soft-coding strings
-- Some optimizations regarding file loading
+- Some optimizations regarding item and caching loading
 
 ## Animation Modding
 You can modify the Launcher Startup / App Launch Animation and Sound by
@@ -49,7 +51,14 @@ adding/changing files in `/sdcard/Android/data/id.psw.vshlauncher/files/`.
 | gameboot.mp3 | App launch audio|
 
 ## Releases
-You can build it yourself, Or go to [Release](https://github.com/EmiyaSyahriel/CrossLauncher/releases) page for built packages
+You can build it yourself, Or go to [Release](https://github.com/EmiyaSyahriel/CrossLauncher/releases)
+page for pre-built packages
+
+## Contribution
+Translations are welcome. Some code blocks are also welcome as long as it doesn't defy the design and 
+functionality of XMB.
+
+I am still a beginner on Android programming. one and a half year experience in non-professional capacity.
 
 ## License
 MIT License.
