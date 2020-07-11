@@ -346,10 +346,13 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                         KeyEvent.KEYCODE_BACK,
                         mimickedCancelButton
                     ),
-                        Runnable {  }
+                        Runnable {
+                            setContentView(vsh)
+                        }
                     ))
                     alert.titleText = "Rebuilding App Database"
-                    alert.contentText = "Application database will be rebuilt, this launcher will not be usable until it finished."
+                    alert.contentText = "Application database will be rebuilt, this launcher will not\nbe usable until it finished."
+                    alert.iconBitmap = resources.getDrawable(R.drawable.icon_refresh).toBitmap(vsh.d(32),vsh.d(32))
                     setContentView(alert)
                 }
             )
@@ -449,6 +452,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         val apps = vsh.findById("APPS") ?: return
         val games = vsh.findById("GAME") ?: return
         apps.items.clear()
+        games.items.clear()
         vsh.clockAsLoadingIndicator = true
 
         val intent = Intent(Intent.ACTION_MAIN, null)

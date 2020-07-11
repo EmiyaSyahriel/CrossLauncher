@@ -39,6 +39,7 @@ class VshDialogView : View {
         })
     )
     private var touchSlop = 1
+    private var backgroundAlpha = 0
 
     private var paintText = TextPaint(Paint.ANTI_ALIAS_FLAG)
     private var paintFill = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -130,30 +131,35 @@ class VshDialogView : View {
         recalculateButtonSize()
         canvas.drawPath(outlinePath, paintOutline)
 
+        backgroundAlpha = (backgroundAlpha + 5).coerceIn(0, 128)
+
+        canvas.drawARGB(backgroundAlpha, 0,0,0)
+
         paintText.textAlign = Paint.Align.LEFT
 
         val leftPadding = d(50f)
 
-        canvas.drawText(titleText, leftPadding,(height * 0.15f) - d(5f),paintText)
+        canvas.drawText(titleText, leftPadding,(height * 0.15f) - d(20f),paintText)
+        canvas.drawBitmap(iconBitmap, leftPadding - d(40f), (height * 0.15f) -d(10f) - d(32f), paintFill)
 
-        canvas.save()
         paintText.textAlign = Paint.Align.CENTER
         buttonRects.forEachIndexed { index, rectF ->
             val btn = buttons[index]
             canvas.drawTextWithYOffset(btn.text, rectF.centerX(), rectF.centerY(), paintText)
+            canvas.save()
             canvas.clipRect(rectF)
-            canvas.drawColor(Color.argb(64,255,255,255))
+            canvas.drawARGB(64,255,255,255)
             canvas.clipRect(0,0,width,height)
+            canvas.restore()
         }
-        canvas.restore()
 
         canvas.save()
         paintText.textAlign = Paint.Align.CENTER
         canvas.clipPath(outlinePath)
         val texts = contentText.split("\t", "\n", "\\n")
         val textSize = paintText.textSize + sd(5f)
-        val isinBound = outlineRect.height() > textSize * texts.size
-        var yPadding = isinBound
+        val isInBound = outlineRect.height() > textSize * texts.size
+        val yPadding = isInBound
             .choose(0.5f, scrollPadding)
             .toLerp(
                 outlineRect.top + 0f + paintText.textSize,
@@ -164,8 +170,7 @@ class VshDialogView : View {
             canvas.drawTextWithYOffset(it, width/2f, yPadding + (i * textSize), paintText)
         }
         canvas.restore()
-
-        canvas.drawTextWithYOffset("Scroll : $scrollPadding", width/2f, sd(20f), paintText, 1f);
+        postInvalidate()
     }
 
     val touchStart = PointF(0f,0f)
@@ -200,9 +205,8 @@ class VshDialogView : View {
             }
             MotionEvent.ACTION_MOVE ->{
                 if(!isTouch){
-                    val delta = (touchEnd.y - touchStart.y) / outlineRect.height()
+                    val delta = d(touchEnd.y - touchStart.y) / outlineRect.height()
                     scrollPadding = (touchStartScrollPos - delta).coerceIn(0f, 1f)
-                    Log.d(TAG,"Scrolled ${delta * 100}%")
                     postInvalidate()
                 }
                 retval = true
@@ -213,11 +217,9 @@ class VshDialogView : View {
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         var retval = false
-        Log.d(TAG,"Key Up: $keyCode")
         buttons.forEach {
             if(it.correspondingKeys.any { key -> key == keyCode }){
                 it.runnable.run()
-                Log.d(TAG,"Keycode matches with any of \"${it.text}\" corresponding keys")
                 retval = true
                 postInvalidate()
             }
@@ -229,13 +231,11 @@ class VshDialogView : View {
         when(keyCode){
             KeyEvent.KEYCODE_DPAD_DOWN -> {
                 scrollPadding = (scrollPadding + spp).coerceIn(0f,1f)
-                Log.d(TAG,"DPad - Moving Down")
                 retval = true
                 postInvalidate()
             }
             KeyEvent.KEYCODE_DPAD_UP -> {
                 scrollPadding = (scrollPadding - spp).coerceIn(0f,1f)
-                Log.d(TAG,"DPad - Moving Up")
                 retval = true
                 postInvalidate()
             }
@@ -247,12 +247,12 @@ class VshDialogView : View {
     private fun recalculateButtonSize(){
         buttonRects.clear()
         val btnWidth = width / buttons.size
-        val paddingSize = d(10f)
+        val paddingSize = d(3f)
         buttons.forEachIndexed { index, _ ->
             buttonRects.add(RectF(
-                (btnWidth * index * 1f) + paddingSize,
+                (btnWidth * index.toFloat()) + paddingSize,
                 (height * 0.85f) + paddingSize,
-                (btnWidth * (index + 1f))- paddingSize,
+                (btnWidth * (index + 1f)) - paddingSize,
                 (height * 1f)- paddingSize
             ))
         }
