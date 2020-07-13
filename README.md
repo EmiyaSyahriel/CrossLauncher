@@ -37,8 +37,9 @@ With about 500Kb~1MB per item since icons will be cached in memory.
 - [ ] Open video file with default apps
 
 ## TODOs:
+- Render padding so it doesn't get rendered behind system bars
 - Soft-coding strings
-- Some optimizations regarding item and caching loading
+- Some optimizations regarding item caching and loading
 
 ## Animation Modding
 You can modify the Launcher Startup / App Launch Animation and Sound by
