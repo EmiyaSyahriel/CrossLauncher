@@ -1,5 +1,6 @@
 package id.psw.vshlauncher
 
+import android.content.pm.PackageManager
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 
@@ -20,5 +21,9 @@ class ExampleInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("id.psw.vshlauncher", appContext.packageName)
+    }
+
+    @Test
+    fun getExceptionCode(){
     }
 }

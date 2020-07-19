@@ -4,15 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.Log
-import android.view.KeyEvent
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewConfiguration
+import android.view.*
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.minus
+import androidx.core.view.*
 
 class VshDialogView : View {
 
@@ -40,10 +39,13 @@ class VshDialogView : View {
     )
     private var touchSlop = 1
     private var backgroundAlpha = 0
+    private var renderableArea = Rect(0,0,0,0)
 
     private var paintText = TextPaint(Paint.ANTI_ALIAS_FLAG)
     private var paintFill = Paint(Paint.ANTI_ALIAS_FLAG)
     private var paintOutline = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var paintButton = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var availableWindowSize = Rect(0,0,0,0)
 
     fun d(i:Float):Float{return i * density}
     fun d(i:Int):Int{return (i * density).toInt()}
@@ -79,14 +81,20 @@ class VshDialogView : View {
             strokeWidth = d(1.5f)
             strokeJoin = Paint.Join.ROUND
             strokeCap = Paint.Cap.ROUND
+            alpha = 255
         }
         paintFill.apply {
             color = Color.WHITE
             style = Paint.Style.FILL
         }
+        paintButton.apply {
+            color = Color.argb(64,255,255,255)
+            style = Paint.Style.FILL
+        }
     }
 
     private fun init(attrs: AttributeSet?, defStyle: Int){
+        renderableArea = getSystemPadding()
         // Load attributes
         val a = context.obtainStyledAttributes(
             attrs, R.styleable.VshDialogView, defStyle, 0
@@ -96,6 +104,22 @@ class VshDialogView : View {
         density = resources.displayMetrics.density
         scaledDensity = resources.displayMetrics.scaledDensity
         generatePaint()
+
+    }
+
+    override fun onApplyWindowInsets(insets: WindowInsets?): WindowInsets {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH){
+            availableWindowSize.top = insets?.systemWindowInsetTop ?: 0
+            availableWindowSize.bottom = insets?.systemWindowInsetBottom ?: height
+            availableWindowSize.left = insets?.systemWindowInsetLeft ?: 0
+            availableWindowSize.right = insets?.systemWindowInsetRight ?: width
+        }else{
+            availableWindowSize.top = 0
+            availableWindowSize.bottom = height
+            availableWindowSize.left = 0
+            availableWindowSize.right = width
+        }
+        return super.onApplyWindowInsets(insets)
     }
 
     var outlinePath = Path()
@@ -115,8 +139,11 @@ class VshDialogView : View {
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        touchSlop = ViewConfiguration.get(context).scaledTouchSlop
         super.onSizeChanged(w, h, oldw, oldh)
+        touchSlop = ViewConfiguration.get(context).scaledTouchSlop
+        renderableArea = getSystemPadding()
+        updatePath()
+        Log.d(TAG, "Screen Size : $marginLeft $marginTop - $marginRight $marginBottom")
     }
 
     private var buttonRects = arrayListOf<RectF>()
@@ -129,11 +156,11 @@ class VshDialogView : View {
     private fun mUpdate(canvas:Canvas){
         if(outlinePath.isEmpty) updatePath()
         recalculateButtonSize()
-        canvas.drawPath(outlinePath, paintOutline)
 
         backgroundAlpha = (backgroundAlpha + 5).coerceIn(0, 128)
-
         canvas.drawARGB(backgroundAlpha, 0,0,0)
+
+        canvas.drawPath(outlinePath, paintOutline)
 
         paintText.textAlign = Paint.Align.LEFT
 
@@ -145,12 +172,8 @@ class VshDialogView : View {
         paintText.textAlign = Paint.Align.CENTER
         buttonRects.forEachIndexed { index, rectF ->
             val btn = buttons[index]
+            canvas.drawRect(rectF, paintButton)
             canvas.drawTextWithYOffset(btn.text, rectF.centerX(), rectF.centerY(), paintText)
-            canvas.save()
-            canvas.clipRect(rectF)
-            canvas.drawARGB(64,255,255,255)
-            canvas.clipRect(0,0,width,height)
-            canvas.restore()
         }
 
         canvas.save()
@@ -205,7 +228,7 @@ class VshDialogView : View {
             }
             MotionEvent.ACTION_MOVE ->{
                 if(!isTouch){
-                    val delta = d(touchEnd.y - touchStart.y) / outlineRect.height()
+                    val delta = d(touchEnd.y - touchStart.y) / (contentText.split("\n").size * paintText.textSize)
                     scrollPadding = (touchStartScrollPos - delta).coerceIn(0f, 1f)
                     postInvalidate()
                 }
@@ -253,7 +276,7 @@ class VshDialogView : View {
                 (btnWidth * index.toFloat()) + paddingSize,
                 (height * 0.85f) + paddingSize,
                 (btnWidth * (index + 1f)) - paddingSize,
-                (height * 1f)- paddingSize
+                (height* 1f)- paddingSize
             ))
         }
     }

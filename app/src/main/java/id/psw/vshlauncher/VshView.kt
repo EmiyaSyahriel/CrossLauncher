@@ -5,6 +5,7 @@ import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.view.ViewCompat
 import java.lang.Exception
 import java.lang.Math.*
 import java.text.SimpleDateFormat
@@ -138,6 +139,7 @@ class VshView : View {
         scaledDensity = resources.displayMetrics.scaledDensity
         generatePaint()
         fillCategory()
+
     }
 
 

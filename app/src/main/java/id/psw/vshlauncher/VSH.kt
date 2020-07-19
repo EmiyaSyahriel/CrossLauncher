@@ -30,9 +30,12 @@ import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.contains
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
 import java.io.File
+import kotlin.concurrent.schedule
 
 @Suppress("SpellCheckingInspection", "DEPRECATION")
 class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
@@ -88,6 +91,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         vsh = VshView(this)
         vsh.id = R.id.vsh_view_main
         sysBarTranslucent()
@@ -124,12 +128,6 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         setContentView(coldboot)
         playColdbootSound()
 
-        val offsetRect = Rect()
-        window.decorView.getWindowVisibleDisplayFrame(offsetRect)
-        VshView.padding.top = offsetRect.top.toFloat()
-        VshView.padding.left = offsetRect.left.toFloat()
-        VshView.padding.right = offsetRect.right.toFloat()
-        VshView.padding.bottom = offsetRect.bottom.toFloat()
         setOperatorName()
 
         checkPermission()
@@ -144,6 +142,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         recalculateChooseRect()
         vsh.recalculateClockRect()
         populateSettingSections()
+
+        getRenderableScreen()
     }
 
     private fun playColdbootSound(){
@@ -161,6 +161,15 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         }
     }
 
+    private fun getRenderableScreen(){
+        val offsetRect = Rect()
+        window.decorView.getLocalVisibleRect(offsetRect)
+        VshView.padding.top = offsetRect.top.toFloat()
+        VshView.padding.left = offsetRect.left.toFloat()
+        VshView.padding.right = offsetRect.right.toFloat()
+        VshView.padding.bottom = offsetRect.bottom.toFloat()
+        Log.d(TAG, "Found Screen Data = $offsetRect")
+    }
 
     private fun playGamebootSound(){
         try{
@@ -232,6 +241,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         vsh.recalculateClockRect()
+        getRenderableScreen()
     }
 
     @Suppress("DEPRECATION")
@@ -489,6 +499,14 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         vsh.clockAsLoadingIndicator = false
     }
 
+    private fun uninstallApp(packageName: String){
+        val intent = Intent(Intent.ACTION_DELETE, Uri.fromParts("package", packageName, null))
+        startActivity(intent)
+        Timer("Uninstaller", true).schedule(5000){
+            Thread(Runnable {loadApps()}).start()
+        }
+    }
+
     private fun startApp(packageName: String){
         val intent = packageManager.getLaunchIntentForPackage(packageName)
         if(null != intent){
@@ -504,7 +522,18 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 startActivity(intent)
             }
         }else{
-            Toast.makeText(this, getString(R.string.app_not_installed), Toast.LENGTH_SHORT).show()
+            val v = VshDialogView(this)
+            v.setButton(arrayListOf(VshDialogView.Button(
+                getString(android.R.string.ok),
+                arrayListOf(mimickedConfirmButton, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER),
+                Runnable {
+                    setContentView(vsh)
+                }
+            )
+            ))
+            v.contentText = "Cannot start this application.\n(NameNotFoundException : Not Installed)"
+            v.titleText = "Launch Error"
+            setContentView(v)
         }
     }
 
