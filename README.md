@@ -1,3 +1,4 @@
+English|[Readme Bahasa Indonesia](https://github.com/EmiyaSyahriel/CrossLauncher/blob/master/README_ID.md)
 # Cross Launcher
 Sony XMB like Android Launcher, Mainly inspired by Sony PlayStation 3(TM) XMB.
 
@@ -29,7 +30,7 @@ With about 500Kb~1MB per item since icons will be cached in memory.
 - [x] Gamepad Support (partial)
 - [x] Keystroke-to-Name Item finding
 - [x] Launcher Startup & App Launch Animation (Switchable), see 
-[Animation Modding](https://github.com/EmiyaSyahriel/CrossLauncher#animation-modding) to modify it
+[Animation Modding](https://github.com/EmiyaSyahriel/CrossLauncher/blob/master/README.md#animation-modding) to modify it
 - [ ] PS3-like Dialogs
   - [x] Preliminary state
 - [ ] Item Options (Just like when you press Triangle on PS3)
