@@ -1,3 +1,4 @@
+Bahasa Indonesia|[English](https://github.com/EmiyaSyahriel/CrossLauncher/blob/master/README.md)
 # Cross Launcher
 Peluncur Aplikasi Android mirip XMB pada beberapa produk Sony, terutama XMB PlayStation 3.
 
@@ -30,7 +31,7 @@ Ikon akan tetap berada pada RAM selama launcher berjalan.
 - [x] Dukungan gamepad (belum total)
 - [x] Cari item dengan tombol alphabet (Keyboard)
 - [x] Animasi saat Mulai dan saat Luncur (Bisa di atur), lihat 
-[Animation Modding](https://github.com/EmiyaSyahriel/CrossLauncher#animation-modding) untuk cara modifikasi
+[Memodifikasi Animasi](https://github.com/EmiyaSyahriel/CrossLauncher/blob/master/README_ID.md#memodifikasi-animasi) untuk cara modifikasi
 - [ ] Layar Dialog seperti XMB
   - [x] Masih tahap awal
 - [ ] Opsi Item (Segitiga di PS3)
