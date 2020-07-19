@@ -4,24 +4,24 @@ Bahasa : Bahasa Indonesia | [English](https://github.com/EmiyaSyahriel/CrossLaun
 Peluncur Aplikasi Android mirip XMB pada beberapa produk Sony, terutama XMB PlayStation 3.
 
 ## Fokus Utama
-Launcher ini tidak benar-benar ditujukan kepada perangkat Android sentuh, Tetapi untuk perangkat
+Launcher ini tidak benar-benar ditujukan kepada perangkat Android layar sentuh, Tetapi untuk perangkat
 Android yang normalnya tidak memiliki antarmuka sentuh seperti TV, Komputer, Laptop atau Emulator.
 
-Peluncur ini masih bisa dipakai pada perangkat Android sentuh, hanya saja akan memerlukan usaha
+Peluncur ini masih bisa dipakai pada perangkat Android layar sentuh, hanya saja akan memerlukan usaha
 lebih untuk navigasinya.
 
 ## Penggunaan
-| Fungsi            | Keyboard   | DualShock | Xbox     | Sentuh           |
+| Fungsi            | Keyboard   | DualShock | Xbox     | Layar Sentuh     |
 |-------------------|------------|-----------|----------|------------------|
-| Memilah Item      |Tombol Arah | D-Pad     | D-Pad    | Geser            |
-| Execute Item      | Enter      | X/O       | A/B      | Sentuh pada ikon |
-| Hide/Show Options*| Menu/Tab   | Segitiga  | Y        | Sentuh dua jari  |
+| Memilah Item      |Tombol Arah | Arah      | Arah     | Geser            |
+| Membuka Item      | Enter      | X/O       | A/B      | Sentuh pada ikon |
+| Opsi*             | Menu/Tab   | Segitiga  | Y        | Sentuh dua jari  |
 
 *Belum sempurna
 
 ## Penggunaan RAM
-Pada perangkat saya, kosongannya biasa memakan 10MB, ditambah ikon yang dimuat sebesar 500kB~1MB per ikon.
-Ikon akan tetap berada pada RAM selama launcher berjalan.
+Pada perangkat tes saya, aplikas kosongan biasa memakan RAM sekitar 10MB, ditambah ikon yang dimuat sekitaran 
+500kB~1MB per ikon. Ikon akan tetap berada pada RAM selama launcher berjalan.
 
 ## Fitur
 - [x] Ganti tombol konfirmasi (Pakai Bulat atau Silang)
@@ -53,8 +53,8 @@ atau mengganti file di `/sdcard/Android/data/id.psw.vshlauncher/files/`.
 [👉 Dimari gan 👈](https://github.com/EmiyaSyahriel/CrossLauncher/releases), atau silahkan coba build sendiri.
 
 ## Kontribusi
-Beberapa baris kode boleh, Asal tidak merubah fungsionalitas utama XMB. Atau mungkin beberapa nasihat
-dalam pemrogramman.
+Beberapa baris kode diperbolehkan, Asal tidak merubah fungsionalitas utama XMB. Atau mungkin beberapa nasihat
+dalam pemrograman.
 
 Saya masih satu setengah tahun ini membuat aplikasi Android, dan diluar kapasitas profesional.
 
