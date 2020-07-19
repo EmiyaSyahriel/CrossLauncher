@@ -1,4 +1,5 @@
-Bahasa Indonesia|[English](https://github.com/EmiyaSyahriel/CrossLauncher/blob/master/README.md)
+Bahasa : Bahasa Indonesia | [English](https://github.com/EmiyaSyahriel/CrossLauncher/blob/master/README.md)
+
 # Cross Launcher
 Peluncur Aplikasi Android mirip XMB pada beberapa produk Sony, terutama XMB PlayStation 3.
 
