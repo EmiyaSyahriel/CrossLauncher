@@ -1,4 +1,4 @@
-English|[Readme Bahasa Indonesia](https://github.com/EmiyaSyahriel/CrossLauncher/blob/master/README_ID.md)
+Language : English | [Bahasa Indonesia](https://github.com/EmiyaSyahriel/CrossLauncher/blob/master/README_ID.md)
 # Cross Launcher
 Sony XMB like Android Launcher, Mainly inspired by Sony PlayStation 3(TM) XMB.
 
