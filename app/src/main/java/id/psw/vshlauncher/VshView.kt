@@ -5,7 +5,6 @@ import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.view.ViewCompat
 import java.lang.Exception
 import java.lang.Math.*
 import java.text.SimpleDateFormat
@@ -43,6 +42,8 @@ class VshView : View {
     private var paintMisc = Paint(Paint.ANTI_ALIAS_FLAG)
     private var paintStatusBoxFill = Paint(Paint.ANTI_ALIAS_FLAG)
     private var paintStatusText = TextPaint(Paint.ANTI_ALIAS_FLAG)
+    private var debugPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(64,0,255,0) }
+    private var renderableArea = Rect(0,0,0,0)
 
     var selectedXf = 0f
     var selectedYf = 0f
@@ -134,7 +135,7 @@ class VshView : View {
             attrs, R.styleable.VshView, defStyle, 0
         )
         a.recycle()
-
+        renderableArea = getSystemPadding()
         density = resources.displayMetrics.density
         scaledDensity = resources.displayMetrics.scaledDensity
         generatePaint()
@@ -198,10 +199,7 @@ class VshView : View {
             super.onSizeChanged(w, h, oldw, oldh)
             return
         }
-        padOffset.top = padding.top
-        padOffset.left = padding.left
-        padOffset.right = w - padding.right
-        padOffset.bottom = h - padding.bottom
+        renderableArea = getSystemPadding()
         super.onSizeChanged(w, h, oldw, oldh)
     }
     /// endregion
@@ -264,16 +262,18 @@ class VshView : View {
     }
 
     fun recalculateClockRect(){
-        val yPivot = height * 0.1f
-        val l = width - (d(300f) + (width * 0.1f))
+        val renderHeight = renderableArea.height()
+        val renderWidth = renderableArea.width()
+        val yPivot = renderableArea.top + renderHeight * 0.1f
+        val l = renderWidth - (d(300f) + (renderWidth * 0.1f))
         val u = yPivot - sd(15f)
-        val r = width + sd(100f)
+        val r = renderWidth * 2f
         val height = if(clockExpandInfo.isEmpty()) 10f else 25f
         val d = yPivot + sd(height)
         upperClockBg = RectF(l,u,r,d)
-        val infoStatusX = width- (d(35f) + (width * 0.1f))
+        val infoStatusX = renderableArea.right.toFloat() - d(30f)
         expandInfoClipRect = RectF(l,u,infoStatusX,d)
-        fullCanvasRect = RectF(0f,0f,width.toFloat(), this.height.toFloat())
+        fullCanvasRect = RectF(0f,0f,renderWidth.toFloat(), this.height.toFloat())
     }
 
     private var lastWidth = 0
@@ -291,10 +291,9 @@ class VshView : View {
         canvas.drawRoundRect(upperClockBg, 5f * density, 5f * density, paintStatusBoxOutline)
 
         val statusText = "$operatorName     $clockStr"
-        var statusX = width - (sd(35f)+ (width * 0.1f))
+        var statusX = renderableArea.right.toFloat() - d(30f)
 
-        updateClock(width - (d(15f) + (width * 0.1f)), upperClockBg.centerY())
-
+        updateClock(renderableArea.right.toFloat() - d(15f), upperClockBg.centerY())
 
         paintStatusBoxFill.color = Color.argb(64,0,0,0)
         paintStatusBoxOutline.color = Color.WHITE
@@ -315,6 +314,7 @@ class VshView : View {
             paintStatusText.getTextBounds(clockExpandInfo, 0, clockExpandInfo.length, expandInfoTextRect)
 
             if(expandInfoClipRect.width() < expandInfoTextRect.width()){
+                canvas.save()
                 canvas.clipRect(expandInfoClipRect)
 
                 statusX -= (frame * 2) % (expandInfoTextRect.width()*2f)
@@ -322,9 +322,7 @@ class VshView : View {
                 paintStatusText.textAlign = Paint.Align.LEFT
                 canvas.drawTextU(clockExpandInfo, statusX, upperClockBg.centerY() - sd(2f), paintStatusText)
                 paintStatusText.textAlign = Paint.Align.RIGHT
-
-                // Reset Canvas Rect
-                canvas.clipRect(fullCanvasRect)
+                canvas.restore()
             }else{
 
                 // Just render it as-is
@@ -473,6 +471,8 @@ class VshView : View {
             paintStatusBoxOutline).forEachIndexed{ index, any ->
             canvas.drawText(any.toString(), d(10f), d(75f) + (d(15f)* index), paintTextSelected)
         }
+
+        canvas.drawRect(renderableArea, debugPaint)
     }
     /// endregion Debug Info
 

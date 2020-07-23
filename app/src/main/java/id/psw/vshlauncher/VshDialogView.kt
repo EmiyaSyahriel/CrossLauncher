@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.Log
@@ -46,6 +45,9 @@ class VshDialogView : View {
     private var paintOutline = Paint(Paint.ANTI_ALIAS_FLAG)
     private var paintButton = Paint(Paint.ANTI_ALIAS_FLAG)
     private var availableWindowSize = Rect(0,0,0,0)
+    private var debugPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.argb(50,255,0,0)
+    }
 
     fun d(i:Float):Float{return i * density}
     fun d(i:Int):Int{return (i * density).toInt()}
@@ -104,37 +106,23 @@ class VshDialogView : View {
         density = resources.displayMetrics.density
         scaledDensity = resources.displayMetrics.scaledDensity
         generatePaint()
-
-    }
-
-    override fun onApplyWindowInsets(insets: WindowInsets?): WindowInsets {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH){
-            availableWindowSize.top = insets?.systemWindowInsetTop ?: 0
-            availableWindowSize.bottom = insets?.systemWindowInsetBottom ?: height
-            availableWindowSize.left = insets?.systemWindowInsetLeft ?: 0
-            availableWindowSize.right = insets?.systemWindowInsetRight ?: width
-        }else{
-            availableWindowSize.top = 0
-            availableWindowSize.bottom = height
-            availableWindowSize.left = 0
-            availableWindowSize.right = width
-        }
-        return super.onApplyWindowInsets(insets)
     }
 
     var outlinePath = Path()
     var outlineRect = RectF(0f,0f,0f,0f)
     private fun updatePath(){
         outlinePath.reset()
-        outlinePath.moveTo(-width * 0.25f, height * 0.15f )
-        outlinePath.lineTo(width * 1.25f, height * 0.15f)
-        outlinePath.lineTo(width * 1.25f, height * 0.85f)
-        outlinePath.lineTo( -width * 0.25f, height * 0.85f)
+        val w = renderableArea.width()
+        val h = renderableArea.bottom
+        outlinePath.moveTo(-w * 0.25f, h * 0.20f)
+        outlinePath.lineTo(w * 1.25f,  h * 0.20f)
+        outlinePath.lineTo(w * 1.25f, h * 0.85f)
+        outlinePath.lineTo( -w * 0.25f, h * 0.85f)
         outlinePath.close()
 
         outlineRect.set(
-            -width * 0.25f, height * 0.15f,
-            width * 1.25f, height * 0.85f
+            -w * 0.25f, h * 0.20f,
+            w * 1.25f, h * 0.85f
         )
     }
 
@@ -160,14 +148,16 @@ class VshDialogView : View {
         backgroundAlpha = (backgroundAlpha + 5).coerceIn(0, 128)
         canvas.drawARGB(backgroundAlpha, 0,0,0)
 
+        val height = renderableArea.bottom
+
         canvas.drawPath(outlinePath, paintOutline)
 
         paintText.textAlign = Paint.Align.LEFT
 
-        val leftPadding = d(50f)
+        val leftPadding = d(50f) + renderableArea.left
 
-        canvas.drawText(titleText, leftPadding,(height * 0.15f) - d(20f),paintText)
-        canvas.drawBitmap(iconBitmap, leftPadding - d(40f), (height * 0.15f) -d(10f) - d(32f), paintFill)
+        canvas.drawText(titleText, leftPadding,(height * 0.20f) - d(20f),paintText)
+        canvas.drawBitmap(iconBitmap, leftPadding - d(40f), (height * 0.20f) -d(10f) - d(32f), paintFill)
 
         paintText.textAlign = Paint.Align.CENTER
         buttonRects.forEachIndexed { index, rectF ->
@@ -193,6 +183,9 @@ class VshDialogView : View {
             canvas.drawTextWithYOffset(it, width/2f, yPadding + (i * textSize), paintText)
         }
         canvas.restore()
+
+        canvas.drawRect(renderableArea, debugPaint)
+
         postInvalidate()
     }
 
@@ -269,14 +262,15 @@ class VshDialogView : View {
 
     private fun recalculateButtonSize(){
         buttonRects.clear()
-        val btnWidth = width / buttons.size
+        val btnWidth = renderableArea.width() / buttons.size
+        val renderHeight = renderableArea.height()
         val paddingSize = d(3f)
         buttons.forEachIndexed { index, _ ->
             buttonRects.add(RectF(
-                (btnWidth * index.toFloat()) + paddingSize,
-                (height * 0.85f) + paddingSize,
-                (btnWidth * (index + 1f)) - paddingSize,
-                (height* 1f)- paddingSize
+                (btnWidth * index.toFloat()) + paddingSize + renderableArea.left,
+                (renderHeight * 0.85f) + paddingSize + renderableArea.top,
+                (btnWidth * (index + 1f)) - paddingSize + renderableArea.left,
+                (renderHeight + renderableArea.top * 1f) - paddingSize
             ))
         }
     }

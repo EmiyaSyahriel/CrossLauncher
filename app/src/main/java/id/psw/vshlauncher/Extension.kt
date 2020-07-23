@@ -46,11 +46,12 @@ fun View.getSystemPadding() : Rect{
     val statusBarId = res.getIdentifier("status_bar_height", "dimen", "android")
     if(res.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE){
         retval.left = res.getDimensionPixelSize(navBarId)
-        retval.right = res.displayMetrics.widthPixels - res.getDimensionPixelSize(navBarId)
+        retval.right = res.displayMetrics.widthPixels + (res.getDimensionPixelSize(navBarId) / 2)
         retval.top = res.getDimensionPixelSize(statusBarId)
+        retval.bottom = res.displayMetrics.heightPixels
     }else{
-        retval.bottom = res.displayMetrics.heightPixels - res.getDimensionPixelSize(navBarId)
         retval.top = res.getDimensionPixelSize(statusBarId)
+        retval.bottom = res.displayMetrics.heightPixels + retval.top// - res.getDimensionPixelSize(navBarId)
     }
 
     Log.d("extSystemPadding", "Renderable Area : $retval")
