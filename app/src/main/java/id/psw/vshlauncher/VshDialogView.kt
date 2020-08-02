@@ -14,7 +14,7 @@ import androidx.core.view.*
 
 class VshDialogView : View {
 
-    data class Button(val text:String, val correspondingKeys:ArrayList<Int>, val runnable: Runnable)
+    data class Button(val text:String, val runnable: Runnable)
 
     interface IDialogBackable{
         fun onDialogBack(){
@@ -30,24 +30,25 @@ class VshDialogView : View {
     var contentText = "Content Text"
     var scrollPadding = 0f
     var buttons = arrayListOf(
-        Button("Close", arrayListOf(KeyEvent.KEYCODE_BUTTON_A, KeyEvent.KEYCODE_BUTTON_B), Runnable{
-        if(context is IDialogBackable) (context as IDialogBackable).onDialogBack()
-    }),
-        Button("Placeholder", arrayListOf(KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_R), Runnable{
-        })
+        Button("Close", Runnable{ if(context is IDialogBackable) (context as IDialogBackable).onDialogBack() }),
+        Button("Placeholder", Runnable{} )
     )
+
     private var touchSlop = 1
     private var backgroundAlpha = 0
     private var renderableArea = Rect(0,0,0,0)
 
     private var paintText = TextPaint(Paint.ANTI_ALIAS_FLAG)
     private var paintFill = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var paintButtonUnselected = Paint(Paint.ANTI_ALIAS_FLAG)
     private var paintOutline = Paint(Paint.ANTI_ALIAS_FLAG)
     private var paintButton = Paint(Paint.ANTI_ALIAS_FLAG)
     private var availableWindowSize = Rect(0,0,0,0)
     private var debugPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.argb(50,255,0,0)
     }
+    private var selectedButtonIndex = 0
+    private var confirmButton = KeyEvent.KEYCODE_A
 
     fun d(i:Float):Float{return i * density}
     fun d(i:Int):Int{return (i * density).toInt()}
@@ -89,6 +90,10 @@ class VshDialogView : View {
             color = Color.WHITE
             style = Paint.Style.FILL
         }
+        paintButtonUnselected.apply {
+            color = Color.argb(32,255,255,255)
+            style = Paint.Style.FILL
+        }
         paintButton.apply {
             color = Color.argb(64,255,255,255)
             style = Paint.Style.FILL
@@ -101,6 +106,9 @@ class VshDialogView : View {
         val a = context.obtainStyledAttributes(
             attrs, R.styleable.VshDialogView, defStyle, 0
         )
+        val prefs = context.getSharedPreferences("xRegistry.sys", Context.MODE_PRIVATE)
+        confirmButton = prefs.getBoolean("xmb_PS3_FAT_CECHA00", false).choose(KeyEvent.KEYCODE_BUTTON_A, KeyEvent.KEYCODE_BUTTON_B)
+
         a.recycle()
         isFocusable = true
         density = resources.displayMetrics.density
@@ -162,8 +170,8 @@ class VshDialogView : View {
         paintText.textAlign = Paint.Align.CENTER
         buttonRects.forEachIndexed { index, rectF ->
             val btn = buttons[index]
-            canvas.drawRect(rectF, paintButton)
-            canvas.drawTextWithYOffset(btn.text, rectF.centerX(), rectF.centerY(), paintText)
+            canvas.drawRect(rectF, (index == selectedButtonIndex).choose(paintButton, paintButtonUnselected))
+            canvas.drawTextWithYOffset(btn.text, rectF.centerX(), rectF.centerY(), paintText )
         }
 
         canvas.save()
@@ -183,8 +191,6 @@ class VshDialogView : View {
             canvas.drawTextWithYOffset(it, width/2f, yPadding + (i * textSize), paintText)
         }
         canvas.restore()
-
-        canvas.drawRect(renderableArea, debugPaint)
 
         postInvalidate()
     }
@@ -233,13 +239,6 @@ class VshDialogView : View {
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         var retval = false
-        buttons.forEach {
-            if(it.correspondingKeys.any { key -> key == keyCode }){
-                it.runnable.run()
-                retval = true
-                postInvalidate()
-            }
-        }
 
         paintText.getTextBounds("A", 0, 1, textContentSize)
         val spp = textContentSize.height() / outlineRect.height()
@@ -254,6 +253,15 @@ class VshDialogView : View {
                 scrollPadding = (scrollPadding - spp).coerceIn(0f,1f)
                 retval = true
                 postInvalidate()
+            }
+            KeyEvent.KEYCODE_DPAD_LEFT -> {
+                selectedButtonIndex = (selectedButtonIndex - 1).coerceIn(0, buttons.size - 1)
+            }
+            KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                selectedButtonIndex = (selectedButtonIndex + 1).coerceIn(0, buttons.size - 1)
+            }
+            KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, confirmButton -> {
+                buttons[selectedButtonIndex].runnable.run()
             }
         }
 

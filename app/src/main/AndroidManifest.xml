@@ -11,7 +11,8 @@
         android:supportsRtl="true"
         android:requestLegacyExternalStorage="true"
         android:allowAudioPlaybackCapture="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:banner="@drawable/ic_launcher_foreground">
         <activity android:name=".VSH" android:screenOrientation="fullUser"
             android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
             android:launchMode="singleTask"
@@ -32,11 +33,10 @@
             android:authorities="id.psw.vshlauncher.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true"
-            android:forceUriPermissions="true"
             >
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths"
+                android:resource="@xml/file_paths"
                 />
         </provider>
     </application>

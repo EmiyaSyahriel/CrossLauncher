@@ -1,7 +1,6 @@
 package id.psw.vshlauncher
 
 import android.app.Service
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -19,21 +18,19 @@ import androidx.core.app.ActivityCompat
 import androidx.core.graphics.drawable.toBitmap
 import java.util.*
 import android.Manifest
-import android.content.Context
-import android.content.SharedPreferences
+import android.content.*
 import android.content.res.Configuration
 import android.graphics.*
+import android.graphics.drawable.ColorDrawable
 import android.media.MediaPlayer
 import android.media.ThumbnailUtils
 import android.view.*
 import android.webkit.MimeTypeMap
 import android.widget.Toast
+import android.widget.VideoView
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.graphics.contains
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.doOnAttach
-import androidx.core.view.doOnDetach
 import java.io.File
 import kotlin.concurrent.schedule
 
@@ -111,11 +108,6 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 vshDialog.contentText = getString(R.string.first_run_instruction_content)
                 val dialogConfirmButton = VshDialogView.Button(
                     getString(android.R.string.ok),
-                    arrayListOf(
-                        xMarksTheSpot.choose(KeyEvent.KEYCODE_BUTTON_A, KeyEvent.KEYCODE_BUTTON_B),
-                        KeyEvent.KEYCODE_ENTER,
-                        KeyEvent.KEYCODE_DPAD_CENTER
-                    ),
                     Runnable { setContentView(vsh) }
                 )
                 vshDialog.setButton(arrayListOf(dialogConfirmButton))
@@ -186,10 +178,12 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         }
     }
 
+
     private fun initializeMediaPlayer(){
         player = MediaPlayer()
         player?.setOnPreparedListener { it.start() }
         player?.setOnCompletionListener { vsh.clockExpandInfo = "" }
+        vsh.mediaPlayer = player
     }
 
     private fun loadPrefs(){
@@ -337,36 +331,28 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 "in case new app is installed, but this app does not automatically show them.",
                 resources.getDrawable(R.drawable.icon_refresh),
                 vsh.density,
-                onClick = Runnable {
-                    val alert = VshDialogView(this)
-                    alert.buttons.clear()
-                    alert.buttons.add(VshDialogView.Button("OK", arrayListOf(
-
-                        KeyEvent.KEYCODE_DPAD_CENTER,
-                        KeyEvent.KEYCODE_ENTER,
-                        mimickedConfirmButton
-
-                    ), Runnable {
-                        val thread = Thread(Runnable { loadApps() })
-                        thread.start()
-                        setContentView(vsh)
-                    }))
-                    alert.buttons.add(VshDialogView.Button("Cancel", arrayListOf(
-                        KeyEvent.KEYCODE_ESCAPE,
-                        KeyEvent.KEYCODE_BACK,
-                        mimickedCancelButton
-                    ),
-                        Runnable {
-                            setContentView(vsh)
-                        }
-                    ))
-                    alert.titleText = "Rebuilding App Database"
-                    alert.contentText = "Application database will be rebuilt, this launcher will not\nbe usable until it finished."
-                    alert.iconBitmap = resources.getDrawable(R.drawable.icon_refresh).toBitmap(vsh.d(32),vsh.d(32))
-                    setContentView(alert)
-                }
+                onClick = Runnable {switchToRefreshRequestWindow()}
             )
         )
+    }
+
+    private fun switchToRefreshRequestWindow(){
+        val alert = VshDialogView(this)
+        alert.buttons.clear()
+        alert.buttons.add(VshDialogView.Button("OK", Runnable {
+            val thread = Thread(Runnable { loadApps() })
+            thread.start()
+            setContentView(vsh)
+        }))
+        alert.buttons.add(VshDialogView.Button("Cancel",
+            Runnable {
+                setContentView(vsh)
+            }
+        ))
+        alert.titleText = "Rebuilding App Database"
+        alert.contentText = "Application database will be rebuilt, this launcher will not\nbe usable until it finished."
+        alert.iconBitmap = resources.getDrawable(R.drawable.icon_refresh).toBitmap(vsh.d(32),vsh.d(32))
+        setContentView(alert)
     }
 
     private val orientationName = mapOf(
@@ -439,6 +425,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             }
             KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_BUTTON_Y -> {
                 vsh.isOnOptions = !vsh.isOnOptions
+                retval = true
             }
         }
 
@@ -508,6 +495,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     private fun startApp(packageName: String){
+        vsh.mpShow = false
         val intent = packageManager.getLaunchIntentForPackage(packageName)
         if(null != intent){
             if(useGameBoot){
@@ -525,7 +513,6 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             val v = VshDialogView(this)
             v.setButton(arrayListOf(VshDialogView.Button(
                 getString(android.R.string.ok),
-                arrayListOf(mimickedConfirmButton, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER),
                 Runnable {
                     setContentView(vsh)
                 }
@@ -594,7 +581,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 val album = cursor.getString(albumCol) ?: getString(R.string.unknown)
                 val albumArt = getAlbumArt(path)
                 val item = VshY(id.toInt(), title, "$album - $artist" , albumArt, vsh.density, Runnable {
-                    openAudioFile(path, title, artist)
+                    openAudioFile(path, title, artist, album, albumArt)
                 })
                 music.items.add(item)
                 index ++
@@ -602,6 +589,20 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         }
         cursor?.close()
         vsh.clockAsLoadingIndicator = false
+    }
+
+    private fun openAudioFile(path:String, title:String, artist:String, album:String, albumArt : Drawable) {
+        if(player != null){
+            vsh.mpShow = true
+            player?.reset()
+            player?.setDataSource(path)
+            player?.prepare()
+            vsh.mpAudioTitle = title
+            vsh.mpAudioArtist = "$album / $artist"
+            val size = (vsh.density * 70).toInt()
+            vsh.mpAudioCover = albumArt.toBitmap(size,size)
+            vsh.mpAudioFormat = getFileExtension(path).toUpperCase(Locale.ROOT)
+        }
     }
 
     private fun loadVideo(){
@@ -623,7 +624,10 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 val size = file.length().toSize()
                 val albumArt = ThumbnailUtils.createVideoThumbnail(file.absolutePath, MediaStore.Video.Thumbnails.MINI_KIND) ?: VshX.TransparentBitmap
 
-                val item = VshY(id.toInt(), fileName, size, BitmapDrawable(albumArt), vsh.density, Runnable {  })
+                val item = VshY(id.toInt(), fileName, size, BitmapDrawable(albumArt), vsh.density, Runnable {
+                    val uri = Uri.withAppendedPath(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id.toString())
+                    openVideoFile(file)
+                })
                 vids.items.add(item)
                 index++
             }while(cursor.moveToNext())
@@ -631,15 +635,32 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         cursor?.close()
         vsh.clockAsLoadingIndicator = false
-
     }
 
-    private fun openAudioFile(path:String, title:String, artist:String) {
-        if(player != null){
-            player?.reset()
-            player?.setDataSource(path)
-            player?.prepare()
-            vsh.clockExpandInfo = "🎶 $title - $artist"
+    private fun getUriForFile(path: String):Uri{
+        var filePath = path
+        if(filePath.startsWith("//")){
+            filePath = filePath.substring(2)
+        }
+        return Uri.parse("content://id.psw.vshlauncher.fileprovider/all").buildUpon().appendPath(filePath).build()
+    }
+
+    private fun openVideoFile(file:File){
+        val uri = FileProvider.getUriForFile(this, "id.psw.vshlauncher.fileprovider", file)
+        val mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)
+        Log.d(TAG, "Opening video V/MX - $uri ($mime)")
+        //grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = uri
+            type = mime
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION )
+            addCategory(Intent.CATEGORY_DEFAULT)
+        }
+        try{
+            startActivity(intent)
+        }catch (e:java.lang.Exception){
+            Toast.makeText(this, "This video type is not supported", Toast.LENGTH_SHORT).show()
         }
     }
 

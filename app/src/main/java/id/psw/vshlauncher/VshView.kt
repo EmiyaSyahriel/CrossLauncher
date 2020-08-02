@@ -2,9 +2,14 @@ package id.psw.vshlauncher
 
 import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.ColorDrawable
+import android.media.MediaPlayer
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.view.SurfaceView
 import android.view.View
+import android.widget.VideoView
+import androidx.core.graphics.drawable.toBitmap
 import java.lang.Exception
 import java.lang.Math.*
 import java.text.SimpleDateFormat
@@ -23,6 +28,8 @@ class VshView : View {
         const val Rad2Deg = 180f / PI
         var padding = RectF(0f,0f,0f,0f)
         private var padOffset = RectF(0f,0f,0f,0f)
+        private var transparentBitmap = ColorDrawable(Color.argb(0,0,0,0)).toBitmap(1,1)
+        var showFPSMeter = false
     }
 
     /// region Variable
@@ -456,6 +463,97 @@ class VshView : View {
         canvas.drawTextC("$fps FPS / $ms ms", fpsRect.centerX(), fpsRect.centerY(), paintMenuTextSelected)
     }
     /// endregion
+
+    //region Media Player
+    var mediaPlayer : MediaPlayer? = null
+    var mpShow = false
+    var mpAudioCover : Bitmap? = null
+    var mpAudioTitle : String = ""
+    var mpAudioArtist : String = ""
+    var mpAudioFormat : String = "AAC"
+    var mpDurationRect : RectF = RectF(0f,0f,0f,0f)
+    var mpCurrentTimeRect : RectF = RectF(0f,0f,0f,0f)
+    var mpDurationPaint = Paint().apply { color = Color.argb(255,128,255,0) }
+    var mpGradientShaderPaint = Paint()
+    var mpBackground : Bitmap? = null
+
+    private fun mpGetDurationString(mp:MediaPlayer): String{
+        val durInSecond = mp.duration / 1000
+        val curInSecond = mp.currentPosition / 1000
+        val dH = ((durInSecond / 3600f).floorToInt() % 24)
+        val dM = (durInSecond / 60f).floorToInt() % 60
+        val dS = durInSecond % 60
+        val cH = (curInSecond / 3600f).floorToInt() % 24
+        val cM = (curInSecond / 60f).floorToInt() % 60
+        val cS = curInSecond % 60
+        return "${mp00(cH)}:${mp00(cM)}:${mp00(cS)} / ${mp00(dH)}:${mp00(dM)}:${mp00(dS)}"
+    }
+
+    private fun mp00(i:Int):String{
+        if( i < 0){
+            mpShow = false
+            return "00"
+        }
+        return if(i > 9) i.toString() else "0$i"
+    }
+
+    private fun lMediaPlayer(canvas: Canvas){
+        if(mediaPlayer != null){
+            val mp = mediaPlayer!!
+
+            if(mpBackground == null){
+                mpBackground = resources.getDrawable(R.drawable.t_mediaplayer_background).toBitmap(d(5000), d(101))
+            }
+
+            if(mpShow){
+                canvas.drawBitmap(mpBackground?: transparentBitmap, 0f, renderableArea.bottom - d(100f), paintMisc)
+                // Left : Song Info
+                val cover = mpAudioCover ?: transparentBitmap
+                val albumLeft = renderableArea.left + sd(20f)
+                val textLeft = renderableArea.left + sd(40f) + cover.width
+                val bottomPos = renderableArea.bottom - sd(20f)
+                canvas.drawBitmap(cover, albumLeft, bottomPos - cover.height, paintIconSelected)
+                canvas.drawText(mpAudioTitle, textLeft, bottomPos - (cover.height/2f) - sd(5f), paintTextSelected)
+                canvas.drawTextU(mpAudioArtist, textLeft, bottomPos - (cover.height/2f), paintSubtextSelected)
+
+                // Right : Song Progress and format
+                mpDurationRect.set(
+                    renderableArea.right - sd(200f),
+                    bottomPos - (cover.height/2f) + d(5f),
+                    renderableArea.right - sd(20f),
+                    bottomPos - (cover.height/2f) + d(10f) + d(5f)
+                )
+
+                mpCurrentTimeRect.set(mpDurationRect)
+                mpCurrentTimeRect.right = ((mp.currentPosition.toFloat()) / (mp.duration))
+                    .toLerp(mpDurationRect.left, mpDurationRect.right)
+
+                mpGradientShaderPaint.shader = LinearGradient(
+                    mpDurationRect.left, mpDurationRect.top,
+                    mpDurationRect.left, mpDurationRect.bottom,
+                    Color.argb(255,255,255,255), Color.argb(0,255,255,255),
+                    Shader.TileMode.CLAMP
+                )
+
+                val timePos = bottomPos - (cover.height/2f) - sd(5f)
+
+                val defaultAlign : Paint.Align = paintSubtextSelected.textAlign
+                paintSubtextSelected.textAlign = Paint.Align.LEFT
+                canvas.drawText(mpGetDurationString(mp), mpDurationRect.left, timePos, paintSubtextSelected)
+                paintSubtextSelected.textAlign = Paint.Align.RIGHT
+                canvas.drawText("[$mpAudioFormat]", mpDurationRect.right, timePos, paintSubtextSelected)
+                paintSubtextSelected.textAlign = defaultAlign
+
+                canvas.drawRoundRect(mpDurationRect, d(5f), d(5f), paintStatusBoxFill)
+                canvas.drawRoundRect(mpCurrentTimeRect, d(5f), d(5f), mpDurationPaint)
+                canvas.drawRoundRect(mpCurrentTimeRect, d(5f), d(5f), mpGradientShaderPaint)
+                canvas.drawRoundRect(mpDurationRect, d(5f), d(5f), paintStatusBoxOutline)
+                canvas.drawRect(0f, renderableArea.bottom*1f, width*1f, height*1f, paintMisc)
+            }
+        }
+    }
+    //endregion
+
     private fun mLateUpdate(){
 
     }
@@ -485,9 +583,10 @@ class VshView : View {
             lHorizontalMenu(canvas)
         }
         if(isOnOptions) lOptions(canvas)
+        lMediaPlayer(canvas)
         lClock(canvas)
         mLateUpdate()
-        lFPSMeter(canvas)
+        if(showFPSMeter) lFPSMeter(canvas)
         if(showDebugInfo) lDebugInfo(canvas)
         frameStart = System.currentTimeMillis()
         postInvalidate()
