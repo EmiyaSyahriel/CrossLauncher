@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="VshDialogView"></declare-styleable>
-    <declare-styleable name="VshGameBoot"></declare-styleable>
+    <declare-styleable name="VshDialogView"/>
+    <declare-styleable name="VshGameBoot"/>
+    <declare-styleable name="VshDialogLayout">
+        <attr name="dialogTitleText" format="string"/>
+        <attr name="dialogIconBitmap" format="reference|color"/>
+    </declare-styleable>
 </resources>

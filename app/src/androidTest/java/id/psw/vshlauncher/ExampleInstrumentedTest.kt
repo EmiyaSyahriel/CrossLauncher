@@ -1,6 +1,7 @@
 package id.psw.vshlauncher
 
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 
@@ -25,5 +26,15 @@ class ExampleInstrumentedTest {
 
     @Test
     fun getExceptionCode(){
+    }
+
+    @Test
+    fun getPaths(){
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        Log.d("PathTest","External Files Dir : ${context.getExternalFilesDir("config")}")
+        Log.d("PathTest","Obb Dir : ${context.obbDir}")
+        Log.d("PathTest","Cache Dir : ${context.cacheDir}")
+        Log.d("PathTest","Files Dir : ${context.filesDir}")
+        Log.d("PathTest","Data Dir : ${context.dataDir}")
     }
 }

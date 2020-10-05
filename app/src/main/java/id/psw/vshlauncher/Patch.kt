@@ -1,5 +1,6 @@
 package id.psw.vshlauncher
 
+import android.graphics.Canvas
 import android.graphics.Color
 import java.lang.StringBuilder
 import kotlin.math.ceil
