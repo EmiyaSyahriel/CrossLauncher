@@ -92,8 +92,7 @@ atau mengganti file di `/sdcard/Android/data/id.psw.vshlauncher/files/`.
 [👉 Dimari gan 👈](https://github.com/EmiyaSyahriel/CrossLauncher/releases), atau silahkan coba build sendiri.
 
 ## Kontribusi
-Beberapa baris kode diperbolehkan, Asal tidak merubah fungsionalitas utama XMB. Atau mungkin beberapa nasihat
-dalam pemrograman.
+Bisa dalam bentuk terjemahan dan perbaikan.
 
 Saya masih satu setengah tahun ini membuat aplikasi Android, dan diluar kapasitas profesional.
 
