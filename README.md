@@ -9,6 +9,8 @@ naturally doesn't have a native touch interface like TV, PC, Laptop, and Emulato
 The launcher is still fairly usable on Phones. Just with a bit struggle if you have a
 lot of apps to navigate.
 
+**You must've known that there is non-touch screen Android devices. Do not go toxic with your stupidity!**
+
 ## Usage
 | Function          | Keyboard | DualShock | Xbox     | Touch            |
 |-------------------|----------|-----------|----------|------------------|
@@ -58,11 +60,21 @@ With about 500Kb~1MB per item since icons will be cached in memory.
 - [ ] Item Options (Just like when you press Triangle on PS3)
 - [ ] Item Hiding
 - [ ] Open video file with default apps
-
+- [ ] Using a custom icon and custom BGM
+- [ ] Built-in media player
+  - [x] Music (Preliminary)
+  - [ ] Video (Available, Not utilized yet)
+  
 ## TODOs:
-- Render padding so it doesn't get rendered behind system bars
+- ~Render padding so it doesn't get rendered behind system bars~
 - Soft-coding strings
 - Some optimizations regarding item caching and loading
+- Make separate media player activities and integrate it to main launcher activity
+- Use binary-based configuration system instead of Android built-in shared preference
+- Add different on-screen gamepad mapping instruction
+- Create a ViewGroup based on XMB dialog to be used on xml layout file
+- Implement an Icon, Background Image and Hover BGM Loading similar to PS3 Content Info File Structure (ICON0.png, SND0.aac and PIC0.png)
+- Make a better vertical slide for touchscreen user.
 
 ## Animation Modding
 You can modify the Launcher Startup / App Launch Animation and Sound by
@@ -79,8 +91,7 @@ You can build it yourself, Or go to [Release](https://github.com/EmiyaSyahriel/C
 page for pre-built packages
 
 ## Contribution
-Translations are welcome. Some code blocks are also welcome as long as it doesn't defy the design and 
-functionality of XMB.
+Translations and fixes are welcome.
 
 I am still a beginner on Android programming. one and a half year experience in non-professional capacity.
 
