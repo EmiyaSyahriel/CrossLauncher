@@ -1,4 +1,4 @@
-Language : English | [Bahasa Indonesia](https://github.com/EmiyaSyahriel/CrossLauncher/blob/master/README_ID.md)
+Language : English | [Bahasa Indonesia](README_ID.md)
 # Cross Launcher
 Sony XMB like Android Launcher, Mainly inspired by Sony PlayStation 3(TM) XMB.
 
@@ -45,6 +45,13 @@ adb uninstall -k --user 0 com.google.android.tvlauncher
 ## Memory Usage
 On my test devices, Base memory usage (without items) is about 10MB.
 With about 500Kb~1MB per item since icons will be cached in memory.
+
+## Screenshots
+![Apps list screenshot](readme_asset/ss_apl.png)
+App List
+
+![Music list screenshot](readme_asset/ss_musiclist.png)
+Music List
 
 ## Available Features
 - [x] Switchable Confirm Button (Cross / Circle)

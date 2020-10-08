@@ -1,4 +1,4 @@
-Bahasa : Bahasa Indonesia | [English](https://github.com/EmiyaSyahriel/CrossLauncher/blob/master/README.md)
+Bahasa : Bahasa Indonesia | [English](README.md)
 
 # Cross Launcher
 Peluncur Aplikasi Android mirip XMB pada beberapa produk Sony, terutama XMB PlayStation 3.
@@ -46,6 +46,13 @@ adb uninstall -k --user 0 com.google.android.tvlauncher
 ## Penggunaan RAM
 Pada perangkat tes saya, aplikas kosongan biasa memakan RAM sekitar 10MB, ditambah ikon yang dimuat sekitaran 
 500kB~1MB per ikon. Ikon akan tetap berada pada RAM selama launcher berjalan.
+
+## Tangkapan Layar
+![Apps list screenshot](readme_asset/ss_apl.png)
+Daftar Aplikasi
+
+![Music list screenshot](readme_asset/ss_musiclist.png)
+Daftar Music
 
 ## Fitur
 - [x] Ganti tombol konfirmasi (Pakai Bulat atau Silang)
