@@ -61,4 +61,7 @@
     <string name="category_videos">Video</string>
     <string name="category_music">Musik</string>
     <string name="category_settings">Pengaturan</string>
+    <string name="videoplayer_pause">Jeda</string>
+    <string name="videoplayer_stop">Hentikan</string>
+    <string name="videoplayer_play">Play</string>
 </resources>

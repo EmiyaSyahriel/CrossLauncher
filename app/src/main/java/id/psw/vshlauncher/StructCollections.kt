@@ -5,9 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.PointF
 
 
-data class ControlRenderable(val id :Int, var enabled:Boolean, var pos: PointF, var name:String, var icon:Bitmap, var runnable:Runnable){
-    fun setNameFromID(resId: Int, res:Resources){ name = res.getString(resId) }
-}
+data class ControlRenderable(val id :Int, var enabled:Boolean, var nameStrId:Int, var runnable:Runnable)
 
 enum class ControlStyle{
     PlayStation_ASIA, // Sony PlayStation

@@ -24,7 +24,16 @@
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
         <!-- Some attribute is unused on older version of Android, most of them were safe to ignore -->
-        <activity android:name=".XMBVideoPlayer"/>
+        <activity android:name=".XMBVideoPlayer"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
+            android:screenOrientation="landscape"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".VSH"
             android:configChanges="keyboardHidden|keyboard|orientation|screenSize"

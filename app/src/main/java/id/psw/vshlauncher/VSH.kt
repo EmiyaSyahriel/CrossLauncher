@@ -32,6 +32,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.graphics.contains
 import java.io.File
+import java.net.URI
 import kotlin.concurrent.schedule
 
 @Suppress("SpellCheckingInspection", "DEPRECATION")
@@ -646,11 +647,12 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     private fun openVideoFile(file:File){
-        val uri = FileProvider.getUriForFile(this, "id.psw.vshlauncher.fileprovider", file)
+        val uri = Uri.fromFile(file)
+        CurrentAppData.selectedFileData = file.path
         val mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)
         Log.d(TAG, "Opening video V/MX - $uri ($mime)")
         //grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        val intent = Intent(Intent.ACTION_VIEW).apply {
+        val intent = Intent(this, XMBVideoPlayer::class.java).apply {
             data = uri
             type = mime
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

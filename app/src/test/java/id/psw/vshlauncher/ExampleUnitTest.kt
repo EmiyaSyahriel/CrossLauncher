@@ -20,4 +20,11 @@ class ExampleUnitTest {
     fun testSize(){
         System.out.println(File("I:\\Builds\\PacManUnity.apk").length().toSize())
     }
+
+    @Test
+    fun testApl(){
+        for(i in 0 .. 100){
+            System.out.println(i.toFloat().pingpong(10.0f, 1.0f))
+        }
+    }
 }

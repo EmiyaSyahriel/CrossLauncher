@@ -486,15 +486,7 @@ class VshView : View {
         val cH = (curInSecond / 3600f).floorToInt() % 24
         val cM = (curInSecond / 60f).floorToInt() % 60
         val cS = curInSecond % 60
-        return "${mp00(cH)}:${mp00(cM)}:${mp00(cS)} / ${mp00(dH)}:${mp00(dM)}:${mp00(dS)}"
-    }
-
-    private fun mp00(i:Int):String{
-        if( i < 0){
-            mpShow = false
-            return "00"
-        }
-        return if(i > 9) i.toString() else "0$i"
+        return "${cH.mp00()}:${cM.mp00()}:${cS.mp00()} / ${dH.mp00()}:${dM.mp00()}:${dS.mp00()}"
     }
 
     private fun lMediaPlayer(canvas: Canvas){

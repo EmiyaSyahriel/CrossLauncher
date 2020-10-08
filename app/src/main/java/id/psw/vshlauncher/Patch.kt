@@ -28,3 +28,14 @@ fun Float.toMultiLerpColor(array:ArrayList<Int>) : Int{
     val bottom = array[floor(t).toInt()]
     return (t % 1.0f).toLerpColor(top, bottom)
 }
+
+fun Float.pingpong(max:Float, scale:Float):Float{
+    return Math.abs((((this % max) - (0.5f * max)) / max ) * 2f) * scale
+}
+
+fun Int.mp00():String{
+    if( this < 0){
+        return "00"
+    }
+    return if(this > 9) this.toString() else "0$this"
+}

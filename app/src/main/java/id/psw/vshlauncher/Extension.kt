@@ -112,3 +112,8 @@ fun Canvas.drawSubImage(bitmap:Bitmap, xCount:Int, yCount:Int, spritePosX : Int,
     paint.alpha = if(enabled) 255 else 100
     this.drawBitmap(bitmap,spriteRect, dest, paint)
 }
+
+fun Canvas.drawSubImage(iconBitmap:Bitmap, highlightBitmap:Bitmap, xCount:Int, yCount:Int, spritePosX : Int, spritePosY : Int, dest:Rect, iconPaint:Paint, highlightPaint:Paint, selected:Boolean = false , enabled:Boolean = true){
+    if(selected && enabled) drawSubImage(highlightBitmap, xCount, yCount, spritePosX, spritePosY, dest, highlightPaint, enabled)
+    drawSubImage(iconBitmap, xCount, yCount, spritePosX, spritePosY, dest, iconPaint, enabled)
+}
