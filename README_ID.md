@@ -9,6 +9,7 @@ Android yang normalnya tidak memiliki antarmuka sentuh seperti TV, Komputer, Lap
 
 Peluncur ini masih bisa dipakai pada perangkat Android layar sentuh, hanya saja akan memerlukan usaha
 lebih untuk navigasinya.
+**Anda pasti sudah tahu bahwa ada perangkat Android yang bukan HP. Jangan sebarkan kebodohan dengan nge-toxic!**
 
 ## Penggunaan
 | Fungsi            | Keyboard   | DualShock | Xbox     | Layar Sentuh     |
@@ -61,6 +62,21 @@ Pada perangkat tes saya, aplikas kosongan biasa memakan RAM sekitar 10MB, ditamb
 - [ ] Opsi Item (Segitiga di PS3)
 - [ ] Menyembunyikan Item
 - [ ] Buka video dengan aplikasi default
+- [ ] Bisa memuat ikon dan BGM kustom
+- [ ] Media player bawaan aplikasi
+  - [x] Musik (Awal)
+  - [ ] Video (Ada, belum terpakai)
+
+## TODOs:
+- ~Menghitung padding sehingga tidak ada item penting yang tertutup bar sistem~
+- Men soft-coding kan teks
+- Optimisasi pada pemuatan dan pen-cache-an item
+- Membuat media player di Activity terpisah namun terintegrasi ke Activity launcher utama
+- Memakai sistem konfigurasi berbasis biner, daripada menggunakan SharedPref bawaan Android
+- Memambahkan petunjuk mapping untuk lebih banyak layout gamepad (XBox, Nintendo Switch)
+- Membuat ViewGroup berbasis Dialog XMB yang bisa dipakai di layout XML
+- Mengimplementasikan pemuatan ikon, gambar latar dan BGM mirip dengan struktur PS3 Content Info File (ICON0.png, SND0.aac, PIC0.png)
+- Membuat sistem vertical sliding yang lebih baik untuk layar sentuh
 
 ## Memodifikasi Animasi
 Anda bisa memodifikasi animasi saat mulai dan saat luncur dengan menambah
@@ -76,8 +92,7 @@ atau mengganti file di `/sdcard/Android/data/id.psw.vshlauncher/files/`.
 [👉 Dimari gan 👈](https://github.com/EmiyaSyahriel/CrossLauncher/releases), atau silahkan coba build sendiri.
 
 ## Kontribusi
-Beberapa baris kode diperbolehkan, Asal tidak merubah fungsionalitas utama XMB. Atau mungkin beberapa nasihat
-dalam pemrograman.
+Bisa dalam bentuk terjemahan dan perbaikan.
 
 Saya masih satu setengah tahun ini membuat aplikasi Android, dan diluar kapasitas profesional.
 
