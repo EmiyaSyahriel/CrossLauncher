@@ -21,18 +21,14 @@ import android.Manifest
 import android.content.*
 import android.content.res.Configuration
 import android.graphics.*
-import android.graphics.drawable.ColorDrawable
 import android.media.MediaPlayer
 import android.media.ThumbnailUtils
 import android.view.*
 import android.webkit.MimeTypeMap
 import android.widget.Toast
-import android.widget.VideoView
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.core.graphics.contains
 import java.io.File
-import java.net.URI
 import kotlin.concurrent.schedule
 
 @Suppress("SpellCheckingInspection", "DEPRECATION")
@@ -648,7 +644,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
     private fun openVideoFile(file:File){
         val uri = Uri.fromFile(file)
-        CurrentAppData.selectedFileData = file.path
+        CurrentAppData.selectedVideoPath = file.path
         val mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)
         Log.d(TAG, "Opening video V/MX - $uri ($mime)")
         //grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)

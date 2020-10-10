@@ -7,6 +7,8 @@ import android.util.AttributeSet
 import kotlin.math.floor
 import android.view.View
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.withClip
+import java.io.File
 import kotlin.math.roundToInt
 
 /**
@@ -65,6 +67,9 @@ class VSHVideoControl : View {
     private val canvasSize = PointF(848f,480f)
     private lateinit var iconBitmap : Bitmap
     private lateinit var highlightBitmap : Bitmap
+    private lateinit var gradientBitmap : Bitmap
+    private lateinit var progressBarBitmap : Bitmap
+    private lateinit var formatBgBitmap : Bitmap
     private var selectedItem = Point(0,0)
 
     private fun init(attrs: AttributeSet?, defStyle: Int) {
@@ -79,6 +84,9 @@ class VSHVideoControl : View {
         val texSize = CurrentAppData.textureLoadSize
         iconBitmap = resources.getDrawable(R.drawable.miptex_videoplayer).toBitmap(texSize,texSize, Bitmap.Config.ARGB_8888)
         highlightBitmap = resources.getDrawable(R.drawable.miptex_videoplayer_highlight).toBitmap(texSize,texSize, Bitmap.Config.ARGB_8888)
+        gradientBitmap = resources.getDrawable(R.drawable.t_videoplayer_gradient).toBitmap(texSize,texSize,Bitmap.Config.ARGB_4444)
+        progressBarBitmap = resources.getDrawable(R.drawable.miptex_progressbar).toBitmap(texSize,texSize,Bitmap.Config.ARGB_8888)
+        formatBgBitmap = resources.getDrawable(R.drawable.t_format_background).toBitmap(texSize,texSize,Bitmap.Config.ARGB_8888)
     }
 
     private var conPivotX = 240f
@@ -152,25 +160,75 @@ class VSHVideoControl : View {
 
     private fun getVideoCurrentTimeStr():String{
         var currentTime = 0
-        var duration = 0
 
         if(activity != null){
             val act = activity!!
             currentTime = act.vp.currentPosition
+        }
+        return formatAsTime(currentTime)
+    }
+    private fun getVideoDurationStr():String{
+        var duration = 0
+
+        if(activity != null){
+            val act = activity!!
             duration = act.vp.duration
         }
-        return "${formatAsTime(currentTime)} / ${formatAsTime(duration)}"
+        return formatAsTime(duration)
     }
 
     private fun drawStatus(canvas:Canvas){
         val lerpTime = getVideoCurrentTime()
         val lastAlpha = bitmapPaint.alpha
-        canvas.drawText(getVideoCurrentTimeStr(), width/2f, height - s(20f), textPaint)
-        bitmapPaint.alpha = 128
-        canvas.drawRect(0f, height-s(20f), width.toFloat(), height.toFloat(), bitmapPaint)
-        bitmapPaint.alpha = 255
-        canvas.drawRect(0f, height-s(20f), lerpTime.toLerp(0f, width.toFloat()) , height.toFloat(), bitmapPaint)
-        bitmapPaint.alpha = lastAlpha
+        val isLandscape = width > height
+        val bgBarHeight = if(isLandscape) s(50) else s(30)
+
+        // draw background
+        // top
+        canvas.drawSubImage(gradientBitmap, 1,2,0,0,0,0,width,bgBarHeight,bitmapPaint)
+        // bottom
+        canvas.drawSubImage(gradientBitmap, 1,2,0,1,0,height - bgBarHeight,width,bgBarHeight,bitmapPaint)
+
+        val oriTextSize = textPaint.textSize
+
+        var filePath = CurrentAppData.selectedVideoPath
+        if(isInEditMode) filePath = "Editor Preview.mp4"
+        val fileName = filePath.asPathGetFileName()
+        val fileFormat = filePath.asPathGetFileExtension()
+        val progress = ((activity?.vp?.currentPosition ?: 0 ) * 1f) / ((activity?.vp?.duration ?: 1) * 1f)
+
+        // top status
+        var yPos = bgBarHeight/2f
+        textPaint.textSize = if(isLandscape) s(15f) else s(10f)
+        textPaint.textAlign = Paint.Align.LEFT
+        canvas.withClip(Rect(0,0,(width * 0.7).toInt(),bgBarHeight)){
+            canvas.drawText(fileName, bgBarHeight * ( if(isLandscape) 1f else 0.25f), bgBarHeight/2f, textPaint)
+        }
+        textPaint.textAlign = Paint.Align.RIGHT
+        canvas.drawFormat(formatBgBitmap, fileFormat, Point((width * 0.75f).toInt(), bgBarHeight/2),refScale,bitmapPaint,textPaint)
+
+
+
+        // bottom status
+        textPaint.textAlign = Paint.Align.RIGHT
+        val durText = getVideoDurationStr()
+        val durOffset = if(isLandscape) width - bgBarHeight * 1f else width - (bgBarHeight * 0.25f)
+        textPaint.getTextBounds(durText,0, durText.length, Temp.tempRect)
+        val barOffset = if(isLandscape) {durOffset - Temp.tempRect.width() - textPaint.textSize} else width - (bgBarHeight * 0.25f)
+        val barSize = if(isLandscape) s(200f) else width - (bgBarHeight * 0.5f)
+        val barHeight = s(4f)
+        yPos = height - (bgBarHeight/2f)
+        val curOffset = if(isLandscape) barOffset - barSize - textPaint.textSize else bgBarHeight * 0.25f
+        val textYOffset = if(isLandscape) -0.25f else 1f
+        canvas.drawText(getVideoDurationStr(), durOffset, yPos, textPaint, textYOffset)
+        if(!isLandscape) textPaint.textAlign = Paint.Align.LEFT
+        canvas.drawText(getVideoCurrentTimeStr(), curOffset, yPos, textPaint, textYOffset)
+
+        // draw progress bar
+        Temp.tempRectF.set(barOffset - barSize,yPos - barHeight, barOffset, yPos + barHeight)
+        canvas.drawProgressBar34Sprite(progressBarBitmap, Temp.tempRectF, progress, bitmapPaint)
+
+        textPaint.textSize = oriTextSize
     }
 
     private fun sel(x:Int,y:Int):Boolean{

@@ -1,7 +1,6 @@
 package id.psw.vshlauncher
 
 import android.graphics.Point
-import android.graphics.PointF
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +14,7 @@ class XMBVideoPlayer : AppCompatActivity() {
     lateinit var vp : VideoView
     private lateinit var control : VSHVideoControl
     private var playerState = MediaPlayerState.Uninitialized
+    var path = ""
     var selection = Point(0,0)
     var selectionControl = mapOf(
         Pair(Point( 0,0), ControlRenderable(0, true, R.string.videoplayer_stop, Runnable{ playerStop() })),
@@ -33,7 +33,7 @@ class XMBVideoPlayer : AppCompatActivity() {
 
         attachEventListeners()
 
-        val path = intent.data?.path ?: CurrentAppData.selectedFileData
+        path = intent.data?.path ?: CurrentAppData.selectedVideoPath
         if(File(path).exists()){
             vp.setVideoPath(path)
         }else{

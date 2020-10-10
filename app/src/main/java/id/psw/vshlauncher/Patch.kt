@@ -5,9 +5,13 @@ import android.graphics.Color
 import java.lang.StringBuilder
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.roundToInt
 
 fun Float.toLerp(a:Float, b:Float) : Float{
     return a + ((b-a) * this)
+}
+fun Float.toLerp(a:Int, b:Int) : Int{
+    return (a + ((b-a) * this)).roundToInt()
 }
 
 fun Float.floorToInt() : Int{

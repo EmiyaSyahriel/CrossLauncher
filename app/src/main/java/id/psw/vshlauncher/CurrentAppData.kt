@@ -2,5 +2,6 @@ package id.psw.vshlauncher
 
 object CurrentAppData {
     var textureLoadSize = 512
-    var selectedFileData = ""
+    var selectedVideoPath = ""
+    var selectedVideoSize = 0L
 }

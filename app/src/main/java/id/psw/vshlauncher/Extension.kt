@@ -1,20 +1,13 @@
 package id.psw.vshlauncher
 
-import android.app.Activity
 import android.content.res.Configuration
 import android.graphics.*
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.print.PrintAttributes
+import android.text.TextPaint
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
-import androidx.core.graphics.minus
-import androidx.core.graphics.toRectF
-import androidx.core.view.ViewCompat
+import java.io.File
 import java.lang.Math.round
+import java.util.*
 
 fun PointF.distanceTo(other : PointF) : Float{
     return PointF(other.x - this.x, other.y - this.y).length()
@@ -62,7 +55,7 @@ fun Canvas.drawSubImage(bitmap:Bitmap, count:Point, spritePos:Point, dest : Rect
     val sprSizeY = bitmap.height/count.y
     val sprPosX = spritePos.x % count.x
     val sprPosY = spritePos.y % count.y
-    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeX, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
+    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeY, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
     this.drawBitmap(bitmap,spriteRect, dest, paint)
 }
 fun Canvas.drawSubImage(bitmap:Bitmap, count:Point, spritePos:Point, drawPos:Point, drawSize:Point, paint:Paint){
@@ -70,7 +63,7 @@ fun Canvas.drawSubImage(bitmap:Bitmap, count:Point, spritePos:Point, drawPos:Poi
     val sprSizeY = bitmap.height/count.y
     val sprPosX = spritePos.x % count.x
     val sprPosY = spritePos.y % count.y
-    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeX, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
+    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeY, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
     val dest = Rect(drawPos.x, drawPos.y, drawPos.x + drawSize.x, drawPos.y + drawSize.y)
     this.drawBitmap(bitmap,spriteRect, dest, paint)
 }
@@ -79,7 +72,7 @@ fun Canvas.drawSubImage(bitmap:Bitmap, count:Point, spritePos:Point, drawPos:Poi
     val sprSizeY = bitmap.height/count.y
     val sprPosX = spritePos.x % count.x
     val sprPosY = spritePos.y % count.y
-    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeX, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
+    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeY, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
     val dest = Rect(drawPos.x, drawPos.y, drawPos.x + drawSize, drawPos.y + drawSize)
     this.drawBitmap(bitmap,spriteRect, dest, paint)
 }
@@ -88,18 +81,39 @@ fun Canvas.drawSubImage(bitmap:Bitmap, xCount:Int, yCount:Int, spritePosX : Int,
     val sprSizeY = bitmap.height/ yCount
     val sprPosX = spritePosX % xCount
     val sprPosY = spritePosY % yCount
-    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeX, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
+    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeY, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
     val dest = Rect(drawPosX, drawPosY, drawPosX + drawSizeX, drawPosY + drawSizeY)
     this.drawBitmap(bitmap,spriteRect, dest, paint)
 }
+
+fun Canvas.drawSubImage(bitmap:Bitmap, xCount:Int, yCount:Int, spritePosX : Int, spritePosY : Int, drawPosX:Float, drawPosY : Float, drawSizeX:Float, drawSizeY : Float, paint:Paint){
+    val sprSizeX = bitmap.width/ xCount
+    val sprSizeY = bitmap.height/ yCount
+    val sprPosX = spritePosX % xCount
+    val sprPosY = spritePosY % yCount
+    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeY, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
+    val dest = RectF(drawPosX, drawPosY, drawPosX + drawSizeX, drawPosY + drawSizeY)
+    this.drawBitmap(bitmap,spriteRect, dest, paint)
+}
+
 
 fun Canvas.drawSubImage(bitmap:Bitmap, xCount:Int, yCount:Int, spritePosX : Int, spritePosY : Int, drawPosX:Int, drawPosY : Int, drawSize:Int, paint:Paint){
     val sprSizeX = bitmap.width/ xCount
     val sprSizeY = bitmap.height/ yCount
     val sprPosX = spritePosX % xCount
     val sprPosY = spritePosY % yCount
-    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeX, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
+    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeY, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
     val dest = Rect(drawPosX, drawPosY, drawPosX + drawSize, drawPosY + drawSize)
+    this.drawBitmap(bitmap,spriteRect, dest, paint)
+}
+
+fun Canvas.drawSubImage(bitmap:Bitmap, xCount:Int, yCount:Int, spritePosX : Int, spritePosY : Int, drawPosX:Float, drawPosY : Float, drawSize:Float, paint:Paint){
+    val sprSizeX = bitmap.width / xCount
+    val sprSizeY = bitmap.height / yCount
+    val sprPosX = spritePosX % xCount
+    val sprPosY = spritePosY % yCount
+    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeY, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
+    val dest = RectF(drawPosX, drawPosY, drawPosX + drawSize, drawPosY + drawSize)
     this.drawBitmap(bitmap,spriteRect, dest, paint)
 }
 
@@ -108,7 +122,7 @@ fun Canvas.drawSubImage(bitmap:Bitmap, xCount:Int, yCount:Int, spritePosX : Int,
     val sprSizeY = bitmap.height/ yCount
     val sprPosX = spritePosX % xCount
     val sprPosY = spritePosY % yCount
-    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeX, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
+    val spriteRect = Rect(sprPosX * sprSizeX, sprPosY * sprSizeY, (sprPosX+1)*sprSizeX, (sprPosY +1) * sprSizeY)
     paint.alpha = if(enabled) 255 else 100
     this.drawBitmap(bitmap,spriteRect, dest, paint)
 }
@@ -116,4 +130,68 @@ fun Canvas.drawSubImage(bitmap:Bitmap, xCount:Int, yCount:Int, spritePosX : Int,
 fun Canvas.drawSubImage(iconBitmap:Bitmap, highlightBitmap:Bitmap, xCount:Int, yCount:Int, spritePosX : Int, spritePosY : Int, dest:Rect, iconPaint:Paint, highlightPaint:Paint, selected:Boolean = false , enabled:Boolean = true){
     if(selected && enabled) drawSubImage(highlightBitmap, xCount, yCount, spritePosX, spritePosY, dest, highlightPaint, enabled)
     drawSubImage(iconBitmap, xCount, yCount, spritePosX, spritePosY, dest, iconPaint, enabled)
+}
+
+fun Canvas.drawText(text:String, x:Float, y:Float, paint: Paint, yOffset:Float){
+    drawText(text, x, y - (paint.textSize * yOffset), paint)
+}
+
+fun Canvas.drawProgressBar34Sprite(bitmap:Bitmap,size:RectF,progress:Float,paint:Paint){
+    // bounds
+    Temp.tempRectF.set(size)
+    val ySize= size.height()
+    var left   =   PointF(Temp.tempRectF.left, Temp.tempRectF.top)
+    var center = PointF(Temp.tempRectF.left + ySize, Temp.tempRectF.top)
+    var right  =  PointF(Temp.tempRectF.right - ySize, Temp.tempRectF.top)
+    var xSize = Temp.tempRectF.width() - (ySize * 2)
+
+    drawSubImage(bitmap, 3,2,0,0,left.x  ,left.y,ySize,paint)
+    drawSubImage(bitmap, 3,2,1,0,center.x,center.y,xSize,ySize,paint)
+    drawSubImage(bitmap, 3,2,2,0,right.x ,right.y,ySize,paint)
+
+    Temp.tempRectF.set(size.left, size.top, progress.toLerp(size.left,size.right), size.bottom)
+    left = PointF(Temp.tempRectF.left, Temp.tempRectF.top)
+    center = PointF(Temp.tempRectF.left + ySize, Temp.tempRectF.top)
+    right = PointF((Temp.tempRectF.right - ySize).coerceAtLeast(center.x), Temp.tempRectF.top)
+    xSize = Temp.tempRectF.width() - (ySize * 2)
+    drawSubImage(bitmap, 3,2,0,1,left.x,left.y,ySize,paint)
+    drawSubImage(bitmap, 3,2,1,1,center.x,center.y,xSize,ySize,paint)
+    drawSubImage(bitmap, 3,2,2,1,right.x,right.y,ySize,paint)
+}
+
+fun Bitmap.getRect():Rect{
+    return Rect(0,0,width,height)
+}
+
+fun String.asPathGetFileName():String{
+    return this.split(File.separatorChar).last().split(".").first()
+}
+fun String.asPathGetFileExtension():String{
+    return this.split(File.separatorChar).last().split(".").last()
+}
+fun Canvas.drawFormat(bitmap:Bitmap,format:String,position:Point,scale:Float,bitmapPaint:Paint,textPaint: TextPaint){
+
+    val oriAlign = textPaint.textAlign
+    val formatStr = format.toUpperCase(Locale.ROOT)
+    val oriTypeface = textPaint.typeface
+
+    // calculate padding and rects
+    textPaint.typeface = Typeface.create(oriTypeface, Typeface.BOLD)
+    val yPadding = (4 * scale).toInt()
+    val xPadding = (10 * scale).toInt()
+    val retval = Rect(0,0,0,0)
+    textPaint.getTextBounds(formatStr, 0, formatStr.length, retval)
+    val w = (retval.width()/2) + xPadding
+    val h = (retval.height()/2) + yPadding
+    Temp.tempRect.set(position.x - w, position.y - h, position.x + w, position.y + h )
+
+    // draw background
+    drawBitmap(bitmap, bitmap.getRect(), Temp.tempRect, bitmapPaint)
+
+    // draw text
+    textPaint.textAlign = Paint.Align.CENTER
+    drawText(formatStr, position.x.toFloat(), position.y.toFloat(), textPaint, -0.25f)
+
+    textPaint.textAlign = oriAlign
+    textPaint.typeface = oriTypeface
 }
