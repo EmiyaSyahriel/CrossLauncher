@@ -19,7 +19,7 @@ import kotlin.math.roundToInt
 
 
 /**
- * TODO: document your custom view class.
+ * The XMB Screen (PS3 Home Screen)
  */
 class VshView : View {
 
@@ -150,6 +150,16 @@ class VshView : View {
 
     }
 
+    private fun getCustomIcon() : Bitmap{
+
+        var retval = transparentBitmap
+        // TODO: Integrate it to game's id
+        val gameDir = context.getExternalFilesDirs("game").find { it.name == "NPID12801" }
+        if(gameDir != null){
+
+        }
+        return retval
+    }
 
     @Suppress("DEPRECATION")
     fun fillCategory(){

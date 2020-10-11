@@ -65,7 +65,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     lateinit var prefs : SharedPreferences
     lateinit var vsh : VshView
     private var storageAllowed = false
-    var player : MediaPlayer? = null
+    private var sfxPlayer : MediaPlayer? = null
+    private var bgmPlayer : MediaPlayer? = null
     private var useGameBoot = false
     private var dynamicThemeTwinkles = true
     private var appListerThread : Thread = Thread()
@@ -81,7 +82,6 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         get() {
             return xMarksTheSpot.choose(KeyEvent.KEYCODE_BUTTON_B, KeyEvent.KEYCODE_BUTTON_A)
         }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,10 +140,10 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             val dataFolder = getExternalFilesDir(null)?: return
             val audioFile = dataFolder.listFiles()?.find { it.name.toLowerCase(Locale.ROOT) == "coldboot.mp3" } ?: return
             if(audioFile.exists()){
-                player?.reset()
-                player?.setDataSource(audioFile.absolutePath)
-                player?.prepare()
-                player?.start()
+                sfxPlayer?.reset()
+                sfxPlayer?.setDataSource(audioFile.absolutePath)
+                sfxPlayer?.prepare()
+                sfxPlayer?.start()
             }
         }finally {
             // Bad practice, mari lestarikan hohooho
@@ -165,10 +165,10 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             val dataFolder = getExternalFilesDir(null)?: return
             val audioFile = dataFolder.listFiles()?.find { it.name.toLowerCase(Locale.ROOT) == "gameboot.mp3" } ?: return
             if(audioFile.exists()){
-                player?.reset()
-                player?.setDataSource(audioFile.absolutePath)
-                player?.prepare()
-                player?.start()
+                sfxPlayer?.reset()
+                sfxPlayer?.setDataSource(audioFile.absolutePath)
+                sfxPlayer?.prepare()
+                sfxPlayer?.start()
             }
         }finally {
             // Bad practice, mari lestarikan hohooho
@@ -177,10 +177,10 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
 
     private fun initializeMediaPlayer(){
-        player = MediaPlayer()
-        player?.setOnPreparedListener { it.start() }
-        player?.setOnCompletionListener { vsh.clockExpandInfo = "" }
-        vsh.mediaPlayer = player
+        sfxPlayer = MediaPlayer()
+        sfxPlayer?.setOnPreparedListener { it.start() }
+        sfxPlayer?.setOnCompletionListener { vsh.clockExpandInfo = "" }
+        vsh.mediaPlayer = sfxPlayer
     }
 
     private fun loadPrefs(){
@@ -501,10 +501,12 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 playGamebootSound()
                 gameBoot.onFinishAnimation =  Runnable {
                     startActivity(intent)
+                    overridePendingTransition(R.anim.anim_ps3_zoomfadein, R.anim.anim_ps3_zoomfadeout)
                 }
                 setContentView(gameBoot)
             }else{
                 startActivity(intent)
+                overridePendingTransition(R.anim.anim_ps3_zoomfadein, R.anim.anim_ps3_zoomfadeout)
             }
         }else{
             val v = VshDialogView(this)
@@ -540,21 +542,21 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             VshY(0x8080,getString(R.string.audioplayer_pause),"",
                 resources.getDrawable(R.drawable.icon_player_pause),
                 vsh.density,
-                Runnable { player?.pause() }))
+                Runnable { sfxPlayer?.pause() }))
 
         music.items.add(
             VshY(0x8080,getString(R.string.audioplayer_resume),"",
                 resources.getDrawable(R.drawable.icon_player_play),
                 vsh.density,
-                Runnable { player?.start() }))
+                Runnable { sfxPlayer?.start() }))
 
         music.items.add(
             VshY(0x8080,getString(R.string.audioplayer_stop),"",
                 resources.getDrawable(R.drawable.icon_player_stop),
                 vsh.density,
                 Runnable {
-                    player?.stop()
-                    player?.reset()
+                    sfxPlayer?.stop()
+                    sfxPlayer?.reset()
                     vsh.clockExpandInfo = ""
                 }))
 
@@ -589,11 +591,11 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     private fun openAudioFile(path:String, title:String, artist:String, album:String, albumArt : Drawable) {
-        if(player != null){
+        if(sfxPlayer != null){
             vsh.mpShow = true
-            player?.reset()
-            player?.setDataSource(path)
-            player?.prepare()
+            sfxPlayer?.reset()
+            sfxPlayer?.setDataSource(path)
+            sfxPlayer?.prepare()
             vsh.mpAudioTitle = title
             vsh.mpAudioArtist = "$album / $artist"
             val size = (vsh.density * 70).toInt()
@@ -657,9 +659,15 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         }
         try{
             startActivity(intent)
+            overridePendingTransition(R.anim.anim_ps3_zoomfadein, R.anim.anim_ps3_zoomfadeout)
         }catch (e:java.lang.Exception){
             Toast.makeText(this, "This video type is not supported", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        overridePendingTransition(R.anim.anim_ps3_zoomfadein, R.anim.anim_ps3_zoomfadeout)
     }
 
     private fun getMime(path:String) : String{

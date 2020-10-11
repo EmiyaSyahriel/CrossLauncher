@@ -2,19 +2,27 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".XMBVideoPlayer"
-    >
+    android:background="@android:color/black"
+    android:fitsSystemWindows="true"
+    tools:context=".XMBVideoPlayer">
 
-    <VideoView
-        android:id="@+id/videoplayer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <id.psw.vshlauncher.VideoScalableViewGroup
+        android:id="@+id/scaler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <id.psw.vshlauncher.VSHVideoView
+            android:id="@+id/videoplayer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </id.psw.vshlauncher.VideoScalableViewGroup>
 
     <id.psw.vshlauncher.VSHVideoControl
         android:id="@+id/vshcon"

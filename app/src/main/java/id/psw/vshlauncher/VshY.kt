@@ -6,7 +6,9 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import androidx.core.graphics.drawable.toBitmap
+import java.io.File
 
+// TODO: Integrate the content info to [VshView]
 class VshY {
     class VshOptions {
         var name : String = ""
@@ -27,6 +29,7 @@ class VshY {
     var subtext : String = ""
     var onClick : Runnable = EmptyRunnable
     var options : ArrayList<VshOptions> = arrayListOf()
+    var contentInfo: ContentInfo = ContentInfo()
 
     constructor()
 
@@ -37,7 +40,8 @@ class VshY {
         icon:Drawable? = null,
         density : Float = 1f,
         onClick : Runnable? = null,
-        options : ArrayList<VshOptions> = arrayListOf())
+        options : ArrayList<VshOptions> = arrayListOf(),
+        contentDir : File? = null)
     {
         this.itemID = itemID
         this.text = name
@@ -49,5 +53,6 @@ class VshY {
         unselectedIcon = Bitmap.createScaledBitmap(iconBitmap, unselectedSize, unselectedSize, false)
         this.onClick = onClick ?: EmptyRunnable
         this.options = options
+        this.contentInfo = ContentInfo(contentDir)
     }
 }

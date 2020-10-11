@@ -64,4 +64,12 @@
     <string name="videoplayer_pause">Jeda</string>
     <string name="videoplayer_stop">Hentikan</string>
     <string name="videoplayer_play">Play</string>
+    <string name="videoplayer_bwd">Mundur</string>
+    <string name="videoplayer_fwd">Maju</string>
+    <string name="videoplayer_switchar">Perbesaran</string>
+    <string name="videoplayer_viewsetting">Pengaturan Tampilan</string>
+    <string name="videoplayer_volume">Volume Suara</string>
+    <string name="videoplayer_switchdisplay">Tampilan</string>
+    <string name="videoplayer_delete">Hapus</string>
+    <string name="videoplayer_setthumbnail">Jadikan Awal Preview</string>
 </resources>

@@ -62,4 +62,12 @@
     <string name="videoplayer_pause">Pause</string>
     <string name="videoplayer_stop">Stop</string>
     <string name="videoplayer_play">Play</string>
+    <string name="videoplayer_bwd">Backward</string>
+    <string name="videoplayer_fwd">Forward</string>
+    <string name="videoplayer_switchar">Zoom</string>
+    <string name="videoplayer_viewsetting">View Setting</string>
+    <string name="videoplayer_volume">Volume</string>
+    <string name="videoplayer_switchdisplay">Display</string>
+    <string name="videoplayer_delete">Delete</string>
+    <string name="videoplayer_setthumbnail">Set as Preview Start</string>
 </resources>

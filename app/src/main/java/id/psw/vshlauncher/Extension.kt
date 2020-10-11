@@ -2,12 +2,15 @@ package id.psw.vshlauncher
 
 import android.content.res.Configuration
 import android.graphics.*
+import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.Log
 import android.view.View
+import androidx.core.graphics.drawable.toBitmap
 import java.io.File
 import java.lang.Math.round
 import java.util.*
+import java.util.function.Predicate
 
 fun PointF.distanceTo(other : PointF) : Float{
     return PointF(other.x - this.x, other.y - this.y).length()
@@ -194,4 +197,38 @@ fun Canvas.drawFormat(bitmap:Bitmap,format:String,position:Point,scale:Float,bit
 
     textPaint.textAlign = oriAlign
     textPaint.typeface = oriTypeface
+}
+
+enum class XYScaling {
+    Width,
+    Height,
+    Square
+}
+
+fun Drawable.toBitmap(desiredSize:Int, scaling:XYScaling, config:Bitmap.Config):Bitmap{
+    val scaleFactor = when(scaling){
+        XYScaling.Width -> {
+            desiredSize / intrinsicWidth.toFloat()
+        }
+        XYScaling.Height -> {
+            desiredSize / intrinsicHeight.toFloat()
+        }
+        else -> {1.0f}
+    }
+
+    val w = if(scaling == XYScaling.Square) desiredSize else (intrinsicWidth * scaleFactor).toInt()
+    val h = if(scaling == XYScaling.Square) desiredSize else (intrinsicHeight * scaleFactor).toInt()
+
+    return toBitmap(w,h,config)
+}
+
+/**
+ * Lambda extension to execute an operation when the [T]? (Nullable of Any type) is not null
+ * @param operation What to do when this variable is not null
+ */
+fun <T> T?.whenNotNull(operation: (T) -> Unit){ if(this != null) operation.invoke(this) }
+
+fun <T> T?.whenNullAndNot(onNull: () -> Unit, onNotNull: (T) -> Unit){
+    if(this != null) onNotNull.invoke(this)
+    else onNull.invoke()
 }

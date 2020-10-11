@@ -12,7 +12,7 @@ import java.io.File
 import kotlin.math.roundToInt
 
 /**
- * TODO: document your custom view class.
+ * Video control panel for VSH
  */
 class VSHVideoControl : View {
 
@@ -34,7 +34,7 @@ class VSHVideoControl : View {
         init(attrs, defStyle)
     }
 
-    private var isVisible = true
+    var isVisible = true
     private var bitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
     }
@@ -77,6 +77,8 @@ class VSHVideoControl : View {
         val a = context.obtainStyledAttributes(
             attrs, R.styleable.VSHVideoControl, defStyle, 0
         )
+        fitsSystemWindows = true
+
         a.recycle()
         scaledDensity = resources.displayMetrics.scaledDensity
         density = resources.displayMetrics.density
@@ -104,6 +106,8 @@ class VSHVideoControl : View {
 
         updateScreenScale()
         drawControl(canvas)
+
+        bitmapPaint.alpha = 255
         drawStatus(canvas)
         currentTime = (deltaTime + currentTime) % 6000f
         val alphaPlacement= currentTime.pingpong(3.0f, 1f)
@@ -113,14 +117,20 @@ class VSHVideoControl : View {
     }
 
     private fun updateScreenScale(){
-        refScale = if(width > height) width / refScreenSize.x else height / refScreenSize.y
-        canvasSize.set(width.toFloat(), height.toFloat())
         val isLandscape = width > height
+
+        refScale = if(isLandscape) width / refScreenSize.x else height / refScreenSize.y
+        canvasSize.set(width.toFloat(), height.toFloat())
         val xPivot = if(isLandscape) 0.3f else 0.5f
         conPivotX = width * xPivot
         conPivotY = height * 0.5f
         iconSize = if(isLandscape) s(32) else s(20)
         iconOffset = -(iconSize/2)
+
+        if(iconSize * 14 > width){ // lets make them fit, at least
+            iconSize = width / 14
+        }
+
         textPaint.textSize = (iconSize / 2).toFloat()
         textPaint.textAlign = Paint.Align.CENTER
     }
@@ -167,6 +177,7 @@ class VSHVideoControl : View {
         }
         return formatAsTime(currentTime)
     }
+
     private fun getVideoDurationStr():String{
         var duration = 0
 
