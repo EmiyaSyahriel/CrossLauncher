@@ -53,6 +53,9 @@ App List
 ![Music list screenshot](readme_asset/ss_musiclist.png)
 Music List
 
+![Video player screenshot](readme_asset/ss_videoplayer.png)
+Video Player
+
 ## Available Features
 - [x] Switchable Confirm Button (Cross / Circle)
 - [x] Android built-in and Dictionary-based Game Detection

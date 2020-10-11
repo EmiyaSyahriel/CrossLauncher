@@ -54,6 +54,9 @@ Daftar Aplikasi
 ![Music list screenshot](readme_asset/ss_musiclist.png)
 Daftar Music
 
+![Video player screenshot](readme_asset/ss_videoplayer.png)
+Pemain Video
+
 ## Fitur
 - [x] Ganti tombol konfirmasi (Pakai Bulat atau Silang)
   - [ ] Belum tersedia di menu
