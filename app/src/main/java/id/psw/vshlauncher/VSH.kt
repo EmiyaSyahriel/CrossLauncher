@@ -6,7 +6,6 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -28,6 +27,10 @@ import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.contains
+import id.psw.vshlauncher.icontypes.AppIcon
+import id.psw.vshlauncher.icontypes.SongIcon
+import id.psw.vshlauncher.icontypes.VideoIcon
+import id.psw.vshlauncher.icontypes.VshSettingIcon
 import java.io.File
 import kotlin.concurrent.schedule
 
@@ -235,100 +238,96 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         getRenderableScreen()
     }
 
-    @Suppress("DEPRECATION")
+    ///region Orientation Settings
+    private fun setOrientation(orientation:Int){
+        scrOrientation = orientation
+        requestedOrientation = orientation
+        prefs.edit().putInt(PREF_ORIENTATION_KEY, scrOrientation).apply()
+    }
+
+    private fun switchOrientation(){
+        scrOrientation = when(scrOrientation){
+            ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT -> {ActivityInfo.SCREEN_ORIENTATION_USER}
+            ActivityInfo.SCREEN_ORIENTATION_USER -> {ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE}
+            ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE -> {ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT}
+            else -> {ActivityInfo.SCREEN_ORIENTATION_USER}
+        }
+    }
+
+    private fun getOrientationName() : String{
+        return getString(orientationName[requestedOrientation] ?: R.string.orient_unknown)
+    }
+
+    ///endregion
+
+    private fun switchGameBoot(){
+        useGameBoot = !useGameBoot
+        prefs.edit().putBoolean(PREF_USE_GAMEBOOT, useGameBoot).apply()
+    }
+
+    private fun switchTwinkles(){
+        dynamicThemeTwinkles = !dynamicThemeTwinkles
+        prefs.edit().putBoolean(PREF_DYNAMIC_TWINKLE, useGameBoot).apply()
+    }
+
+    private fun Boolean.toLocalizedString() : String{
+        return if(this) getString(R.string.common_yes) else getString(R.string.common_no)
+    }
+
+    private fun launchURL(url:String){
+        try{
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        }catch(e: PackageManager.NameNotFoundException){
+            Toast.makeText(this, "No default browser found in device.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun populateSettingSections(){
         val settings = vsh.findById("SETT") ?: return
-        settings.items.add(VshY(
-            0xd1802,
-            getString(R.string.item_orientation),
-            getString(R.string.orient_landscape),
-            resources.getDrawable(R.drawable.icon_orientation),
-            vsh.density,
-            Runnable {
-                val item = settings.getItemBy(0xd1802) ?: return@Runnable
-                when(scrOrientation){
-                    ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE -> {
-                        setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT, item)
-                    }
-                    ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT -> {
-                        setOrientation(ActivityInfo.SCREEN_ORIENTATION_USER, item)
-                    }
-                    ActivityInfo.SCREEN_ORIENTATION_USER -> {
-                        setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE, item)
-                    }
-                }
-                requestedOrientation = scrOrientation
-            },
-            arrayListOf(
-                VshY.VshOptions().apply { name = getString(R.string.orient_landscape); onClick = Runnable {setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE, settings.getItemBy(0xd1802))}},
-                VshY.VshOptions().apply { name = getString(R.string.orient_portrait); onClick = Runnable {setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT, settings.getItemBy(0xd1802))}},
-                VshY.VshOptions().apply { name = getString(R.string.orient_user); onClick = Runnable {setOrientation(ActivityInfo.SCREEN_ORIENTATION_USER, settings.getItemBy(0xd1802))}}
-            )
-        ))
-        setOrientation(prefs.getInt(PREF_ORIENTATION_KEY, ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE), settings.getItemBy(0xd1802))
-        val useGameBootConfig = VshY(
-            0xd1803,
+
+        // Orientation
+        settings.items.add(
+            VshSettingIcon(
+                0xd1802, this, getString(R.string.item_orientation), VshSettingIcon.DEVICE_ORIENTATION,
+                { switchOrientation() }, { getOrientationName() } )
+        )
+
+        setOrientation(prefs.getInt(PREF_ORIENTATION_KEY, ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE))
+
+        // Game Boot
+        settings.items.add(VshSettingIcon(
+            0xd1803, this,
             getString(R.string.setting_show_gameboot),
-            "Yes",
-            resources.getDrawable(R.drawable.icon_android),
-            vsh.density
-        )
+            VshSettingIcon.ICON_ANDROID,
+            { switchGameBoot() },
+            { useGameBoot.toLocalizedString() }
+        ))
 
-        useGameBootConfig.onClick =
-            Runnable{
-                useGameBoot = !useGameBoot
-                prefs.edit().putBoolean(PREF_USE_GAMEBOOT, useGameBoot).apply()
-                useGameBootConfig.subtext = useGameBoot.choose("Yes","No")
-            }
-        useGameBootConfig.subtext = useGameBoot.choose("Yes","No")
-
-        settings.items.add(useGameBootConfig)
-
-        val dynamicThemeSetting = VshY(
-            0xd1804,
-            getString(R.string.setting_mimic_dynamic_theme),"Yes",
-            resources.getDrawable(R.drawable.icon_dynamic_theme_effect),
-            vsh.density
-        )
-
-        dynamicThemeSetting.onClick = Runnable {
-            dynamicThemeTwinkles = !dynamicThemeTwinkles
-            prefs.edit().putBoolean(PREF_DYNAMIC_TWINKLE, useGameBoot).apply()
-            dynamicThemeSetting.subtext = dynamicThemeTwinkles.choose("Yes","No")
-        }
-        dynamicThemeSetting.subtext = dynamicThemeTwinkles.choose("Yes","No")
-
-        settings.items.add(dynamicThemeSetting)
+        // Dynamic Twinkle Icon
+        settings.items.add(VshSettingIcon(
+            0xd1804, this,
+            getString(R.string.setting_mimic_dynamic_theme),VshSettingIcon.ICON_STAR,
+            { switchTwinkles() },
+            { dynamicThemeTwinkles.toLocalizedString() }
+        ))
 
         settings.items.add(
-            VshY(
-            0xd18034,
-                getString(R.string.setting_gameboot_custom_guide),
-                getString(R.string.click_here),
-                resources.getDrawable(R.drawable.icon_android),
-                vsh.density
-            )
-        )
-        settings.items.add(
-            VshY(
-                0xd18034,
-                getString(R.string.setting_coldboot_custom_guide),
-                getString(R.string.click_here),
-                resources.getDrawable(R.drawable.icon_android),
-                vsh.density
+            VshSettingIcon(
+            0xd18034, this,
+                getString(R.string.setting_gameboot_custom_guide), VshSettingIcon.ICON_ANDROID,
+                { launchURL("https://github.com/EmiyaSyahriel/CrossLauncher#animation-modding" )},
+                { getString(R.string.common_click_here) }
             )
         )
 
         val home = vsh.findById("HOME")
 
         home?.items?.add(
-            VshY(
-                0xd18035,
-                "Rebuild App and Game Database",
-                "in case new app is installed, but this app does not automatically show them.",
-                resources.getDrawable(R.drawable.icon_refresh),
-                vsh.density,
-                onClick = Runnable {switchToRefreshRequestWindow()}
+            VshSettingIcon(
+                0xd18035, this,
+                getString(R.string.menu_rebuild_db), VshSettingIcon.ICON_REFRESH,
+                {switchToRefreshRequestWindow() },
+                { getString(R.string.menu_rebuild_db_desc) }
             )
         )
     }
@@ -357,13 +356,6 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         Pair(ActivityInfo.SCREEN_ORIENTATION_USER, R.string.orient_user),
         Pair(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE, R.string.orient_landscape)
     )
-
-    private fun setOrientation(orientation:Int, icon:VshY?){
-        scrOrientation = orientation
-        requestedOrientation = orientation
-        icon?.subtext = getString(orientationName[orientation] ?: R.string.orient_unknown)
-        prefs.edit().putInt(PREF_ORIENTATION_KEY, scrOrientation).apply()
-    }
 
     private fun setOperatorName() {
         val telephonyManager = getSystemService(Service.TELEPHONY_SERVICE) as TelephonyManager
@@ -430,7 +422,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             val c = event.unicodeChar.toChar()
             if(!vsh.hideMenu){
                 try{
-                    val data =  vsh.category[vsh.selectedX].items.find { it.text.toLowerCase(Locale.getDefault()).startsWith(c.toLowerCase())}
+                    val data =  vsh.category[vsh.selectedX].items.find { it.name.toLowerCase(Locale.getDefault()).startsWith(c.toLowerCase())}
                     if(data != null){
                         var yIndex = vsh.category[vsh.selectedX].items.indexOf (data)
                         if(yIndex < 0) yIndex = vsh.selectedY
@@ -459,15 +451,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 //println("VTX_Activity [I] | New App : ${appData.name} (${appData.pkg}) - isGame : $isGame")
                 //val size = File(it.activityInfo.applicationInfo.sourceDir).length().toSize()
                 val size = it.activityInfo.packageName
-                val xmbData = VshY(
-                    0xc00 + index,
-                    it.loadLabel(packageManager).toString(),
-                    size,
-                    it.loadIcon(packageManager),
-                    density = vsh.density,
-                    onClick = Runnable { startApp(it.activityInfo.packageName)
-                    }
-                )
+                val xmbData = AppIcon(this, 0xc00 + index, it)
 
                 // Filter itself
                 if(it.activityInfo.packageName != packageName){
@@ -477,8 +461,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             }
         }
 
-        apps.items.sortBy { it.text }
-        games.items.sortBy { it.text }
+        apps.items.sortBy { it.name }
+        games.items.sortBy { it.name }
 
         vsh.clockAsLoadingIndicator = false
     }
@@ -491,7 +475,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         }
     }
 
-    private fun startApp(packageName: String){
+    fun startApp(packageName: String){
         vsh.mpShow = false
         val intent = packageManager.getLaunchIntentForPackage(packageName)
         if(null != intent){
@@ -510,12 +494,9 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             }
         }else{
             val v = VshDialogView(this)
-            v.setButton(arrayListOf(VshDialogView.Button(
-                getString(android.R.string.ok),
-                Runnable {
-                    setContentView(vsh)
-                }
-            )
+            v.setButton(arrayListOf(VshDialogView.Button(getString(android.R.string.ok)) {
+                setContentView(vsh)
+            }
             ))
             v.contentText = "Cannot start this application.\n(NameNotFoundException : Not Installed)"
             v.titleText = "Launch Error"
@@ -537,28 +518,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     private fun loadAudio(){
         val music = vsh.findById("SONG") ?: return
         music.items.clear()
-
-        music.items.add(
-            VshY(0x8080,getString(R.string.audioplayer_pause),"",
-                resources.getDrawable(R.drawable.icon_player_pause),
-                vsh.density,
-                Runnable { sfxPlayer?.pause() }))
-
-        music.items.add(
-            VshY(0x8080,getString(R.string.audioplayer_resume),"",
-                resources.getDrawable(R.drawable.icon_player_play),
-                vsh.density,
-                Runnable { sfxPlayer?.start() }))
-
-        music.items.add(
-            VshY(0x8080,getString(R.string.audioplayer_stop),"",
-                resources.getDrawable(R.drawable.icon_player_stop),
-                vsh.density,
-                Runnable {
-                    sfxPlayer?.stop()
-                    sfxPlayer?.reset()
-                    vsh.clockExpandInfo = ""
-                }))
+        SongIcon.songList.clear()
 
         vsh.clockAsLoadingIndicator = true
         val musicResolver = contentResolver
@@ -567,21 +527,10 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         var index = 0
         if(cursor != null && cursor.moveToFirst()){
-            val titleCol = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
             val idCol = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
-            val artistCol = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
-            val albumCol = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
-            val pathCol = cursor.getColumnIndex(MediaStore.Audio.Media.DATA)
             do{
                 val id = cursor.getLong(idCol)
-                val title = cursor.getString(titleCol)
-                val artist = cursor.getString(artistCol) ?: getString(R.string.unknown)
-                val path = cursor.getString(pathCol)
-                val album = cursor.getString(albumCol) ?: getString(R.string.unknown)
-                val albumArt = getAlbumArt(path)
-                val item = VshY(id.toInt(), title, "$album - $artist" , albumArt, vsh.density, Runnable {
-                    openAudioFile(path, title, artist, album, albumArt)
-                })
+                val item = SongIcon(id.toInt(), cursor, this)
                 music.items.add(item)
                 index ++
             }while(cursor.moveToNext())
@@ -590,17 +539,18 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         vsh.clockAsLoadingIndicator = false
     }
 
-    private fun openAudioFile(path:String, title:String, artist:String, album:String, albumArt : Drawable) {
+    // TODO: direct this to XMB Audio Player Service instead of internal sfx player
+    fun openAudioFile(metadata:SongIcon.SongMetadata) {
         if(sfxPlayer != null){
             vsh.mpShow = true
             sfxPlayer?.reset()
-            sfxPlayer?.setDataSource(path)
+            sfxPlayer?.setDataSource(metadata.path)
             sfxPlayer?.prepare()
-            vsh.mpAudioTitle = title
-            vsh.mpAudioArtist = "$album / $artist"
+            vsh.mpAudioTitle = metadata.title
+            vsh.mpAudioArtist = "${metadata.album} / ${metadata.artist}"
             val size = (vsh.density * 70).toInt()
-            vsh.mpAudioCover = albumArt.toBitmap(size,size)
-            vsh.mpAudioFormat = getFileExtension(path).toUpperCase(Locale.ROOT)
+            vsh.mpAudioCover = metadata.albumArt.toBitmap(size,size)
+            vsh.mpAudioFormat = getFileExtension(metadata.path).toUpperCase(Locale.ROOT)
         }
     }
 
@@ -613,20 +563,10 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         var index = 0
         if(cursor != null && cursor.moveToFirst()){
-            val dataCol = cursor.getColumnIndex(MediaStore.Video.Media.DATA)
             val idCol = cursor.getColumnIndex(MediaStore.Video.Media._ID)
-
             do{
                 val id = cursor.getLong(idCol)
-                val file = File(cursor.getString(dataCol))
-                val fileName = file.name
-                val size = file.length().toSize()
-                val albumArt = ThumbnailUtils.createVideoThumbnail(file.absolutePath, MediaStore.Video.Thumbnails.MINI_KIND) ?: VshX.TransparentBitmap
-
-                val item = VshY(id.toInt(), fileName, size, BitmapDrawable(albumArt), vsh.density, Runnable {
-                    val uri = Uri.withAppendedPath(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id.toString())
-                    openVideoFile(file)
-                })
+                val item = VideoIcon(id.toInt(), this, cursor)
                 vids.items.add(item)
                 index++
             }while(cursor.moveToNext())
@@ -644,7 +584,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         return Uri.parse("content://id.psw.vshlauncher.fileprovider/all").buildUpon().appendPath(filePath).build()
     }
 
-    private fun openVideoFile(file:File){
+    fun openVideoFile(file:File){
         val uri = Uri.fromFile(file)
         CurrentAppData.selectedVideoPath = file.path
         val mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)
@@ -679,18 +619,27 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
     private fun getFileExtension(path:String) : String{ return path.split(".").last() }
 
-    private fun getAlbumArt(path:String) : Drawable {
-        var retval = resources.getDrawable(R.drawable.icon_cda).toBitmap(128,128)
-        try{
-            val mmr = MediaMetadataRetriever()
-            mmr.setDataSource(this, Uri.parse(path))
-            val data = mmr.embeddedPicture
-            if(data != null) retval = BitmapFactory.decodeByteArray(data, 0, data.size)
-            mmr.release()
-        }catch(e:Exception){
-        }
-        return BitmapDrawable(resources, retval)
+    /// region Get Custom Icon
+
+    // Most of it based on https://www.psdevwiki.com/ps3/Icontex.qrc for system icons
+    // and https://www.psdevwiki.com/ps3/Content_Information_Files for app / game icons
+    // TODO: create the custom icon system
+    fun hasCustomIcon(category:String, iconName:String):Boolean{
+        return false
     }
+
+    fun hasCustomAnimatedIcon(category:String, iconName:String):Boolean{
+        return false
+    }
+
+    fun hasCustomScreentimeIcon(category:String, iconName:String):Boolean{
+        return false
+    }
+
+    fun requestCustomIcon(category:String, iconName:String, requestType: Int){
+
+    }
+    /// endregion
 
     private fun packageIsGame(activityInfo: ActivityInfo): Boolean {
         var retval: Boolean
@@ -728,6 +677,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         super.onContentChanged()
     }
 
+    // TODO: Also add an user editable dictionary
     private fun packageIsGameByDB(appinfo : ActivityInfo) : Boolean{
         val lwr = appinfo.name.toLowerCase(originLocale)
         var retval = false
@@ -754,6 +704,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         launchArea.left = pivotX - vsh.d(40)
         launchArea.bottom = pivotY + vsh.d(40)
         launchArea.right = pivotX + vsh.d(40)
+        VshView.launchTapArea = launchArea
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {

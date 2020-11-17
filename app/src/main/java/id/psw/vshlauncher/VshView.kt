@@ -1,14 +1,14 @@
 package id.psw.vshlauncher
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
 import android.text.TextPaint
 import android.util.AttributeSet
-import android.view.SurfaceView
 import android.view.View
-import android.widget.VideoView
 import androidx.core.graphics.drawable.toBitmap
 import java.lang.Exception
 import java.lang.Math.*
@@ -30,6 +30,8 @@ class VshView : View {
         private var padOffset = RectF(0f,0f,0f,0f)
         private var transparentBitmap = ColorDrawable(Color.argb(0,0,0,0)).toBitmap(1,1)
         var showFPSMeter = false
+        // Debug only purpose
+        var launchTapArea = RectF(0f,0f,0f,0f)
     }
 
     /// region Variable
@@ -150,47 +152,22 @@ class VshView : View {
 
     }
 
-    private fun getCustomIcon() : Bitmap{
-
-        var retval = transparentBitmap
-        // TODO: Integrate it to game's id
-        val gameDir = context.getExternalFilesDirs("game").find { it.name == "NPID12801" }
-        if(gameDir != null){
-
-        }
-        return retval
+    @SuppressLint("UseCompatLoadingForDrawables")
+    fun getDrawable(r:Int): Drawable {
+        return resources.getDrawable(r);
     }
 
     @Suppress("DEPRECATION")
     fun fillCategory(){
-        val home = VshX("HOME", context.getString(R.string.category_home), resources.getDrawable(R.drawable.category_home), density)
+        val home = VshX("HOME", context.getString(R.string.category_home), getDrawable(R.drawable.category_home), density)
         category.add(home)
-        category.add(VshX("APPS", context.getString(R.string.category_apps), resources.getDrawable(R.drawable.category_apps), density))
-        category.add(VshX("GAME", context.getString(R.string.category_games), resources.getDrawable(R.drawable.category_games), density))
-        category.add(VshX("FILM", context.getString(R.string.category_videos), resources.getDrawable(R.drawable.category_video), density))
-        category.add(VshX("SONG", context.getString(R.string.category_music), resources.getDrawable(R.drawable.category_music), density))
-        category.add(VshX("SETT", context.getString(R.string.category_settings), resources.getDrawable(R.drawable.category_setting), density))
-        val debug = VshX("DBUG", "Debug", resources.getDrawable(R.drawable.category_debug), density)
+        category.add(VshX("APPS", context.getString(R.string.category_apps), getDrawable(R.drawable.category_apps), density))
+        category.add(VshX("GAME", context.getString(R.string.category_games),  getDrawable(R.drawable.category_games), density))
+        category.add(VshX("FILM", context.getString(R.string.category_videos), getDrawable(R.drawable.category_video), density))
+        category.add(VshX("SONG", context.getString(R.string.category_music),  getDrawable(R.drawable.category_music), density))
+        category.add(VshX("SETT", context.getString(R.string.category_settings), getDrawable(R.drawable.category_setting), density))
+        val debug = VshX("DBUG", "Debug", getDrawable(R.drawable.category_debug), density)
         category.add(debug)
-        // Debug items
-        debug.items.add(VshY(0xd1, "Show Debug Info", showDebugInfo.toString(), onClick = Runnable{
-            showDebugInfo = !showDebugInfo
-            debug.getItemBy(0xd1)?.subtext = showDebugInfo.toString()
-        },icon = resources.getDrawable(R.drawable.category_debug), density = density
-            ))
-        debug.items.add(VshY(0xd2, "Set Clock Loading Mode", clockAsLoadingIndicator.toString(), onClick = Runnable{
-            clockAsLoadingIndicator = !clockAsLoadingIndicator
-            debug.getItemBy(0xd2)?.subtext = clockAsLoadingIndicator.toString()
-        },icon = resources.getDrawable(R.drawable.category_debug), density = density
-        ))
-
-        home.items.add(VshY(0x01, "Hide Menu", "Tap this icon to hide menu and see your wallpaper.",
-            icon = resources.getDrawable(R.drawable.icon_start),
-            density = density,
-            onClick = Runnable {
-                hideMenu = !hideMenu
-            }
-        ))
     }
 
     // Draw text from it's top instead of baseline like JS does :P
@@ -299,6 +276,7 @@ class VshView : View {
     private var fullCanvasRect = RectF(0f,0f,0f,0f)
     private var expandInfoTextRect = Rect(0,0,0,0)
 
+    //TODO: update this function to support both PS3-style and PSP-style XMB clock
     private fun lClock(canvas: Canvas){
         if(clockExpandInfo != lastClockExpandInfo || lastWidth != width || lastHeight != height || expandInfoClipRect.isEmpty){
             recalculateClockRect()
@@ -411,21 +389,19 @@ class VshView : View {
                     centerY += d(30f)
                 }
 
-                // don't render offscreen
-                if (centerY > -icon.height && centerY < height + icon.height) {
+                // don't render offscreen and set the data to call the onScreen and onHidden
+                val isOnScreen = centerY > -icon.height && centerY < height + icon.height
+                data.isCoordinatelyVisible = isOnScreen
+                if (isOnScreen) {
+                    val x = pivotX + (d(50f))
+                    val y = pivotY + (icon.height / 2f)
                     canvas.drawBitmap(icon, pivotX - (icon.width / 2f), screenY, iconPaint)
-                    canvas.drawText(
-                        data.text,
-                        pivotX + (d(50f)),
-                        screenY + (icon.height / 2f),
-                        textPaint
-                    )
-                    canvas.drawTextU(
-                        data.subtext,
-                        pivotX + (d(50f)),
-                        screenY + (icon.height / 2f),
-                        subtextPaint
-                    )
+                    if(data.hasDescription){
+                        canvas.drawText(data.name, x, y, textPaint)
+                        canvas.drawTextU(data.description, x, y, subtextPaint)
+                    }else{
+                        canvas.drawTextC(data.name, x, y, textPaint )
+                    }
                 }
             }
         }catch(cmfce:ConcurrentModificationException){
@@ -568,11 +544,15 @@ class VshView : View {
             frameStart,
             selectedX,
             selectedXf,
-            paintStatusBoxOutline).forEachIndexed{ index, any ->
-            canvas.drawText(any.toString(), d(10f), d(75f) + (d(15f)* index), paintTextSelected)
-        }
-
+            paintStatusBoxOutline
+        ).forEachIndexed{
+                index, any ->
+                canvas.drawText(any.toString(), d(10f), d(75f) + (d(15f)* index), paintTextSelected)
+            }
+        debugPaint.color = Color.argb(64,0,255,0)
         canvas.drawRect(renderableArea, debugPaint)
+        debugPaint.color = Color.argb(64,255,0,0)
+        canvas.drawRect(launchTapArea, debugPaint)
     }
     /// endregion Debug Info
 
@@ -637,7 +617,7 @@ class VshView : View {
             hideMenu = false
         }else{
             try{
-                category[selectedX].items[selectedY].onClick.run()
+                category[selectedX].items[selectedY].onLaunch.run()
             }catch (ex:Exception){ ex.printStackTrace() }
         }
     }

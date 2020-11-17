@@ -72,4 +72,11 @@
     <string name="videoplayer_switchdisplay">Tampilan</string>
     <string name="videoplayer_delete">Hapus</string>
     <string name="videoplayer_setthumbnail">Jadikan Awal Preview</string>
+    <string name="common_yes">Ya</string>
+    <string name="common_no">Tidak</string>
+    <string name="menu_rebuild_db">Bangun ulang database</string>
+    <string name="common_click_here">Klik disini</string>
+    <string name="menu_rebuild_db_desc">Jika aplikasi tidak muncul setelah pemasangan</string>
+    <string name="common_corrupted">Data rusak</string>
+    <string name="audio_corrupted">Data suara rusak</string>
 </resources>

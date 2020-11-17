@@ -1,5 +1,6 @@
 package id.psw.vshlauncher
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
@@ -72,6 +73,7 @@ class VSHVideoControl : View {
     private lateinit var formatBgBitmap : Bitmap
     private var selectedItem = Point(0,0)
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun init(attrs: AttributeSet?, defStyle: Int) {
         // Load attributes
         val a = context.obtainStyledAttributes(
@@ -86,7 +88,7 @@ class VSHVideoControl : View {
         val texSize = CurrentAppData.textureLoadSize
         iconBitmap = resources.getDrawable(R.drawable.miptex_videoplayer).toBitmap(texSize,texSize, Bitmap.Config.ARGB_8888)
         highlightBitmap = resources.getDrawable(R.drawable.miptex_videoplayer_highlight).toBitmap(texSize,texSize, Bitmap.Config.ARGB_8888)
-        gradientBitmap = resources.getDrawable(R.drawable.t_videoplayer_gradient).toBitmap(texSize,texSize,Bitmap.Config.ARGB_4444)
+        gradientBitmap = resources.getDrawable(R.drawable.t_videoplayer_gradient).toBitmap(texSize,texSize,Bitmap.Config.ARGB_8888)
         progressBarBitmap = resources.getDrawable(R.drawable.miptex_progressbar).toBitmap(texSize,texSize,Bitmap.Config.ARGB_8888)
         formatBgBitmap = resources.getDrawable(R.drawable.t_format_background).toBitmap(texSize,texSize,Bitmap.Config.ARGB_8888)
     }

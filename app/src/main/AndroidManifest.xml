@@ -4,13 +4,13 @@
     package="id.psw.vshlauncher">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
-    <!-- Tell if touchscreen can be used but is not required -->
-    <uses-feature android:name="android.software.leanback" android:required="false"/>
-
-    <!-- Tell if touchscreen can be used but is not required -->
-    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Tell if touchscreen can be used but is not required -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" /> <!-- Tell if touchscreen can be used but is not required -->
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
 
     <application
         android:allowAudioPlaybackCapture="true"
@@ -23,15 +23,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
+        <service
+            android:name=".mediaplayer.XMBAudioPlayerService"
+            android:enabled="true"
+            android:exported="true"></service>
         <!-- Some attribute is unused on older version of Android, most of them were safe to ignore -->
-        <activity android:name=".XMBVideoPlayer"
+        <activity
+            android:name=".XMBVideoPlayer"
+            android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
-            android:screenOrientation="landscape"
-            >
+            android:screenOrientation="landscape">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <activity

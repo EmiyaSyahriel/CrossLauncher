@@ -61,7 +61,7 @@ class VideoScalableViewGroup : ViewGroup {
     }
     private val fillScale: Point get(){
         val point = Point(1280,720)
-        var scaleFactor = 1.0f
+        val scaleFactor: Float
         val res = videoRes
 
         if(screenAR < videoAR){
