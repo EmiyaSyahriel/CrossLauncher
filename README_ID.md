@@ -47,6 +47,8 @@ adb uninstall -k --user 0 com.google.android.tvlauncher
 Pada perangkat tes saya, aplikas kosongan biasa memakan RAM sekitar 10MB, ditambah ikon yang dimuat sekitaran 
 500kB~1MB per ikon. Ikon akan tetap berada pada RAM selama launcher berjalan.
 
+18/11/2020: Pemuatan ikon sekarang lebih dinamis. Mungkin akan ada lag sedikit ketika ikon masuk layar
+
 ## Tangkapan Layar
 ![Apps list screenshot](readme_asset/ss_apl.png)
 Daftar Aplikasi
@@ -74,7 +76,7 @@ Pemain Video
 - [ ] Buka video dengan aplikasi default
 - [ ] Bisa memuat ikon dan BGM kustom
 - [ ] Media player bawaan aplikasi
-  - [x] Musik (Awal)
+  - [ ] Musik (Perlu dibuat ulang)
   - [ ] Video (Ada, belum terpakai)
 
 ## TODOs:
