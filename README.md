@@ -46,6 +46,9 @@ adb uninstall -k --user 0 com.google.android.tvlauncher
 On my test devices, Base memory usage (without items) is about 10MB.
 With about 500Kb~1MB per item since icons will be cached in memory.
 
+18/11/2020: Icon bitmap loading is more dynamic now, but possibly caused hiccups when
+an icon is drawn on screen
+
 ## Screenshots
 ![Apps list screenshot](readme_asset/ss_apl.png)
 App List
@@ -60,7 +63,7 @@ Video Player
 - [x] Switchable Confirm Button (Cross / Circle)
 - [x] Android built-in and Dictionary-based Game Detection
 - [x] Music and Video Gallery
-- [x] A Minimal Built-in Music Player
+- [ ] Notification section
 - [x] Gamepad Support (partial)
 - [x] Keystroke-to-Name Item finding
 - [x] Launcher Startup & App Launch Animation (Switchable), see 
@@ -72,8 +75,8 @@ Video Player
 - [ ] Open video file with default apps
 - [ ] Using a custom icon and custom BGM
 - [ ] Built-in media player
-  - [x] Music (Preliminary)
-  - [ ] Video (Available, Not utilized yet)
+  - [ ] Music (Need some fix)
+  - [ ] Video (Available, Barely function UI)
   
 ## TODOs:
 - ~Render padding so it doesn't get rendered behind system bars~
