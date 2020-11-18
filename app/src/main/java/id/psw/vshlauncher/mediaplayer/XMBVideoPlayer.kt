@@ -1,12 +1,11 @@
-package id.psw.vshlauncher
+package id.psw.vshlauncher.mediaplayer
 
 import android.graphics.Point
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
-import android.widget.VideoView
-import kotlinx.android.synthetic.main.activity_xmbvp.*
+import id.psw.vshlauncher.*
 import java.io.File
 
 class XMBVideoPlayer : AppCompatActivity() {

@@ -29,7 +29,7 @@
             android:exported="true"></service>
         <!-- Some attribute is unused on older version of Android, most of them were safe to ignore -->
         <activity
-            android:name=".XMBVideoPlayer"
+            android:name=".mediaplayer.XMBVideoPlayer"
             android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"

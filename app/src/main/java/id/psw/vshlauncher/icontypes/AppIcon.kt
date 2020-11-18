@@ -14,11 +14,11 @@ class AppIcon(private var context: VSH, itemID: Int, private var resolveInfo: Re
     private var cachedUnselectedIcon : Bitmap = transparentBitmap
     private var appLabel = resolveInfo.loadLabel(context.packageManager).toString()
     private var launchApp = Runnable {
-        context.startApp(resolveInfo.resolvePackageName)
+        context.startApp(resolveInfo.activityInfo.packageName)
     }
 
     companion object{
-        private const val selectedIconSize = 50f
+        private const val selectedIconSize = 70f
         private const val unselectedIconSize = 50f
         var dynamicUnload = false
     }
@@ -33,6 +33,9 @@ class AppIcon(private var context: VSH, itemID: Int, private var resolveInfo: Re
     override val options: ArrayList<VshOption>
         get() = arrayListOf()
 
+    override val selectedIcon: Bitmap get() = cachedSelectedIcon
+    override val unselectedIcon: Bitmap get() = cachedUnselectedIcon
+
     private fun loadIcon(){
         val selectedSize = (selectedIconSize * context.vsh.density).toInt()
         val unselectedSize = (unselectedIconSize * context.vsh.density).toInt()
@@ -41,9 +44,19 @@ class AppIcon(private var context: VSH, itemID: Int, private var resolveInfo: Re
         cachedUnselectedIcon = Bitmap.createScaledBitmap(loadedIcon, unselectedSize, unselectedSize, false)
     }
 
+    override val hasDescription: Boolean
+        get() = true
+
+    override val description: String
+        get() = resolveInfo.activityInfo.packageName ?: "No package name"
+
     private fun unloadIcon(){
-        cachedSelectedIcon= transparentBitmap
-        cachedUnselectedIcon= transparentBitmap
+        // avoid recycling default bitmaps
+        if (cachedSelectedIcon != transparentBitmap) cachedSelectedIcon.recycle()
+        if (cachedUnselectedIcon != transparentBitmap) cachedUnselectedIcon.recycle()
+
+        cachedSelectedIcon = transparentBitmap
+        cachedUnselectedIcon = transparentBitmap
     }
 
     override fun onHidden() {

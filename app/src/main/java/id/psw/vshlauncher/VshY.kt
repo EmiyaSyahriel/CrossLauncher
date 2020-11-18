@@ -42,8 +42,12 @@ open class VshY {
 
     var itemID : Int = 0
 
+    /** Tell the view to render the icon in 20:11 AR instead of 1:1 icon */
+    open val matchPSContentIcon : Boolean = false
+
     open val selectedIcon : Bitmap = transparentBitmap
     open val unselectedIcon : Bitmap = transparentBitmap
+
     open val name : String = "VshVerticalIcon"
     open val hasDescription : Boolean = false
     open val description = "An icon"
@@ -59,11 +63,25 @@ open class VshY {
                 field = value
         }
 
-    /**
-     * Called when this icon is shown into screen
-     */
+    var isSelected : Boolean = false
+    set(value){
+        if(field != value){
+            if(value) onSelected() else onUnselected()
+        }
+        field = value
+    }
+
+    /** Called when this icon is shown into screen after being hidden */
     open fun onScreen(){}
+
+    /** Called when this icon is hidden into screen after being shown */
     open fun onHidden(){}
+
+    /** Called when is currently selected */
+    open fun onSelected(){}
+
+    /** Called when is no longer selected */
+    open fun onUnselected(){}
 
     constructor()
     constructor(itemID:Int) { this.itemID = itemID  }

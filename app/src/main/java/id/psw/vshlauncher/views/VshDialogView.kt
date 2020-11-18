@@ -1,4 +1,4 @@
-package id.psw.vshlauncher
+package id.psw.vshlauncher.views
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,6 +11,10 @@ import android.view.*
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.minus
 import androidx.core.view.*
+import id.psw.vshlauncher.R
+import id.psw.vshlauncher.choose
+import id.psw.vshlauncher.getSystemPadding
+import id.psw.vshlauncher.toLerp
 
 class VshDialogView : View {
 

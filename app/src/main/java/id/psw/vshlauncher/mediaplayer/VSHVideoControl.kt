@@ -1,4 +1,4 @@
-package id.psw.vshlauncher
+package id.psw.vshlauncher.mediaplayer
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,7 +9,7 @@ import kotlin.math.floor
 import android.view.View
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withClip
-import java.io.File
+import id.psw.vshlauncher.*
 import kotlin.math.roundToInt
 
 /**

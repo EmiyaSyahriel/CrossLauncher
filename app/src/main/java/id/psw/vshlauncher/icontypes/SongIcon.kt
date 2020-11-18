@@ -18,7 +18,8 @@ import id.psw.vshlauncher.VshY
 import id.psw.vshlauncher.toSize
 import java.io.File
 
-class SongIcon(itemID:Int, private val cursor: Cursor?, private val vsh:VSH) : VshY(itemID){
+// TODO : fix cursor is mostly null when created this icon, causing the icon appear corrupted
+class SongIcon(itemID:Int, cursor: Cursor?, private val vsh:VSH) : VshY(itemID){
     data class SongMetadata(
         val id:Int,
         val title:String,
@@ -38,10 +39,13 @@ class SongIcon(itemID:Int, private val cursor: Cursor?, private val vsh:VSH) : V
             return songList.first { it.id == id }
         }
         var cachedDefaultIcon : Drawable? = null
+        var dynamicUnload = true
     }
 
     var metadata : SongMetadata
     private var isValid = false
+    private var cachedSelectedIcon = transparentBitmap
+    private var cachedUnselectedIcon = transparentBitmap
 
     init {
         if(cursor != null){
@@ -58,6 +62,7 @@ class SongIcon(itemID:Int, private val cursor: Cursor?, private val vsh:VSH) : V
             isValid = true
         }
         metadata = SongMetadata(0, vsh.getString(R.string.common_corrupted), "", "", "", "?? B", cachedDefaultIcon ?: transparentDrawable)
+        loadIcon()
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -83,6 +88,38 @@ class SongIcon(itemID:Int, private val cursor: Cursor?, private val vsh:VSH) : V
                 Toast.makeText(vsh, vsh.getString(R.string.audio_corrupted), Toast.LENGTH_SHORT).show()
             }
         }
+
+    private fun loadIcon(){
+        if(isValid){
+
+        }
+    }
+
+    private fun unloadIcon(){
+        if(isValid){
+            if(cachedSelectedIcon != transparentBitmap) cachedSelectedIcon.recycle()
+            if(cachedUnselectedIcon != transparentBitmap) cachedUnselectedIcon.recycle()
+            cachedSelectedIcon = transparentBitmap
+            cachedUnselectedIcon = transparentBitmap
+        }
+    }
+
+    override fun onScreen() {
+        if(dynamicUnload) loadIcon()
+    }
+
+    override fun onHidden() {
+        if(dynamicUnload) unloadIcon()
+    }
+
+    override val name: String
+        get() = metadata.title
+
+    override val hasDescription: Boolean
+        get() = true
+
+    override val description: String
+        get() = "${metadata.album} - ${metadata.artist}"
 
 
     override val hasOptions: Boolean

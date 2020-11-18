@@ -4,8 +4,6 @@ import android.app.Service
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -21,7 +19,6 @@ import android.content.*
 import android.content.res.Configuration
 import android.graphics.*
 import android.media.MediaPlayer
-import android.media.ThumbnailUtils
 import android.view.*
 import android.webkit.MimeTypeMap
 import android.widget.Toast
@@ -31,6 +28,11 @@ import id.psw.vshlauncher.icontypes.AppIcon
 import id.psw.vshlauncher.icontypes.SongIcon
 import id.psw.vshlauncher.icontypes.VideoIcon
 import id.psw.vshlauncher.icontypes.VshSettingIcon
+import id.psw.vshlauncher.mediaplayer.XMBVideoPlayer
+import id.psw.vshlauncher.views.VshColdBoot
+import id.psw.vshlauncher.views.VshDialogView
+import id.psw.vshlauncher.views.VshGameBoot
+import id.psw.vshlauncher.views.VshView
 import java.io.File
 import kotlin.concurrent.schedule
 
@@ -122,7 +124,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         setOperatorName()
 
-        checkPermission()
+        checkFileReadWritePermission()
         appListerThread = Thread(Runnable {
             loadApps()
             loadAudio()
@@ -178,7 +180,6 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         }
     }
 
-
     private fun initializeMediaPlayer(){
         sfxPlayer = MediaPlayer()
         sfxPlayer?.setOnPreparedListener { it.start() }
@@ -193,7 +194,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         dynamicThemeTwinkles = prefs.getBoolean(PREF_DYNAMIC_TWINKLE, true)
     }
 
-    private fun checkPermission(){
+    private fun checkFileReadWritePermission(){
         val resultRead = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
         val resultWrite = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         if(resultRead == PackageManager.PERMISSION_GRANTED && resultWrite == PackageManager.PERMISSION_GRANTED){
@@ -325,6 +326,15 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         home?.items?.add(
             VshSettingIcon(
                 0xd18035, this,
+                getString(R.string.app_hide_menu), VshSettingIcon.ICON_START,
+                {vsh.hideMenu = !vsh.hideMenu},
+                {getString(R.string.app_hide_menu_desc)}
+            )
+        )
+
+        home?.items?.add(
+            VshSettingIcon(
+                0xd18035, this,
                 getString(R.string.menu_rebuild_db), VshSettingIcon.ICON_REFRESH,
                 {switchToRefreshRequestWindow() },
                 { getString(R.string.menu_rebuild_db_desc) }
@@ -340,7 +350,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             thread.start()
             setContentView(vsh)
         }))
-        alert.buttons.add(VshDialogView.Button("Cancel",
+        alert.buttons.add(
+            VshDialogView.Button("Cancel",
             Runnable {
                 setContentView(vsh)
             }

@@ -1,4 +1,4 @@
-package id.psw.vshlauncher
+package id.psw.vshlauncher.views
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,13 +9,13 @@ import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.core.graphics.contains
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.toRect
-import androidx.core.graphics.withClip
-import androidx.core.graphics.withTranslation
 import androidx.core.view.children
+import id.psw.vshlauncher.R
+import id.psw.vshlauncher.choose
+import id.psw.vshlauncher.getSystemPadding
 
 class VshDialogLayout : ViewGroup {
 
@@ -25,9 +25,11 @@ class VshDialogLayout : ViewGroup {
         var scaledDensity = 1f
         const val iconSize = 32
     }
-    fun d(i:Float):Float{return i * density}
+    fun d(i:Float):Float{return i * density
+    }
     fun d(i:Int):Int{return (i * density).toInt()}
-    fun sd(i:Float):Float{return i * density}
+    fun sd(i:Float):Float{return i * density
+    }
     fun sd(i:Int):Int{return (i * scaledDensity).toInt()}
     private var paintText = TextPaint(Paint.ANTI_ALIAS_FLAG)
     private var paintFill = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -49,7 +51,9 @@ class VshDialogLayout : ViewGroup {
         )
 
         iconBitmap =
-            a.getDrawable(R.styleable.VshDialogLayout_dialogIconBitmap)?.toBitmap(d(iconSize), d(iconSize)) ?:
+            a.getDrawable(R.styleable.VshDialogLayout_dialogIconBitmap)?.toBitmap(d(iconSize), d(
+                iconSize
+            )) ?:
                     ColorDrawable(Color.TRANSPARENT).toBitmap(1,1)
         titleText = a.getString(R.styleable.VshDialogLayout_dialogTitleText) ?: "VshDialogLayout"
 
@@ -64,7 +68,9 @@ class VshDialogLayout : ViewGroup {
         )
 
         iconBitmap =
-            a.getDrawable(R.styleable.VshDialogLayout_dialogIconBitmap)?.toBitmap(d(iconSize), d(iconSize)) ?:
+            a.getDrawable(R.styleable.VshDialogLayout_dialogIconBitmap)?.toBitmap(d(iconSize), d(
+                iconSize
+            )) ?:
                     ColorDrawable(Color.TRANSPARENT).toBitmap(1,1)
         titleText = a.getString(R.styleable.VshDialogLayout_dialogTitleText) ?: "VshDialogLayout"
 
@@ -181,13 +187,13 @@ class VshDialogLayout : ViewGroup {
     }
 
     fun addButton(text:String, runnable:()->Unit){
-        buttons.add( VshDialogView.Button(text, Runnable { runnable() }) )
+        buttons.add(VshDialogView.Button(text, Runnable { runnable() }))
     }
 
     fun addButton(resId:Int, runnable: () -> Unit){
         buttons.add(
             VshDialogView.Button(context.getString(resId),
-            Runnable{ runnable() })
+                Runnable { runnable() })
         )
     }
     private fun Canvas.drawTextWithYOffset(text:String, x:Float, y:Float, paint:Paint, yOff : Float = 0.5f){

@@ -7,9 +7,9 @@
     android:layout_height="match_parent"
     android:background="@android:color/black"
     android:fitsSystemWindows="true"
-    tools:context=".XMBVideoPlayer">
+    tools:context=".mediaplayer.XMBVideoPlayer">
 
-    <id.psw.vshlauncher.VideoScalableViewGroup
+    <id.psw.vshlauncher.mediaplayer.VideoScalableViewGroup
         android:id="@+id/scaler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,13 +18,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <id.psw.vshlauncher.VSHVideoView
+        <id.psw.vshlauncher.mediaplayer.VSHVideoView
             android:id="@+id/videoplayer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-    </id.psw.vshlauncher.VideoScalableViewGroup>
+    </id.psw.vshlauncher.mediaplayer.VideoScalableViewGroup>
 
-    <id.psw.vshlauncher.VSHVideoControl
+    <id.psw.vshlauncher.mediaplayer.VSHVideoControl
         android:id="@+id/vshcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

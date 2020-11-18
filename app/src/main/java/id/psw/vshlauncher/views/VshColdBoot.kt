@@ -1,15 +1,14 @@
-package id.psw.vshlauncher
+package id.psw.vshlauncher.views
 
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
-import java.io.File
+import id.psw.vshlauncher.R
+import id.psw.vshlauncher.choose
 import java.util.*
 
 /**

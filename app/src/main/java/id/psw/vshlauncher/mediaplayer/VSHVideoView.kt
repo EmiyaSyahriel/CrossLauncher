@@ -1,7 +1,6 @@
-package id.psw.vshlauncher
+package id.psw.vshlauncher.mediaplayer
 
 import android.content.Context
-import android.graphics.Canvas
 import android.graphics.Point
 import android.media.MediaMetadataRetriever
 import android.util.AttributeSet

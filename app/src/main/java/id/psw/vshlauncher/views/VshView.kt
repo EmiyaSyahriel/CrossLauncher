@@ -1,4 +1,4 @@
-package id.psw.vshlauncher
+package id.psw.vshlauncher.views
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -10,6 +10,7 @@ import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.graphics.drawable.toBitmap
+import id.psw.vshlauncher.*
 import java.lang.Exception
 import java.lang.Math.*
 import java.text.SimpleDateFormat
@@ -63,6 +64,7 @@ class VshView : View {
     var category : ArrayList<VshX> = arrayListOf()
     var hideMenu = false
     var backgroundAlpha = 1f
+    var usePspStyle = true
 
     var density = 1f
     var scaledDensity = 1f
@@ -392,13 +394,18 @@ class VshView : View {
                 // don't render offscreen and set the data to call the onScreen and onHidden
                 val isOnScreen = centerY > -icon.height && centerY < height + icon.height
                 data.isCoordinatelyVisible = isOnScreen
+                data.isSelected = isSelected
                 if (isOnScreen) {
-                    val x = pivotX + (d(50f))
-                    val y = pivotY + (icon.height / 2f)
+                    // 80f : Preserve space for XMB-sized (20:11) icons
+                    val x = pivotX + (d(80f))
+                    val y = screenY + (icon.height / 2f)
                     canvas.drawBitmap(icon, pivotX - (icon.width / 2f), screenY, iconPaint)
                     if(data.hasDescription){
-                        canvas.drawText(data.name, x, y, textPaint)
-                        canvas.drawTextU(data.description, x, y, subtextPaint)
+                        if(isSelected && usePspStyle){
+                            canvas.drawLine(x, y, width * 1f, y, paintStatusBoxOutline)
+                        }
+                        canvas.drawText(data.name, x, y - sd(2f), textPaint)
+                        canvas.drawTextU(data.description, x, y + sd(2f), subtextPaint)
                     }else{
                         canvas.drawTextC(data.name, x, y, textPaint )
                     }
@@ -580,11 +587,18 @@ class VshView : View {
     /// region Input
     fun setSelection(x:Int, y:Int){
         if(hideMenu) return
+
+        // Set selected icon to be no longer selected and no longer onScreen then Save currently selected icon before changing
         if(x != 0){
+            if(category[selectedX].items.size > selectedY){
+                category[selectedX].items[selectedY].isSelected = false
+            }
+            category[selectedX].items.forEach { it.isCoordinatelyVisible = false }
             category[selectedX].itemY = selectedY
         }
 
         selectedX = (selectedX + x).coerceIn(0, category.size - 1)
+
         if(category[selectedX].items.isNotEmpty()){
             selectedY = (selectedY + y).coerceIn(0, category[selectedX].items.size - 1)
         }
@@ -622,6 +636,6 @@ class VshView : View {
         }
     }
 
-    fun findById(id:String) :VshX? = category.find { it.id == id }
+    fun findById(id:String) : VshX? = category.find { it.id == id }
     /// endregion
 }

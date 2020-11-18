@@ -1,15 +1,18 @@
-package id.psw.vshlauncher
+package id.psw.vshlauncher.views
 
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.plus
 import androidx.core.graphics.scale
 import androidx.core.graphics.withScale
+import id.psw.vshlauncher.R
+import id.psw.vshlauncher.choose
+import id.psw.vshlauncher.toLerpColor
+import id.psw.vshlauncher.toMultiLerpColor
 import java.lang.Exception
 import java.util.*
 import kotlin.math.max

@@ -1,4 +1,4 @@
-package id.psw.vshlauncher
+package id.psw.vshlauncher.mediaplayer
 
 import android.content.Context
 import android.graphics.Point
@@ -86,7 +86,7 @@ class VideoScalableViewGroup : ViewGroup {
             ScalingMode.Stretch ->{
                 width
             }
-            ScalingMode.OneByOne->{
+            ScalingMode.OneByOne ->{
                 videoRes.x
             }
         }

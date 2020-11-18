@@ -20,11 +20,13 @@ class VshSettingIcon(
         const val ICON_ANDROID = "icon_android"
         const val ICON_STAR = "icon_star"
         const val ICON_REFRESH = "icon_refresh"
+        const val ICON_START = "icon_start"
         var iconIds : Map<String, Int> = mapOf(
             Pair(DEVICE_ORIENTATION, R.drawable.icon_orientation),
             Pair(ICON_ANDROID, R.drawable.icon_android),
             Pair(ICON_STAR, R.drawable.icon_dynamic_theme_effect),
-            Pair(ICON_REFRESH, R.drawable.icon_refresh)
+            Pair(ICON_REFRESH, R.drawable.icon_refresh),
+            Pair(ICON_START, R.drawable.icon_start)
         )
     }
 
@@ -36,7 +38,7 @@ class VshSettingIcon(
     override val selectedIcon: Bitmap get() = iconUnselected
 
     override val hasDescription: Boolean
-        get() = this.valueString.invoke().isEmpty()
+        get() = this.valueString.invoke().isNotEmpty()
 
     override val name: String
         get() = this.iconName

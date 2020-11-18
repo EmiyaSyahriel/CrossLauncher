@@ -77,4 +77,6 @@
     <string name="menu_rebuild_db_desc">If new item is not added automatically.</string>
     <string name="common_corrupted">Corrupted data</string>
     <string name="audio_corrupted">Audio data is corrupted</string>
+    <string name="app_hide_menu">Hide Menu</string>
+    <string name="app_hide_menu_desc">Tap anywhere to reveal menu once it\'s hidden</string>
 </resources>

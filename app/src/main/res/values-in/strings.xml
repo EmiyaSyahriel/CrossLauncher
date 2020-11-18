@@ -79,4 +79,6 @@
     <string name="menu_rebuild_db_desc">Jika aplikasi tidak muncul setelah pemasangan</string>
     <string name="common_corrupted">Data rusak</string>
     <string name="audio_corrupted">Data suara rusak</string>
+    <string name="app_hide_menu">Sembunyikan Menu</string>
+    <string name="app_hide_menu_desc">Tap dimana saja untuk membuka lagi menu setelah disembunyikan</string>
 </resources>

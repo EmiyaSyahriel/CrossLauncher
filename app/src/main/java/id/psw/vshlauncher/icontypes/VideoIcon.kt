@@ -8,6 +8,7 @@ import android.provider.MediaStore
 import id.psw.vshlauncher.*
 import java.io.File
 
+// TODO : fix cursor is mostly null when created this icon, causing the icon appear corrupted
 class VideoIcon(itemID:Int, private val vsh: VSH, private val cursor: Cursor?) : VshY(itemID) {
 
     data class VideoMetadata(
@@ -49,6 +50,12 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val cursor: Cursor?) :
             }
         }
 
+    override val name: String
+        get() = metadata.fileName
+
+    override val hasDescription: Boolean get() = true
+    override val description: String
+        get() = metadata.size
 
     override val hasOptions: Boolean
         get() = true

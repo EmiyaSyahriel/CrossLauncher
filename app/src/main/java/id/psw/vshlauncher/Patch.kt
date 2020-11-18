@@ -2,6 +2,7 @@ package id.psw.vshlauncher
 
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Rect
 import java.lang.StringBuilder
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -42,4 +43,8 @@ fun Int.mp00():String{
         return "00"
     }
     return if(this > 9) this.toString() else "0$this"
+}
+
+fun Rect.scaleToAspectRatio(x:Float, y:Float, fill:Boolean = false){
+
 }
