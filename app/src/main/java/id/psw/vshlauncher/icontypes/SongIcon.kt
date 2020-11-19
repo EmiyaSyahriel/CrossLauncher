@@ -91,7 +91,11 @@ class SongIcon(itemID:Int, cursor: Cursor?, private val vsh:VSH) : VshY(itemID){
 
     private fun loadIcon(){
         if(isValid){
-
+            val selectedSize = (selectedIconSize * vsh.vsh.density).toInt()
+            val unselectedSize = (unselectedIconSize * vsh.vsh.density).toInt()
+            val loadedIcon = metadata.albumArt
+            cachedSelectedIcon = loadedIcon.toBitmap(selectedSize, selectedSize)
+            cachedUnselectedIcon = loadedIcon.toBitmap(unselectedSize, unselectedSize)
         }
     }
 

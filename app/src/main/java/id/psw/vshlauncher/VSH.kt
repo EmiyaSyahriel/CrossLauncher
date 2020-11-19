@@ -15,7 +15,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.graphics.drawable.toBitmap
 import java.util.*
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.*
+import android.content.pm.ResolveInfo
 import android.content.res.Configuration
 import android.graphics.*
 import android.media.MediaPlayer
@@ -34,6 +36,7 @@ import id.psw.vshlauncher.views.VshDialogView
 import id.psw.vshlauncher.views.VshGameBoot
 import id.psw.vshlauncher.views.VshView
 import java.io.File
+import java.lang.Exception
 import kotlin.concurrent.schedule
 
 @Suppress("SpellCheckingInspection", "DEPRECATION")
@@ -577,7 +580,9 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             val idCol = cursor.getColumnIndex(MediaStore.Video.Media._ID)
             do{
                 val id = cursor.getLong(idCol)
-                val item = VideoIcon(id.toInt(), this, cursor)
+                val dataCol = cursor.getColumnIndex(MediaStore.Video.Media.DATA)
+                val path = cursor.getString(dataCol)
+                val item = VideoIcon(id.toInt(), this, path)
                 vids.items.add(item)
                 index++
             }while(cursor.moveToNext())
@@ -647,8 +652,86 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         return false
     }
 
-    fun requestCustomIcon(category:String, iconName:String, requestType: Int){
+    /**
+     * Request a custom icon if exists, otherwise load form drawables (if any error occured, returns 1x1 transparent drawable)
+     *
+     * @param category Category of the app
+     * @param iconName File name of the icon without extension
+     * @param systemIconID Icon ID in R.drawable (app internal icon)
+     */
+    @SuppressLint("UseCompatLoadingForDrawables")
+    fun requestCustomIcon(category:String, iconName:String, systemIconID : Int) : Bitmap {
+        try{
+            val extDir = getExternalFilesDir(category)
+            if(extDir?.exists() == true){
+                val iconData= extDir.listFiles()!!.find { it.nameWithoutExtension == iconName }
+                if(iconData != null){
+                    return BitmapFactory.decodeFile(iconData.absolutePath)
+                }
+            }
+            return resources.getDrawable(systemIconID).toBitmap(70, 70, Bitmap.Config.ARGB_8888)
+        }catch(e:Exception){
+            e.printStackTrace()
+        }
+        return VshY.transparentBitmap
+    }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
+    fun requestCustomGameIcon(resolveInfo: ResolveInfo) : Bitmap {
+        var retval : Bitmap = VshY.transparentBitmap
+        try{
+            val backdropFile = requestSpecificFileInGameDir(resolveInfo, "ICON0.PNG")
+            if(backdropFile != null && backdropFile.exists()){
+                retval = BitmapFactory.decodeFile(backdropFile.absolutePath)
+            }
+        }catch(e:Exception){
+            e.printStackTrace()
+        }
+        return retval
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    fun requestCustomGameVideoIcon(resolveInfo: ResolveInfo) : File? {
+        return requestSpecificFileInGameDir(resolveInfo, "ICON1.MP4")
+    }
+
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    fun requestGameBacksound(resolveInfo: ResolveInfo) : File? {
+        return requestSpecificFileInGameDir(resolveInfo, "SND0.MP3")
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    fun requestGameBackdrop(resolveInfo: ResolveInfo) : Bitmap {
+        var retval : Bitmap = VshY.transparentBitmap
+        try{
+            val backdropFile = requestSpecificFileInGameDir(resolveInfo, "PIC1.PNG")
+            if(backdropFile != null && backdropFile.exists()){
+                retval = BitmapFactory.decodeFile(backdropFile.absolutePath)
+            }
+        }catch(e:Exception){
+            e.printStackTrace()
+        }
+        return retval
+    }
+
+    private fun requestSpecificFileInGameDir(resolveInfo: ResolveInfo, fileName:String) : File?{
+        try{
+            val gameDir = getExternalFilesDir("game")!!
+            if(gameDir.exists()){
+                val gameSpecDir = gameDir.listFiles()?.find { it.name == resolveInfo.activityInfo.packageName }
+                if(gameSpecDir != null){
+                    if(gameSpecDir.exists()){
+                        return gameSpecDir.listFiles()?.find { it.name == fileName }
+                    }
+                }
+            }else{
+                gameDir.mkdir()
+            }
+        }catch(e:Exception){
+            e.printStackTrace()
+        }
+        return null
     }
     /// endregion
 

@@ -1,9 +1,8 @@
 package id.psw.vshlauncher
 
-import android.graphics.Canvas
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
-import java.lang.StringBuilder
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -45,6 +44,31 @@ fun Int.mp00():String{
     return if(this > 9) this.toString() else "0$this"
 }
 
-fun Rect.scaleToAspectRatio(x:Float, y:Float, fill:Boolean = false){
+// TODO: create scale by AR
+fun Rect.scaleToAspectRatio(x:Float, y:Float, fill:Boolean = false, centered:Boolean = true){
 
+}
+
+fun Bitmap.getDominantColorMean(alsoCalculateAlpha:Boolean = false):Int{
+    var r = 0
+    var g = 0
+    var b = 0
+    var a = if(alsoCalculateAlpha) 0 else 255
+    var validPixels = 0
+
+    val colors = intArrayOf(width * height)
+    getPixels(colors, 0, 0, 0, 0, width, height)
+    colors.forEach {
+        val valid = if(alsoCalculateAlpha) true else Color.alpha(it) > 1
+        if(valid){
+            r += Color.red(it)
+            g += Color.red(it)
+            b += Color.red(it)
+            if(alsoCalculateAlpha) a += Color.alpha(it)
+            validPixels++
+        }
+    }
+
+    val finalAlpha = if(alsoCalculateAlpha) a / validPixels else 255
+    return Color.argb(finalAlpha,r/validPixels,g/validPixels,b/validPixels)
 }

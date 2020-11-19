@@ -38,6 +38,9 @@ open class VshY {
         val EmptyRunnable = Runnable { /**Do Nothing**/ }
         val transparentBitmap = ColorDrawable(Color.TRANSPARENT).toBitmap(1,1)
         val transparentDrawable = BitmapDrawable(transparentBitmap)
+        val selectedIconSize = 70f
+        val selectedIconSizeWidth = 127f
+        val unselectedIconSize = 50f
     }
 
     var itemID : Int = 0
