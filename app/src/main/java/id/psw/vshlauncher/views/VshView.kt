@@ -11,6 +11,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
+import java.io.File
 import java.lang.Exception
 import java.lang.Math.*
 import java.text.SimpleDateFormat
@@ -33,6 +34,7 @@ class VshView : View {
         var showFPSMeter = false
         // Debug only purpose
         var launchTapArea = RectF(0f,0f,0f,0f)
+        var customTypeface = Typeface.SANS_SERIF
     }
 
     /// region Variable
@@ -50,6 +52,7 @@ class VshView : View {
 
     private var paintStatusBoxOutline = Paint(Paint.ANTI_ALIAS_FLAG)
     private var paintMisc = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var paintFill = Paint(Paint.ANTI_ALIAS_FLAG)
     private var paintStatusBoxFill = Paint(Paint.ANTI_ALIAS_FLAG)
     private var paintStatusText = TextPaint(Paint.ANTI_ALIAS_FLAG)
     private var debugPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(64,0,255,0) }
@@ -60,6 +63,7 @@ class VshView : View {
     var selectedX = 0
     var selectedY = 0
     var menuIndex = 0
+    var lastInteractionTime = 0L
 
     var category : ArrayList<VshX> = arrayListOf()
     var hideMenu = false
@@ -122,6 +126,9 @@ class VshView : View {
             strokeCap = Paint.Cap.ROUND
         }
         paintIconUnselected = TextPaint(paintIconSelected).apply { alpha = 128 }
+        paintFill.apply {
+            color = Color.WHITE
+        }
     }
 
     constructor(context: Context) : super(context) {
@@ -211,6 +218,17 @@ class VshView : View {
     var clockAsLoadingIndicator = false
     private var clockStr = "10:43"
     val cal = Calendar.getInstance()
+    var xmbFont : Typeface = customTypeface
+        set(value) {
+            field = value
+            customTypeface = value
+            paintStatusText.typeface = value
+            paintTextSelected.typeface = value
+            paintTextUnselected.typeface = value
+            paintMenuTextSelected.typeface = value
+            paintSubtextSelected.typeface = value
+            paintSubtextUnselected.typeface = value
+        }
 
     private fun calculateHandRotation(t : Float, r : Float){
         // Do rotating the clock by frame instead of clock
@@ -220,6 +238,15 @@ class VshView : View {
         }else{
             clockHand.x = cos( ( (t * 360) - 90 ) * Deg2Rad).toFloat() * r
             clockHand.y = sin( ( (t * 360) - 90 ) * Deg2Rad ).toFloat() * r
+        }
+    }
+
+    fun loadCustomFont(fontPath:String){
+        try{
+            val fontFace = Typeface.createFromFile(File(fontPath))
+            xmbFont = fontFace
+        }catch(e:Exception){
+
         }
     }
 
@@ -417,17 +444,79 @@ class VshView : View {
     }
 
     /// region Options Popup
+    // TODO: Add interaction to the option box (it just pop the box for now)
     var isOnOptions = false
     var optionsRect = RectF(0f,0f,0f,0f)
+    var optionSelectedIndex = 0
+    var optionArrowPath = Path()
+    var optionXOffset = 0.0f
+
+    private val optionTextBound = Rect()
     private fun lOptions(canvas:Canvas){
-        if(optionsRect.isEmpty){
-            optionsRect.left = width - (d(200f) + padOffset.right)
-            optionsRect.top = -d(20f)
-            optionsRect.bottom = height + d(30f)
-            optionsRect.right = width + d(10f)
-        }
+        updateOptionPopupShape()
         canvas.drawRect(optionsRect, paintStatusBoxFill)
         canvas.drawRect(optionsRect, paintStatusBoxOutline)
+
+        // Draw contents
+        if(isSelectionValid){
+            val options = category[selectedX].items[selectedY].options
+            paintTextSelected.getTextBounds("M",0,1, optionTextBound)
+            val charHeight = optionTextBound.height() * 1.5f
+            val yOffset = (optionsRect.height() / 2f) + (options.size * -charHeight)
+            val xTextOffset = optionTextBound.width() * 2
+            options.forEachIndexed { index, vshOption ->
+                val isSelected = index == optionSelectedIndex
+                val paint = if(isSelected) paintTextSelected else paintTextUnselected
+                val yPos = (index * charHeight)+ yOffset
+                if(isSelected){
+                    // Update triangle
+                    val triR = optionTextBound.height() /2f
+                    val leftPos = optionsRect.left + (0.25f * xTextOffset)
+                    val rightPos = optionsRect.left + (0.75f * xTextOffset)
+                    with(optionArrowPath){
+                        reset();
+                        moveTo(leftPos, yPos); lineTo(leftPos, yPos - triR);
+                        lineTo(rightPos, yPos); lineTo(leftPos, yPos + triR);
+                        lineTo(leftPos, yPos); close()
+                    }
+                    canvas.drawPath(optionArrowPath, paintFill)
+                    canvas.drawPath(optionArrowPath, paintStatusBoxOutline)
+                }
+
+                if(!vshOption.shouldSkip){
+                    canvas.drawText(vshOption.name, optionsRect.left + xTextOffset, yPos, paint, -0.5f)
+                }
+            }
+        }
+    }
+
+    fun updateOptionPopupShape(){
+        optionXOffset = (0.2f).toLerp(optionXOffset, if(isOnOptions) 1.0f else 0.0f)
+        val intrinsicWidth = (d(200f) + padOffset.right)
+        val width = optionXOffset.toLerp(d(-10f), intrinsicWidth)
+        val furtherWidth = optionXOffset.toLerp(intrinsicWidth, d(10f))
+        optionsRect.left = renderableArea.right - width
+        optionsRect.top = -d(20f)
+        optionsRect.bottom = height + d(30f)
+        optionsRect.right = renderableArea.right + furtherWidth
+    }
+
+    fun switchOptionPopupVisibility(){
+        setOptionPopupVisibility(!isOnOptions)
+    }
+
+    private val isSelectionValid : Boolean get() {
+        var retval = false
+        if(selectedX < category.size){
+            retval = selectedY < category[selectedX].items.size
+        }
+        return retval
+    }
+
+    fun setOptionPopupVisibility(shown:Boolean){
+        if(isSelectionValid){
+            isOnOptions = shown && category[selectedX].items[selectedY].hasOptions
+        }
     }
 
     /// endregion
@@ -437,6 +526,9 @@ class VshView : View {
         selectedXf = 0.75f.toLerp(selectedX.toFloat(), selectedXf)
         backgroundAlpha = 0.1f.toLerp(backgroundAlpha, hideMenu.choose(0f, 0.5f))
         frame++
+
+
+        if(frame > Float.MAX_VALUE /2f ) frame = 0f
     }
 
     ///region FPS Meter
@@ -571,10 +663,10 @@ class VshView : View {
             lVerticalItems(canvas)
             lHorizontalMenu(canvas)
         }
-        if(isOnOptions) lOptions(canvas)
         lMediaPlayer(canvas)
         lClock(canvas)
         mLateUpdate()
+        lOptions(canvas)
         if(showFPSMeter) lFPSMeter(canvas)
         if(showDebugInfo) lDebugInfo(canvas)
         frameStart = System.currentTimeMillis()
@@ -587,6 +679,20 @@ class VshView : View {
     /// region Input
     fun setSelection(x:Int, y:Int){
         if(hideMenu) return
+
+        if(isOnOptions && isSelectionValid){
+            val selectedItem = category[selectedX].items[selectedY]
+            val max = selectedItem.options.size -1
+            if(max < 0) return
+
+            val selectedOption = selectedItem.options[optionSelectedIndex]
+
+            optionSelectedIndex = (optionSelectedIndex + y).coerceIn(0, max)
+            while((!selectedOption.enabled || selectedOption.shouldSkip) && optionSelectedIndex < max){
+                optionSelectedIndex = (optionSelectedIndex + y).coerceIn(0, max)
+            }
+            return
+        }
 
         // Set selected icon to be no longer selected and no longer onScreen then Save currently selected icon before changing
         if(x != 0){

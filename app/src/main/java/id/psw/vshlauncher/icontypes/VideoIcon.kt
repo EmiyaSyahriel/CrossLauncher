@@ -2,6 +2,7 @@ package id.psw.vshlauncher.icontypes
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Point
 import android.media.ThumbnailUtils
 import android.net.Uri
 import android.provider.MediaStore
@@ -15,7 +16,7 @@ import java.lang.Exception
 class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : VshY(itemID) {
 
     companion object{
-        var doVideoPreview = true
+        var doVideoPreview = false
         private var corruptedIcon : Bitmap = transparentBitmap
         private var corruptedIconUnselected : Bitmap = transparentBitmap
     }
@@ -32,9 +33,12 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
     private var isValid = false
 
     private var thumbnailVp : VideoView? = null
+    private var videoReady = false
     private var lastPreviewPos = 0
     private var thumbnailStart = 0
     private var thumbnailEnd = 0
+    private var scaledSelectedAlbumArt : Bitmap = transparentBitmap
+    private var scaledUnselectedAlbumArt : Bitmap = transparentBitmap
 
 
     init{
@@ -44,6 +48,7 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
             val fileName = file.name
             val size = file.length().toSize()
             val albumArt = ThumbnailUtils.createVideoThumbnail(file.absolutePath, MediaStore.Video.Thumbnails.MINI_KIND) ?: transparentBitmap
+            bakeAlbumArt(albumArt)
             loadVideoPreview()
             thumbnailStart = 0
             thumbnailEnd = 30000
@@ -54,25 +59,41 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
         }
     }
 
+    private fun arFitCalc(width:Int, height:Int, selected: Boolean): Point {
+        val iconSize = if(selected) selectedIconSize else unselectedIconSize
+        val ratioX = iconSize / width
+        val ratioY = iconSize / height
+        val ratio = if(ratioX < ratioY) ratioX else ratioY
+        val density = vsh.vsh.density
+        return Point((width * ratio * density).toInt(), (height * ratio * density).toInt())
+    }
+
+    private fun bakeAlbumArt(albumArt: Bitmap){
+        val selectedSizePoint = arFitCalc(albumArt.width, albumArt.height, true)
+        val unselectedSizePoint = arFitCalc(albumArt.width, albumArt.height, false)
+        scaledSelectedAlbumArt = albumArt.scale(selectedSizePoint.x, selectedSizePoint.y, false)
+        scaledUnselectedAlbumArt = albumArt.scale(unselectedSizePoint.x, unselectedSizePoint.y, false)
+    }
+
     /**
      * Main getter of video thumbnail
      *
      * TODO: Can be optimized further by caching the canvas and bitmap to variable
      */
     private fun getCurrentVideoBitmap(selected:Boolean = true) : Bitmap{
-        val width = (if(selected) selectedIconSizeWidth else unselectedIconSize).toInt()
-        val height = (if(selected) selectedIconSize else unselectedIconSize).toInt()
+        val width = (if(selected) selectedIconSizeWidth else unselectedIconSize).toInt() * vsh.vsh.density
+        val height = (if(selected) selectedIconSize else unselectedIconSize).toInt()* vsh.vsh.density
         if(doVideoPreview) {
             val tvp = thumbnailVp
             if(tvp != null){
-                val retval = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+                val retval = Bitmap.createBitmap(width.toInt(), height.toInt(), Bitmap.Config.ARGB_8888)
                 val retCan = Canvas(retval)
                 tvp.draw(retCan)
                 return retval
             }
         }
 
-        return metadata.albumArt.scale(width, height)
+        return if(selected) scaledSelectedAlbumArt else scaledUnselectedAlbumArt
     }
 
     /**
@@ -83,7 +104,11 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
             val tvp = VideoView(vsh)
             // set it to loop and mute audio since we shouldn't play the audio on preview anyway
             tvp.setOnPreparedListener {
-                with(it) { isLooping = true; setVolume(0f, 0f) }
+                with(it) {
+                    isLooping = true
+                    setVolume(0f, 0f)
+                }
+                videoReady = true
             }
             tvp.setVideoPath(path)
             thumbnailVp = tvp
@@ -105,7 +130,7 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
 
     override fun onScreen() {
         val tvp = thumbnailVp
-        if(tvp != null && doVideoPreview){
+        if(tvp != null && doVideoPreview && videoReady){
             tvp.seekTo(lastPreviewPos)
             tvp.start()
         }
@@ -123,10 +148,10 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
 
     // TODO: Create a small video thumbnail and fix squared aspect ratio problem
     override val selectedIcon: Bitmap
-        get() = metadata.albumArt
+        get() = getCurrentVideoBitmap(true)
 
     override val unselectedIcon: Bitmap
-        get() = metadata.albumArt
+        get() = getCurrentVideoBitmap(false)
 
     override val onLaunch: Runnable
         get() = Runnable {

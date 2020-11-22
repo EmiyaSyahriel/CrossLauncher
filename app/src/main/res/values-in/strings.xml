@@ -81,4 +81,5 @@
     <string name="audio_corrupted">Data suara rusak</string>
     <string name="app_hide_menu">Sembunyikan Menu</string>
     <string name="app_hide_menu_desc">Tap dimana saja untuk membuka lagi menu setelah disembunyikan</string>
+    <string name="xmb_wave_livewp_desc">Live Wallpaper XMB Wave</string>
 </resources>

@@ -116,7 +116,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                     Runnable { setContentView(vsh) }
                 )
                 vshDialog.setButton(arrayListOf(dialogConfirmButton))
-               // prefs.edit().putBoolean(PREF_IS_FIRST_RUN, false).apply()
+                // prefs.edit().putBoolean(PREF_IS_FIRST_RUN, false).apply()
             }else{
                 setContentView(vsh)
             }
@@ -317,7 +317,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         settings.items.add(
             VshSettingIcon(
-            0xd18034, this,
+                0xd18034, this,
                 getString(R.string.setting_gameboot_custom_guide), VshSettingIcon.ICON_ANDROID,
                 { launchURL("https://github.com/EmiyaSyahriel/CrossLauncher#animation-modding" )},
                 { getString(R.string.common_click_here) }
@@ -355,10 +355,10 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         }))
         alert.buttons.add(
             VshDialogView.Button("Cancel",
-            Runnable {
-                setContentView(vsh)
-            }
-        ))
+                Runnable {
+                    setContentView(vsh)
+                }
+            ))
         alert.titleText = "Rebuilding App Database"
         alert.contentText = "Application database will be rebuilt, this launcher will not\nbe usable until it finished."
         alert.iconBitmap = resources.getDrawable(R.drawable.icon_refresh).toBitmap(vsh.d(32),vsh.d(32))
@@ -491,6 +491,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
     fun startApp(packageName: String){
         vsh.mpShow = false
+        vsh.setOptionPopupVisibility(false)
         val intent = packageManager.getLaunchIntentForPackage(packageName)
         if(null != intent){
             if(useGameBoot){
@@ -801,74 +802,92 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         VshView.launchTapArea = launchArea
     }
 
+    private var touchCount = 0
+    private var lastTouchTime = 0L
+    private fun onTouchCountChange(now:Int, last:Int, timeDelta:Long){
+
+        // Switch vsh option when two tap is detected and less than 0.2s difference
+        if(last < now && now == 2 && timeDelta < 100L){
+            vsh.switchOptionPopupVisibility()
+        }
+
+    }
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if(!isOnMenu) return false
 
         var retval = false
+        val lastTouchCount = touchCount
+        val touchTime = System.currentTimeMillis()
+        val timeDelta = touchTime - lastTouchTime
 
-        if(event.pointerCount == 2){
-            if(event.actionMasked == MotionEvent.ACTION_UP){
-                if(!vsh.hideMenu){
-                    vsh.isOnOptions = !vsh.isOnOptions
+        when(event.actionMasked){
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_POINTER_UP ->{
+                isDrag = false
+                directionLock = DIRLOCK_NONE
+
+                touchCount --
+
+                onTouchCountChange(touchCount, lastTouchCount, timeDelta)
+                lastTouchTime = touchTime
+
+                if(touchCurrentPoint.distanceTo(touchStartPoint) < touchSlop){
+
+                    if(vsh.hideMenu) {
+                        // Unhide on tap
+                        vsh.hideMenu = false
+                    }
+                    recalculateChooseRect()
+
+                    if(touchStartPoint in launchArea && !vsh.hideMenu){
+                        vsh.executeCurrentItem()
+                    }
                 }
+                directionLock = DIRLOCK_NONE
+                retval = true
             }
-        }else{
-            when(event.actionMasked){
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_POINTER_UP ->{
-                    isDrag = false
-                    directionLock = DIRLOCK_NONE
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_POINTER_DOWN -> {
+                touchStartPoint.x = event.x
+                touchStartPoint.y = event.y
+                touchCurrentPoint.x = event.x
+                touchCurrentPoint.y = event.y
+                touchDeltaStartPoint.x = event.x
+                touchDeltaStartPoint.y = event.y
+                isDrag = true
+                retval = true
 
-
-                    if(touchCurrentPoint.distanceTo(touchStartPoint) < touchSlop){
-
-                        if(vsh.hideMenu) {
-                            // Unhide on tap
-                            vsh.hideMenu = false
-                        }
-                        recalculateChooseRect()
-
-                        if(touchStartPoint in launchArea && !vsh.hideMenu){
-                            vsh.executeCurrentItem()
-                        }
+                touchCount ++
+                onTouchCountChange(touchCount, lastTouchCount, timeDelta)
+                lastTouchTime = touchTime
+            }
+            MotionEvent.ACTION_MOVE ->{
+                touchCurrentPoint.set(event.x, event.y)
+                val minMove = vsh.d(75f)
+                if(isDrag){
+                    val xLen = touchCurrentPoint.x - touchDeltaStartPoint.x
+                    val yLen = touchCurrentPoint.y - touchDeltaStartPoint.y
+                    if(kotlin.math.abs(xLen) > minMove && directionLock != DIRLOCK_VERTICAL ){
+                        directionLock = DIRLOCK_HORIZONTAL
+                        vsh.setSelection((xLen > 0).choose(-1,1),0)
+                        touchDeltaStartPoint.set(touchCurrentPoint)
+                    }else if(kotlin.math.abs(yLen) > minMove && directionLock != DIRLOCK_HORIZONTAL){
+                        directionLock = DIRLOCK_VERTICAL
+                        val yDir = if(vsh.isOnOptions) (yLen > 0).choose(1,-1) else (yLen > 0).choose(-1, 1)
+                        vsh.setSelection(0,yDir)
+                        touchDeltaStartPoint.set(touchCurrentPoint)
                     }
-                    directionLock = DIRLOCK_NONE
                     retval = true
-                }
-                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_POINTER_DOWN -> {
-                    touchStartPoint.x = event.x
-                    touchStartPoint.y = event.y
-                    touchCurrentPoint.x = event.x
-                    touchCurrentPoint.y = event.y
-                    touchDeltaStartPoint.x = event.x
-                    touchDeltaStartPoint.y = event.y
-                    isDrag = true
-                    retval = true
-                }
-                MotionEvent.ACTION_MOVE ->{
-                    touchCurrentPoint.set(event.x, event.y)
-                    val minMove = vsh.d(75f)
-                    if(isDrag){
-                        val xLen = touchCurrentPoint.x - touchDeltaStartPoint.x
-                        val yLen = touchCurrentPoint.y - touchDeltaStartPoint.y
-                        if(kotlin.math.abs(xLen) > minMove && directionLock != DIRLOCK_VERTICAL ){
-                            directionLock = DIRLOCK_HORIZONTAL
-                            vsh.setSelection((xLen > 0).choose(-1,1),0)
-                            touchDeltaStartPoint.set(touchCurrentPoint)
-                        }else if(kotlin.math.abs(yLen) > minMove && directionLock != DIRLOCK_HORIZONTAL){
-                            directionLock = DIRLOCK_VERTICAL
-                            vsh.setSelection(0,(yLen > 0).choose(-1,1))
-                            touchDeltaStartPoint.set(touchCurrentPoint)
-                        }
-                        retval = true
-                    }
                 }
             }
         }
+
         return retval || super.onTouchEvent(event)
     }
 
     override fun onDialogBack() {
         setContentView(vsh)
+        touchCount = 0
+        lastTouchTime = System.currentTimeMillis()
     }
 
 }

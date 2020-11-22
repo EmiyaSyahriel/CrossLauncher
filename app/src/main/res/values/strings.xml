@@ -79,4 +79,5 @@
     <string name="audio_corrupted">Audio data is corrupted</string>
     <string name="app_hide_menu">Hide Menu</string>
     <string name="app_hide_menu_desc">Tap anywhere to reveal menu once it\'s hidden</string>
+    <string name="xmb_wave_livewp_desc">XMB Wave Live Wallpaper</string>
 </resources>
