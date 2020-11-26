@@ -34,6 +34,8 @@ class VshView : View {
         var showFPSMeter = false
         // Debug only purpose
         var launchTapArea = RectF(0f,0f,0f,0f)
+        // to launch option right in it's location
+        var optionLaunchArea = RectF(0f,0f,0f,0f)
         var customTypeface = Typeface.SANS_SERIF
     }
 
@@ -418,7 +420,7 @@ class VshView : View {
                     centerY += d(30f)
                 }
 
-                // don't render offscreen and set the data to call the onScreen and onHidden
+                // don't render offscreen and set the visibility to call the onScreen and onHidden
                 val isOnScreen = centerY > -icon.height && centerY < height + icon.height
                 data.isCoordinatelyVisible = isOnScreen
                 data.isSelected = isSelected
@@ -444,7 +446,6 @@ class VshView : View {
     }
 
     /// region Options Popup
-    // TODO: Add interaction to the option box (it just pop the box for now)
     var isOnOptions = false
     var optionsRect = RectF(0f,0f,0f,0f)
     var optionSelectedIndex = 0
@@ -481,6 +482,11 @@ class VshView : View {
                     }
                     canvas.drawPath(optionArrowPath, paintFill)
                     canvas.drawPath(optionArrowPath, paintStatusBoxOutline)
+
+                    optionLaunchArea.set(
+                        leftPos, yPos - triR,
+                        renderableArea.right.toFloat(), yPos +triR
+                    )
                 }
 
                 if(!vshOption.shouldSkip){
@@ -495,10 +501,10 @@ class VshView : View {
         val intrinsicWidth = (d(200f) + padOffset.right)
         val width = optionXOffset.toLerp(d(-10f), intrinsicWidth)
         val furtherWidth = optionXOffset.toLerp(intrinsicWidth, d(10f))
-        optionsRect.left = renderableArea.right - width
+        optionsRect.left = this.width - width
         optionsRect.top = -d(20f)
         optionsRect.bottom = height + d(30f)
-        optionsRect.right = renderableArea.right + furtherWidth
+        optionsRect.right = this.width + furtherWidth
     }
 
     fun switchOptionPopupVisibility(){
@@ -739,6 +745,18 @@ class VshView : View {
             try{
                 category[selectedX].items[selectedY].onLaunch.run()
             }catch (ex:Exception){ ex.printStackTrace() }
+        }
+    }
+
+    fun executeCurrentOptionItem(){
+        try{
+            val currentOpt = category[selectedX].items[selectedY].options[optionSelectedIndex]
+            if(currentOpt.enabled){
+                currentOpt.onClick.run()
+                isOnOptions = false
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
         }
     }
 

@@ -2,6 +2,7 @@ package id.psw.vshlauncher.icontypes
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Point
 import android.media.ThumbnailUtils
 import android.net.Uri
@@ -61,9 +62,10 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
 
     private fun arFitCalc(width:Int, height:Int, selected: Boolean): Point {
         val iconSize = if(selected) selectedIconSize else unselectedIconSize
-        val ratioX = iconSize / width
+        val mainAr = width.toFloat() / height
+        val ratioX = (iconSize * 1.89f) / width
         val ratioY = iconSize / height
-        val ratio = if(ratioX < ratioY) ratioX else ratioY
+        val ratio = if(mainAr > 1) ratioX else ratioY
         val density = vsh.vsh.density
         return Point((width * ratio * density).toInt(), (height * ratio * density).toInt())
     }
@@ -88,6 +90,7 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
             if(tvp != null){
                 val retval = Bitmap.createBitmap(width.toInt(), height.toInt(), Bitmap.Config.ARGB_8888)
                 val retCan = Canvas(retval)
+                retCan.drawColor(Color.BLACK)
                 tvp.draw(retCan)
                 return retval
             }

@@ -423,7 +423,11 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 retval = true
             }
             KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER, confirmButton ->{
-                vsh.executeCurrentItem()
+                if(vsh.isOnOptions){
+                    vsh.executeCurrentOptionItem()
+                }else{
+                    vsh.executeCurrentItem()
+                }
                 retval = true
             }
             KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_BUTTON_Y -> {
@@ -481,7 +485,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         vsh.clockAsLoadingIndicator = false
     }
 
-    private fun uninstallApp(packageName: String){
+    fun uninstallApp(packageName: String){
         val intent = Intent(Intent.ACTION_DELETE, Uri.fromParts("package", packageName, null))
         startActivity(intent)
         Timer("Uninstaller", true).schedule(5000){
@@ -804,13 +808,15 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
     private var touchCount = 0
     private var lastTouchTime = 0L
+    private var inputTimer = Timer()
     private fun onTouchCountChange(now:Int, last:Int, timeDelta:Long){
-
         // Switch vsh option when two tap is detected and less than 0.2s difference
         if(last < now && now == 2 && timeDelta < 100L){
             vsh.switchOptionPopupVisibility()
         }
 
+        // Reset touch count after a second
+        inputTimer.schedule(1000L){ touchCount = 0 }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -839,8 +845,14 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                     }
                     recalculateChooseRect()
 
-                    if(touchStartPoint in launchArea && !vsh.hideMenu){
-                        vsh.executeCurrentItem()
+                    if(vsh.isOnOptions){
+                        if(touchStartPoint in VshView.optionLaunchArea && !vsh.hideMenu){
+                            vsh.executeCurrentOptionItem()
+                        }
+                    }else{
+                        if(touchStartPoint in launchArea && !vsh.hideMenu){
+                            vsh.executeCurrentItem()
+                        }
                     }
                 }
                 directionLock = DIRLOCK_NONE
