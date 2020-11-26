@@ -16,9 +16,7 @@ lot of apps to navigate.
 |-------------------|----------|-----------|----------|------------------|
 | Navigate Items    | Arrow Pad| D-Pad     | D-Pad    | Swipe            |
 | Execute Item      | Enter    | X/O       | A/B      | Icon touch       |
-| Hide/Show Options*| Menu/Tab | Triangle  | Y        | Two-finger Touch |
-
-*Not yet available
+| Hide/Show Options | Menu/Tab | Triangle  | Y        | Two-finger Touch |
 
 ## TV Installation
 **Warning: This launcher isn't ready to be used on TV yet, use at your own risk**
@@ -47,7 +45,7 @@ On my test devices, Base memory usage (without items) is about 10MB.
 With about 500Kb~1MB per item since icons will be cached in memory.
 
 18/11/2020: Icon bitmap loading is more dynamic now, but possibly caused hiccups when
-an icon is drawn on screen
+an icon is first drawn on screen after hidden before
 
 ## Screenshots
 ![Apps list screenshot](readme_asset/ss_apl.png)
@@ -71,6 +69,7 @@ Video Player
 - [ ] PS3-like Dialogs
   - [x] Preliminary state
 - [ ] Item Options (Just like when you press Triangle on PS3)
+  - [x] Preliminary state
 - [ ] Item Hiding
 - [ ] Open video file with default apps
 - [ ] Using a custom icon and custom BGM

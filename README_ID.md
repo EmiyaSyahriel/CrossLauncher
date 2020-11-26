@@ -16,9 +16,7 @@ lebih untuk navigasinya.
 |-------------------|------------|-----------|----------|------------------|
 | Memilah Item      |Tombol Arah | Arah      | Arah     | Geser            |
 | Membuka Item      | Enter      | X/O       | A/B      | Sentuh pada ikon |
-| Opsi*             | Menu/Tab   | Segitiga  | Y        | Sentuh dua jari  |
-
-*Belum sempurna
+| Opsi              | Menu/Tab   | Segitiga  | Y        | Sentuh dua jari  |
 
 ## Penggunaan di TV
 **Perhatian: Peluncur ini masih belum siap untk dipakai secara default di TV, resiko ditanggung sendiri.**
@@ -72,6 +70,7 @@ Pemain Video
 - [ ] Layar Dialog seperti XMB
   - [x] Masih tahap awal
 - [ ] Opsi Item (Segitiga di PS3)
+  - [x] Masih tahap awal
 - [ ] Menyembunyikan Item
 - [ ] Buka video dengan aplikasi default
 - [ ] Bisa memuat ikon dan BGM kustom
