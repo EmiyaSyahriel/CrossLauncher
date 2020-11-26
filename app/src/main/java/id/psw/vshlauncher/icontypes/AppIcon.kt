@@ -6,9 +6,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
-import id.psw.vshlauncher.VSH
-import id.psw.vshlauncher.VshY
-import id.psw.vshlauncher.toSize
+import id.psw.vshlauncher.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
@@ -135,9 +133,7 @@ class AppIcon(private var context: VSH, itemID: Int, private var resolveInfo: Re
 
     private fun openOnPlayStore(){
         try{
-            val i = Intent(Intent.ACTION_VIEW)
-            i.data = Uri.parse("http://play.google.com/store/apps/details?id=${packageName}")
-            context.startActivity(i)
+            context.launchURL("http://play.google.com/store/apps/details?id=${packageName}")
         }catch (e:Exception){
             Toast.makeText(context, "Cannot open play store for the specified application", Toast.LENGTH_LONG).show()
         }

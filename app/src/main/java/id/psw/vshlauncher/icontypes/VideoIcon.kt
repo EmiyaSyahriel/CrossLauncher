@@ -7,6 +7,7 @@ import android.graphics.Point
 import android.media.ThumbnailUtils
 import android.net.Uri
 import android.provider.MediaStore
+import android.widget.Toast
 import android.widget.VideoView
 import androidx.core.graphics.scale
 import id.psw.vshlauncher.*
@@ -53,6 +54,7 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
             loadVideoPreview()
             thumbnailStart = 0
             thumbnailEnd = 30000
+            isValid=true
             VideoMetadata(itemID, file, fileName, size, albumArt)
         }catch(e:Exception){
             e.printStackTrace()
@@ -161,6 +163,8 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
             if(isValid){
                 val uri = Uri.withAppendedPath(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, metadata.id.toString())
                 vsh.openVideoFile(metadata.file!!)
+            }else{
+                Toast.makeText(vsh, "Invalid video file", Toast.LENGTH_LONG).show()
             }
         }
 

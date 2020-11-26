@@ -278,14 +278,6 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         return if(this) getString(R.string.common_yes) else getString(R.string.common_no)
     }
 
-    private fun launchURL(url:String){
-        try{
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-        }catch(e: PackageManager.NameNotFoundException){
-            Toast.makeText(this, "No default browser found in device.", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     private fun populateSettingSections(){
         val settings = vsh.findById("SETT") ?: return
 
@@ -349,8 +341,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         val alert = VshDialogView(this)
         alert.buttons.clear()
         alert.buttons.add(VshDialogView.Button("OK", Runnable {
-            val thread = Thread(Runnable { loadApps() })
-            thread.start()
+            val thread = runOnOtherThread { loadApps() }
             setContentView(vsh)
         }))
         alert.buttons.add(
@@ -485,11 +476,11 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         vsh.clockAsLoadingIndicator = false
     }
 
-    fun uninstallApp(packageName: String){
-        val intent = Intent(Intent.ACTION_DELETE, Uri.fromParts("package", packageName, null))
-        startActivity(intent)
-        Timer("Uninstaller", true).schedule(5000){
-            Thread(Runnable {loadApps()}).start()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when(requestCode){
+            // Reload when uninstall is requested
+            UNINSTALL_REQ_CODE -> if(resultCode == RESULT_OK) runOnOtherThread { loadApps() }
         }
     }
 
