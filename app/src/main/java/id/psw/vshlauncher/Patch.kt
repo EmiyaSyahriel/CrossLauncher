@@ -3,6 +3,12 @@ package id.psw.vshlauncher
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
+import android.os.Handler
+import android.os.HandlerThread
+import android.view.PixelCopy
+import android.widget.VideoView
+import java.lang.Exception
+import java.lang.Integer.parseInt
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -71,4 +77,27 @@ fun Bitmap.getDominantColorMean(alsoCalculateAlpha:Boolean = false):Int{
 
     val finalAlpha = if(alsoCalculateAlpha) a / validPixels else 255
     return Color.argb(finalAlpha,r/validPixels,g/validPixels,b/validPixels)
+}
+
+fun VideoView.getFrame(width:Int, height:Int, callback: (Bitmap?) -> Unit){
+    val bitmap : Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+    try{
+        val ht = HandlerThread("")
+
+    }catch(e:Exception){}
+}
+
+fun String.hexColorToInt():Int{
+    if(this.length <= 8) throw IllegalArgumentException("Please use #AARRGGBB hex format, e.g #FF00FF00 for opaque green")
+    if(this[0] != '#') throw IllegalArgumentException("Use # prefix please")
+    val bd = StringBuilder(2)
+    bd.clear().append(this[1]).append(this[2])
+    val aa = parseInt(bd.toString(), 16)
+    bd.clear().append(this[3]).append(this[4])
+    val rr = parseInt(bd.toString(), 16)
+    bd.clear().append(this[5]).append(this[6])
+    val gg = parseInt(bd.toString(), 16)
+    bd.clear().append(this[7]).append(this[8])
+    val bb = parseInt(bd.toString(), 16)
+    return Color.argb(aa,rr,gg,bb)
 }

@@ -25,7 +25,7 @@ import kotlin.math.roundToInt
  */
 class VshView : View {
 
-    companion object{
+    companion object {
         const val Deg2Rad = PI / 180f
         const val Rad2Deg = 180f / PI
         var padding = RectF(0f,0f,0f,0f)
@@ -37,6 +37,11 @@ class VshView : View {
         // to launch option right in it's location
         var optionLaunchArea = RectF(0f,0f,0f,0f)
         var customTypeface = Typeface.SANS_SERIF
+        var deltaTime = 0.016f
+        var hideClock = false
+        var descriptionSeparator = false
+        var menuBackgroundColor = Color.argb(32,0,0,0)
+        val alphaColor = Color.argb(0,0,0,0)
     }
 
     /// region Variable
@@ -309,6 +314,7 @@ class VshView : View {
 
     //TODO: update this function to support both PS3-style and PSP-style XMB clock
     private fun lClock(canvas: Canvas){
+        if(hideClock) return
         if(clockExpandInfo != lastClockExpandInfo || lastWidth != width || lastHeight != height || expandInfoClipRect.isEmpty){
             recalculateClockRect()
         }
@@ -430,7 +436,7 @@ class VshView : View {
                     val y = screenY + (icon.height / 2f)
                     canvas.drawBitmap(icon, pivotX - (icon.width / 2f), screenY, iconPaint)
                     if(data.hasDescription){
-                        if(isSelected && usePspStyle){
+                        if(isSelected && descriptionSeparator){
                             canvas.drawLine(x, y, width * 1f, y, paintStatusBoxOutline)
                         }
                         canvas.drawText(data.name, x, y - sd(2f), textPaint)
@@ -522,6 +528,9 @@ class VshView : View {
     fun setOptionPopupVisibility(shown:Boolean){
         if(isSelectionValid){
             isOnOptions = shown && category[selectedX].items[selectedY].hasOptions
+
+            // reset option position when the item opens up
+            if(isOnOptions) optionSelectedIndex = 0
         }
     }
 
@@ -530,7 +539,7 @@ class VshView : View {
     private fun mUpdate(){
         selectedYf = 0.75f.toLerp(selectedY.toFloat(), selectedYf)
         selectedXf = 0.75f.toLerp(selectedX.toFloat(), selectedXf)
-        backgroundAlpha = 0.1f.toLerp(backgroundAlpha, hideMenu.choose(0f, 0.5f))
+        backgroundAlpha = 0.1f.toLerp(backgroundAlpha, hideMenu.choose(0f, 1f))
         frame++
 
 
@@ -547,6 +556,8 @@ class VshView : View {
             fpsRect.right = sd(200f)
             fpsRect.bottom = fpsRect.top + sd(25f)
         }
+
+        deltaTime = ms / 1000f
 
         val fps = (1000f / ms).roundToInt()
         canvas.drawRoundRect(fpsRect, 10f,10f,paintStatusBoxFill)
@@ -664,7 +675,8 @@ class VshView : View {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         mUpdate()
-        canvas.drawColor(Color.argb((255 * backgroundAlpha).floorToInt(),0,0,0))
+        val backgroundColor = backgroundAlpha.toLerpColor(alphaColor, menuBackgroundColor)
+        canvas.drawColor(backgroundColor)
         if(!hideMenu){
             lVerticalItems(canvas)
             lHorizontalMenu(canvas)

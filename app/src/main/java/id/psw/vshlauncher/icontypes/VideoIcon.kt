@@ -1,21 +1,24 @@
 package id.psw.vshlauncher.icontypes
 
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Point
+import android.graphics.SurfaceTexture
+import android.media.MediaMetadataRetriever
+import android.media.MediaPlayer
 import android.media.ThumbnailUtils
 import android.net.Uri
 import android.provider.MediaStore
+import android.view.Surface
+import android.view.SurfaceView
+import android.view.TextureView
 import android.widget.Toast
-import android.widget.VideoView
 import androidx.core.graphics.scale
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.views.VshView
 import java.io.File
 import java.lang.Exception
 
-// TODO : fix cursor is mostly null when created this icon, causing the icon appear corrupted
-class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : VshY(itemID) {
+class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : VshY(itemID), TextureView.SurfaceTextureListener {
 
     companion object{
         var doVideoPreview = false
@@ -34,14 +37,21 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
     private var metadata : VideoMetadata
     private var isValid = false
 
-    private var thumbnailVp : VideoView? = null
     private var videoReady = false
-    private var lastPreviewPos = 0
-    private var thumbnailStart = 0
-    private var thumbnailEnd = 0
+    private var currentTime = 0f
+    private var isPaused = false
+    private var thumbnailStart = 0f
+    private var thumbnailEnd = 10f
+    private var fps = 30
+
+    private var mp = MediaPlayer()
+    private var texView = TextureView(vsh)
+    private var srView = SurfaceView(vsh)
+    private var surface : Surface? = null
+
     private var scaledSelectedAlbumArt : Bitmap = transparentBitmap
     private var scaledUnselectedAlbumArt : Bitmap = transparentBitmap
-
+    private var currentVideoBitmap : Bitmap = transparentBitmap
 
     init{
         loadCorruptedIcon()
@@ -51,9 +61,9 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
             val size = file.length().toSize()
             val albumArt = ThumbnailUtils.createVideoThumbnail(file.absolutePath, MediaStore.Video.Thumbnails.MINI_KIND) ?: transparentBitmap
             bakeAlbumArt(albumArt)
-            loadVideoPreview()
-            thumbnailStart = 0
-            thumbnailEnd = 30000
+            thumbnailStart = 0f
+            thumbnailEnd = 10f
+            startGrabberThread()
             isValid=true
             VideoMetadata(itemID, file, fileName, size, albumArt)
         }catch(e:Exception){
@@ -85,59 +95,45 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
      * TODO: Can be optimized further by caching the canvas and bitmap to variable
      */
     private fun getCurrentVideoBitmap(selected:Boolean = true) : Bitmap{
+
         val width = (if(selected) selectedIconSizeWidth else unselectedIconSize).toInt() * vsh.vsh.density
         val height = (if(selected) selectedIconSize else unselectedIconSize).toInt()* vsh.vsh.density
         if(doVideoPreview) {
-            val tvp = thumbnailVp
-            if(tvp != null){
-                val retval = Bitmap.createBitmap(width.toInt(), height.toInt(), Bitmap.Config.ARGB_8888)
-                val retCan = Canvas(retval)
-                retCan.drawColor(Color.BLACK)
-                tvp.draw(retCan)
-                return retval
-            }
+            currentTime += VshView.deltaTime
+            if(currentTime >= thumbnailEnd) currentTime = thumbnailStart
+            return currentVideoBitmap
         }
-
         return if(selected) scaledSelectedAlbumArt else scaledUnselectedAlbumArt
     }
 
-    /**
-     * Load video preview of the view in case user do set it to true
-     */
-    private fun loadVideoPreview(){
-        if(doVideoPreview){
-            val tvp = VideoView(vsh)
-            // set it to loop and mute audio since we shouldn't play the audio on preview anyway
-            tvp.setOnPreparedListener {
-                with(it) {
-                    isLooping = true
-                    setVolume(0f, 0f)
-                }
-                videoReady = true
-            }
-            tvp.setVideoPath(path)
-            thumbnailVp = tvp
-        }
+    override fun onSurfaceTextureAvailable(surface: SurfaceTexture?, width: Int, height: Int) {
+        this.surface = Surface(surface)
     }
+
+    override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {  }
+
+    override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean = false
+
+    override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) { this.surface = Surface(surface) }
 
     /**
      * Pause the video player if
      */
     override fun onHidden() {
-        val tvp = thumbnailVp
-        if(tvp != null && doVideoPreview){
-            if(tvp.canPause()){
-                lastPreviewPos = tvp.currentPosition
-                tvp.pause()
-            }
-        }
+        isPaused = true
     }
 
     override fun onScreen() {
-        val tvp = thumbnailVp
-        if(tvp != null && doVideoPreview && videoReady){
-            tvp.seekTo(lastPreviewPos)
-            tvp.start()
+        isPaused = false
+    }
+
+    private fun startGrabberThread(){
+        if(doVideoPreview){
+            mp.setDataSource(path)
+            mp.setSurface(surface)
+            texView.surfaceTextureListener = this
+            mp.isLooping = true
+            mp.setOnPreparedListener { mp.start() }
         }
     }
 
@@ -151,7 +147,7 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
         }
     }
 
-    // TODO: Create a small video thumbnail and fix squared aspect ratio problem
+    // TODO: Create a small video thumbnail
     override val selectedIcon: Bitmap
         get() = getCurrentVideoBitmap(true)
 

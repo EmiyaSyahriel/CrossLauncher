@@ -67,6 +67,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         const val PREF_USE_GAMEBOOT = "xmb_USE_GAMEBOOT"
         const val PREF_DYNAMIC_TWINKLE = "xmb_DYNAMIC_P3T"
         const val PREF_IS_FIRST_RUN = "xmb_not_new_user"
+        const val PREF_BACKGROUND_COLOR = "xmb_menu_backgroundColor"
     }
 
     private var returnFromGameboot = false
@@ -195,6 +196,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         scrOrientation = prefs.getInt(PREF_ORIENTATION_KEY, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
         useGameBoot = prefs.getBoolean(PREF_USE_GAMEBOOT, true)
         dynamicThemeTwinkles = prefs.getBoolean(PREF_DYNAMIC_TWINKLE, true)
+        VshView.menuBackgroundColor = prefs.getInt(PREF_BACKGROUND_COLOR, Color.argb(0,0,0,0))
     }
 
     private fun checkFileReadWritePermission(){
@@ -309,7 +311,34 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         settings.items.add(
             VshSettingIcon(
-                0xd18034, this,
+                0xd1805, this,
+                "Set Menu Background Color", VshSettingIcon.ICON_ANDROID,
+                { showBackgroundColorDialog() },
+                { "Menu background (hidden when menu is hidden)" }
+            )
+        )
+
+        settings.items.add(
+            VshSettingIcon(
+                0xd1806, this,
+                "Hide Clock Bar", VshSettingIcon.ICON_ANDROID,
+                { VshView.hideClock = !VshView.hideClock },
+                { VshView.hideClock.toLocalizedString() }
+            )
+        )
+
+        settings.items.add(
+            VshSettingIcon(
+                0xd1807, this,
+                "Show Description Separator", VshSettingIcon.ICON_ANDROID,
+                { VshView.descriptionSeparator = !VshView.descriptionSeparator },
+                { VshView.descriptionSeparator.toLocalizedString() }
+            )
+        )
+
+        settings.items.add(
+            VshSettingIcon(
+                0xd1808, this,
                 getString(R.string.setting_gameboot_custom_guide), VshSettingIcon.ICON_ANDROID,
                 { launchURL("https://github.com/EmiyaSyahriel/CrossLauncher#animation-modding" )},
                 { getString(R.string.common_click_here) }
@@ -394,7 +423,6 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if(!isOnMenu) return false
         var retval = false
-        val confirmButton = xMarksTheSpot.choose(KeyEvent.KEYCODE_BUTTON_A, KeyEvent.KEYCODE_BUTTON_B)
 
         when(keyCode){
             KeyEvent.KEYCODE_DPAD_UP -> {
@@ -413,13 +441,20 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 vsh.setSelection(1,0)
                 retval = true
             }
-            KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER, confirmButton ->{
+            KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER, mimickedConfirmButton ->{
                 if(vsh.isOnOptions){
                     vsh.executeCurrentOptionItem()
                 }else{
                     vsh.executeCurrentItem()
                 }
                 retval = true
+            }
+            KeyEvent.KEYCODE_DEL, mimickedCancelButton ->{
+                if(vsh.isOnOptions){
+                    vsh.switchOptionPopupVisibility()
+                }else{
+                    vsh.hideMenu = !vsh.hideMenu
+                }
             }
             KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_BUTTON_Y -> {
                 vsh.isOnOptions = !vsh.isOnOptions
@@ -437,7 +472,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                         if(yIndex < 0) yIndex = vsh.selectedY
                         vsh.setSelectionAbs(vsh.selectedX, yIndex)
                     }
-                }catch (e:java.lang.Exception){}
+                }catch (e : Exception){}
             }
         }
         return retval || super.onKeyDown(keyCode, event)
@@ -612,7 +647,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         try{
             startActivity(intent)
             overridePendingTransition(R.anim.anim_ps3_zoomfadein, R.anim.anim_ps3_zoomfadeout)
-        }catch (e:java.lang.Exception){
+        }catch (e: Exception){
             Toast.makeText(this, "This video type is not supported", Toast.LENGTH_SHORT).show()
         }
     }
