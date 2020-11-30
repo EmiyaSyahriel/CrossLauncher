@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/background">
+        <nine-patch android:src="@drawable/notif_miptex_progressbar"/>
+    </item>
+    <item android:id="@android:id/progress">
+        <clip>
+            <nine-patch android:src="@drawable/notif_miptex_progressbar_value"/>
+        </clip>
+    </item>
+</layer-list>

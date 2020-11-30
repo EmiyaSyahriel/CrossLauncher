@@ -469,7 +469,7 @@ class VshView : View {
             val options = category[selectedX].items[selectedY].options
             paintTextSelected.getTextBounds("M",0,1, optionTextBound)
             val charHeight = optionTextBound.height() * 1.5f
-            val yOffset = (optionsRect.height() / 2f) + (options.size * -charHeight)
+            val yOffset = (optionsRect.height() / 2f) + ((options.size * -charHeight)  /2f)
             val xTextOffset = optionTextBound.width() * 2
             options.forEachIndexed { index, vshOption ->
                 val isSelected = index == optionSelectedIndex

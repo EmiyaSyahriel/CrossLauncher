@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.VshY
 
-class VshSettingIcon(
+open class VshSettingIcon(
     itemID: Int,
     private var context: Context,
     name: String,

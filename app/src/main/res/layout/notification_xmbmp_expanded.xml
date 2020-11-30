@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="128dp"
+    android:background="@drawable/notif_miptext_bg"
+    android:padding="6dp">
+
+    <ImageView
+        android:id="@+id/mp_albumart"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/notif_miptext_bg" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0"
+        android:orientation="vertical"
+        android:padding="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/mp_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="10"
+                android:text="贐の鳥　（アイドルマスターミリオンライブアニメスぺシアル）" />
+
+            <TextView
+                android:id="@+id/mp_currentTime"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:maxLines="2"
+                android:text="00:00 / 00:00"
+                android:textAlignment="viewEnd"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/mp_metadata"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:ellipsize="end"
+            android:shadowColor="#FFFFFF"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="10"
+            android:text="iDOLMASTER MILLION LIVE MASTER 10 - D/Zeal"
+            android:textSize="12sp" />
+
+        <ProgressBar
+            android:id="@+id/mp_timebar"
+            style="@style/XmbProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:indeterminate="false"
+            android:progress="25" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/mp_btn_prev"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/notif_miptext_prev" />
+
+            <ImageButton
+                android:id="@+id/mp_btn_fbwd"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/notif_miptext_fbwd" />
+
+            <ImageButton
+                android:id="@+id/mp_btn_stop"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/notif_miptext_stop" />
+
+            <ImageButton
+                android:id="@+id/mp_btn_play"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/notif_miptext_play" />
+
+            <ImageButton
+                android:id="@+id/mp_btn_info"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/notif_miptext_display" />
+
+            <ImageButton
+                android:id="@+id/mp_btn_ffwd"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/notif_miptext_ffwd" />
+
+            <ImageButton
+                android:id="@+id/mp_btn_next"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/notif_miptext_next" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

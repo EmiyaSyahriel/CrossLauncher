@@ -4,16 +4,11 @@
     package="id.psw.vshlauncher">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
-    <!-- Needed for the app to uninstall packages -->
-    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
-
-    <!-- Tell if touchscreen can be used but is not required -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Needed for the app to uninstall packages -->
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" /> <!-- Tell if touchscreen can be used but is not required -->
     <uses-feature
         android:name="android.software.leanback"
-        android:required="false" />
-    <!-- Tell if touchscreen can be used but is not required -->
+        android:required="false" /> <!-- Tell if touchscreen can be used but is not required -->
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
@@ -29,11 +24,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
+        <activity android:name=".mediaplayer.XMBAudioPlayer"></activity>
+
         <service
             android:name=".mediaplayer.XMBAudioPlayerService"
             android:enabled="true"
-            android:exported="true"/>
-        <!-- Some attribute is unused on older version of Android, most of them were safe to ignore -->
+            android:exported="true" /> <!-- Some attribute is unused on older version of Android, most of them were safe to ignore -->
         <activity
             android:name=".mediaplayer.XMBVideoPlayer"
             android:configChanges="keyboardHidden|keyboard|orientation|screenSize"

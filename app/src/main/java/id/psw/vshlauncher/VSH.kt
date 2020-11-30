@@ -26,10 +26,8 @@ import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.contains
-import id.psw.vshlauncher.icontypes.AppIcon
-import id.psw.vshlauncher.icontypes.SongIcon
-import id.psw.vshlauncher.icontypes.VideoIcon
-import id.psw.vshlauncher.icontypes.VshSettingIcon
+import id.psw.vshlauncher.icontypes.*
+import id.psw.vshlauncher.mediaplayer.AudioPlayerSvcConnection
 import id.psw.vshlauncher.mediaplayer.XMBVideoPlayer
 import id.psw.vshlauncher.views.VshColdBoot
 import id.psw.vshlauncher.views.VshDialogView
@@ -68,6 +66,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         const val PREF_DYNAMIC_TWINKLE = "xmb_DYNAMIC_P3T"
         const val PREF_IS_FIRST_RUN = "xmb_not_new_user"
         const val PREF_BACKGROUND_COLOR = "xmb_menu_backgroundColor"
+        const val PREF_HIDE_CLOCK = "xmb_hideClock"
+        const val PREF_SHOW_SEPARATOR = "xmb_showSeparator"
     }
 
     private var returnFromGameboot = false
@@ -81,6 +81,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     private var appListerThread : Thread = Thread()
     var scrOrientation : Int = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
     private var isOnMenu = false
+    var audioPlayerConnector = AudioPlayerSvcConnection()
 
     private val mimickedConfirmButton : Int
         get() {
@@ -117,7 +118,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                     Runnable { setContentView(vsh) }
                 )
                 vshDialog.setButton(arrayListOf(dialogConfirmButton))
-                // prefs.edit().putBoolean(PREF_IS_FIRST_RUN, false).apply()
+                prefs.edit().putBoolean(PREF_IS_FIRST_RUN, false).apply()
             }else{
                 setContentView(vsh)
             }
@@ -197,6 +198,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         useGameBoot = prefs.getBoolean(PREF_USE_GAMEBOOT, true)
         dynamicThemeTwinkles = prefs.getBoolean(PREF_DYNAMIC_TWINKLE, true)
         VshView.menuBackgroundColor = prefs.getInt(PREF_BACKGROUND_COLOR, Color.argb(0,0,0,0))
+        VshView.hideClock = prefs.getBoolean(PREF_HIDE_CLOCK, false)
+        VshView.descriptionSeparator = prefs.getBoolean(PREF_SHOW_SEPARATOR, false)
     }
 
     private fun checkFileReadWritePermission(){
@@ -253,26 +256,58 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
     private fun switchOrientation(){
         scrOrientation = when(scrOrientation){
-            ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT -> {ActivityInfo.SCREEN_ORIENTATION_USER}
-            ActivityInfo.SCREEN_ORIENTATION_USER -> {ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE}
-            ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE -> {ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT}
-            else -> {ActivityInfo.SCREEN_ORIENTATION_USER}
+            ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_USER
+            ActivityInfo.SCREEN_ORIENTATION_USER -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+            else -> ActivityInfo.SCREEN_ORIENTATION_USER
         }
+        requestedOrientation = scrOrientation
+        prefs.edit().putInt(PREF_ORIENTATION_KEY, scrOrientation).apply()
+    }
+
+    private fun setCurrentOrientation(orientation:Int){
+        try{
+            scrOrientation = orientation
+            requestedOrientation = scrOrientation
+            prefs.edit().putInt(PREF_ORIENTATION_KEY, scrOrientation).apply()
+        }catch(e:Exception){
+            toast(e.message)
+        }
+    }
+
+    private fun toast(string:String?, long:Boolean = false){
+        Toast
+            .makeText(this, string, long.choose(Toast.LENGTH_LONG,Toast.LENGTH_SHORT))
+            .show()
     }
 
     private fun getOrientationName() : String{
         return getString(orientationName[requestedOrientation] ?: R.string.orient_unknown)
     }
 
+    private fun getOrientationName(id:Int):String{
+        return getString(orientationName[id] ?: R.string.orient_unknown)
+    }
+
     ///endregion
 
-    private fun switchGameBoot(){
+    private fun setGameBoot(){
         useGameBoot = !useGameBoot
         prefs.edit().putBoolean(PREF_USE_GAMEBOOT, useGameBoot).apply()
     }
 
-    private fun switchTwinkles(){
+    private fun setGameBoot(active:Boolean){
+        useGameBoot = active
+        prefs.edit().putBoolean(PREF_USE_GAMEBOOT, useGameBoot).apply()
+    }
+
+    private fun setTwinkles(){
         dynamicThemeTwinkles = !dynamicThemeTwinkles
+        prefs.edit().putBoolean(PREF_DYNAMIC_TWINKLE, useGameBoot).apply()
+    }
+
+    private fun setTwinkles(active:Boolean){
+        dynamicThemeTwinkles = active
         prefs.edit().putBoolean(PREF_DYNAMIC_TWINKLE, useGameBoot).apply()
     }
 
@@ -283,56 +318,88 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     private fun populateSettingSections(){
         val settings = vsh.findById("SETT") ?: return
 
+        val y = true.toLocalizedString()
+        val n = false.toLocalizedString()
+
         // Orientation
         settings.items.add(
-            VshSettingIcon(
+            VshOptionedSettingIcon(
                 0xd1802, this, getString(R.string.item_orientation), VshSettingIcon.DEVICE_ORIENTATION,
-                { switchOrientation() }, { getOrientationName() } )
+                { switchOrientation() }, { getOrientationName() },
+                { VshY.VshOptionsBuilder()
+                        .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_USER)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_USER) }
+                        .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT) }
+                        .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE) }
+                        .build() }
+            )
         )
 
         setOrientation(prefs.getInt(PREF_ORIENTATION_KEY, ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE))
 
         // Game Boot
-        settings.items.add(VshSettingIcon(
+        settings.items.add(VshOptionedSettingIcon(
             0xd1803, this,
             getString(R.string.setting_show_gameboot),
             VshSettingIcon.ICON_ANDROID,
-            { switchGameBoot() },
-            { useGameBoot.toLocalizedString() }
+            { setGameBoot() },
+            { useGameBoot.toLocalizedString() },
+            {
+                VshY.VshOptionsBuilder()
+                    .add(y){ setGameBoot(true) }
+                    .add(n){ setGameBoot(false) }
+                    .build()
+            }
         ))
 
         // Dynamic Twinkle Icon
-        settings.items.add(VshSettingIcon(
+        settings.items.add(VshOptionedSettingIcon(
             0xd1804, this,
             getString(R.string.setting_mimic_dynamic_theme),VshSettingIcon.ICON_STAR,
-            { switchTwinkles() },
-            { dynamicThemeTwinkles.toLocalizedString() }
+            { setTwinkles() },
+            { dynamicThemeTwinkles.toLocalizedString() },
+            {
+                VshY.VshOptionsBuilder()
+                    .add(y){ setTwinkles(true) }
+                    .add(n){ setTwinkles(false) }
+                    .build()
+            }
         ))
 
         settings.items.add(
-            VshSettingIcon(
+            VshOptionedSettingIcon(
                 0xd1805, this,
                 "Set Menu Background Color", VshSettingIcon.ICON_ANDROID,
                 { showBackgroundColorDialog() },
-                { "Menu background (hidden when menu is hidden)" }
+                { "Menu background (hidden when menu is hidden)" },
+                { preMadeColors.build() }
             )
         )
 
         settings.items.add(
-            VshSettingIcon(
+            VshOptionedSettingIcon(
                 0xd1806, this,
                 "Hide Clock Bar", VshSettingIcon.ICON_ANDROID,
-                { VshView.hideClock = !VshView.hideClock },
-                { VshView.hideClock.toLocalizedString() }
+                { setHiddenClock() },
+                { VshView.hideClock.toLocalizedString() },
+                { VshY.VshOptionsBuilder()
+                    .add(y){ setHiddenClock(true) }
+                    .add(n){ setHiddenClock(false) }
+                    .build() }
             )
         )
 
         settings.items.add(
-            VshSettingIcon(
+            VshOptionedSettingIcon(
                 0xd1807, this,
                 "Show Description Separator", VshSettingIcon.ICON_ANDROID,
-                { VshView.descriptionSeparator = !VshView.descriptionSeparator },
-                { VshView.descriptionSeparator.toLocalizedString() }
+                { setSeparatorLine() },
+                { VshView.descriptionSeparator.toLocalizedString() },
+                {
+                    VshY.VshOptionsBuilder()
+                        .add(y){ setSeparatorLine(true) }
+                        .add(n){ setSeparatorLine(false) }
+                        .build()
+                }
             )
         )
 
@@ -457,7 +524,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 }
             }
             KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_BUTTON_Y -> {
-                vsh.isOnOptions = !vsh.isOnOptions
+                vsh.switchOptionPopupVisibility()
                 retval = true
             }
         }

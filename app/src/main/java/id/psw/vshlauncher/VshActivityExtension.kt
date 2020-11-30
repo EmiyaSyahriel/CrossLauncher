@@ -1,8 +1,10 @@
 package id.psw.vshlauncher
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.text.Editable
 import android.text.InputType
@@ -10,6 +12,7 @@ import android.text.method.DigitsKeyListener
 import android.widget.EditText
 import android.widget.Toast
 import id.psw.vshlauncher.customtypes.HexInputFilter
+import id.psw.vshlauncher.mediaplayer.XMBAudioPlayerService
 import id.psw.vshlauncher.views.VshView
 
 /**
@@ -73,4 +76,34 @@ fun VSH.showBackgroundColorDialog(){
         .setTitle("Set Menu Background Color")
         .create()
         .show()
+}
+
+fun VSH.setHiddenClock(boolean: Boolean){ VshView.hideClock = boolean; prefs.edit().putBoolean(VSH.PREF_HIDE_CLOCK, boolean).apply() }
+fun VSH.setHiddenClock(){ setHiddenClock(!VshView.hideClock) }
+
+fun VSH.setSeparatorLine(boolean: Boolean){ VshView.descriptionSeparator = boolean; prefs.edit().putBoolean(VSH.PREF_SHOW_SEPARATOR, boolean).apply() }
+fun VSH.setSeparatorLine(){ setSeparatorLine( !VshView.descriptionSeparator) }
+
+fun VSH.setBackgroundColor(a:Int,r:Int,g:Int,b:Int){
+    val fColor = Color.argb(a,r,g,b)
+    VshView.menuBackgroundColor = fColor
+    prefs.edit().putInt(VSH.PREF_BACKGROUND_COLOR, VshView.menuBackgroundColor).apply()
+}
+
+val VSH.preMadeColors : VshY.VshOptionsBuilder
+    get() = VshY.VshOptionsBuilder()
+        .add("Clear"){          setBackgroundColor(   0, 255, 255, 255)}
+        .add("50% Red"){        setBackgroundColor( 128, 255,   0,   0)}
+        .add("50% Green"){      setBackgroundColor( 128,   0, 255,   0)}
+        .add("50% Blue"){       setBackgroundColor( 128,   0,   0, 255)}
+        .add("50% Black"){      setBackgroundColor( 128,   0,   0,   0)}
+        .add("50% White"){      setBackgroundColor( 128, 255, 255, 255)}
+        .add("Opaque Red"){     setBackgroundColor( 255, 255,   0,   0)}
+        .add("Opaque Green"){   setBackgroundColor( 255,   0, 255,   0)}
+        .add("Opaque Blue"){    setBackgroundColor( 255,   0,   0, 255)}
+        .add("Opaque Black"){   setBackgroundColor( 255,   0,   0,   0)}
+        .add("Opaque White"){   setBackgroundColor( 255, 255, 255, 255)}
+
+fun VSH.tryConnectToMusicPlayerService(){
+    bindService(Intent(this, XMBAudioPlayerService::class.java), audioPlayerConnector, Context.BIND_AUTO_CREATE)
 }

@@ -11,4 +11,11 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
+    <style name="XmbProgressBar">
+        <item name="android:progressDrawable">@drawable/mp_xmb_progressbar</item>
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:minHeight">5dip</item>
+        <item name="android:maxHeight">10dip</item>
+    </style>
+
 </resources>
