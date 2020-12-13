@@ -139,7 +139,7 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
 
     private fun loadCorruptedIcon(){
         if(corruptedIcon == transparentBitmap || corruptedIconUnselected == transparentBitmap){
-            val brokenImage = vsh.requestCustomIcon("rco", "common_corrupted", R.drawable.common_corrupted)
+            val brokenImage = vsh.loadCustomIcon("rco", "common_corrupted", R.drawable.common_corrupted)
             val siSize = selectedIconSize.toInt()
             val usiSize = unselectedIconSize.toInt()
             corruptedIcon = brokenImage.scale(siSize, siSize)

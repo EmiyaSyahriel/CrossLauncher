@@ -86,6 +86,9 @@ open class VshY {
     /** Called when is no longer selected */
     open fun onUnselected(){}
 
+    open var hasSubContent = false
+    open var subContent : ArrayList<VshY>? = null
+
     constructor()
     constructor(itemID:Int) { this.itemID = itemID  }
 }

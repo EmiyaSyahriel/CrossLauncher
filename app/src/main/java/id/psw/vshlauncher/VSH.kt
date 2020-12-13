@@ -20,6 +20,7 @@ import android.content.*
 import android.content.pm.ResolveInfo
 import android.content.res.Configuration
 import android.graphics.*
+import android.graphics.drawable.ColorDrawable
 import android.media.MediaPlayer
 import android.view.*
 import android.webkit.MimeTypeMap
@@ -57,6 +58,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         )
         var storagePermRequest = 5122
         val originLocale = Locale("in", "ID")
+        val transparentIcon = ColorDrawable(Color.TRANSPARENT).toBitmap(1,1, Bitmap.Config.ALPHA_8)
         const val DIRLOCK_NONE = 0xab
         const val DIRLOCK_HORIZONTAL = 0xcd
         const val DIRLOCK_VERTICAL = 0xef
@@ -189,7 +191,6 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         sfxPlayer = MediaPlayer()
         sfxPlayer?.setOnPreparedListener { it.start() }
         sfxPlayer?.setOnCompletionListener { vsh.clockExpandInfo = "" }
-        vsh.mediaPlayer = sfxPlayer
     }
 
     private fun loadPrefs(){
@@ -315,6 +316,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         return if(this) getString(R.string.common_yes) else getString(R.string.common_no)
     }
 
+
+
     private fun populateSettingSections(){
         val settings = vsh.findById("SETT") ?: return
 
@@ -322,7 +325,10 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         val n = false.toLocalizedString()
 
         // Orientation
-        settings.items.add(
+        val systemSetting = VshSettingCategory(0x1973, "System Setting", "", transparentIcon)
+        settings.items.add(systemSetting)
+
+        systemSetting.add(
             VshOptionedSettingIcon(
                 0xd1802, this, getString(R.string.item_orientation), VshSettingIcon.DEVICE_ORIENTATION,
                 { switchOrientation() }, { getOrientationName() },
@@ -336,8 +342,10 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         setOrientation(prefs.getInt(PREF_ORIENTATION_KEY, ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE))
 
-        // Game Boot
-        settings.items.add(VshOptionedSettingIcon(
+        val displaySetting = VshSettingCategory(0x1974, "Display Setting", "", transparentIcon)
+        settings.items.add(displaySetting)
+
+        displaySetting.add(VshOptionedSettingIcon(
             0xd1803, this,
             getString(R.string.setting_show_gameboot),
             VshSettingIcon.ICON_ANDROID,
@@ -352,7 +360,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         ))
 
         // Dynamic Twinkle Icon
-        settings.items.add(VshOptionedSettingIcon(
+        displaySetting.add(VshOptionedSettingIcon(
             0xd1804, this,
             getString(R.string.setting_mimic_dynamic_theme),VshSettingIcon.ICON_STAR,
             { setTwinkles() },
@@ -365,7 +373,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             }
         ))
 
-        settings.items.add(
+        displaySetting.add(
             VshOptionedSettingIcon(
                 0xd1805, this,
                 "Set Menu Background Color", VshSettingIcon.ICON_ANDROID,
@@ -375,7 +383,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             )
         )
 
-        settings.items.add(
+        displaySetting.add(
             VshOptionedSettingIcon(
                 0xd1806, this,
                 "Hide Clock Bar", VshSettingIcon.ICON_ANDROID,
@@ -388,7 +396,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             )
         )
 
-        settings.items.add(
+
+        displaySetting.add(
             VshOptionedSettingIcon(
                 0xd1807, this,
                 "Show Description Separator", VshSettingIcon.ICON_ANDROID,
@@ -403,7 +412,10 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             )
         )
 
-        settings.items.add(
+        val modding = VshSettingCategory(0x1975, "Modding", "", transparentIcon)
+        settings.items.add(modding)
+
+        modding.add(
             VshSettingIcon(
                 0xd1808, this,
                 getString(R.string.setting_gameboot_custom_guide), VshSettingIcon.ICON_ANDROID,
@@ -482,9 +494,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     override fun onBackPressed() {
-        if(vsh.isOnOptions){
-            vsh.isOnOptions = false
-        }
+        vsh.sendBackSignal()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -587,7 +597,6 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     fun startApp(packageName: String){
-        vsh.mpShow = false
         vsh.setOptionPopupVisibility(false)
         val intent = packageManager.getLaunchIntentForPackage(packageName)
         if(null != intent){
@@ -640,9 +649,11 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         var index = 0
         if(cursor != null && cursor.moveToFirst()){
             val idCol = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
+            val pathCol = cursor.getColumnIndex(MediaStore.Video.Media.DATA)
             do{
                 val id = cursor.getLong(idCol)
-                val item = SongIcon(id.toInt(), cursor, this)
+                val path = cursor.getString(pathCol)
+                val item = SongIcon(id.toInt(), path, this)
                 music.items.add(item)
                 index ++
             }while(cursor.moveToNext())
@@ -653,17 +664,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
     // TODO: direct this to XMB Audio Player Service instead of internal sfx player
     fun openAudioFile(metadata:SongIcon.SongMetadata) {
-        if(sfxPlayer != null){
-            vsh.mpShow = true
-            sfxPlayer?.reset()
-            sfxPlayer?.setDataSource(metadata.path)
-            sfxPlayer?.prepare()
-            vsh.mpAudioTitle = metadata.title
-            vsh.mpAudioArtist = "${metadata.album} / ${metadata.artist}"
-            val size = (vsh.density * 70).toInt()
-            vsh.mpAudioCover = metadata.albumArt.toBitmap(size,size)
-            vsh.mpAudioFormat = getFileExtension(metadata.path).toUpperCase(Locale.ROOT)
-        }
+
     }
 
     private fun loadVideo(){
@@ -732,106 +733,6 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     private fun getFileExtension(path:String) : String{ return path.split(".").last() }
-
-    /// region Get Custom Icon
-
-    // Most of it based on https://www.psdevwiki.com/ps3/Icontex.qrc for system icons
-    // and https://www.psdevwiki.com/ps3/Content_Information_Files for app / game icons
-    // TODO: create the custom icon system
-    fun hasCustomIcon(category:String, iconName:String):Boolean{
-        return false
-    }
-
-    fun hasCustomAnimatedIcon(category:String, iconName:String):Boolean{
-        return false
-    }
-
-    fun hasCustomScreentimeIcon(category:String, iconName:String):Boolean{
-        return false
-    }
-
-    /**
-     * Request a custom icon if exists, otherwise load form drawables (if any error occured, returns 1x1 transparent drawable)
-     *
-     * @param category Category of the app
-     * @param iconName File name of the icon without extension
-     * @param systemIconID Icon ID in R.drawable (app internal icon)
-     */
-    @SuppressLint("UseCompatLoadingForDrawables")
-    fun requestCustomIcon(category:String, iconName:String, systemIconID : Int) : Bitmap {
-        try{
-            val extDir = getExternalFilesDir(category)
-            if(extDir?.exists() == true){
-                val iconData= extDir.listFiles()!!.find { it.nameWithoutExtension == iconName }
-                if(iconData != null){
-                    return BitmapFactory.decodeFile(iconData.absolutePath)
-                }
-            }
-            return resources.getDrawable(systemIconID).toBitmap(70, 70, Bitmap.Config.ARGB_8888)
-        }catch(e:Exception){
-            e.printStackTrace()
-        }
-        return VshY.transparentBitmap
-    }
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    fun requestCustomGameIcon(resolveInfo: ResolveInfo) : Bitmap {
-        var retval : Bitmap = VshY.transparentBitmap
-        try{
-            val backdropFile = requestSpecificFileInGameDir(resolveInfo, "ICON0.PNG")
-            if(backdropFile != null && backdropFile.exists()){
-                retval = BitmapFactory.decodeFile(backdropFile.absolutePath)
-            }
-        }catch(e:Exception){
-            e.printStackTrace()
-        }
-        return retval
-    }
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    fun requestCustomGameVideoIcon(resolveInfo: ResolveInfo) : File? {
-        return requestSpecificFileInGameDir(resolveInfo, "ICON1.MP4")
-    }
-
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    fun requestGameBacksound(resolveInfo: ResolveInfo) : File? {
-        return requestSpecificFileInGameDir(resolveInfo, "SND0.MP3")
-    }
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    fun requestGameBackdrop(resolveInfo: ResolveInfo) : Bitmap {
-        var retval : Bitmap = VshY.transparentBitmap
-        try{
-            val backdropFile = requestSpecificFileInGameDir(resolveInfo, "PIC1.PNG")
-            if(backdropFile != null && backdropFile.exists()){
-                retval = BitmapFactory.decodeFile(backdropFile.absolutePath)
-            }
-        }catch(e:Exception){
-            e.printStackTrace()
-        }
-        return retval
-    }
-
-    private fun requestSpecificFileInGameDir(resolveInfo: ResolveInfo, fileName:String) : File?{
-        try{
-            val gameDir = getExternalFilesDir("game")!!
-            if(gameDir.exists()){
-                val gameSpecDir = gameDir.listFiles()?.find { it.name == resolveInfo.activityInfo.packageName }
-                if(gameSpecDir != null){
-                    if(gameSpecDir.exists()){
-                        return gameSpecDir.listFiles()?.find { it.name == fileName }
-                    }
-                }
-            }else{
-                gameDir.mkdir()
-            }
-        }catch(e:Exception){
-            e.printStackTrace()
-        }
-        return null
-    }
-    /// endregion
 
     private fun packageIsGame(activityInfo: ActivityInfo): Boolean {
         var retval: Boolean

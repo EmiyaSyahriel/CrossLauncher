@@ -19,7 +19,7 @@ import id.psw.vshlauncher.toSize
 import java.io.File
 
 // TODO : fix cursor is mostly null when created this icon, causing the icon appear corrupted
-class SongIcon(itemID:Int, cursor: Cursor?, private val vsh:VSH) : VshY(itemID){
+class SongIcon(itemID:Int, private val path : String, private val vsh:VSH) : VshY(itemID){
     data class SongMetadata(
         val id:Int,
         val title:String,
@@ -48,20 +48,19 @@ class SongIcon(itemID:Int, cursor: Cursor?, private val vsh:VSH) : VshY(itemID){
     private var cachedUnselectedIcon = transparentBitmap
 
     init {
-        if(cursor != null){
-            val titleCol = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
-            val artistCol = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
-            val albumCol = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
-            val pathCol = cursor.getColumnIndex(MediaStore.Audio.Media.DATA)
-            val title = cursor.getString(titleCol)
-            val artist = cursor.getString(artistCol) ?: vsh.getString(R.string.unknown)
-            val path = cursor.getString(pathCol)
-            val album = cursor.getString(albumCol) ?: vsh.getString(R.string.unknown)
+        metadata = try{
+            val mmr = MediaMetadataRetriever()
+            mmr.setDataSource(path)
+            val title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE) ?: ""
+            val artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST) ?: ""
+            val album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM) ?: ""
             val size = File(path).length().toSize()
-            metadata = SongMetadata(itemID, title, artist, album, path, size, getAlbumArt(path))
-            isValid = true
+            val albumArt = getAlbumArt(path)
+            SongMetadata(itemID, title, artist, album, path, size, albumArt)
+        }catch (e:Exception){
+            e.printStackTrace()
+            SongMetadata(0, vsh.getString(R.string.common_corrupted), "", "", "", "?? B", cachedDefaultIcon ?: transparentDrawable)
         }
-        metadata = SongMetadata(0, vsh.getString(R.string.common_corrupted), "", "", "", "?? B", cachedDefaultIcon ?: transparentDrawable)
         loadIcon()
     }
 

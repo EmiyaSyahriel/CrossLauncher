@@ -5,18 +5,19 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.media.MediaPlayer
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.customtypes.XMBStack
 import java.io.File
 import java.lang.Exception
 import java.lang.Math.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.ConcurrentModificationException
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 
@@ -79,6 +80,8 @@ class VshView : View {
 
     var density = 1f
     var scaledDensity = 1f
+
+    var subcontentStack = XMBStack<VshY>()
 
     /// endregion Variable
 
@@ -177,13 +180,11 @@ class VshView : View {
     fun fillCategory(){
         val home = VshX("HOME", context.getString(R.string.category_home), getDrawable(R.drawable.category_home), density)
         category.add(home)
+        category.add(VshX("SETT", context.getString(R.string.category_settings), getDrawable(R.drawable.category_setting), density))
+        category.add(VshX("SONG", context.getString(R.string.category_music),  getDrawable(R.drawable.category_music), density))
+        category.add(VshX("FILM", context.getString(R.string.category_videos), getDrawable(R.drawable.category_video), density))
         category.add(VshX("APPS", context.getString(R.string.category_apps), getDrawable(R.drawable.category_apps), density))
         category.add(VshX("GAME", context.getString(R.string.category_games),  getDrawable(R.drawable.category_games), density))
-        category.add(VshX("FILM", context.getString(R.string.category_videos), getDrawable(R.drawable.category_video), density))
-        category.add(VshX("SONG", context.getString(R.string.category_music),  getDrawable(R.drawable.category_music), density))
-        category.add(VshX("SETT", context.getString(R.string.category_settings), getDrawable(R.drawable.category_setting), density))
-        val debug = VshX("DBUG", "Debug", getDrawable(R.drawable.category_debug), density)
-        category.add(debug)
     }
 
     // Draw text from it's top instead of baseline like JS does :P
@@ -387,11 +388,13 @@ class VshView : View {
         val pivotX = (width * 0.3f) - ((selectedX - selectedXf) * d(-100))
         val pivotY = height * 0.3f
 
+        val items : ArrayList<VshY>? = if(subcontentStack.hasContent()) subcontentStack.peek()?.subContent else category[selectedX].items
+
         // Don't do any rendering if empty
-        if(category[selectedX].items.isEmpty()) return
+        if(items?.isEmpty() != false) return
 
         try{
-            category[selectedX].items.forEachIndexed { index, data ->
+            items.forEachIndexed { index, data ->
                 val isSelected = index == selectedY
                 val iconPaint = if (isSelected) {
                     paintIconSelected
@@ -417,7 +420,7 @@ class VshView : View {
                 var centerY = pivotY + ((index - selectedYf) * d(60f)) + d(100f)
                 var screenY =
                     pivotY + ((index - selectedYf) * d(60f)) - (icon.height / 2f) + d(100f)
-                if (index - selectedY < 0) {
+                if (index - selectedY < 0 && !subcontentStack.hasContent()) {
                     screenY -= d(110f)
                     centerY -= d(110f)
                 }
@@ -448,6 +451,43 @@ class VshView : View {
             }
         }catch(cmfce:ConcurrentModificationException){
             cmfce.printStackTrace()
+        }
+    }
+
+    private var subContentOffset = 1.0f
+    private var arrowIcon : Bitmap? = null
+
+    private fun lSubContentItem(canvas:Canvas){
+        val pivotX = (width * 0.3f) - ((selectedX - selectedXf) * d(-100))
+        val pivotY = height * 0.3f
+
+        if(arrowIcon == null){
+            arrowIcon = getDrawable(R.drawable.miptex_arrow).toBitmap(d(16),d(16))
+        }
+
+        try{
+            val folder = subcontentStack.peek()
+            if(folder != null){
+                val arrowX = (pivotX - subContentOffset.toLerp(d(50f), 0f))
+                val arrowY = pivotY + d(100f)
+                val arrow = arrowIcon ?: transparentBitmap
+                canvas.drawBitmap(arrow, arrowX - arrow.width/2f, arrowY - arrow.height/2f, paintIconSelected)
+
+                val folderIcon = folder.selectedIcon
+                val screenX = (pivotX - subContentOffset.toLerp(d(100f), 0f))
+
+                canvas.drawBitmap(folderIcon, screenX - (folderIcon.width/2f), pivotY - (folderIcon.height/2f) + d(100f), paintIconUnselected)
+
+                // Draw the main category over current folder if is the first directory
+                if(subcontentStack.count == 1){
+                    val cat = category[selectedX]
+                    val catIcon = cat.selectedIcon
+                    canvas.drawBitmap(catIcon, screenX - (catIcon.width/2f), pivotY - (catIcon.height/2f), paintIconUnselected)
+                }
+            }
+
+        }catch(e:Exception){
+
         }
     }
 
@@ -520,7 +560,11 @@ class VshView : View {
     private val isSelectionValid : Boolean get() {
         var retval = false
         if(selectedX < category.size){
-            retval = selectedY < category[selectedX].items.size
+            retval = selectedY < if(subcontentStack.hasContent()){
+                subcontentStack.peek()?.subContent?.size ?: 0
+            }else{
+                category[selectedX].items.size
+            }
         }
         return retval
     }
@@ -542,6 +586,7 @@ class VshView : View {
         backgroundAlpha = 0.1f.toLerp(backgroundAlpha, hideMenu.choose(0f, 1f))
         frame++
 
+        subContentOffset = (0.75f).toLerp(subContentOffset, 0f)
 
         if(frame > Float.MAX_VALUE /2f ) frame = 0f
     }
@@ -566,87 +611,6 @@ class VshView : View {
     }
     /// endregion
 
-    //region Media Player
-    var mediaPlayer : MediaPlayer? = null
-    var mpShow = false
-    var mpAudioCover : Bitmap? = null
-    var mpAudioTitle : String = ""
-    var mpAudioArtist : String = ""
-    var mpAudioFormat : String = "AAC"
-    var mpDurationRect : RectF = RectF(0f,0f,0f,0f)
-    var mpCurrentTimeRect : RectF = RectF(0f,0f,0f,0f)
-    var mpDurationPaint = Paint().apply { color = Color.argb(255,128,255,0) }
-    var mpGradientShaderPaint = Paint()
-    var mpBackground : Bitmap? = null
-
-    private fun mpGetDurationString(mp:MediaPlayer): String{
-        val durInSecond = mp.duration / 1000
-        val curInSecond = mp.currentPosition / 1000
-        val dH = ((durInSecond / 3600f).floorToInt() % 24)
-        val dM = (durInSecond / 60f).floorToInt() % 60
-        val dS = durInSecond % 60
-        val cH = (curInSecond / 3600f).floorToInt() % 24
-        val cM = (curInSecond / 60f).floorToInt() % 60
-        val cS = curInSecond % 60
-        return "${cH.mp00()}:${cM.mp00()}:${cS.mp00()} / ${dH.mp00()}:${dM.mp00()}:${dS.mp00()}"
-    }
-
-    private fun lMediaPlayer(canvas: Canvas){
-        if(mediaPlayer != null){
-            val mp = mediaPlayer!!
-
-            if(mpBackground == null){
-                mpBackground = resources.getDrawable(R.drawable.t_mediaplayer_background).toBitmap(d(5000), d(101))
-            }
-
-            if(mpShow){
-                canvas.drawBitmap(mpBackground?: transparentBitmap, 0f, renderableArea.bottom - d(100f), paintMisc)
-                // Left : Song Info
-                val cover = mpAudioCover ?: transparentBitmap
-                val albumLeft = renderableArea.left + sd(20f)
-                val textLeft = renderableArea.left + sd(40f) + cover.width
-                val bottomPos = renderableArea.bottom - sd(20f)
-                canvas.drawBitmap(cover, albumLeft, bottomPos - cover.height, paintIconSelected)
-                canvas.drawText(mpAudioTitle, textLeft, bottomPos - (cover.height/2f) - sd(5f), paintTextSelected)
-                canvas.drawTextU(mpAudioArtist, textLeft, bottomPos - (cover.height/2f), paintSubtextSelected)
-
-                // Right : Song Progress and format
-                mpDurationRect.set(
-                    renderableArea.right - sd(200f),
-                    bottomPos - (cover.height/2f) + d(5f),
-                    renderableArea.right - sd(20f),
-                    bottomPos - (cover.height/2f) + d(10f) + d(5f)
-                )
-
-                mpCurrentTimeRect.set(mpDurationRect)
-                mpCurrentTimeRect.right = ((mp.currentPosition.toFloat()) / (mp.duration))
-                    .toLerp(mpDurationRect.left, mpDurationRect.right)
-
-                mpGradientShaderPaint.shader = LinearGradient(
-                    mpDurationRect.left, mpDurationRect.top,
-                    mpDurationRect.left, mpDurationRect.bottom,
-                    Color.argb(255,255,255,255), Color.argb(0,255,255,255),
-                    Shader.TileMode.CLAMP
-                )
-
-                val timePos = bottomPos - (cover.height/2f) - sd(5f)
-
-                val defaultAlign : Paint.Align = paintSubtextSelected.textAlign
-                paintSubtextSelected.textAlign = Paint.Align.LEFT
-                canvas.drawText(mpGetDurationString(mp), mpDurationRect.left, timePos, paintSubtextSelected)
-                paintSubtextSelected.textAlign = Paint.Align.RIGHT
-                canvas.drawText("[$mpAudioFormat]", mpDurationRect.right, timePos, paintSubtextSelected)
-                paintSubtextSelected.textAlign = defaultAlign
-
-                canvas.drawRoundRect(mpDurationRect, d(5f), d(5f), paintStatusBoxFill)
-                canvas.drawRoundRect(mpCurrentTimeRect, d(5f), d(5f), mpDurationPaint)
-                canvas.drawRoundRect(mpCurrentTimeRect, d(5f), d(5f), mpGradientShaderPaint)
-                canvas.drawRoundRect(mpDurationRect, d(5f), d(5f), paintStatusBoxOutline)
-                canvas.drawRect(0f, renderableArea.bottom*1f, width*1f, height*1f, paintMisc)
-            }
-        }
-    }
-    //endregion
 
     private fun mLateUpdate(){
 
@@ -679,9 +643,12 @@ class VshView : View {
         canvas.drawColor(backgroundColor)
         if(!hideMenu){
             lVerticalItems(canvas)
-            lHorizontalMenu(canvas)
+            if(subcontentStack.hasContent()){
+                lSubContentItem(canvas)
+            }else{
+                lHorizontalMenu(canvas)
+            }
         }
-        lMediaPlayer(canvas)
         lClock(canvas)
         mLateUpdate()
         lOptions(canvas)
@@ -698,8 +665,17 @@ class VshView : View {
     fun setSelection(x:Int, y:Int){
         if(hideMenu) return
 
+        if(subcontentStack.hasContent()){
+            if(x != 0){
+                if(x < 0){
+                    subcontentStack.pop()
+                }
+                return
+            }
+        }
+
         if(isOnOptions && isSelectionValid){
-            val selectedItem = category[selectedX].items[selectedY]
+            val selectedItem = subcontentStack.peek() ?: category[selectedX].items[selectedY]
             val max = selectedItem.options.size -1
             if(max < 0) return
 
@@ -714,17 +690,19 @@ class VshView : View {
 
         // Set selected icon to be no longer selected and no longer onScreen then Save currently selected icon before changing
         if(x != 0){
-            if(category[selectedX].items.size > selectedY){
+            val selectedItem = subcontentStack.peek()?.subContent ?: category[selectedX].items
+            if(selectedItem.size > selectedY){
                 category[selectedX].items[selectedY].isSelected = false
             }
-            category[selectedX].items.forEach { it.isCoordinatelyVisible = false }
+            selectedItem.forEach { it.isCoordinatelyVisible = false }
             category[selectedX].itemY = selectedY
         }
 
         selectedX = (selectedX + x).coerceIn(0, category.size - 1)
 
         if(category[selectedX].items.isNotEmpty()){
-            selectedY = (selectedY + y).coerceIn(0, category[selectedX].items.size - 1)
+            val selectedItem = subcontentStack.peek()?.subContent ?: category[selectedX].items
+            selectedY = (selectedY + y).coerceIn(0, selectedItem.size - 1)
         }
 
         if(x != 0){
@@ -749,20 +727,38 @@ class VshView : View {
         selectedYf = selectedY.toFloat()
     }
 
+    fun sendBackSignal(){
+        if(isOnOptions){
+            isOnOptions = false
+        }else if(subcontentStack.hasContent()){
+            subcontentStack.pop()
+        }else if(!hideMenu){
+            hideMenu = true
+        }
+    }
+
     fun executeCurrentItem(){
         if(hideMenu) {
             // Press Menu to Unhide
             hideMenu = false
         }else{
             try{
-                category[selectedX].items[selectedY].onLaunch.run()
+                val data = subcontentStack.peek() ?: category[selectedX].items[selectedY]
+                if(data.hasSubContent){
+                    subContentOffset = 1.0f
+                    subcontentStack.push(data)
+                }else{
+                    category[selectedX].items[selectedY].onLaunch.run()
+                }
             }catch (ex:Exception){ ex.printStackTrace() }
         }
     }
 
     fun executeCurrentOptionItem(){
         try{
-            val currentOpt = category[selectedX].items[selectedY].options[optionSelectedIndex]
+            val currentOpt =
+                (subcontentStack.peek() ?: category[selectedX].items[selectedY])
+                .options[optionSelectedIndex]
             if(currentOpt.enabled){
                 currentOpt.onClick.run()
                 isOnOptions = false

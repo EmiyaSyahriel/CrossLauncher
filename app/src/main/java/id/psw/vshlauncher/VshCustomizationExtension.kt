@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.core.graphics.drawable.toBitmap
+import com.linecorp.apng.ApngDrawable
 import java.io.File
 import java.nio.file.Paths
 
@@ -79,7 +80,14 @@ fun VSH.getAppCustomFiles(packageName: String, fileName:String) : File?{
  * where it was the animated version of the app icon
  */
 fun VSH.getAppCustomAnimIconFile(packageName: String) : File?{
-    return getAppCustomFiles(packageName, "ICON1.APNG")
+    var retval : File? = null
+    val animIconFile = getAppCustomFiles(packageName, "ICON1.APNG")
+    if(animIconFile != null){
+        if(ApngDrawable.isApng(animIconFile)){
+            retval = animIconFile
+        }
+    }
+    return retval
 }
 
 /**

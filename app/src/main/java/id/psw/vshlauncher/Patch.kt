@@ -2,11 +2,13 @@ package id.psw.vshlauncher
 
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Path
 import android.graphics.Rect
 import android.os.Handler
 import android.os.HandlerThread
 import android.view.PixelCopy
 import android.widget.VideoView
+import java.io.File
 import java.lang.Exception
 import java.lang.Integer.parseInt
 import kotlin.math.ceil
@@ -100,4 +102,14 @@ fun String.hexColorToInt():Int{
     bd.clear().append(this[7]).append(this[8])
     val bb = parseInt(bd.toString(), 16)
     return Color.argb(aa,rr,gg,bb)
+}
+
+fun pathCombine(vararg files:String): String{
+    val retval = StringBuilder()
+    for(i in files.indices){
+        val isLast = i > files.size - 1
+        val combines = if(!isLast) files[i] + File.separatorChar else files[i]
+        retval.append(combines)
+    }
+    return retval.toString()
 }
