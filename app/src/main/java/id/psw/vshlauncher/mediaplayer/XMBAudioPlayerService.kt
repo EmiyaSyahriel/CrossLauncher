@@ -60,59 +60,6 @@ class XMBAudioPlayerService : Service() {
         mediaPlayer.setOnPreparedListener { mediaPlayer.start() }
         visualizer= Visualizer(mediaPlayer.audioSessionId)
         timer.scheduleAtFixedRate(0L, 16L){ mUpdate() }
-        createNotif()
-
-    }
-
-    private fun createNotif(){
-        normalNotifView = RemoteViews(packageName, R.layout.notification_xmbmp_normal)
-        expandedNotifView = RemoteViews(packageName, R.layout.notification_xmbmp_expanded)
-        notifManager = NotificationManagerCompat.from(this)
-
-        val playPauseIntent = Intent(this, MediaPlayerBroadcastReceiver::class.java)
-            .apply {
-            action = ACTION_MEDIA_PLAY
-            putExtra("NOTIF_ID", 0)
-        }
-        val nextIntent = Intent(this, MediaPlayerBroadcastReceiver::class.java)
-            .apply {
-            action = ACTION_MEDIA_NEXT
-            putExtra("NOTIF_ID", 0)
-        }
-        val prevIntent = Intent(this, MediaPlayerBroadcastReceiver::class.java)
-            .apply {
-            action = ACTION_MEDIA_PREV
-            putExtra("NOTIF_ID", 0)
-        }
-        val ffwdIntent = Intent(this, MediaPlayerBroadcastReceiver::class.java)
-            .apply {
-            action = ACTION_MEDIA_FFWD
-            putExtra("NOTIF_ID", 0)
-        }
-        val fbwdIntent = Intent(this, MediaPlayerBroadcastReceiver::class.java)
-            .apply {
-            action = ACTION_MEDIA_FBWD
-            putExtra("NOTIF_ID", 0)
-        }
-        val displayIntent = Intent(this, MediaPlayerBroadcastReceiver::class.java)
-            .apply {
-            action = ACTION_MEDIA_DISP
-            putExtra("NOTIF_ID", 0)
-        }
-        val stopIntent = Intent(this, MediaPlayerBroadcastReceiver::class.java).
-        apply {
-            action = ACTION_MEDIA_STOP
-            putExtra("NOTIF_ID", 0)
-        }
-
-        expandedNotifView.setOnClickPendingIntent(R.id.mp_btn_play, PendingIntent.getBroadcast(this, 0, playPauseIntent, 0))
-
-        notification = NotificationCompat
-            .Builder(this, "VSH Media Player")
-            .setCustomBigContentView(expandedNotifView)
-            .setCustomContentView(normalNotifView)
-            .build()
-        notification.flags = Notification.FLAG_ONGOING_EVENT
     }
 
     inner class MediaPlayerBinder : Binder() {

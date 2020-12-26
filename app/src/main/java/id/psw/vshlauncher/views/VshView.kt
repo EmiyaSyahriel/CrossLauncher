@@ -102,23 +102,19 @@ class VshView : View {
             textSize = sd(15f)
             setShadowLayer(sd(2f), 0f,0f, Color.argb(128,0,0,0))
         }
-
         paintSubtextSelected = TextPaint(paintTextSelected).apply{
             textSize = sd(12f)
         }
-
         paintSubtextUnselected = TextPaint(paintTextSelected).apply{
             alpha = 128
             textSize = sd(10f)
             setShadowLayer(sd(2f), 0f,0f, Color.argb(128,0,0,0))
         }
-
         paintMenuTextSelected = TextPaint(paintTextSelected).apply {
             textSize = sd(15f)
             textAlign = Paint.Align.CENTER
             setShadowLayer(0f,0f,0f,Color.BLACK)
         }
-
         paintStatusText = TextPaint(paintMenuTextSelected).apply {
             textAlign = Paint.Align.RIGHT
             textSize = sd(15f)
@@ -506,37 +502,40 @@ class VshView : View {
 
         // Draw contents
         if(isSelectionValid){
-            val options = category[selectedX].items[selectedY].options
-            paintTextSelected.getTextBounds("M",0,1, optionTextBound)
-            val charHeight = optionTextBound.height() * 1.5f
-            val yOffset = (optionsRect.height() / 2f) + ((options.size * -charHeight)  /2f)
-            val xTextOffset = optionTextBound.width() * 2
-            options.forEachIndexed { index, vshOption ->
-                val isSelected = index == optionSelectedIndex
-                val paint = if(isSelected) paintTextSelected else paintTextUnselected
-                val yPos = (index * charHeight)+ yOffset
-                if(isSelected){
-                    // Update triangle
-                    val triR = optionTextBound.height() /2f
-                    val leftPos = optionsRect.left + (0.25f * xTextOffset)
-                    val rightPos = optionsRect.left + (0.75f * xTextOffset)
-                    with(optionArrowPath){
-                        reset();
-                        moveTo(leftPos, yPos); lineTo(leftPos, yPos - triR);
-                        lineTo(rightPos, yPos); lineTo(leftPos, yPos + triR);
-                        lineTo(leftPos, yPos); close()
+            val item = if(subcontentStack.hasContent()) subcontentStack.peek() else category[selectedX].items[selectedY]
+            if(item != null){
+                val options = item.options
+                paintTextSelected.getTextBounds("M",0,1, optionTextBound)
+                val charHeight = optionTextBound.height() * 1.5f
+                val yOffset = (optionsRect.height() / 2f) + ((options.size * -charHeight)  /2f)
+                val xTextOffset = optionTextBound.width() * 2
+                options.forEachIndexed { index, vshOption ->
+                    val isSelected = index == optionSelectedIndex
+                    val paint = if(isSelected) paintTextSelected else paintTextUnselected
+                    val yPos = (index * charHeight)+ yOffset
+                    if(isSelected){
+                        // Update triangle
+                        val triR = optionTextBound.height() /2f
+                        val leftPos = optionsRect.left + (0.25f * xTextOffset)
+                        val rightPos = optionsRect.left + (0.75f * xTextOffset)
+                        with(optionArrowPath){
+                            reset()
+                            moveTo(leftPos, yPos); lineTo(leftPos, yPos - triR)
+                            lineTo(rightPos, yPos); lineTo(leftPos, yPos + triR)
+                            lineTo(leftPos, yPos); close()
+                        }
+                        canvas.drawPath(optionArrowPath, paintFill)
+                        canvas.drawPath(optionArrowPath, paintStatusBoxOutline)
+
+                        optionLaunchArea.set(
+                            leftPos, yPos - triR,
+                            renderableArea.right.toFloat(), yPos +triR
+                        )
                     }
-                    canvas.drawPath(optionArrowPath, paintFill)
-                    canvas.drawPath(optionArrowPath, paintStatusBoxOutline)
 
-                    optionLaunchArea.set(
-                        leftPos, yPos - triR,
-                        renderableArea.right.toFloat(), yPos +triR
-                    )
-                }
-
-                if(!vshOption.shouldSkip){
-                    canvas.drawText(vshOption.name, optionsRect.left + xTextOffset, yPos, paint, -0.5f)
+                    if(!vshOption.shouldSkip){
+                        canvas.drawText(vshOption.name, optionsRect.left + xTextOffset, yPos, paint, -0.5f)
+                    }
                 }
             }
         }
@@ -571,10 +570,12 @@ class VshView : View {
 
     fun setOptionPopupVisibility(shown:Boolean){
         if(isSelectionValid){
-            isOnOptions = shown && category[selectedX].items[selectedY].hasOptions
-
-            // reset option position when the item opens up
-            if(isOnOptions) optionSelectedIndex = 0
+            val item = if(subcontentStack.hasContent()) subcontentStack.peek() else category[selectedX].items[selectedY]
+            if( item != null){
+                isOnOptions = shown && item.hasOptions
+                // reset option position when the item opens up
+                if(isOnOptions) optionSelectedIndex = 0
+            }
         }
     }
 
@@ -669,6 +670,7 @@ class VshView : View {
             if(x != 0){
                 if(x < 0){
                     subcontentStack.pop()
+                    reassignYPos(false)
                 }
                 return
             }
@@ -710,6 +712,7 @@ class VshView : View {
             // Skip sliding animation when changing between categories
             selectedYf = selectedY.toFloat()
         }
+
     }
 
     fun setSelectionAbs(x:Int, y:Int){
@@ -732,9 +735,16 @@ class VshView : View {
             isOnOptions = false
         }else if(subcontentStack.hasContent()){
             subcontentStack.pop()
+            reassignYPos(false)
         }else if(!hideMenu){
             hideMenu = true
         }
+    }
+
+    fun reassignYPos(open: Boolean){
+        val maxSizePosition = if(subcontentStack.hasContent()) subcontentStack.peek()?.subContent?.size ?: 0 else category[selectedX].items.size
+        selectedXf += open.choose(-1f, 1f)
+        selectedY = selectedY.coerceIn(0,  maxSizePosition - 1)
     }
 
     fun executeCurrentItem(){
@@ -747,6 +757,7 @@ class VshView : View {
                 if(data.hasSubContent){
                     subContentOffset = 1.0f
                     subcontentStack.push(data)
+                    reassignYPos(true)
                 }else{
                     category[selectedX].items[selectedY].onLaunch.run()
                 }

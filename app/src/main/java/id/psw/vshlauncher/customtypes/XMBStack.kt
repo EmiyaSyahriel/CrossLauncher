@@ -1,5 +1,6 @@
 package id.psw.vshlauncher.customtypes
 
+import id.psw.vshlauncher.VshY
 import kotlin.collections.ArrayList
 
 class XMBStack<T> {
@@ -24,6 +25,8 @@ class XMBStack<T> {
         }
         return retval
     }
+
+    fun firstData() : T? = internalList[0]
 
     fun isEmpty(): Boolean = internalList.isEmpty()
     fun hasContent() : Boolean = internalList.isNotEmpty()
