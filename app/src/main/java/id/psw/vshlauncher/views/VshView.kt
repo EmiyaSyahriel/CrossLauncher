@@ -7,10 +7,16 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.toRectF
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.customtypes.XMBStack
+import id.psw.vshlauncher.typography.FontCollections
+import id.psw.vshlauncher.typography.MultifontSpan
+import id.psw.vshlauncher.typography.drawText
+import id.psw.vshlauncher.typography.getTextBound
 import java.io.File
 import java.lang.Exception
 import java.lang.Math.*
@@ -163,6 +169,9 @@ class VshView : View {
         density = resources.displayMetrics.density
         scaledDensity = resources.displayMetrics.scaledDensity
         generatePaint()
+        if(FontCollections.masterFont != null){
+            xmbFont = FontCollections.masterFont!!
+        }
         fillCategory()
 
     }
@@ -233,6 +242,7 @@ class VshView : View {
             paintSubtextSelected.typeface = value
             paintSubtextUnselected.typeface = value
         }
+    var xmbSystemFont : Typeface = FontCollections.buttonFont
 
     private fun calculateHandRotation(t : Float, r : Float){
         // Do rotating the clock by frame instead of clock
@@ -242,15 +252,6 @@ class VshView : View {
         }else{
             clockHand.x = cos( ( (t * 360) - 90 ) * Deg2Rad).toFloat() * r
             clockHand.y = sin( ( (t * 360) - 90 ) * Deg2Rad ).toFloat() * r
-        }
-    }
-
-    fun loadCustomFont(fontPath:String){
-        try{
-            val fontFace = Typeface.createFromFile(File(fontPath))
-            xmbFont = fontFace
-        }catch(e:Exception){
-
         }
     }
 
@@ -587,6 +588,10 @@ class VshView : View {
         backgroundAlpha = 0.1f.toLerp(backgroundAlpha, hideMenu.choose(0f, 1f))
         frame++
 
+        if(FontCollections.masterFont != null){
+            xmbFont = FontCollections.masterFont!!
+        }
+
         subContentOffset = (0.75f).toLerp(subContentOffset, 0f)
 
         if(frame > Float.MAX_VALUE /2f ) frame = 0f
@@ -653,6 +658,7 @@ class VshView : View {
         lClock(canvas)
         mLateUpdate()
         lOptions(canvas)
+        lButtonGuide(canvas)
         if(showFPSMeter) lFPSMeter(canvas)
         if(showDebugInfo) lDebugInfo(canvas)
         frameStart = System.currentTimeMillis()
@@ -744,6 +750,7 @@ class VshView : View {
     fun reassignYPos(open: Boolean){
         val maxSizePosition = if(subcontentStack.hasContent()) subcontentStack.peek()?.subContent?.size ?: 0 else category[selectedX].items.size
         selectedXf += open.choose(-1f, 1f)
+        subContentOffset = open.choose(-1f, 1f)
         selectedY = selectedY.coerceIn(0,  maxSizePosition - 1)
     }
 
@@ -755,14 +762,69 @@ class VshView : View {
             try{
                 val data = subcontentStack.peek() ?: category[selectedX].items[selectedY]
                 if(data.hasSubContent){
-                    subContentOffset = 1.0f
                     subcontentStack.push(data)
+                    Log.d(TAG, "Try execution | Subcontent count : ${subcontentStack.count} - LastContent : ${subcontentStack.peek()}}")
                     reassignYPos(true)
                 }else{
                     category[selectedX].items[selectedY].onLaunch.run()
                 }
             }catch (ex:Exception){ ex.printStackTrace() }
         }
+    }
+
+    private var buttonGuide = "{choose} : Select\n{back} : Back\n{sort} : Sort (Unavailable)\n{menu} : Menu"
+    private fun formatButtonGuide() : MultifontSpan {
+        val retval = MultifontSpan()
+        var useBtnFont = false
+        val txt = buttonGuide
+            .replace("{choose}","|\uf880|")
+            .replace("{back}",  "|\uf881|")
+            .replace("{sort}",  "|\uf882|")
+            .replace("{menu}",  "|\uf883|")
+        txt.split('|').forEach{
+            useBtnFont = !useBtnFont
+            retval.add(if(useBtnFont) xmbFont else xmbSystemFont, it)
+        }
+        return retval
+    }
+
+    private var buttonGuideRect : Rect = Rect()
+
+    private fun updateButtonGuideRect(ctx:Canvas) {
+        val text = formatButtonGuide()
+        val sizeRect = Rect()
+        val sysPad = getSystemPadding()
+        ctx.getTextBound(text, paintStatusText, sizeRect)
+        buttonGuideRect.set(
+            sysPad.right - sizeRect.width() - sd(30),
+            sysPad.bottom - sizeRect.height() - sd(30),
+            sysPad.right - sd(20),
+            sysPad.bottom - sd(20),
+        )
+    }
+
+    private fun lButtonGuide(ctx:Canvas){
+        updateButtonGuideRect(ctx)
+        val text = formatButtonGuide()
+        ctx.drawRoundRect(
+            buttonGuideRect.toRectF(),
+            sd(10f),
+            sd(10f),
+            paintStatusBoxFill
+        )
+
+        ctx.drawRoundRect(
+            buttonGuideRect.toRectF(),
+            sd(10f),
+            sd(10f),
+            paintStatusBoxOutline
+        )
+        ctx.drawText(text,
+            buttonGuideRect.left + sd(5f),
+            buttonGuideRect.top + sd(5f),
+            -1.0f,
+            paintSubtextSelected
+        )
     }
 
     fun executeCurrentOptionItem(){

@@ -15,7 +15,8 @@ class XMBStack<T> {
         return retval
     }
 
-    var count : Int = internalList.size
+    val count : Int
+    get() = internalList.size
 
     fun pop(defVal : T? = null) : T?{
         var retval : T? = defVal

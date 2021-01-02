@@ -30,6 +30,7 @@ import androidx.core.graphics.contains
 import id.psw.vshlauncher.icontypes.*
 import id.psw.vshlauncher.mediaplayer.AudioPlayerSvcConnection
 import id.psw.vshlauncher.mediaplayer.XMBVideoPlayer
+import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.VshColdBoot
 import id.psw.vshlauncher.views.VshDialogView
 import id.psw.vshlauncher.views.VshGameBoot
@@ -97,6 +98,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        FontCollections.init(this)
 
         vsh = VshView(this)
         vsh.id = R.id.vsh_view_main
@@ -628,6 +631,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     override fun onResume() {
         super.onResume()
         if(returnFromGameboot){
+            FontCollections.init(this)
             setContentView(vsh)
         }
     }

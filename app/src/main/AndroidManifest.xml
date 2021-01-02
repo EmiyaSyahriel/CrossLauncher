@@ -24,7 +24,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
-        <activity android:name=".mediaplayer.XMBAudioPlayer"></activity>
+        <activity android:name=".mediaplayer.XMBAudioPlayer"/>
 
         <service
             android:name=".mediaplayer.XMBAudioPlayerService"

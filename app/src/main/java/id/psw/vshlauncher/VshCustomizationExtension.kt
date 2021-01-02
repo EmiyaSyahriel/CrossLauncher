@@ -34,7 +34,6 @@ fun VSH.getVshCustomRsrcDir() : File? {
 
 /**
  * Try load "app_dir/files/vsh/resource/[category]/[iconName]" as file
- * Which matched PS3 Content Information File for audio file
  * when an icon is hovered
  */
 fun VSH.loadCustomIcon(category:String, iconName:String, defaultIcon: Int) : Bitmap{
