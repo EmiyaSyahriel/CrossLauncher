@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.graphics.Typeface
 import android.text.TextPaint
 import id.psw.vshlauncher.drawText
+import kotlin.collections.ArrayList
 
 data class MultifontText(val font:Typeface, val text:String)
 
@@ -52,4 +53,21 @@ fun Canvas.getTextBound(span: MultifontSpan, paint: Paint, bounds:Rect){
             bounds.right += tempRect.width()
         }
     }
+    bounds.bottom += tempRect.height()
+}
+fun String.applyFontMacro(type:ButtonType, swapConfirm: Boolean) : String
+{
+    var retval = this
+    (if(swapConfirm) swapConfirmFontMacro else confirmFontMacros)
+        .entries.forEach {
+            if(it.key.btnType == type){
+                retval = retval.replace(it.key.macro, it.value)
+            }
+        }
+    fontMacros.entries.forEach {
+        if(it.key.btnType == type){
+            retval = retval.replace(it.key.macro, it.value)
+        }
+    }
+    return retval
 }
