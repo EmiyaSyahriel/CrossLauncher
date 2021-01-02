@@ -13,10 +13,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.toRectF
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.customtypes.XMBStack
-import id.psw.vshlauncher.typography.FontCollections
-import id.psw.vshlauncher.typography.MultifontSpan
-import id.psw.vshlauncher.typography.drawText
-import id.psw.vshlauncher.typography.getTextBound
+import id.psw.vshlauncher.typography.*
 import java.io.File
 import java.lang.Exception
 import java.lang.Math.*
@@ -772,15 +769,12 @@ class VshView : View {
         }
     }
 
-    private var buttonGuide = "{choose} : Select\n{back} : Back\n{sort} : Sort (Unavailable)\n{menu} : Menu"
+    private var buttonGuide =
+        "|{btn:confirm}| : Select\n|{btn:cancel}| : Back\n|{btn:menu}| : Menu\n|{btn:home}| : Home"
     private fun formatButtonGuide() : MultifontSpan {
         val retval = MultifontSpan()
         var useBtnFont = false
-        val txt = buttonGuide
-            .replace("{choose}","|\uf880|")
-            .replace("{back}",  "|\uf881|")
-            .replace("{sort}",  "|\uf882|")
-            .replace("{menu}",  "|\uf883|")
+        val txt = buttonGuide.applyFontMacro(ButtonType.PlayStation, false)
         txt.split('|').forEach{
             useBtnFont = !useBtnFont
             retval.add(if(useBtnFont) xmbFont else xmbSystemFont, it)
@@ -794,12 +788,12 @@ class VshView : View {
         val text = formatButtonGuide()
         val sizeRect = Rect()
         val sysPad = getSystemPadding()
-        ctx.getTextBound(text, paintStatusText, sizeRect)
+        ctx.getTextBound(text, paintTextSelected, sizeRect)
         buttonGuideRect.set(
             sysPad.right - sizeRect.width() - sd(30),
             sysPad.bottom - sizeRect.height() - sd(30),
-            sysPad.right - sd(20),
-            sysPad.bottom - sd(20),
+            sysPad.right - sd(10),
+            sysPad.bottom - sd(10),
         )
     }
 
@@ -823,7 +817,7 @@ class VshView : View {
             buttonGuideRect.left + sd(5f),
             buttonGuideRect.top + sd(5f),
             -1.0f,
-            paintSubtextSelected
+            paintTextSelected
         )
     }
 
