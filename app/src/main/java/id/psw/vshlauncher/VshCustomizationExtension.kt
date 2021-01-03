@@ -3,9 +3,12 @@ package id.psw.vshlauncher
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import com.linecorp.apng.ApngDrawable
+import id.psw.vshlauncher.filesystem.fileOpenOrCreate
 import java.io.File
+import java.lang.Exception
 import java.nio.file.Paths
 
 
@@ -15,21 +18,12 @@ fun VSH.loadBitmap(bitmapIcon: Int): Bitmap {
     try{
         val drw = resources.getDrawable(bitmapIcon)
         retval = drw.toBitmap(drw.intrinsicWidth, drw.intrinsicHeight, Bitmap.Config.ARGB_8888)
-    }finally {  }
+    }catch (e:Exception) { e.printStackTrace() }
     return retval
 }
 
-fun VSH.getVshCustomRsrcDir() : File? {
-    var retval : File? = null
-    try{
-        val filesDir = getExternalFilesDir(null)
-        if(filesDir != null){
-            val resDir = File(filesDir, pathCombine("vsh","resource"))
-            if(!resDir.exists()) resDir.mkdirs()
-            return resDir
-        }
-    }finally { }
-    return null
+fun VSH.getVshCustomRsrcDir() : File {
+    return fileOpenOrCreate("vsh/resource/")
 }
 
 /**
@@ -37,21 +31,25 @@ fun VSH.getVshCustomRsrcDir() : File? {
  * when an icon is hovered
  */
 fun VSH.loadCustomIcon(category:String, iconName:String, defaultIcon: Int) : Bitmap{
+    val TAG = "custman.sprx"
     var retval = loadBitmap(defaultIcon)
     try{
-        val resDir = getVshCustomRsrcDir()
-        if(resDir != null){
-            val catDir = File(resDir, category)
-            if(!catDir.exists()) catDir.mkdirs()
-            val finalFile = File(catDir, iconName)
-            if(finalFile.exists()){
-                if(retval != VSH.transparentIcon) retval.recycle()
-                retval = BitmapFactory.decodeFile(finalFile.canonicalPath)
-            }
+        val catDir = fileOpenOrCreate("vsh/resource/icons/${category}")
+        Log.d(TAG, "Exploring ${catDir.path}");
+        catDir.listFiles()?.forEach {
+            Log.d(TAG, "-> [${if(it.isDirectory) "Dirc" else "File"}] ${it.name}");
         }
-    }finally {
-
-    }
+        val finalFile = File(catDir, "$iconName.png")
+        Log.d(TAG, "Trying to load custom icon from \"${finalFile.path}\"")
+        retval = if(finalFile.exists()){
+            if(retval != VSH.transparentIcon) retval.recycle()
+            Log.d(TAG, "-> Loaded")
+            BitmapFactory.decodeFile(finalFile.path)
+        }else{
+            Log.d(TAG, "-> Failed, loading from app resource with id $defaultIcon")
+            BitmapFactory.decodeResource(resources, defaultIcon)
+        }
+    }catch (e:Exception) { e.printStackTrace() }
     return retval
 }
 

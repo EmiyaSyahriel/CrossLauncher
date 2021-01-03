@@ -52,8 +52,8 @@ class AppIcon(private var context: VSH, itemID: Int, private var resolveInfo: Re
     }
 
     companion object{
-        private const val selectedIconSize = 70f
-        private const val unselectedIconSize = 50f
+        const val selectedIconSize = 70f
+        const val unselectedIconSize = 50f
         var dynamicUnload = false
         var descriptionText : DescriptionText = DescriptionText.PackageName
     }
