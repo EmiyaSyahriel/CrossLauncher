@@ -15,13 +15,14 @@ import androidx.core.app.ActivityCompat
 import androidx.core.graphics.drawable.toBitmap
 import java.util.*
 import android.Manifest
-import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.*
-import android.content.pm.ResolveInfo
 import android.content.res.Configuration
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.media.MediaPlayer
+import android.os.Process
 import android.view.*
 import android.webkit.MimeTypeMap
 import android.widget.Toast
@@ -39,6 +40,7 @@ import id.psw.vshlauncher.views.VshView
 import java.io.File
 import java.lang.Exception
 import kotlin.concurrent.schedule
+import kotlin.system.exitProcess
 
 @Suppress("SpellCheckingInspection", "DEPRECATION")
 class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
@@ -323,134 +325,132 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
 
     private fun populateSettingSections(){
-        val settings = vsh.findById("SETT") ?: return
+        val settings = vsh.findCategory("SETT") ?: return
+        val home = vsh.findCategory(VshCategory.home) ?: return
 
         val y = true.toLocalizedString()
         val n = false.toLocalizedString()
-        val blankIcon = Icon.fromBitmap(XMBIcon.TransparentBitmap)
+        val blankIcon = Icon(XMBIcon.TransparentBitmap, 75)
 
         // Orientation
+        // TODO : Add cust. icon
         val systemSetting = VshSettingCategory(this, vsh, "xmb_setting_system", "System Setting", "", blankIcon)
+        val displaySetting = VshSettingCategory(this, vsh, "xmb_icon_display", "Display Setting", "", blankIcon)
         settings.addContent(systemSetting)
+        settings.addContent(displaySetting)
 
-        systemSetting.add(
-            VshOptionedSettingIcon(
-                0xd1802, this, getString(R.string.item_orientation), VshSettingIcon.DEVICE_ORIENTATION,
-                { switchOrientation() }, { getOrientationName() },
-                { XMBIcon.MenuEntryBuilder(systemSetting, "Sys")
-                        .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_USER)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_USER) }
-                        .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT) }
-                        .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE) }
-                        .build() }
-            )
+        val sysOrientation = VshOptionedSettingIcon(
+            0xd1802, this, getString(R.string.item_orientation), VshSettingIcon.DEVICE_ORIENTATION,
+            { switchOrientation() }, { getOrientationName() }
         )
+
+        sysOrientation.createMenu()
+            .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_USER)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_USER) }
+            .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT) }
+            .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE) }
+            .apply()
+
 
         setOrientation(prefs.getInt(PREF_ORIENTATION_KEY, ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE))
 
-        // TODO : Add cust. icon
-        val displaySetting = VshSettingCategory(this, vsh, "xmb_icon_display", "Display Setting", "", blankIcon)
-        settings.addContent(displaySetting)
-
-        displaySetting.add(VshOptionedSettingIcon(
+        val dispShowBrand = VshOptionedSettingIcon(
             0xd1803, this,
             getString(R.string.setting_show_gameboot),
             VshSettingIcon.ICON_ANDROID,
             { setGameBoot() },
-            { useGameBoot.toLocalizedString() },
-            {
-                VshY.VshOptionsBuilder()
-                    .add(y){ setGameBoot(true) }
-                    .add(n){ setGameBoot(false) }
-                    .build()
-            }
-        ))
+            { useGameBoot.toLocalizedString() }
+        )
 
-        displaySetting.
+        dispShowBrand.createMenu()
+            .add(y){setGameBoot(true)}
+            .add(n){setGameBoot(false)}
+            .apply()
+
 
         // Dynamic Twinkle Icon
-        displaySetting.add(VshOptionedSettingIcon(
+        val dispTwinkles = VshOptionedSettingIcon(
             0xd1804, this,
-            getString(R.string.setting_mimic_dynamic_theme),VshSettingIcon.ICON_STAR,
-            { setTwinkles() },
-            { dynamicThemeTwinkles.toLocalizedString() },
-            {
-                VshY.VshOptionsBuilder()
-                    .add(y){ setTwinkles(true) }
-                    .add(n){ setTwinkles(false) }
-                    .build()
-            }
-        ))
-
-        displaySetting.add(
-            VshOptionedSettingIcon(
-                0xd1805, this,
-                "Set Menu Background Color", VshSettingIcon.ICON_ANDROID,
-                { showBackgroundColorDialog() },
-                { "Menu background (hidden when menu is hidden)" },
-                { preMadeColors.build() }
-            )
+            getString(R.string.setting_mimic_dynamic_theme),VshSettingIcon.ICON_STAR, { setTwinkles() }, { dynamicThemeTwinkles.toLocalizedString() }
         )
 
-        displaySetting.add(
-            VshOptionedSettingIcon(
-                0xd1806, this,
-                "Hide Clock Bar", VshSettingIcon.ICON_ANDROID,
-                { setHiddenClock() },
-                { VshView.hideClock.toLocalizedString() },
-                { VshY.VshOptionsBuilder()
-                    .add(y){ setHiddenClock(true) }
-                    .add(n){ setHiddenClock(false) }
-                    .build() }
-            )
+        val dispBgColors = VshOptionedSettingIcon(
+            0xd1805, this,
+            "Set Menu Background Color", VshSettingIcon.ICON_ANDROID,
+            { showBackgroundColorDialog() },
+            { "Menu background (hidden when menu is hidden)" }
+        )
+        preMadeColors(dispBgColors).apply()
+
+        val dispHideClock = VshOptionedSettingIcon(
+            0xd1806, this,
+            "Hide Clock Bar", VshSettingIcon.ICON_ANDROID,
+            { setHiddenClock() },
+            { VshView.hideClock.toLocalizedString() }
         )
 
+        dispHideClock.createMenu()
+            .add(y){ setHiddenClock(true) }
+            .add(n){ setHiddenClock(false) }
+            .apply()
 
-        displaySetting.add(
-            VshOptionedSettingIcon(
-                0xd1807, this,
-                "Show Description Separator", VshSettingIcon.ICON_ANDROID,
-                { setSeparatorLine() },
-                { VshView.descriptionSeparator.toLocalizedString() },
-                {
-                    VshY.VshOptionsBuilder()
-                        .add(y){ setSeparatorLine(true) }
-                        .add(n){ setSeparatorLine(false) }
-                        .build()
-                }
-            )
+        val dispDescSeparator = VshOptionedSettingIcon(
+            0xd1807, this,
+            "Show Description Separator", VshSettingIcon.ICON_ANDROID,
+            { setSeparatorLine() },
+            { VshView.descriptionSeparator.toLocalizedString() }
         )
 
-        val modding = VshSettingCategory(0x1975, "Modding", "", transparentIcon)
-        settings.addContent(modding)
+        dispDescSeparator.createMenu().add(y){ setSeparatorLine(true) }.add(n){ setSeparatorLine(false) }
+                .apply()
 
-        modding.add(
-            VshSettingIcon(
+
+        val modding = VshSettingCategory( this, vsh,"sys_disp_mod", "Modding", "", blankIcon)
+        val modGameboot = VshSettingIcon(
                 0xd1808, this,
                 getString(R.string.setting_gameboot_custom_guide), VshSettingIcon.ICON_ANDROID,
                 { launchURL("https://github.com/EmiyaSyahriel/CrossLauncher#animation-modding" )},
                 { getString(R.string.common_click_here) }
             )
+
+        val homeHide = VshSettingIcon(
+            0xd18035, this,
+            getString(R.string.app_hide_menu), VshSettingIcon.ICON_START,
+            {vsh.hideMenu = !vsh.hideMenu},
+            {getString(R.string.app_hide_menu_desc)}
         )
 
-        val home = vsh.findById("HOME")
-
-        home?.addContent(
-            VshSettingIcon(
-                0xd18035, this,
-                getString(R.string.app_hide_menu), VshSettingIcon.ICON_START,
-                {vsh.hideMenu = !vsh.hideMenu},
-                {getString(R.string.app_hide_menu_desc)}
-            )
+        val homeRefresh = VshSettingIcon(
+            0xd18035, this,
+            getString(R.string.menu_rebuild_db), VshSettingIcon.ICON_REFRESH,
+            {switchToRefreshRequestWindow() },
+            { getString(R.string.menu_rebuild_db_desc) }
         )
 
-        home?.items?.add(
-            VshSettingIcon(
-                0xd18035, this,
-                getString(R.string.menu_rebuild_db), VshSettingIcon.ICON_REFRESH,
-                {switchToRefreshRequestWindow() },
-                { getString(R.string.menu_rebuild_db_desc) }
-            )
-        )
+        homeRefresh.createMenu()
+            .add(getString(R.string.menu_rebuild_db)){switchToRefreshRequestWindow() }
+            .add("Restart Process"){ restartApp() }
+            .add("Exit Launcher"){ finish() }
+            .apply()
+
+        settings.addContent(modding)
+        home.addContent(homeHide)
+        home.addContent(homeRefresh)
+        modding.addContent(modGameboot)
+        systemSetting.addContent(sysOrientation)
+        displaySetting.addContent(dispShowBrand)
+        displaySetting.addContent(dispTwinkles)
+        displaySetting.addContent(dispBgColors)
+        displaySetting.addContent(dispHideClock)
+        displaySetting.addContent(dispDescSeparator)
+    }
+
+    private fun restartApp(){
+        val starter = Intent(this, VSH::class.java)
+        val intentId = Process.myPid()
+        val pendingIntent = PendingIntent.getActivity(this, intentId, starter, PendingIntent.FLAG_CANCEL_CURRENT )
+        val mgr = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent)
+        exitProcess(0)
     }
 
     private fun switchToRefreshRequestWindow(){
@@ -551,12 +551,16 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             val c = event.unicodeChar.toChar()
             if(!vsh.hideMenu){
                 try{
-                    val data =  vsh.category[vsh.selectedX].items.find { it.name.toLowerCase(Locale.getDefault()).startsWith(c.toLowerCase())}
-                    if(data != null){
-                        var yIndex = vsh.category[vsh.selectedX].items.indexOf (data)
-                        if(yIndex < 0) yIndex = vsh.selectedY
-                        vsh.setSelectionAbs(vsh.selectedX, yIndex)
+                    val item = vsh.deepestSubContent
+                    var found = false
+                    var currentItem = vsh.deepestSubContent.contentIndex
+                    item.forEachContentIndexed { i, xmbIcon ->
+                        if(xmbIcon.name.startsWith(c, true) && !found) {
+                            found = true
+                            currentItem = i
+                        }
                     }
+                    vsh.deepestSubContent.contentIndex = currentItem
                 }catch (e : Exception){}
             }
         }
@@ -564,10 +568,10 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     private fun loadApps(){
-        val apps = vsh.findById("APPS") ?: return
-        val games = vsh.findById("GAME") ?: return
-        apps.items.clear()
-        games.items.clear()
+        val apps = vsh.findCategory("APPS") ?: return
+        val games = vsh.findCategory("GAME") ?: return
+        apps.content.clear()
+        games.content.clear()
         vsh.clockAsLoadingIndicator = true
 
         val intent = Intent(Intent.ACTION_MAIN, null)
@@ -579,19 +583,19 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 val isGame = packageIsGame(it.activityInfo)
                 //println("VTX_Activity [I] | New App : ${appData.name} (${appData.pkg}) - isGame : $isGame")
                 //val size = File(it.activityInfo.applicationInfo.sourceDir).length().toSize()
-                val size = it.activityInfo.packageName
-                val xmbData = AppIcon(this, 0xc00 + index, it)
+                val description = it.activityInfo.packageName
+                val xmbData = AppIcon(this, vsh, description, it)
 
                 // Filter itself
                 if(it.activityInfo.packageName != packageName){
-                    (if(isGame){games}else{apps}).items.add(xmbData)
+                    (if(isGame){games}else{apps}).addContent(xmbData)
                 }
 
             }
         }
 
-        apps.items.sortBy { it.name }
-        games.items.sortBy { it.name }
+        apps.content.sortBy { it.name }
+        games.content.sortBy { it.name }
 
         vsh.clockAsLoadingIndicator = false
     }
@@ -646,8 +650,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     private fun loadAudio(){
-        val music = vsh.findById("SONG") ?: return
-        music.items.clear()
+        val music = vsh.findCategory("SONG") ?: return
+        music.content.clear()
         SongIcon.songList.clear()
 
         vsh.clockAsLoadingIndicator = true
@@ -663,7 +667,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 val id = cursor.getLong(idCol)
                 val path = cursor.getString(pathCol)
                 val item = SongIcon(id.toInt(), path, this)
-                music.items.add(item)
+                music.addContent(item)
                 index ++
             }while(cursor.moveToNext())
         }
@@ -678,7 +682,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
     private fun loadVideo(){
         vsh.clockAsLoadingIndicator = true
-        val vids = vsh.findById("FILM") ?: return
+        val vids = vsh.findCategory("FILM") ?: return
         val videoResolver = contentResolver
         val videoUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
         val cursor = videoResolver.query(videoUri, null,null,null,null)
@@ -691,7 +695,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 val dataCol = cursor.getColumnIndex(MediaStore.Video.Media.DATA)
                 val path = cursor.getString(dataCol)
                 val item = VideoIcon(id.toInt(), this, path)
-                vids.items.add(item)
+                vids.addContent(item)
                 index++
             }while(cursor.moveToNext())
         }
