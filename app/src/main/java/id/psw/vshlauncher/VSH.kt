@@ -27,6 +27,7 @@ import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.contains
+import id.psw.vshlauncher.customtypes.Icon
 import id.psw.vshlauncher.icontypes.*
 import id.psw.vshlauncher.mediaplayer.AudioPlayerSvcConnection
 import id.psw.vshlauncher.mediaplayer.XMBVideoPlayer
@@ -135,7 +136,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         setOperatorName()
 
         checkFileReadWritePermission()
-        appListerThread = Thread(Runnable {
+        appListerThread = Thread( Runnable {
             loadApps()
             loadAudio()
             loadVideo()
@@ -326,16 +327,17 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         val y = true.toLocalizedString()
         val n = false.toLocalizedString()
+        val blankIcon = Icon.fromBitmap(XMBIcon.TransparentBitmap)
 
         // Orientation
-        val systemSetting = VshSettingCategory(0x1973, "System Setting", "", transparentIcon)
-        settings.items.add(systemSetting)
+        val systemSetting = VshSettingCategory(this, vsh, "xmb_setting_system", "System Setting", "", blankIcon)
+        settings.addContent(systemSetting)
 
         systemSetting.add(
             VshOptionedSettingIcon(
                 0xd1802, this, getString(R.string.item_orientation), VshSettingIcon.DEVICE_ORIENTATION,
                 { switchOrientation() }, { getOrientationName() },
-                { VshY.VshOptionsBuilder()
+                { XMBIcon.MenuEntryBuilder(systemSetting, "Sys")
                         .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_USER)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_USER) }
                         .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT) }
                         .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE) }
@@ -345,8 +347,9 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         setOrientation(prefs.getInt(PREF_ORIENTATION_KEY, ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE))
 
-        val displaySetting = VshSettingCategory(0x1974, "Display Setting", "", transparentIcon)
-        settings.items.add(displaySetting)
+        // TODO : Add cust. icon
+        val displaySetting = VshSettingCategory(this, vsh, "xmb_icon_display", "Display Setting", "", blankIcon)
+        settings.addContent(displaySetting)
 
         displaySetting.add(VshOptionedSettingIcon(
             0xd1803, this,
@@ -361,6 +364,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                     .build()
             }
         ))
+
+        displaySetting.
 
         // Dynamic Twinkle Icon
         displaySetting.add(VshOptionedSettingIcon(
@@ -416,7 +421,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         )
 
         val modding = VshSettingCategory(0x1975, "Modding", "", transparentIcon)
-        settings.items.add(modding)
+        settings.addContent(modding)
 
         modding.add(
             VshSettingIcon(
@@ -429,7 +434,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         val home = vsh.findById("HOME")
 
-        home?.items?.add(
+        home?.addContent(
             VshSettingIcon(
                 0xd18035, this,
                 getString(R.string.app_hide_menu), VshSettingIcon.ICON_START,

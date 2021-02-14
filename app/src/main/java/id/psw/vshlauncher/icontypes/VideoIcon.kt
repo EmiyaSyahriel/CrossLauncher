@@ -3,7 +3,6 @@ package id.psw.vshlauncher.icontypes
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.graphics.SurfaceTexture
-import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.media.ThumbnailUtils
 import android.net.Uri
@@ -139,7 +138,7 @@ class VideoIcon(itemID:Int, private val vsh: VSH, private val path: String) : Vs
 
     private fun loadCorruptedIcon(){
         if(corruptedIcon == transparentBitmap || corruptedIconUnselected == transparentBitmap){
-            val brokenImage = vsh.loadCustomIcon("rco", "common_corrupted", R.drawable.common_corrupted)
+            val brokenImage = vsh.loadLauncherCustomIcon("common_corrupted", R.drawable.common_corrupted)
             val siSize = selectedIconSize.toInt()
             val usiSize = unselectedIconSize.toInt()
             corruptedIcon = brokenImage.scale(siSize, siSize)

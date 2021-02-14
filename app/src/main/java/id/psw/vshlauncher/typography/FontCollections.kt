@@ -6,7 +6,9 @@ import android.graphics.fonts.Font
 import android.util.Log
 import android.widget.Toast
 import id.psw.vshlauncher.VSH
-import id.psw.vshlauncher.getVshCustomRsrcDir
+import id.psw.vshlauncher.VshDirs
+import id.psw.vshlauncher.formatDirPathAndCreate
+import id.psw.vshlauncher.getFilesPath
 import java.lang.Exception
 
 object FontCollections {
@@ -38,11 +40,7 @@ object FontCollections {
 
     fun init(ctx: VSH){
         try {
-            val rsrc = ctx.getVshCustomRsrcDir()
-            if(rsrc != null){
-                Log.d("fntmgr.self", "Loading custom font from ${rsrc.absolutePath}")
-            }
-            val customFontPath = ctx.getVshCustomRsrcDir()?.listFiles()
+            val customFontPath = ctx.formatDirPathAndCreate(VshDirs.SYSTEM_DIR, ctx.getFilesPath()).listFiles()
             if(customFontPath != null && customFontPath.isNotEmpty()){
                 customFontPath.forEach {
                     Log.d("fntmgr.self", "Found file : ${it.absolutePath}")

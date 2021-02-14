@@ -1,12 +1,11 @@
 package id.psw.vshlauncher.icontypes
 
-import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.graphics.scale
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.VshY
-import id.psw.vshlauncher.loadCustomIcon
+import id.psw.vshlauncher.loadLauncherCustomIcon
 
 open class VshSettingIcon(
     itemID: Int,
@@ -46,8 +45,7 @@ open class VshSettingIcon(
     override val selectedIcon: Bitmap get() = iconSelected
 
     init{
-        val icon = context.loadCustomIcon(
-            "settings",
+        val icon = context.loadLauncherCustomIcon(
             iconId,
             iconIds[iconId] ?: R.drawable.icon_android
         )

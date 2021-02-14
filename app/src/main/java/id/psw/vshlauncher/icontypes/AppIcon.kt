@@ -83,6 +83,9 @@ class AppIcon(private var context: VSH, itemID: Int, private var resolveInfo: Re
         val selectedSize = (selectedIconSize * context.vsh.density).toInt()
         val unselectedSize = (unselectedIconSize * context.vsh.density).toInt()
         val loadedIcon = resolveInfo.loadIcon(context.packageManager).toBitmap()
+
+        //val customIcon = context.getApp
+
         cachedSelectedIcon = Bitmap.createScaledBitmap(loadedIcon, selectedSize, selectedSize, false)
         cachedUnselectedIcon = Bitmap.createScaledBitmap(loadedIcon, unselectedSize, unselectedSize, false)
     }

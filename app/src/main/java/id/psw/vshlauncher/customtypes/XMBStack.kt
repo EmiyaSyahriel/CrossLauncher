@@ -18,6 +18,8 @@ class XMBStack<T> {
     val count : Int
     get() = internalList.size
 
+    operator fun get(index:Int) : T { return internalList[index] }
+
     fun pop(defVal : T? = null) : T?{
         var retval : T? = defVal
         if(internalList.size > 0){

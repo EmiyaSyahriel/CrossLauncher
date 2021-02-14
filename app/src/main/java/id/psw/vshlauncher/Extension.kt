@@ -232,3 +232,15 @@ fun <T> T?.whenNullAndNot(onNull: () -> Unit, onNotNull: (T) -> Unit){
     if(this != null) onNotNull.invoke(this)
     else onNull.invoke()
 }
+
+fun <T> ArrayList<T>.removeIfTrue(predicate: (T) -> Boolean) {
+    val removable = ArrayList<T>()
+    forEach { if(predicate.invoke(it)) removable.add(it) }
+    removeAll(removable)
+}
+
+fun <T> ArrayList<T>.move(from:Int, to:Int){
+    val data = this[from]
+    removeAt(from)
+    add(to, data)
+}

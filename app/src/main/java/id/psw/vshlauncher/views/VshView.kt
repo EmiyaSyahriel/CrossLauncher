@@ -13,14 +13,14 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.toRectF
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.customtypes.XMBStack
+import id.psw.vshlauncher.icontypes.XMBIcon
+import id.psw.vshlauncher.icontypes.XMBRootIcon
 import id.psw.vshlauncher.typography.*
-import java.io.File
 import java.lang.Exception
 import java.lang.Math.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.ConcurrentModificationException
-import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 
@@ -75,8 +75,9 @@ class VshView : View {
     var selectedY = 0
     var menuIndex = 0
     var lastInteractionTime = 0L
+    lateinit var vsh : VSH
 
-    var category : ArrayList<VshX> = arrayListOf()
+    lateinit var itemRoot : XMBRootIcon
     var hideMenu = false
     var backgroundAlpha = 1f
     var usePspStyle = true
@@ -84,7 +85,8 @@ class VshView : View {
     var density = 1f
     var scaledDensity = 1f
 
-    var subcontentStack = XMBStack<VshY>()
+    var indexStack = XMBStack<Int>()
+    val isOnRoot : Boolean get() = indexStack.count == 1
 
     /// endregion Variable
 
@@ -141,11 +143,11 @@ class VshView : View {
     }
 
     constructor(context: Context) : super(context) {
-        init(null, 0)
+        init(context, null, 0)
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(attrs, 0)
+        init(context, attrs, 0)
     }
 
     constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
@@ -153,11 +155,12 @@ class VshView : View {
         attrs,
         defStyle
     ) {
-        init(attrs, defStyle)
+        init(context, attrs, defStyle)
     }
 
-    private fun init(attrs: AttributeSet?, defStyle: Int) {
-        // Load attributes
+    private fun init(context:Context, attrs: AttributeSet?, defStyle: Int) {
+        itemRoot = XMBRootIcon(vsh, this)
+
         val a = context.obtainStyledAttributes(
             attrs, R.styleable.VshView, defStyle, 0
         )
@@ -180,13 +183,13 @@ class VshView : View {
 
     @Suppress("DEPRECATION")
     fun fillCategory(){
-        val home = VshX("HOME", context.getString(R.string.category_home), getDrawable(R.drawable.category_home), density)
-        category.add(home)
-        category.add(VshX("SETT", context.getString(R.string.category_settings), getDrawable(R.drawable.category_setting), density))
-        category.add(VshX("SONG", context.getString(R.string.category_music),  getDrawable(R.drawable.category_music), density))
-        category.add(VshX("FILM", context.getString(R.string.category_videos), getDrawable(R.drawable.category_video), density))
-        category.add(VshX("APPS", context.getString(R.string.category_apps), getDrawable(R.drawable.category_apps), density))
-        category.add(VshX("GAME", context.getString(R.string.category_games),  getDrawable(R.drawable.category_games), density))
+        itemRoot.addContent(VshCategory(context, this, VshCategory.home))
+        itemRoot.addContent(VshCategory(context, this, VshCategory.settings))
+        itemRoot.addContent(VshCategory(context, this, VshCategory.photo))
+        itemRoot.addContent(VshCategory(context, this, VshCategory.music))
+        itemRoot.addContent(VshCategory(context, this, VshCategory.video))
+        itemRoot.addContent(VshCategory(context, this, VshCategory.apps))
+        itemRoot.addContent(VshCategory(context, this, VshCategory.games))
     }
 
     // Draw text from it's top instead of baseline like JS does :P
@@ -362,10 +365,10 @@ class VshView : View {
     private fun lHorizontalMenu(canvas:Canvas){
         val pivotX = width * 0.3f
         val pivotY = height * 0.3f
-        category.forEachIndexed{ index, data ->
 
+        itemRoot.content.forEachIndexed{ index, data ->
             val iconPaint = if(index == selectedX){paintIconSelected}else{paintIconUnselected}
-            val icon = if(index == selectedX){data.selectedIcon}else{data.unselectedIcon}
+            val icon = if(index == selectedX){data.icon.selected}else{data.icon.unselected}
 
             val screenX = (pivotX + ((index - selectedXf) * d(100))) - (icon.width / 2f)
             // Don't render item outside outside
@@ -382,13 +385,21 @@ class VshView : View {
         val pivotX = (width * 0.3f) - ((selectedX - selectedXf) * d(-100))
         val pivotY = height * 0.3f
 
-        val items : ArrayList<VshY>? = if(subcontentStack.hasContent()) subcontentStack.peek()?.subContent else category[selectedX].items
+        var items : XMBIcon = itemRoot.getContent(indexStack[0]).getContent(indexStack[1])
+        val depth = indexStack.count
+        for(i in 2 until depth){
+            if(items.hasContent){
+                items = items.getContent(indexStack[1])
+            }else{
+                indexStack.pop()
+            }
+        }
 
         // Don't do any rendering if empty
-        if(items?.isEmpty() != false) return
+        if(!items.hasContent) return
 
         try{
-            items.forEachIndexed { index, data ->
+            items.forEachContentIndexed { index, data ->
                 val isSelected = index == selectedY
                 val iconPaint = if (isSelected) {
                     paintIconSelected
@@ -407,18 +418,21 @@ class VshView : View {
                 }
 
                 val icon = if (isSelected) {
-                    data.selectedIcon
+                    data.icon.selected
                 } else {
-                    data.unselectedIcon
+                    data.icon.unselected
                 }
                 var centerY = pivotY + ((index - selectedYf) * d(60f)) + d(100f)
                 var screenY =
                     pivotY + ((index - selectedYf) * d(60f)) - (icon.height / 2f) + d(100f)
-                if (index - selectedY < 0 && !subcontentStack.hasContent()) {
+
+                val selY = items.contentIndex
+
+                if (index - selY < 0) {
                     screenY -= d(110f)
                     centerY -= d(110f)
                 }
-                if (index - selectedY > 0) {
+                if (index - selY > 0) {
                     screenY += d(30f)
                     centerY += d(30f)
                 }
@@ -451,6 +465,21 @@ class VshView : View {
     private var subContentOffset = 1.0f
     private var arrowIcon : Bitmap? = null
 
+    private val deepestSubContent : XMBIcon get(){
+        var items = itemRoot.getContent(0)
+
+        val depth = indexStack.count
+        for(i in 2 until depth){
+            if(items.hasContent){
+                items = items.getContent(indexStack[1])
+            }else{
+                indexStack.pop()
+            }
+        }
+
+        return items
+    }
+
     private fun lSubContentItem(canvas:Canvas){
         val pivotX = (width * 0.3f) - ((selectedX - selectedXf) * d(-100))
         val pivotY = height * 0.3f
@@ -460,25 +489,23 @@ class VshView : View {
         }
 
         try{
-            val folder = subcontentStack.peek()
-            if(folder != null){
+            val folder = deepestSubContent
                 val arrowX = (pivotX - subContentOffset.toLerp(d(50f), 0f))
                 val arrowY = pivotY + d(100f)
                 val arrow = arrowIcon ?: transparentBitmap
                 canvas.drawBitmap(arrow, arrowX - arrow.width/2f, arrowY - arrow.height/2f, paintIconSelected)
 
-                val folderIcon = folder.selectedIcon
+                val folderIcon = folder.icon.selected
                 val screenX = (pivotX - subContentOffset.toLerp(d(100f), 0f))
 
                 canvas.drawBitmap(folderIcon, screenX - (folderIcon.width/2f), pivotY - (folderIcon.height/2f) + d(100f), paintIconUnselected)
 
                 // Draw the main category over current folder if is the first directory
-                if(subcontentStack.count == 1){
-                    val cat = category[selectedX]
-                    val catIcon = cat.selectedIcon
+                if(isOnRoot){
+                    val cat = itemRoot.getContent(indexStack[0])
+                    val catIcon = cat.icon.selected
                     canvas.drawBitmap(catIcon, screenX - (catIcon.width/2f), pivotY - (catIcon.height/2f), paintIconUnselected)
                 }
-            }
 
         }catch(e:Exception){
 
@@ -500,7 +527,7 @@ class VshView : View {
 
         // Draw contents
         if(isSelectionValid){
-            val item = if(subcontentStack.hasContent()) subcontentStack.peek() else category[selectedX].items[selectedY]
+            val item = if(isOnRoot) itemRoot.getContent(indexStack[0], indexStack[1]) else deepestSubContent
             if(item != null){
                 val options = item.options
                 paintTextSelected.getTextBounds("M",0,1, optionTextBound)
@@ -558,7 +585,7 @@ class VshView : View {
         var retval = false
         if(selectedX < category.size){
             retval = selectedY < if(subcontentStack.hasContent()){
-                subcontentStack.peek()?.subContent?.size ?: 0
+                subcontentStack.peek()?.getContent?.size ?: 0
             }else{
                 category[selectedX].items.size
             }
@@ -695,7 +722,7 @@ class VshView : View {
 
         // Set selected icon to be no longer selected and no longer onScreen then Save currently selected icon before changing
         if(x != 0){
-            val selectedItem = subcontentStack.peek()?.subContent ?: category[selectedX].items
+            val selectedItem = subcontentStack.peek()?.getContent ?: category[selectedX].items
             if(selectedItem.size > selectedY){
                 category[selectedX].items[selectedY].isSelected = false
             }
@@ -706,8 +733,9 @@ class VshView : View {
         selectedX = (selectedX + x).coerceIn(0, category.size - 1)
 
         if(category[selectedX].items.isNotEmpty()){
-            val selectedItem = subcontentStack.peek()?.subContent ?: category[selectedX].items
+            val selectedItem = subcontentStack.peek()?.getContent ?: category[selectedX].items
             selectedY = (selectedY + y).coerceIn(0, selectedItem.size - 1)
+            category[selectedX].itemY = selectedY
         }
 
         if(x != 0){
@@ -727,6 +755,7 @@ class VshView : View {
         selectedX = x.coerceIn(0, category.size - 1)
         if(category[selectedX].items.isNotEmpty()){
             selectedY = y.coerceIn(0, category[selectedX].items.size - 1)
+            category[selectedX].itemY = selectedY
         }
 
         // Skip vertical sliding animation
@@ -745,7 +774,7 @@ class VshView : View {
     }
 
     fun reassignYPos(open: Boolean){
-        val maxSizePosition = if(subcontentStack.hasContent()) subcontentStack.peek()?.subContent?.size ?: 0 else category[selectedX].items.size
+        val maxSizePosition = if(subcontentStack.hasContent()) subcontentStack.peek()?.getContent?.size ?: 0 else category[selectedX].items.size
         selectedXf += open.choose(-1f, 1f)
         subContentOffset = open.choose(-1f, 1f)
         selectedY = selectedY.coerceIn(0,  maxSizePosition - 1)
@@ -758,12 +787,16 @@ class VshView : View {
         }else{
             try{
                 val data = subcontentStack.peek() ?: category[selectedX].items[selectedY]
-                if(data.hasSubContent){
+                if(data.hasContent){
                     subcontentStack.push(data)
                     Log.d(TAG, "Try execution | Subcontent count : ${subcontentStack.count} - LastContent : ${subcontentStack.peek()}}")
                     reassignYPos(true)
                 }else{
-                    category[selectedX].items[selectedY].onLaunch.run()
+                    if(data == category[selectedX].items[selectedY]){
+                        data.onLaunch.run()
+                    }else{
+                        data.getContent!![selectedY].onLaunch.run()
+                    }
                 }
             }catch (ex:Exception){ ex.printStackTrace() }
         }
@@ -835,6 +868,6 @@ class VshView : View {
         }
     }
 
-    fun findById(id:String) : VshX? = category.find { it.id == id }
+    fun findById(id:String) : VshCategory? = category.find { it.id == id }
     /// endregion
 }
