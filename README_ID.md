@@ -21,29 +21,6 @@ lebih untuk navigasinya.
 | Membuka Item      | Enter      | X/O       | A/B      | Sentuh pada ikon |
 | Opsi              | Menu/Tab   | Segitiga  | Y        | Sentuh dua jari  |
 
-## Penggunaan di TV
-**Perhatian: Peluncur ini masih belum siap untk dipakai secara default di TV, resiko ditanggung sendiri.**
-
-Beberapa TV tidak mengizinkan penggunaan Peluncur external. Launcher ini bisa dipakai secara default dengan cara berikut.
-Asumsi anda menggunakan Windows. Untuk langkah 4 - 8 harus urut, terutama 6 dan 7.
-
-1. Aktifkan Opsi Pengembang dan USB Debugging di TV.
-2. Pasang Driver TV anda dan ADB dengan Fastboot
-3. Download APK peluncur ini.
-4. Sambungkan TV anda ke PC.
-5. Di PC, jalankan "cmd".
-6. Pasang peluncur ini dengan:
-```
-adb install "path/to/apk"
-```
-7. Uninstall peluncur bawaan dengan:
-```
-adb uninstall -k --user 0 com.google.android.leanbacklauncher
-adb uninstall -k --user 0 com.google.android.tvlauncher
-```
-8. Sekarang, launcher ini sudah menjadi launcher default TV anda.
-
-
 ## Penggunaan RAM
 Pada perangkat tes saya, aplikas kosongan biasa memakan RAM sekitar 10MB, ditambah ikon yang dimuat sekitaran 
 500kB~1MB per ikon. Ikon akan tetap berada pada RAM selama launcher berjalan.
