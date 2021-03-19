@@ -3,6 +3,9 @@ Bahasa : Bahasa Indonesia | [English](README.md)
 # Cross Launcher
 Peluncur Aplikasi Android mirip XMB pada beberapa produk Sony, terutama XMB PlayStation 3.
 
+## ⚠ SEDANG HIATUS ⚠
+Saya tidak bisa sering update projek ini karena perusahaan tempat saya bekerja sedang dalam jadwal projek yang padat, game maupun apl. Kadang juga mood ilang pas lagi dapet waktu kosong. Ya, Inikan projek sampingan saya sendiri. Bahkan mungkin saya bisa melupakan projek ini sama sekali.
+
 ## Fokus Utama
 Launcher ini tidak benar-benar ditujukan kepada perangkat Android layar sentuh, Tetapi untuk perangkat
 Android yang normalnya tidak memiliki antarmuka sentuh seperti TV, Komputer, Laptop atau Emulator.
