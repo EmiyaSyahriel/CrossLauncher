@@ -2,6 +2,11 @@ Language : English | [Bahasa Indonesia](README_ID.md)
 # Cross Launcher
 Sony XMB like Android Launcher, Mainly inspired by Sony PlayStation 3(TM) XMB.
 
+## ⚠ Hiatus Notice ⚠
+I cannot work on this project for very often as the company I'm working at currently have a very thigh schedule for projects, be it app or games. 
+And sometime I lost my mood to work in this project when I have free time. Please understand that this project is my own side-project. 
+There is probably a time that I may forgot this project at all.
+
 ## Main Focus
 This launcher is not really focused to Android touch-based devices, But for Android devices that 
 naturally doesn't have a native touch interface like TV, PC, Laptop, and Emulators.
@@ -17,28 +22,6 @@ lot of apps to navigate.
 | Navigate Items    | Arrow Pad| D-Pad     | D-Pad    | Swipe            |
 | Execute Item      | Enter    | X/O       | A/B      | Icon touch       |
 | Hide/Show Options | Menu/Tab | Triangle  | Y        | Two-finger Touch |
-
-## TV Installation
-**Warning: This launcher isn't ready to be used on TV yet, use at your own risk**
-
-Some Android TV internally restricts the usage of external launcher. You can use this launcher this way, 
-assuming you are on Windows.
-
-1. Enable Developer Options and USB Debugging on your TV
-2. Install your TV Driver and ADB with Fastboot to your PC / Laptop.
-3. Download this Launcher installer.
-4. Connect your TV to your PC / Laptop.
-5. On your PC / Laptop, Run "cmd".
-6. Sideload this launcher installer with:
-```
-adb install "path/to/apk"
-```
-7. Uninstall default launcher with:
-```
-adb uninstall -k --user 0 com.google.android.leanbacklauncher
-adb uninstall -k --user 0 com.google.android.tvlauncher
-```
-8. Now, you can enjoy this launcher on your TV.
 
 ## Memory Usage
 On my test devices, Base memory usage (without items) is about 10MB.
