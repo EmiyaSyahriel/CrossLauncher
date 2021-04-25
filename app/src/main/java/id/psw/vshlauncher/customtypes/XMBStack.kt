@@ -1,8 +1,6 @@
 package id.psw.vshlauncher.customtypes
 
 import android.util.Log
-import id.psw.vshlauncher.VshY
-import java.lang.Exception
 import kotlin.collections.ArrayList
 
 class XMBStack<T> {

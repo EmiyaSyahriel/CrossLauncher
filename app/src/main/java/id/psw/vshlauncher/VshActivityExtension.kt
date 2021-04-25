@@ -13,7 +13,7 @@ import android.widget.EditText
 import android.widget.Toast
 import id.psw.vshlauncher.customtypes.HexInputFilter
 import id.psw.vshlauncher.icontypes.XMBIcon
-import id.psw.vshlauncher.icontypes.XMBMenuEntry
+import id.psw.vshlauncher.icontypes.createMenu
 import id.psw.vshlauncher.mediaplayer.XMBAudioPlayerService
 import id.psw.vshlauncher.views.VshView
 

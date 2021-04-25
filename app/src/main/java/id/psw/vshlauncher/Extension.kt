@@ -5,12 +5,15 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import androidx.core.graphics.drawable.toBitmap
+import id.psw.vshlauncher.views.VshServer
 import java.io.File
 import java.lang.Math.round
 import java.util.*
 import java.util.function.Predicate
+import kotlin.collections.ArrayList
 
 fun PointF.distanceTo(other : PointF) : Float{
     return PointF(other.x - this.x, other.y - this.y).length()
@@ -243,4 +246,13 @@ fun <T> ArrayList<T>.move(from:Int, to:Int){
     val data = this[from]
     removeAt(from)
     add(to, data)
+}
+
+fun MotionEvent.getAllTouches() : ArrayList<VshServer.Input.Taps>{
+    val retval = ArrayList<VshServer.Input.Taps>()
+    for(i in 0 until pointerCount)
+    {
+        retval.add(VshServer.Input.Taps(getPointerId(i), PointF(getX(i), getY(i))))
+    }
+    return retval
 }

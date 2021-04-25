@@ -27,8 +27,6 @@ import android.view.*
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.contains
-import id.psw.vshlauncher.customtypes.Icon
 import id.psw.vshlauncher.icontypes.*
 import id.psw.vshlauncher.mediaplayer.AudioPlayerSvcConnection
 import id.psw.vshlauncher.mediaplayer.XMBVideoPlayer
@@ -132,16 +130,15 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             }
         }
 
-        setContentView(coldboot)
+        // setContentView(coldboot)
+        setContentView(vsh)
         playColdbootSound()
-
         setOperatorName()
 
         checkFileReadWritePermission()
+        initServerData()
         appListerThread = Thread( Runnable {
             loadApps()
-            loadAudio()
-            loadVideo()
         })
         appListerThread.start()
         touchSlop = ViewConfiguration.get(this).scaledTouchSlop
@@ -325,123 +322,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
 
     private fun populateSettingSections(){
-        val settings = VshServer.findCategory(VshCategory.settings) ?: return
-        val home = VshServer.findCategory(VshCategory.home) ?: return
-
-        val y = true.toLocalizedString()
-        val n = false.toLocalizedString()
-        val blankIcon = Icon(XMBIcon.TransparentBitmap, 75)
-
-        // Orientation
-        // TODO : Add cust. icon
-        val systemSetting = VshSettingCategory("xmb_setting_system", "System Setting", "", blankIcon)
-        val displaySetting = VshSettingCategory("xmb_icon_display", "Display Setting", "", blankIcon)
-        settings.addContent(systemSetting)
-        settings.addContent(displaySetting)
-
-        val sysOrientation = VshOptionedSettingIcon(
-            0xd1802, this, getString(R.string.item_orientation), VshSettingIcon.DEVICE_ORIENTATION,
-            { switchOrientation() }, { getOrientationName() }
-        )
-
-        sysOrientation.createMenu()
-            .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_USER)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_USER) }
-            .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT) }
-            .add(getOrientationName(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)) { setOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE) }
-            .apply()
-
-
-        setOrientation(prefs.getInt(PREF_ORIENTATION_KEY, ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE))
-
-        val dispShowBrand = VshOptionedSettingIcon(
-            0xd1803, this,
-            getString(R.string.setting_show_gameboot),
-            VshSettingIcon.ICON_ANDROID,
-            { setGameBoot() },
-            { useGameBoot.toLocalizedString() }
-        )
-
-        dispShowBrand.createMenu()
-            .add(y){setGameBoot(true)}
-            .add(n){setGameBoot(false)}
-            .apply()
-
-
-        // Dynamic Twinkle Icon
-        val dispTwinkles = VshOptionedSettingIcon(
-            0xd1804, this,
-            getString(R.string.setting_mimic_dynamic_theme),VshSettingIcon.ICON_STAR, { setTwinkles() }, { dynamicThemeTwinkles.toLocalizedString() }
-        )
-
-        val dispBgColors = VshOptionedSettingIcon(
-            0xd1805, this,
-            "Set Menu Background Color", VshSettingIcon.ICON_ANDROID,
-            { showBackgroundColorDialog() },
-            { "Menu background (hidden when menu is hidden)" }
-        )
-        preMadeColors(dispBgColors).apply()
-
-        val dispHideClock = VshOptionedSettingIcon(
-            0xd1806, this,
-            "Hide Clock Bar", VshSettingIcon.ICON_ANDROID,
-            { setHiddenClock() },
-            { VshView.hideClock.toLocalizedString() }
-        )
-
-        dispHideClock.createMenu()
-            .add(y){ setHiddenClock(true) }
-            .add(n){ setHiddenClock(false) }
-            .apply()
-
-        val dispDescSeparator = VshOptionedSettingIcon(
-            0xd1807, this,
-            "Show Description Separator", VshSettingIcon.ICON_ANDROID,
-            { setSeparatorLine() },
-            { VshView.descriptionSeparator.toLocalizedString() }
-        )
-
-        dispDescSeparator.createMenu().add(y){ setSeparatorLine(true) }.add(n){ setSeparatorLine(false) }
-                .apply()
-
-
-        val modding = VshSettingCategory("sys_disp_mod", "Modding", "", blankIcon)
-        val modGameboot = VshSettingIcon(
-                0xd1808, this,
-                getString(R.string.setting_gameboot_custom_guide), VshSettingIcon.ICON_ANDROID,
-                { launchURL("https://github.com/EmiyaSyahriel/CrossLauncher#animation-modding" )},
-                { getString(R.string.common_click_here) }
-            )
-
-        val homeHide = VshSettingIcon(
-            0xd18035, this,
-            getString(R.string.app_hide_menu), VshSettingIcon.ICON_START,
-            {VshServer.showDesktop = !VshServer.showDesktop},
-            {getString(R.string.app_hide_menu_desc)}
-        )
-
-        val homeRefresh = VshSettingIcon(
-            0xd18035, this,
-            getString(R.string.menu_rebuild_db), VshSettingIcon.ICON_REFRESH,
-            {switchToRefreshRequestWindow() },
-            { getString(R.string.menu_rebuild_db_desc) }
-        )
-
-        homeRefresh.createMenu()
-            .add(getString(R.string.menu_rebuild_db)){switchToRefreshRequestWindow() }
-            .add("Restart Process"){ restartApp() }
-            .add("Exit Launcher"){ finish() }
-            .apply()
-
-        settings.addContent(modding)
-        home.addContent(homeHide)
-        home.addContent(homeRefresh)
-        modding.addContent(modGameboot)
-        systemSetting.addContent(sysOrientation)
-        displaySetting.addContent(dispShowBrand)
-        displaySetting.addContent(dispTwinkles)
-        displaySetting.addContent(dispBgColors)
-        displaySetting.addContent(dispHideClock)
-        displaySetting.addContent(dispDescSeparator)
+        // TODO
     }
 
     private fun restartApp(){
@@ -542,6 +423,54 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         return retval || super.onKeyDown(keyCode, event)
     }
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        if(!isOnMenu) return false
+        var retval = false
+
+        when(keyCode){
+            KeyEvent.KEYCODE_DPAD_UP -> {
+                VshServer.Input.onKeyUp(VshServer.InputKeys.DPadU)
+                retval = true
+            }
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                VshServer.Input.onKeyUp(VshServer.InputKeys.DPadD)
+                retval = true
+            }
+            KeyEvent.KEYCODE_DPAD_LEFT -> {
+                VshServer.Input.onKeyUp(VshServer.InputKeys.DPadL)
+                retval = true
+            }
+            KeyEvent.KEYCODE_DPAD_RIGHT ->{
+                VshServer.Input.onKeyUp(VshServer.InputKeys.DPadR)
+                retval = true
+            }
+            KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER ->{
+                VshServer.Input.onKeyUp(VshServer.InputKeys.Select)
+                retval = true
+            }
+            KeyEvent.KEYCODE_DEL ->{
+                VshServer.Input.onKeyUp(VshServer.InputKeys.Back)
+                retval = true
+            }
+            KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_BUTTON_Y -> {
+                VshServer.Input.onKeyUp(VshServer.InputKeys.Menu)
+                retval = true
+            }
+        }
+
+        return retval || super.onKeyUp(keyCode, event)
+    }
+
+    private fun initServerData(){
+        val apps= XMBLambdaIcon(VshCategory.apps).apply {
+            nameImpl = { getString(R.string.category_apps)}
+        }
+        val games = XMBLambdaIcon(VshCategory.games).apply {
+            nameImpl = { getString(R.string.category_games)}
+        }
+        VshServer.root.addContent(apps)
+        VshServer.root.addContent(games)
+    }
 
     private fun loadApps(){
         val apps = VshServer.findCategory(VshCategory.apps) ?: return
@@ -559,8 +488,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 val isGame = packageIsGame(it.activityInfo)
                 //println("VTX_Activity [I] | New App : ${appData.name} (${appData.pkg}) - isGame : $isGame")
                 //val size = File(it.activityInfo.applicationInfo.sourceDir).length().toSize()
-                val description = it.activityInfo.packageName
-                val xmbData = AppIcon(this, description, it)
+                val pkg = it.activityInfo.packageName
+                val xmbData = XMBAppIcon(pkg, it, this)
 
                 // Filter itself
                 if(it.activityInfo.packageName != packageName){
@@ -573,6 +502,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         games.content.sortBy { it.name }
 
         VshServer.StatusBar.isLoading = false
+        apps.selectedIndex = 10
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -624,103 +554,10 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         appListerThread.start()
     }
 
-    private fun loadAudio(){
-        val music = VshServer.findCategory(VshCategory.music) ?: return
-        music.content.clear()
-        SongIcon.songList.clear()
-
-        VshServer.StatusBar.isLoading = true
-        val musicResolver = contentResolver
-        val musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-        val cursor = musicResolver.query(musicUri, null, null, null, null)
-
-        var index = 0
-        if(cursor != null && cursor.moveToFirst()){
-            val idCol = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
-            val pathCol = cursor.getColumnIndex(MediaStore.Video.Media.DATA)
-            do{
-                val id = cursor.getLong(idCol)
-                val path = cursor.getString(pathCol)
-                val item = SongIcon(id.toInt(), path, this)
-                music.addContent(item)
-                index ++
-            }while(cursor.moveToNext())
-        }
-        cursor?.close()
-        VshServer.StatusBar.isLoading = false
-    }
-
-    // TODO: direct this to XMB Audio Player Service instead of internal sfx player
-    fun openAudioFile(metadata:SongIcon.SongMetadata) {
-
-    }
-
-    private fun loadVideo(){
-        VshServer.StatusBar.isLoading = true
-        val vids = VshServer.findCategory(VshCategory.video) ?: return
-        val videoResolver = contentResolver
-        val videoUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        val cursor = videoResolver.query(videoUri, null,null,null,null)
-
-        var index = 0
-        if(cursor != null && cursor.moveToFirst()){
-            val idCol = cursor.getColumnIndex(MediaStore.Video.Media._ID)
-            do{
-                val id = cursor.getLong(idCol)
-                val dataCol = cursor.getColumnIndex(MediaStore.Video.Media.DATA)
-                val path = cursor.getString(dataCol)
-                val item = VideoIcon(id.toInt(), this, path)
-                vids.addContent(item)
-                index++
-            }while(cursor.moveToNext())
-        }
-
-        cursor?.close()
-        VshServer.StatusBar.isLoading = false
-    }
-
-    private fun getUriForFile(path: String):Uri{
-        var filePath = path
-        if(filePath.startsWith("//")){
-            filePath = filePath.substring(2)
-        }
-        return Uri.parse("content://id.psw.vshlauncher.fileprovider/all").buildUpon().appendPath(filePath).build()
-    }
-
-    fun openVideoFile(file:File){
-        val uri = Uri.fromFile(file)
-        CurrentAppData.selectedVideoPath = file.path
-        val mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension)
-        Log.d(TAG, "Opening video V/MX - $uri ($mime)")
-        //grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        val intent = Intent(this, XMBVideoPlayer::class.java).apply {
-            data = uri
-            type = mime
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION )
-            addCategory(Intent.CATEGORY_DEFAULT)
-        }
-        try{
-            startActivity(intent)
-            overridePendingTransition(R.anim.anim_ps3_zoomfadein, R.anim.anim_ps3_zoomfadeout)
-        }catch (e: Exception){
-            Toast.makeText(this, "This video type is not supported", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         overridePendingTransition(R.anim.anim_ps3_zoomfadein, R.anim.anim_ps3_zoomfadeout)
     }
-
-    private fun getMime(path:String) : String{
-        val type = getFileExtension(path)
-        return MimeTypeMap.getSingleton().getExtensionFromMimeType(type)
-            ?: MimeTypeDict.maps[type.toLowerCase(Locale.ROOT)]
-            ?: "*/*"
-    }
-
-    private fun getFileExtension(path:String) : String{ return path.split(".").last() }
 
     private fun packageIsGame(activityInfo: ActivityInfo): Boolean {
         var retval: Boolean
@@ -798,24 +635,27 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     private var points : HashMap<Int, PointF> = HashMap()
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        val retval = false
-        Log.d("TouchEvent","There is ${event.pointerCount} pointers with actionIndex ${event.actionIndex}")
-        if(retval){ // TODO : This should be removed
-            val idx = event.actionIndex
-            val id= event.getPointerId(idx)
-            val x = event.getX(idx)
-            val y = event.getY(idx)
-            when(event.actionMasked){
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_POINTER_UP ->{
-                    points.remove(id)
-                }
-                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_POINTER_DOWN -> {
-                    points.put(id, PointF(x,y))
-                }
-                MotionEvent.ACTION_MOVE ->{
-                    points[id]?.x = x
-                    points[id]?.y = y
-                }
+        var retval = false
+        val idx = event.actionIndex
+        val id= event.getPointerId(0)
+        val x = event.getX(idx)
+        val y = event.getY(idx)
+        when(event.actionMasked){
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_POINTER_UP ->{
+                points.remove(id)
+                VshServer.Input.onTouchUp(id,PointF(x,y))
+                retval = true
+            }
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_POINTER_DOWN -> {
+                points.put(id, PointF(x,y))
+                VshServer.Input.onTouchDown(id,PointF(x,y))
+                retval = true
+            }
+            MotionEvent.ACTION_MOVE ->{
+                points[id]?.x = x
+                points[id]?.y = y
+                VshServer.Input.onTouchMove(id,PointF(x,y))
+                retval = true
             }
         }
 

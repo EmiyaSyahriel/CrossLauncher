@@ -2,7 +2,6 @@ package id.psw.vshlauncher
 
 import android.content.Context
 import android.graphics.BitmapFactory
-import id.psw.vshlauncher.customtypes.Icon
 import id.psw.vshlauncher.icontypes.XMBIcon
 import id.psw.vshlauncher.views.VshView
 
@@ -15,41 +14,5 @@ class VshCategory(var context: VSH, vsh:VshView, private val iconId : String) : 
         const val photo = "explore_category_photo"
         const val music = "explore_category_music"
         const val games = "explore_category_game"
-
-        val defNameIds = mapOf(
-            Pair(apps, R.string.category_apps),
-            Pair(settings, R.string.category_apps),
-            Pair(home, R.string.category_home),
-            Pair(video, R.string.category_videos),
-            Pair(photo, R.string.category_videos),
-            Pair(music, R.string.category_music),
-            Pair(games, R.string.category_games)
-        )
-
-        val defIconIds = mapOf(
-            Pair(apps, R.drawable.category_apps),
-            Pair(settings,R.drawable.category_setting),
-            Pair(home, R.drawable.category_home),
-            Pair(video, R.drawable.category_video),
-            Pair(photo, R.drawable.category_video),
-            Pair(music, R.drawable.category_music),
-            Pair(games, R.drawable.category_games)
-        )
     }
-
-    private lateinit var _icon : Icon
-    init {
-        val defaultIconId = defIconIds[iconId] ?: R.drawable.t_format_background
-        _icon = if(vsh.isInEditMode){
-            Icon(BitmapFactory.decodeResource(context.resources, defaultIconId), 75)
-        }else{
-            Icon((context as VSH).loadLauncherCustomIcon(iconId, defaultIconId), 75)
-        }
-    }
-
-    override val name: String
-        get() = context.resources.getString(defNameIds[iconId] ?: R.string.unknown_symbols)
-
-    override var icon: Icon = _icon
-        get() = _icon
 }

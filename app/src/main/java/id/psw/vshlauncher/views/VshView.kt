@@ -13,8 +13,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.toRectF
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.customtypes.XMBStack
-import id.psw.vshlauncher.icontypes.XMBIcon
-import id.psw.vshlauncher.icontypes.XMBRootIcon
+import id.psw.vshlauncher.icontypes.*
 import id.psw.vshlauncher.typography.*
 import java.lang.Exception
 import java.lang.Math.*
@@ -370,10 +369,10 @@ class VshView : View {
 
         itemRoot.content.forEachIndexed{ index, data ->
             val iconPaint = if(index == selectedX){paintIconSelected}else{paintIconUnselected}
-            val icon = if(index == selectedX){data.icon.selected}else{data.icon.unselected}
+            val icon = if(index == selectedX){data.activeIcon}else{data.inactiveIcon}
 
             val screenX = (pivotX + ((index - selectedXf) * d(100))) - (icon.width / 2f)
-            // Don't render item outside outside
+            // Don't render item outside
             if(screenX > -icon.width && screenX < width+icon.width){
                 canvas.drawBitmap( icon ,screenX, pivotY - (icon.height/2f), iconPaint)
                 if(index == selectedX){
@@ -424,9 +423,9 @@ class VshView : View {
                 }
 
                 val icon = if (isSelected) {
-                    data.icon.selected
+                    data.activeIcon
                 } else {
-                    data.icon.unselected
+                    data.inactiveIcon
                 }
                 var centerY = pivotY + ((index - selectedYf) * d(60f)) + d(100f)
                 var screenY =
@@ -502,7 +501,7 @@ class VshView : View {
                 val arrow = arrowIcon ?: transparentBitmap
                 canvas.drawBitmap(arrow, arrowX - arrow.width/2f, arrowY - arrow.height/2f, paintIconSelected)
 
-                val folderIcon = folder.icon.selected
+                val folderIcon = folder.activeIcon
                 val screenX = (pivotX - subContentOffset.toLerp(d(100f), 0f))
 
                 canvas.drawBitmap(folderIcon, screenX - (folderIcon.width/2f), pivotY - (folderIcon.height/2f) + d(100f), paintIconUnselected)
@@ -510,7 +509,7 @@ class VshView : View {
                 // Draw the main category over current folder if is the first directory
                 if(isOnRoot){
                     val cat = itemRoot.getContent(indexStack[0])
-                    val catIcon = cat.icon.selected
+                    val catIcon = cat.activeIcon
                     canvas.drawBitmap(catIcon, screenX - (catIcon.width/2f), pivotY - (catIcon.height/2f), paintIconUnselected)
                 }
 
