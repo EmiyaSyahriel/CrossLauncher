@@ -1,9 +1,14 @@
 package id.psw.vshlauncher.customtypes
 
+import android.util.Log
 import id.psw.vshlauncher.VshY
+import java.lang.Exception
 import kotlin.collections.ArrayList
 
 class XMBStack<T> {
+    companion object{
+        private const val TAG : String = ""
+    }
     private var internalList : ArrayList<T> = arrayListOf()
 
     fun push(item:T){ internalList.add(item) }
@@ -22,10 +27,13 @@ class XMBStack<T> {
 
     fun pop(defVal : T? = null) : T?{
         var retval : T? = defVal
+
         if(internalList.size > 0){
             retval = internalList.last()
             internalList.removeAt(internalList.lastIndex)
         }
+
+        Log.d(TAG, "Popped item : ${retval ?: "Unknown"}")
         return retval
     }
 
@@ -39,4 +47,6 @@ class XMBStack<T> {
         internalList.forEach { if (it != null) newList.add(it) }
         internalList = newList
     }
+
+    operator fun set(t: Int, value: T) { internalList[t] = value }
 }

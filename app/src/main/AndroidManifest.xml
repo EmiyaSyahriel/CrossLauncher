@@ -12,6 +12,7 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
+    <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
 
     <application
         android:allowAudioPlaybackCapture="true"
@@ -24,7 +25,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
-        <activity android:name=".mediaplayer.XMBAudioPlayer"/>
+        <activity android:name=".test_activity.XMBWaveTestActivity" android:exported="true" android:launchMode="singleInstance"/>
+        <activity android:name=".mediaplayer.XMBAudioPlayer" />
 
         <service
             android:name=".mediaplayer.XMBAudioPlayerService"

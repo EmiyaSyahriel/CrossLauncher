@@ -9,13 +9,14 @@ import id.psw.vshlauncher.move
 import id.psw.vshlauncher.removeIfTrue
 import id.psw.vshlauncher.views.VshView
 
-open class XMBIcon(val context: VSH, val vsh: VshView, val itemId: String) {
+open class XMBIcon(val itemId: String) {
 
     companion object{
-        val TransparentBitmap = ColorDrawable(Color.TRANSPARENT).toBitmap(1,1)
+        val TransparentDrawable = ColorDrawable(Color.TRANSPARENT)
+        val TransparentBitmap = TransparentDrawable.toBitmap(1,1)
+        val blank = Icon(TransparentBitmap, 75)
     }
 
-    protected val blank = Icon.fromBitmap(TransparentBitmap)
     protected open val idPrefix = ""
 
     /// region Metadata
@@ -23,8 +24,9 @@ open class XMBIcon(val context: VSH, val vsh: VshView, val itemId: String) {
     open val name : String = ""
     open val description : String = ""
     open val hasDescription : Boolean = false
-    open val icon : Icon = blank
+    open var icon : Icon = blank
     open val isVisible : Boolean get() = true
+    open var selectedIndex : Int = 0
     /// endregion
 
     /// region Contents
@@ -32,6 +34,7 @@ open class XMBIcon(val context: VSH, val vsh: VshView, val itemId: String) {
     open val hasContent : Boolean
         get() = content.isNotEmpty()
     open fun getContent(index:Int) : XMBIcon = content[index]
+    open fun getContent():XMBIcon = content[contentIndex]
     open fun getContent(vararg indices : Int) : XMBIcon{
         var retval = this
         for(i in indices){
@@ -55,6 +58,7 @@ open class XMBIcon(val context: VSH, val vsh: VshView, val itemId: String) {
     val menu = ArrayList<XMBMenuEntry>()
     open val hasMenu : Boolean get() = menu.isNotEmpty()
     open fun getMenu(index:Int): XMBMenuEntry = menu[index]
+    open fun getMenu():XMBMenuEntry = menu[menuIndex]
     open fun addMenu(menuEntry:XMBMenuEntry) = menu.add(menuEntry)
     open fun delMenu(menuEntry:XMBMenuEntry) = menu.remove(menuEntry)
     open fun delMenu(ID:String)  = menu.removeIfTrue { it.id.equals(ID, true) }
@@ -97,17 +101,24 @@ open class XMBIcon(val context: VSH, val vsh: VshView, val itemId: String) {
 
     class MenuEntryBuilder(val icon:XMBIcon, val prefix:String) {
         private val entries : ArrayList<XMBMenuEntry> = ArrayList()
-        fun add(name:String, desc:String, onClick : () -> Unit, onSelect: (Boolean, XMBMenuEntry) -> Unit) : MenuEntryBuilder{
-            entries.add(XMBMenuEntry(icon.context, icon.vsh, "${prefix}_${entries.size}").apply {
+        fun add(name:String, onClick : () -> Unit) : MenuEntryBuilder{
+            entries.add(XMBMenuEntry("${prefix}_${entries.size}").apply {
 
                 this.name = name
-                this.description = desc
                 this.onClick = Runnable(onClick)
-                this.onSelectionChanged = onSelect
+                this.selectable = true
             })
             return this
         }
-        fun build(clearContainer:Boolean = false) : ArrayList<XMBMenuEntry> {
+        fun separator(){
+            entries.add(XMBMenuEntry("${prefix}_${entries.size}").apply {
+                this.onClick = Runnable {  }
+                this.name = ""
+                this.selectable = false
+            }
+            )
+        }
+        fun apply(clearContainer:Boolean = false) : ArrayList<XMBMenuEntry> {
             if(clearContainer) icon.menu.clear()
             entries.forEach { icon.menu.add(it) }
             return entries

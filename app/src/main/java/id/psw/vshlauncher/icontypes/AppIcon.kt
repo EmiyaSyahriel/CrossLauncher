@@ -7,17 +7,16 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.customtypes.Icon
+import id.psw.vshlauncher.views.VshView
 import java.io.File
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
-class AppIcon(private var context: VSH, itemID: Int, private var resolveInfo: ResolveInfo) :
-    VshY(itemID) {
-
-    private var cachedSelectedIcon : Bitmap = transparentBitmap
-    private var cachedUnselectedIcon : Bitmap = transparentBitmap
+class AppIcon(var context: VSH, itemID: String, private var resolveInfo: ResolveInfo) :
+    XMBIcon(itemID) {
 
     /// region Mostly for Cosmetics
     private var apkFile = File(resolveInfo.activityInfo.applicationInfo.sourceDir)
@@ -36,10 +35,6 @@ class AppIcon(private var context: VSH, itemID: Int, private var resolveInfo: Re
     /// endregion
 
     private var appLabel = resolveInfo.loadLabel(context.packageManager).toString()
-
-    private var launchApp = Runnable {
-        context.startApp(resolveInfo.activityInfo.packageName)
-    }
 
     enum class DescriptionText {
         PackageName,
@@ -64,30 +59,10 @@ class AppIcon(private var context: VSH, itemID: Int, private var resolveInfo: Re
         }
     }
 
-
-    private val appOptions =
-        VshOptionsBuilder()
-            .add("Launch", launchApp)
-            .add("Uninstall") { uninstallApp() }
-            .add("Find on Play Store") { openOnPlayStore() }
-            .build()
-
-    override val hasOptions: Boolean = true
-    override val options: ArrayList<VshOption>
-        get() = appOptions
-
-    override val selectedIcon: Bitmap get() = cachedSelectedIcon
-    override val unselectedIcon: Bitmap get() = cachedUnselectedIcon
-
     private fun loadIcon(){
-        val selectedSize = (selectedIconSize * context.vsh.density).toInt()
-        val unselectedSize = (unselectedIconSize * context.vsh.density).toInt()
         val loadedIcon = resolveInfo.loadIcon(context.packageManager).toBitmap()
-
         //val customIcon = context.getApp
-
-        cachedSelectedIcon = Bitmap.createScaledBitmap(loadedIcon, selectedSize, selectedSize, false)
-        cachedUnselectedIcon = Bitmap.createScaledBitmap(loadedIcon, unselectedSize, unselectedSize, false)
+        icon.reload(loadedIcon, selectedIconSize.toInt())
     }
 
     private fun uninstallApp(){
@@ -113,26 +88,23 @@ class AppIcon(private var context: VSH, itemID: Int, private var resolveInfo: Re
 
     private fun unloadIcon(){
         // avoid recycling default bitmaps
-        if (cachedSelectedIcon != transparentBitmap) cachedSelectedIcon.recycle()
-        if (cachedUnselectedIcon != transparentBitmap) cachedUnselectedIcon.recycle()
-
-        cachedSelectedIcon = transparentBitmap
-        cachedUnselectedIcon = transparentBitmap
+        icon.unload()
     }
 
-    override fun onHidden() {
+    fun onHidden() {
         if(dynamicUnload) unloadIcon()
     }
 
-    override fun onScreen() {
+    fun onScreen() {
         if(dynamicUnload) loadIcon()
     }
 
     override val name: String
         get() = appLabel
 
-    override val onLaunch: Runnable
-        get() = launchApp
+    override fun onLaunch(){
+        context.startApp(resolveInfo.activityInfo.packageName)
+    }
 
     private fun openOnPlayStore(){
         try{

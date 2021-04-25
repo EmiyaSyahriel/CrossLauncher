@@ -5,16 +5,17 @@ import androidx.core.graphics.scale
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.VshY
+import id.psw.vshlauncher.customtypes.Icon
 import id.psw.vshlauncher.loadLauncherCustomIcon
 
 open class VshSettingIcon(
     itemID: Int,
-    private var context: VSH,
+    context: VSH,
     name: String,
     iconId: String,
     private var onClick: () -> Unit,
     valueStr: () -> String
-) : VshY(itemID) {
+) : XMBIcon(iconId) {
 
     companion object
     {
@@ -38,21 +39,14 @@ open class VshSettingIcon(
     private var valueString : () -> String = valueStr
     private var iconName : String = name
     private var iconDrawableId = iconId
-    private var iconSelected : Bitmap = transparentBitmap
-    private var iconUnselected : Bitmap = transparentBitmap
-
-    override val unselectedIcon: Bitmap get() = iconUnselected
-    override val selectedIcon: Bitmap get() = iconSelected
 
     init{
         val icon = context.loadLauncherCustomIcon(
             iconId,
             iconIds[iconId] ?: R.drawable.icon_android
         )
-        val selectedSize = (AppIcon.selectedIconSize * context.vsh.density).toInt()
-        val unselectedSize = (AppIcon.unselectedIconSize * context.vsh.density).toInt()
-        iconSelected = icon.scale(selectedSize, selectedSize, doFilteredScaling)
-        iconUnselected = icon.scale(unselectedSize, unselectedSize, doFilteredScaling)
+        Icon.density = context.resources.displayMetrics.density
+        this.icon.reload(icon, AppIcon.selectedIconSize.toInt())
     }
 
     override val hasDescription: Boolean
@@ -64,7 +58,6 @@ open class VshSettingIcon(
     override val description: String
         get() = this.valueString.invoke()
 
-    override val onLaunch: Runnable
-        get() = Runnable { onClick.invoke() }
+    override fun onLaunch(){ onClick.invoke() }
 
 }

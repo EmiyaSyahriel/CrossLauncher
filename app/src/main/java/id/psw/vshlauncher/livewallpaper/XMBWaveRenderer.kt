@@ -1,69 +1,51 @@
 package id.psw.vshlauncher.livewallpaper
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
+import android.content.Context
+import android.opengl.GLSurfaceView
+import javax.microedition.khronos.egl.EGLConfig
+import javax.microedition.khronos.opengles.GL10
 
-object XMBWaveRenderer {
-    data class XMBScalingTransport(val w:Float, val h:Float, val density:Float)
-    private data class Particle(val x:Float, val y:Float, val size:Float, val alpha:Float)
+import android.opengl.GLES20
+import android.util.Log
+import id.psw.vshlauncher.livewallpaper.ogl.GLShader
+import id.psw.vshlauncher.livewallpaper.ogl.GLShaders
+import java.io.InputStream
+import java.nio.charset.Charset
 
-    var wavePaint = Paint().apply {
-        color = Color.argb(32,255,255,255)
-    }
-    var particlePaint = Paint()
+class XMBWaveRenderer(val context: Context) : GLSurfaceView.Renderer {
 
-    var drawDynamicParticle = false
-    private val paths = arrayListOf(Path(), Path(), Path(), Path(),Path(), Path())
-    private val particlePath = Path()
-    private val particles = arrayListOf<Particle>()
-    // Taken from https://github.com/zanneth/Wavelike/blob/master/shaders/wave_vertex.glsl
-    private fun waveFunction(x:Float, amp:Float, time:Float): Float{
-        val x1 = amp * sin(x - time)
-        val x2 = amp * cos(x - time)
-        val x3 = cos(x / PI).pow(2.0).toFloat()
-        return (x1 + x2 + x3) - 1.0f;
+    companion object{
+        const val TAG = "wave.qrc"
     }
 
-    private fun updatePaths(w:Float, amp:Float, h:Float){
-        paths.forEachIndexed {index, it ->
-            it.reset()
-            var i = 0
-            var ms = System.currentTimeMillis().toFloat()
-            // draw first line
-            it.moveTo(0f,0f)
-            while(i <= w){
-                val iF = (i.toFloat() + (index * w)) * w
-                it.lineTo(iF, waveFunction(iF, amp, ms))
-                ms += w
-                i++
-            }
-            while(i >= 0){
-                val iF = (i.toFloat() + (index * w)) * w
-                it.lineTo(iF, waveFunction(iF, amp, ms) * h)
-                ms += w
-                i--
-            }
-        }
+    lateinit var bg: GLBackgroundPlane
+    lateinit var wave: GLWavePlane
+
+    override fun onSurfaceCreated(_gl: GL10?, config: EGLConfig?) {
+        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
+        GLShaders.blankShader = GLShader(context, "blank")
+        GLShaders.backgroundShader = GLShader(context, "xmb_background")
+        GLShaders.waveShader = GLShader(context, "xmb_wave")
+
+        bg = GLBackgroundPlane()
+        wave = GLWavePlane()
+        bg.genBuffer()
+        wave.genBuffer()
+    }
+    override fun onSurfaceChanged(_gl: GL10?, width: Int, height: Int) {
+        GLES20.glViewport(0, 0, width, height)
     }
 
-    private fun updateParticles(w:Float, h:Float){
-        if(particles.size < 128){
-            for(i in 0 .. 128){
-                particles.add(Particle(0f,0f,0f,0f))
-            }
-        }
-
-
-    }
-
-    fun draw(canvas: Canvas, scaleData:XMBScalingTransport){
-        updatePaths(scaleData.w, 0.2f, scaleData.w)
+    override fun onDrawFrame(_gl: GL10?) {
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        GLES20.glDisable(GLES20.GL_CULL_FACE)
+        GLES20.glEnable(GLES20.GL_BLEND)
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
+        GLES20.glLineWidth(10f)
+        bg.render()
+        wave.render()
+        GLES20.glDisable(GLES20.GL_BLEND)
+        GLES20.glEnable(GLES20.GL_CULL_FACE)
     }
 
 }

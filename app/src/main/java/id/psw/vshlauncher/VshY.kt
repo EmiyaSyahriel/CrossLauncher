@@ -10,7 +10,7 @@ import id.psw.vshlauncher.customtypes.XMBStack
 import id.psw.vshlauncher.icontypes.XMBIcon
 import id.psw.vshlauncher.views.VshView
 
-open class VshY(context: VSH, vsh:VshView, itemID: String) : XMBIcon(context, vsh, itemID) {
+open class VshY(context: VSH, vsh:VshView, itemID: String) : XMBIcon(itemID) {
 
 
     /** Tell the view to render the icon in 20:11 AR instead of 1:1 icon */

@@ -6,7 +6,7 @@ import id.psw.vshlauncher.customtypes.Icon
 import id.psw.vshlauncher.icontypes.XMBIcon
 import id.psw.vshlauncher.views.VshView
 
-class VshCategory(context: VSH, vsh:VshView, private val iconId : String) : XMBIcon(context, vsh, iconId) {
+class VshCategory(var context: VSH, vsh:VshView, private val iconId : String) : XMBIcon(iconId) {
     companion object {
         const val apps = "explore_category_apps"
         const val settings = "explore_category_sysconf"
@@ -40,16 +40,16 @@ class VshCategory(context: VSH, vsh:VshView, private val iconId : String) : XMBI
     private lateinit var _icon : Icon
     init {
         val defaultIconId = defIconIds[iconId] ?: R.drawable.t_format_background
-        if(vsh.isInEditMode){
-            Icon.fromBitmap(BitmapFactory.decodeResource(context.resources, defaultIconId))
+        _icon = if(vsh.isInEditMode){
+            Icon(BitmapFactory.decodeResource(context.resources, defaultIconId), 75)
         }else{
-            Icon.fromBitmap((context as VSH).loadLauncherCustomIcon(iconId, defaultIconId))
+            Icon((context as VSH).loadLauncherCustomIcon(iconId, defaultIconId), 75)
         }
     }
 
     override val name: String
         get() = context.resources.getString(defNameIds[iconId] ?: R.string.unknown_symbols)
 
-    override val icon: Icon
+    override var icon: Icon = _icon
         get() = _icon
 }

@@ -12,6 +12,8 @@ import android.text.method.DigitsKeyListener
 import android.widget.EditText
 import android.widget.Toast
 import id.psw.vshlauncher.customtypes.HexInputFilter
+import id.psw.vshlauncher.icontypes.XMBIcon
+import id.psw.vshlauncher.icontypes.XMBMenuEntry
 import id.psw.vshlauncher.mediaplayer.XMBAudioPlayerService
 import id.psw.vshlauncher.views.VshView
 
@@ -90,8 +92,9 @@ fun VSH.setBackgroundColor(a:Int,r:Int,g:Int,b:Int){
     prefs.edit().putInt(VSH.PREF_BACKGROUND_COLOR, VshView.menuBackgroundColor).apply()
 }
 
-val VSH.preMadeColors : VshY.VshOptionsBuilder
-    get() = VshY.VshOptionsBuilder()
+fun VSH.preMadeColors(icon:XMBIcon) : XMBIcon.MenuEntryBuilder {
+
+    return icon.createMenu()
         .add("Clear"){          setBackgroundColor(   0, 255, 255, 255)}
         .add("50% Red"){        setBackgroundColor( 128, 255,   0,   0)}
         .add("50% Green"){      setBackgroundColor( 128,   0, 255,   0)}
@@ -103,6 +106,7 @@ val VSH.preMadeColors : VshY.VshOptionsBuilder
         .add("Opaque Blue"){    setBackgroundColor( 255,   0,   0, 255)}
         .add("Opaque Black"){   setBackgroundColor( 255,   0,   0,   0)}
         .add("Opaque White"){   setBackgroundColor( 255, 255, 255, 255)}
+}
 
 fun VSH.tryConnectToMusicPlayerService(){
     bindService(Intent(this, XMBAudioPlayerService::class.java), audioPlayerConnector, Context.BIND_AUTO_CREATE)

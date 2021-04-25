@@ -71,8 +71,9 @@ class VshView : View {
 
     var selectedXf = 0f
     var selectedYf = 0f
-    var selectedX = 0
-    var selectedY = 0
+    var selectedX : Int get() = indexStack[0] ; set(v) { indexStack[0] = v}
+    var selectedY : Int get() = deepestSubContent.contentIndex ; set(v){ deepestSubContent.contentIndex = v}
+
     var menuIndex = 0
     var lastInteractionTime = 0L
     lateinit var vsh : VSH
@@ -159,8 +160,6 @@ class VshView : View {
     }
 
     private fun init(context:Context, attrs: AttributeSet?, defStyle: Int) {
-        itemRoot = XMBRootIcon(vsh, this)
-
         val a = context.obtainStyledAttributes(
             attrs, R.styleable.VshView, defStyle, 0
         )
@@ -172,6 +171,8 @@ class VshView : View {
         if(FontCollections.masterFont != null){
             xmbFont = FontCollections.masterFont!!
         }
+        indexStack.push(0)
+        itemRoot = XMBRootIcon()
         fillCategory()
 
     }
@@ -183,13 +184,14 @@ class VshView : View {
 
     @Suppress("DEPRECATION")
     fun fillCategory(){
-        itemRoot.addContent(VshCategory(context, this, VshCategory.home))
-        itemRoot.addContent(VshCategory(context, this, VshCategory.settings))
-        itemRoot.addContent(VshCategory(context, this, VshCategory.photo))
-        itemRoot.addContent(VshCategory(context, this, VshCategory.music))
-        itemRoot.addContent(VshCategory(context, this, VshCategory.video))
-        itemRoot.addContent(VshCategory(context, this, VshCategory.apps))
-        itemRoot.addContent(VshCategory(context, this, VshCategory.games))
+        val vsh = context as VSH
+        itemRoot.addContent(VshCategory(vsh, this, VshCategory.home))
+        itemRoot.addContent(VshCategory(vsh, this, VshCategory.settings))
+        itemRoot.addContent(VshCategory(vsh, this, VshCategory.photo))
+        itemRoot.addContent(VshCategory(vsh, this, VshCategory.music))
+        itemRoot.addContent(VshCategory(vsh, this, VshCategory.video))
+        itemRoot.addContent(VshCategory(vsh, this, VshCategory.apps))
+        itemRoot.addContent(VshCategory(vsh, this, VshCategory.games))
     }
 
     // Draw text from it's top instead of baseline like JS does :P
@@ -385,10 +387,14 @@ class VshView : View {
         val pivotX = (width * 0.3f) - ((selectedX - selectedXf) * d(-100))
         val pivotY = height * 0.3f
 
-        var items : XMBIcon = itemRoot.getContent(indexStack[0]).getContent(indexStack[1])
+        try{
+
+        var items : XMBIcon = itemRoot
+            .getContent(indexStack[0])
+            .getContent()
         val depth = indexStack.count
         for(i in 2 until depth){
-            if(items.hasContent){
+            if(!isOnRoot){
                 items = items.getContent(indexStack[1])
             }else{
                 indexStack.pop()
@@ -460,12 +466,13 @@ class VshView : View {
         }catch(cmfce:ConcurrentModificationException){
             cmfce.printStackTrace()
         }
+        }catch (e:Exception){}
     }
 
     private var subContentOffset = 1.0f
     private var arrowIcon : Bitmap? = null
 
-    private val deepestSubContent : XMBIcon get(){
+    val deepestSubContent : XMBIcon get(){
         var items = itemRoot.getContent(0)
 
         val depth = indexStack.count
@@ -527,14 +534,13 @@ class VshView : View {
 
         // Draw contents
         if(isSelectionValid){
-            val item = if(isOnRoot) itemRoot.getContent(indexStack[0], indexStack[1]) else deepestSubContent
+            val item = if(isOnRoot) itemRoot.getContent(indexStack[0]).getContent() else deepestSubContent
             if(item != null){
-                val options = item.options
                 paintTextSelected.getTextBounds("M",0,1, optionTextBound)
                 val charHeight = optionTextBound.height() * 1.5f
-                val yOffset = (optionsRect.height() / 2f) + ((options.size * -charHeight)  /2f)
+                val yOffset = (optionsRect.height() / 2f) + ((item.menuCount * -charHeight)  /2f)
                 val xTextOffset = optionTextBound.width() * 2
-                options.forEachIndexed { index, vshOption ->
+                item.forEachMenuIndexed { index, vshOption ->
                     val isSelected = index == optionSelectedIndex
                     val paint = if(isSelected) paintTextSelected else paintTextUnselected
                     val yPos = (index * charHeight)+ yOffset
@@ -558,7 +564,7 @@ class VshView : View {
                         )
                     }
 
-                    if(!vshOption.shouldSkip){
+                    if(!vshOption.selectable){
                         canvas.drawText(vshOption.name, optionsRect.left + xTextOffset, yPos, paint, -0.5f)
                     }
                 }
@@ -583,24 +589,18 @@ class VshView : View {
 
     private val isSelectionValid : Boolean get() {
         var retval = false
-        if(selectedX < category.size){
-            retval = selectedY < if(subcontentStack.hasContent()){
-                subcontentStack.peek()?.getContent?.size ?: 0
-            }else{
-                category[selectedX].items.size
-            }
+        if(selectedX < itemRoot.contentSize){
+            retval = selectedY < deepestSubContent.contentSize
         }
         return retval
     }
 
     fun setOptionPopupVisibility(shown:Boolean){
         if(isSelectionValid){
-            val item = if(subcontentStack.hasContent()) subcontentStack.peek() else category[selectedX].items[selectedY]
-            if( item != null){
-                isOnOptions = shown && item.hasOptions
-                // reset option position when the item opens up
-                if(isOnOptions) optionSelectedIndex = 0
-            }
+            val item = deepestSubContent.getContent(deepestSubContent.contentIndex)
+            isOnOptions = shown && item.hasMenu
+            // reset option position when the item opens up
+            if(isOnOptions) optionSelectedIndex = 0
         }
     }
 
@@ -673,7 +673,7 @@ class VshView : View {
         canvas.drawColor(backgroundColor)
         if(!hideMenu){
             lVerticalItems(canvas)
-            if(subcontentStack.hasContent()){
+            if(deepestSubContent.hasContent){
                 lSubContentItem(canvas)
             }else{
                 lHorizontalMenu(canvas)
@@ -696,10 +696,10 @@ class VshView : View {
     fun setSelection(x:Int, y:Int){
         if(hideMenu) return
 
-        if(subcontentStack.hasContent()){
+        if(!isOnRoot){
             if(x != 0){
                 if(x < 0){
-                    subcontentStack.pop()
+                    indexStack.pop()
                     reassignYPos(false)
                 }
                 return
@@ -707,32 +707,32 @@ class VshView : View {
         }
 
         if(isOnOptions && isSelectionValid){
-            val selectedItem = subcontentStack.peek() ?: category[selectedX].items[selectedY]
-            val max = selectedItem.options.size -1
+            val selectedItem = deepestSubContent
+            val max = selectedItem.menuCount - 1
             if(max < 0) return
 
-            val selectedOption = selectedItem.options[optionSelectedIndex]
+            val selectedOption = selectedItem.getMenu(selectedItem.menuIndex)
 
             optionSelectedIndex = (optionSelectedIndex + y).coerceIn(0, max)
-            while((!selectedOption.enabled || selectedOption.shouldSkip) && optionSelectedIndex < max){
+            while((!selectedOption.selectable) && optionSelectedIndex < max){
                 optionSelectedIndex = (optionSelectedIndex + y).coerceIn(0, max)
             }
             return
         }
 
         // Set selected icon to be no longer selected and no longer onScreen then Save currently selected icon before changing
+        /* // Orignal Code
         if(x != 0){
-            val selectedItem = subcontentStack.peek()?.getContent ?: category[selectedX].items
-            if(selectedItem.size > selectedY){
-                category[selectedX].items[selectedY].isSelected = false
-            }
-            selectedItem.forEach { it.isCoordinatelyVisible = false }
-            category[selectedX].itemY = selectedY
+            val selectedItem = deepestSubContent
+            if(selectedItem.contentSize > selectedY){ selectedItem.isSelected = false }
+
+            selectedItem.content.forEach { it.isCoordinatelyVisible = false }
+            itemRoot.getContent(indexStack[0]).contentIndex = selectedY
         }
 
-        selectedX = (selectedX + x).coerceIn(0, category.size - 1)
+        selectedX = (selectedX + x).coerceIn(0, itemRoot.getContent().contentSize - 1)
 
-        if(category[selectedX].items.isNotEmpty()){
+        if(deepestSubContent.content.isNotEmpty()){
             val selectedItem = subcontentStack.peek()?.getContent ?: category[selectedX].items
             selectedY = (selectedY + y).coerceIn(0, selectedItem.size - 1)
             category[selectedX].itemY = selectedY
@@ -743,19 +743,34 @@ class VshView : View {
             // Skip sliding animation when changing between categories
             selectedYf = selectedY.toFloat()
         }
+        */
 
+        if(x != 0){
+            // On Root
+            if(isOnRoot){
+                selectedX = (selectedX + x).coerceIn(0, itemRoot.contentSize)
+            }else{ // On Sub-Content
+                if(x < 0){
+                    sendBackSignal()
+                }
+            }
+        }
+
+        if(deepestSubContent.content.isNotEmpty()){
+            val items = deepestSubContent.content
+            selectedY = (selectedY + y).coerceIn(0, items.size - 1)
+        }
+
+        // Skip sliding animation
+        if(x != 0){ selectedYf = selectedY.toFloat() }
     }
 
     fun setSelectionAbs(x:Int, y:Int){
         if(hideMenu) return
-        if(x != selectedX){
-            category[selectedX].itemY = selectedY
-        }
 
-        selectedX = x.coerceIn(0, category.size - 1)
-        if(category[selectedX].items.isNotEmpty()){
-            selectedY = y.coerceIn(0, category[selectedX].items.size - 1)
-            category[selectedX].itemY = selectedY
+        selectedX = x.coerceIn(0, itemRoot.contentSize - 1)
+        if(deepestSubContent.hasContent){
+            selectedY = y.coerceIn(0, deepestSubContent.contentSize - 1)
         }
 
         // Skip vertical sliding animation
@@ -765,8 +780,8 @@ class VshView : View {
     fun sendBackSignal(){
         if(isOnOptions){
             isOnOptions = false
-        }else if(subcontentStack.hasContent()){
-            subcontentStack.pop()
+        }else if(!isOnRoot){
+            indexStack.pop()
             reassignYPos(false)
         }else if(!hideMenu){
             hideMenu = true
@@ -774,7 +789,7 @@ class VshView : View {
     }
 
     fun reassignYPos(open: Boolean){
-        val maxSizePosition = if(subcontentStack.hasContent()) subcontentStack.peek()?.getContent?.size ?: 0 else category[selectedX].items.size
+        val maxSizePosition = deepestSubContent.contentSize
         selectedXf += open.choose(-1f, 1f)
         subContentOffset = open.choose(-1f, 1f)
         selectedY = selectedY.coerceIn(0,  maxSizePosition - 1)
@@ -786,17 +801,13 @@ class VshView : View {
             hideMenu = false
         }else{
             try{
-                val data = subcontentStack.peek() ?: category[selectedX].items[selectedY]
+                val data = deepestSubContent
                 if(data.hasContent){
-                    subcontentStack.push(data)
-                    Log.d(TAG, "Try execution | Subcontent count : ${subcontentStack.count} - LastContent : ${subcontentStack.peek()}}")
+
+                    Log.d(TAG, "Try execution | Subcontent count : ${indexStack.count} - LastContent : ${deepestSubContent}}")
                     reassignYPos(true)
                 }else{
-                    if(data == category[selectedX].items[selectedY]){
-                        data.onLaunch.run()
-                    }else{
-                        data.getContent!![selectedY].onLaunch.run()
-                    }
+                    data.getContent().onLaunch()
                 }
             }catch (ex:Exception){ ex.printStackTrace() }
         }
@@ -856,10 +867,8 @@ class VshView : View {
 
     fun executeCurrentOptionItem(){
         try{
-            val currentOpt =
-                (subcontentStack.peek() ?: category[selectedX].items[selectedY])
-                .options[optionSelectedIndex]
-            if(currentOpt.enabled){
+            val currentOpt = deepestSubContent.getMenu()
+            if(currentOpt.selectable){
                 currentOpt.onClick.run()
                 isOnOptions = false
             }
@@ -868,6 +877,19 @@ class VshView : View {
         }
     }
 
-    fun findById(id:String) : VshCategory? = category.find { it.id == id }
+    fun findCategory(id:String) : XMBIcon? {
+        var item : XMBIcon? = null
+        itemRoot.content.forEach {
+            Log.d(TAG, "ItemID : ${it.id} | ${it.itemId}")
+            if(it.itemId.equals(id, true)) item = it
+        }
+
+        if(item !=null){
+            Log.d(TAG, "Found item : $id")
+        }else{
+            Log.d(TAG, "Item with ID $id not found")
+        }
+        return item
+    }
     /// endregion
 }

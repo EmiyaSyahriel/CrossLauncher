@@ -33,12 +33,10 @@ import id.psw.vshlauncher.icontypes.*
 import id.psw.vshlauncher.mediaplayer.AudioPlayerSvcConnection
 import id.psw.vshlauncher.mediaplayer.XMBVideoPlayer
 import id.psw.vshlauncher.typography.FontCollections
-import id.psw.vshlauncher.views.VshColdBoot
-import id.psw.vshlauncher.views.VshDialogView
-import id.psw.vshlauncher.views.VshGameBoot
-import id.psw.vshlauncher.views.VshView
+import id.psw.vshlauncher.views.*
 import java.io.File
 import java.lang.Exception
+import kotlin.collections.HashMap
 import kotlin.concurrent.schedule
 import kotlin.system.exitProcess
 
@@ -78,7 +76,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
     private var returnFromGameboot = false
     lateinit var prefs : SharedPreferences
-    lateinit var vsh : VshView
+    // lateinit var vsh : VshView
+    lateinit var vsh : VshServerTestView
     private var storageAllowed = false
     private var sfxPlayer : MediaPlayer? = null
     private var bgmPlayer : MediaPlayer? = null
@@ -104,7 +103,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         FontCollections.init(this)
 
-        vsh = VshView(this)
+        // vsh = VshView(this)
+        vsh = VshServerTestView(this)
         vsh.id = R.id.vsh_view_main
         sysBarTranslucent()
         vsh.fitsSystemWindows = true
@@ -147,7 +147,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         touchSlop = ViewConfiguration.get(this).scaledTouchSlop
 
         recalculateChooseRect()
-        vsh.recalculateClockRect()
+        VshServer.recalculateClockRect()
         populateSettingSections()
 
         getRenderableScreen()
@@ -196,7 +196,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     private fun initializeMediaPlayer(){
         sfxPlayer = MediaPlayer()
         sfxPlayer?.setOnPreparedListener { it.start() }
-        sfxPlayer?.setOnCompletionListener { vsh.clockExpandInfo = "" }
+        sfxPlayer?.setOnCompletionListener { VshServer.StatusBar.clockExpandInfo = "" }
     }
 
     private fun loadPrefs(){
@@ -250,7 +250,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        vsh.recalculateClockRect()
+        VshServer.recalculateClockRect()
         getRenderableScreen()
     }
 
@@ -325,8 +325,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
 
     private fun populateSettingSections(){
-        val settings = vsh.findCategory("SETT") ?: return
-        val home = vsh.findCategory(VshCategory.home) ?: return
+        val settings = VshServer.findCategory(VshCategory.settings) ?: return
+        val home = VshServer.findCategory(VshCategory.home) ?: return
 
         val y = true.toLocalizedString()
         val n = false.toLocalizedString()
@@ -334,8 +334,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         // Orientation
         // TODO : Add cust. icon
-        val systemSetting = VshSettingCategory(this, vsh, "xmb_setting_system", "System Setting", "", blankIcon)
-        val displaySetting = VshSettingCategory(this, vsh, "xmb_icon_display", "Display Setting", "", blankIcon)
+        val systemSetting = VshSettingCategory("xmb_setting_system", "System Setting", "", blankIcon)
+        val displaySetting = VshSettingCategory("xmb_icon_display", "Display Setting", "", blankIcon)
         settings.addContent(systemSetting)
         settings.addContent(displaySetting)
 
@@ -404,7 +404,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 .apply()
 
 
-        val modding = VshSettingCategory( this, vsh,"sys_disp_mod", "Modding", "", blankIcon)
+        val modding = VshSettingCategory("sys_disp_mod", "Modding", "", blankIcon)
         val modGameboot = VshSettingIcon(
                 0xd1808, this,
                 getString(R.string.setting_gameboot_custom_guide), VshSettingIcon.ICON_ANDROID,
@@ -415,7 +415,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         val homeHide = VshSettingIcon(
             0xd18035, this,
             getString(R.string.app_hide_menu), VshSettingIcon.ICON_START,
-            {vsh.hideMenu = !vsh.hideMenu},
+            {VshServer.showDesktop = !VshServer.showDesktop},
             {getString(R.string.app_hide_menu_desc)}
         )
 
@@ -468,7 +468,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             ))
         alert.titleText = "Rebuilding App Database"
         alert.contentText = "Application database will be rebuilt, this launcher will not\nbe usable until it finished."
-        alert.iconBitmap = resources.getDrawable(R.drawable.icon_refresh).toBitmap(vsh.d(32),vsh.d(32))
+        alert.iconBitmap = resources.getDrawable(R.drawable.icon_refresh).toBitmap(32,32)
         setContentView(alert)
     }
 
@@ -480,8 +480,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
     private fun setOperatorName() {
         val telephonyManager = getSystemService(Service.TELEPHONY_SERVICE) as TelephonyManager
-        vsh.operatorName = telephonyManager.simOperatorName
-        vsh.use24Format = android.text.format.DateFormat.is24HourFormat(this)
+        VshServer.StatusBar.operatorName = telephonyManager.simOperatorName
+        VshServer.StatusBar.use24Format = android.text.format.DateFormat.is24HourFormat(this)
     }
 
     private fun sysBarTranslucent(){
@@ -502,7 +502,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     override fun onBackPressed() {
-        vsh.sendBackSignal()
+        VshServer.sendBackSignal()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -511,68 +511,44 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         when(keyCode){
             KeyEvent.KEYCODE_DPAD_UP -> {
-                vsh.setSelection(0,-1)
+                VshServer.Input.onKeyDown(VshServer.InputKeys.DPadU)
                 retval = true
             }
             KeyEvent.KEYCODE_DPAD_DOWN -> {
-                vsh.setSelection(0,1)
+                VshServer.Input.onKeyDown(VshServer.InputKeys.DPadD)
                 retval = true
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                vsh.setSelection(-1,0)
+                VshServer.Input.onKeyDown(VshServer.InputKeys.DPadL)
                 retval = true
             }
             KeyEvent.KEYCODE_DPAD_RIGHT ->{
-                vsh.setSelection(1,0)
+                VshServer.Input.onKeyDown(VshServer.InputKeys.DPadR)
                 retval = true
             }
-            KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER, mimickedConfirmButton ->{
-                if(vsh.isOnOptions){
-                    vsh.executeCurrentOptionItem()
-                }else{
-                    vsh.executeCurrentItem()
-                }
+            KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER ->{
+                VshServer.Input.onKeyDown(VshServer.InputKeys.Select)
                 retval = true
             }
-            KeyEvent.KEYCODE_DEL, mimickedCancelButton ->{
-                if(vsh.isOnOptions){
-                    vsh.switchOptionPopupVisibility()
-                }else{
-                    vsh.hideMenu = !vsh.hideMenu
-                }
+            KeyEvent.KEYCODE_DEL ->{
+                VshServer.Input.onKeyDown(VshServer.InputKeys.Back)
+                retval = true
             }
             KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_BUTTON_Y -> {
-                vsh.switchOptionPopupVisibility()
+                VshServer.Input.onKeyDown(VshServer.InputKeys.Menu)
                 retval = true
             }
         }
 
-        if(event != null){
-            val c = event.unicodeChar.toChar()
-            if(!vsh.hideMenu){
-                try{
-                    val item = vsh.deepestSubContent
-                    var found = false
-                    var currentItem = vsh.deepestSubContent.contentIndex
-                    item.forEachContentIndexed { i, xmbIcon ->
-                        if(xmbIcon.name.startsWith(c, true) && !found) {
-                            found = true
-                            currentItem = i
-                        }
-                    }
-                    vsh.deepestSubContent.contentIndex = currentItem
-                }catch (e : Exception){}
-            }
-        }
         return retval || super.onKeyDown(keyCode, event)
     }
 
     private fun loadApps(){
-        val apps = vsh.findCategory("APPS") ?: return
-        val games = vsh.findCategory("GAME") ?: return
+        val apps = VshServer.findCategory(VshCategory.apps) ?: return
+        val games = VshServer.findCategory(VshCategory.games) ?: return
         apps.content.clear()
         games.content.clear()
-        vsh.clockAsLoadingIndicator = true
+        VshServer.StatusBar.isLoading = true
 
         val intent = Intent(Intent.ACTION_MAIN, null)
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
@@ -584,20 +560,19 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
                 //println("VTX_Activity [I] | New App : ${appData.name} (${appData.pkg}) - isGame : $isGame")
                 //val size = File(it.activityInfo.applicationInfo.sourceDir).length().toSize()
                 val description = it.activityInfo.packageName
-                val xmbData = AppIcon(this, vsh, description, it)
+                val xmbData = AppIcon(this, description, it)
 
                 // Filter itself
                 if(it.activityInfo.packageName != packageName){
                     (if(isGame){games}else{apps}).addContent(xmbData)
                 }
-
             }
         }
 
         apps.content.sortBy { it.name }
         games.content.sortBy { it.name }
 
-        vsh.clockAsLoadingIndicator = false
+        VshServer.StatusBar.isLoading = false
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -609,7 +584,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     fun startApp(packageName: String){
-        vsh.setOptionPopupVisibility(false)
+        VshServer.ContextMenu.visible = false
         val intent = packageManager.getLaunchIntentForPackage(packageName)
         if(null != intent){
             if(useGameBoot){
@@ -650,11 +625,11 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     private fun loadAudio(){
-        val music = vsh.findCategory("SONG") ?: return
+        val music = VshServer.findCategory(VshCategory.music) ?: return
         music.content.clear()
         SongIcon.songList.clear()
 
-        vsh.clockAsLoadingIndicator = true
+        VshServer.StatusBar.isLoading = true
         val musicResolver = contentResolver
         val musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val cursor = musicResolver.query(musicUri, null, null, null, null)
@@ -672,7 +647,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             }while(cursor.moveToNext())
         }
         cursor?.close()
-        vsh.clockAsLoadingIndicator = false
+        VshServer.StatusBar.isLoading = false
     }
 
     // TODO: direct this to XMB Audio Player Service instead of internal sfx player
@@ -681,8 +656,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     private fun loadVideo(){
-        vsh.clockAsLoadingIndicator = true
-        val vids = vsh.findCategory("FILM") ?: return
+        VshServer.StatusBar.isLoading = true
+        val vids = VshServer.findCategory(VshCategory.video) ?: return
         val videoResolver = contentResolver
         val videoUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
         val cursor = videoResolver.query(videoUri, null,null,null,null)
@@ -701,7 +676,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         }
 
         cursor?.close()
-        vsh.clockAsLoadingIndicator = false
+        VshServer.StatusBar.isLoading = false
     }
 
     private fun getUriForFile(path: String):Uri{
@@ -804,13 +779,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     var isDrag = false
 
     fun recalculateChooseRect(){
-        val pivotY = (vsh.height * 0.3f) + vsh.d(75f)
-        val pivotX = vsh.width * 0.3f
-        launchArea.top = pivotY - vsh.d(40)
-        launchArea.left = pivotX - vsh.d(40)
-        launchArea.bottom = pivotY + vsh.d(40)
-        launchArea.right = pivotX + vsh.d(40)
-        VshView.launchTapArea = launchArea
+        VshServer.Input.recalculateLaunchPos()
     }
 
     private var touchCount = 0
@@ -819,83 +788,33 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     private fun onTouchCountChange(now:Int, last:Int, timeDelta:Long){
         // Switch vsh option when two tap is detected and less than 0.2s difference
         if(last < now && now == 2 && timeDelta < 100L){
-            vsh.switchOptionPopupVisibility()
+            // TODO:
         }
 
         // Reset touch count after a second
         inputTimer.schedule(1000L){ touchCount = 0 }
     }
 
+    private var points : HashMap<Int, PointF> = HashMap()
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if(!isOnMenu) return false
-
-        var retval = false
-        val lastTouchCount = touchCount
-        val touchTime = System.currentTimeMillis()
-        val timeDelta = touchTime - lastTouchTime
-
-        when(event.actionMasked){
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_POINTER_UP ->{
-                isDrag = false
-                directionLock = DIRLOCK_NONE
-
-                touchCount --
-
-                onTouchCountChange(touchCount, lastTouchCount, timeDelta)
-                lastTouchTime = touchTime
-
-                if(touchCurrentPoint.distanceTo(touchStartPoint) < touchSlop){
-
-                    if(vsh.hideMenu) {
-                        // Unhide on tap
-                        vsh.hideMenu = false
-                    }
-                    recalculateChooseRect()
-
-                    if(vsh.isOnOptions){
-                        if(touchStartPoint in VshView.optionLaunchArea && !vsh.hideMenu){
-                            vsh.executeCurrentOptionItem()
-                        }
-                    }else{
-                        if(touchStartPoint in launchArea && !vsh.hideMenu){
-                            vsh.executeCurrentItem()
-                        }
-                    }
+        val retval = false
+        Log.d("TouchEvent","There is ${event.pointerCount} pointers with actionIndex ${event.actionIndex}")
+        if(retval){ // TODO : This should be removed
+            val idx = event.actionIndex
+            val id= event.getPointerId(idx)
+            val x = event.getX(idx)
+            val y = event.getY(idx)
+            when(event.actionMasked){
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_POINTER_UP ->{
+                    points.remove(id)
                 }
-                directionLock = DIRLOCK_NONE
-                retval = true
-            }
-            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_POINTER_DOWN -> {
-                touchStartPoint.x = event.x
-                touchStartPoint.y = event.y
-                touchCurrentPoint.x = event.x
-                touchCurrentPoint.y = event.y
-                touchDeltaStartPoint.x = event.x
-                touchDeltaStartPoint.y = event.y
-                isDrag = true
-                retval = true
-
-                touchCount ++
-                onTouchCountChange(touchCount, lastTouchCount, timeDelta)
-                lastTouchTime = touchTime
-            }
-            MotionEvent.ACTION_MOVE ->{
-                touchCurrentPoint.set(event.x, event.y)
-                val minMove = vsh.d(75f)
-                if(isDrag){
-                    val xLen = touchCurrentPoint.x - touchDeltaStartPoint.x
-                    val yLen = touchCurrentPoint.y - touchDeltaStartPoint.y
-                    if(kotlin.math.abs(xLen) > minMove && directionLock != DIRLOCK_VERTICAL ){
-                        directionLock = DIRLOCK_HORIZONTAL
-                        vsh.setSelection((xLen > 0).choose(-1,1),0)
-                        touchDeltaStartPoint.set(touchCurrentPoint)
-                    }else if(kotlin.math.abs(yLen) > minMove && directionLock != DIRLOCK_HORIZONTAL){
-                        directionLock = DIRLOCK_VERTICAL
-                        val yDir = if(vsh.isOnOptions) (yLen > 0).choose(1,-1) else (yLen > 0).choose(-1, 1)
-                        vsh.setSelection(0,yDir)
-                        touchDeltaStartPoint.set(touchCurrentPoint)
-                    }
-                    retval = true
+                MotionEvent.ACTION_DOWN, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_POINTER_DOWN -> {
+                    points.put(id, PointF(x,y))
+                }
+                MotionEvent.ACTION_MOVE ->{
+                    points[id]?.x = x
+                    points[id]?.y = y
                 }
             }
         }
