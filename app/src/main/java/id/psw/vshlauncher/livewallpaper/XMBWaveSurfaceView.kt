@@ -4,10 +4,8 @@ import android.content.Context
 import android.graphics.Canvas
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
+import android.util.Log
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.livewallpaper.ogl.GLShader
-import id.psw.vshlauncher.livewallpaper.ogl.GLShaders
-import id.psw.vshlauncher.livewallpaper.ogl.GLShape
 import java.io.InputStream
 import java.nio.charset.Charset
 
@@ -28,8 +26,8 @@ class XMBWaveSurfaceView : GLSurfaceView {
     lateinit var renderer : XMBWaveRenderer
 
     fun init(){
+        setEGLConfigChooser(8,8,8,8,16,0)
         setEGLContextClientVersion(2)
-
         renderer = XMBWaveRenderer(context)
         setRenderer(renderer)
     }

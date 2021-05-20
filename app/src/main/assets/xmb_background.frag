@@ -8,6 +8,5 @@ uniform vec3 _ColorB;
 varying vec2 screenPos;
 
 void main(){
-
     gl_FragColor = vec4(lerp3(_ColorB, _ColorA, screenPos.y), 1.0);
 }
