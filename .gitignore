@@ -86,3 +86,4 @@ lint/tmp/
 /app/src/main/res/layout/layout.xml
 /app/.cxx/
 /app/build/
+/app/src/main/cpp/.vs/

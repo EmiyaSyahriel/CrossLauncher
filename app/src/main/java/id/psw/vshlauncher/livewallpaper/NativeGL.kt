@@ -10,4 +10,7 @@ object NativeGL {
     external fun draw(deltaTime:Float)
     external fun setAssetManager(mgr:AssetManager)
     external fun setup(w:Int, h:Int)
+    external fun destroy()
+    external fun setPaused(paused : Boolean)
+    external fun getPaused() : Boolean
 }

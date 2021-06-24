@@ -52,11 +52,6 @@ fun Int.mp00():String{
     return if(this > 9) this.toString() else "0$this"
 }
 
-// TODO: create scale by AR
-fun Rect.scaleToAspectRatio(x:Float, y:Float, fill:Boolean = false, centered:Boolean = true){
-
-}
-
 fun Bitmap.getDominantColorMean(alsoCalculateAlpha:Boolean = false):Int{
     var r = 0
     var g = 0

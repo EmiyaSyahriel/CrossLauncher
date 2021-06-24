@@ -10,7 +10,7 @@ import android.util.Log
 import java.io.InputStream
 import java.nio.charset.Charset
 
-class XMBWaveRenderer(val context: Context) : GLSurfaceView.Renderer {
+class XMBWaveRenderer() : GLSurfaceView.Renderer {
 
     companion object{
         const val TAG = "wave.qrc"
@@ -21,6 +21,7 @@ class XMBWaveRenderer(val context: Context) : GLSurfaceView.Renderer {
     override fun onSurfaceCreated(_gl: GL10?, config: EGLConfig?) {
         NativeGL.create()
     }
+
     override fun onSurfaceChanged(_gl: GL10?, width: Int, height: Int) {
         NativeGL.setup(width, height)
     }
@@ -33,5 +34,13 @@ class XMBWaveRenderer(val context: Context) : GLSurfaceView.Renderer {
         lastTime = cTime
         NativeGL.draw(dTime)
     }
+
+    fun destroy() {
+        // Do not kill
+    }
+
+    var isPaused : Boolean
+        get() = NativeGL.getPaused()
+        set(v) = NativeGL.setPaused(v)
 
 }

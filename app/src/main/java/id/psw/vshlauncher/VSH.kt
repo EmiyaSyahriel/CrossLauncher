@@ -462,14 +462,19 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     private fun initServerData(){
-        val apps= XMBLambdaIcon(VshCategory.apps).apply {
-            nameImpl = { getString(R.string.category_apps)}
+        if(VshServer.findCategory(VshCategory.apps) == null){
+            val apps= XMBLambdaIcon(VshCategory.apps).apply {
+                nameImpl = { VshCategory.apps }
+            }
+            VshServer.root.addContent(apps)
         }
-        val games = XMBLambdaIcon(VshCategory.games).apply {
-            nameImpl = { getString(R.string.category_games)}
+
+        if(VshServer.findCategory(VshCategory.games) == null){
+            val games = XMBLambdaIcon(VshCategory.games).apply {
+                nameImpl = { VshCategory.games }
+            }
+            VshServer.root.addContent(games)
         }
-        VshServer.root.addContent(apps)
-        VshServer.root.addContent(games)
     }
 
     private fun loadApps(){

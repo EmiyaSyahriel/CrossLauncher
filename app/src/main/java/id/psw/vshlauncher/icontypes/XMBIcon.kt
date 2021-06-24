@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.core.graphics.drawable.toBitmap
+import id.psw.vshlauncher.views.VshServer
 
 open class XMBIcon(val itemId: String) {
 
@@ -23,6 +24,13 @@ open class XMBIcon(val itemId: String) {
     open var inactiveIcon : Bitmap = blankBmp
     open val isVisible : Boolean get() = true
     open var selectedIndex : Int = 0
+
+    private var _selectedIndexF = 0.0F
+    val selectedIndexF : Float
+    get (){
+        _selectedIndexF = VshServer.xMath.lerp(_selectedIndexF, selectedIndex * 1.0F, 0.3F)
+        return _selectedIndexF
+    }
     /// endregion
 
     /// region Contents

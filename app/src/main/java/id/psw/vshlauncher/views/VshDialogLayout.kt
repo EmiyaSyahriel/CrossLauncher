@@ -125,7 +125,6 @@ class VshDialogLayout : ViewGroup {
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        rendRect = getSystemPadding()
     }
 
     private var buttonRects = arrayListOf<RectF>()
@@ -238,7 +237,7 @@ class VshDialogLayout : ViewGroup {
         val oRect = outlineRect.toRect()
         val rRect = rendRect
         children.forEach {
-            it.layout(rRect.left, oRect.top, rRect.right, oRect.bottom)
+            it.layout(left, oRect.top, right + left, oRect.bottom)
         }
     }
 

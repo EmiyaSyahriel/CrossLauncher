@@ -82,4 +82,5 @@
     <string name="xmb_wave_livewp_desc">XMB Wave Live Wallpaper</string>
     <string name="xmb_icon_desc_root">This icon shouldn\'t be visible</string>
     <string name="unknown_symbols" translatable="false">\???</string>
+    <string name="app_name_wave">Wave Wallpaper</string>
 </resources>
