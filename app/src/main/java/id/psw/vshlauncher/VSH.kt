@@ -4,11 +4,9 @@ import android.app.Service
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -24,19 +22,18 @@ import android.graphics.drawable.ColorDrawable
 import android.media.MediaPlayer
 import android.os.Process
 import android.view.*
-import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import id.psw.vshlauncher.icontypes.*
 import id.psw.vshlauncher.mediaplayer.AudioPlayerSvcConnection
-import id.psw.vshlauncher.mediaplayer.XMBVideoPlayer
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.*
-import java.io.File
 import java.lang.Exception
 import kotlin.collections.HashMap
 import kotlin.concurrent.schedule
 import kotlin.system.exitProcess
+import id.psw.vshlauncher.views.VshServerSubcomponent.*
+import id.psw.vshlauncher.views.VshServerSubcomponent.ContextMenu
 
 @Suppress("SpellCheckingInspection", "DEPRECATION")
 class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
@@ -193,7 +190,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     private fun initializeMediaPlayer(){
         sfxPlayer = MediaPlayer()
         sfxPlayer?.setOnPreparedListener { it.start() }
-        sfxPlayer?.setOnCompletionListener { VshServer.StatusBar.clockExpandInfo = "" }
+        sfxPlayer?.setOnCompletionListener { StatusBar.clockExpandInfo = "" }
     }
 
     private fun loadPrefs(){
@@ -361,8 +358,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
     private fun setOperatorName() {
         val telephonyManager = getSystemService(Service.TELEPHONY_SERVICE) as TelephonyManager
-        VshServer.StatusBar.operatorName = telephonyManager.simOperatorName
-        VshServer.StatusBar.use24Format = android.text.format.DateFormat.is24HourFormat(this)
+        StatusBar.operatorName = telephonyManager.simOperatorName
+        StatusBar.use24Format = android.text.format.DateFormat.is24HourFormat(this)
     }
 
     private fun sysBarTranslucent(){
@@ -392,31 +389,31 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         when(keyCode){
             KeyEvent.KEYCODE_DPAD_UP -> {
-                VshServer.Input.onKeyDown(VshServer.InputKeys.DPadU)
+                Input.onKeyDown(Input.Keys.DPadU)
                 retval = true
             }
             KeyEvent.KEYCODE_DPAD_DOWN -> {
-                VshServer.Input.onKeyDown(VshServer.InputKeys.DPadD)
+                Input.onKeyDown(Input.Keys.DPadD)
                 retval = true
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                VshServer.Input.onKeyDown(VshServer.InputKeys.DPadL)
+                Input.onKeyDown(Input.Keys.DPadL)
                 retval = true
             }
             KeyEvent.KEYCODE_DPAD_RIGHT ->{
-                VshServer.Input.onKeyDown(VshServer.InputKeys.DPadR)
+                Input.onKeyDown(Input.Keys.DPadR)
                 retval = true
             }
             KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER ->{
-                VshServer.Input.onKeyDown(VshServer.InputKeys.Select)
+                Input.onKeyDown(Input.Keys.Circle)
                 retval = true
             }
             KeyEvent.KEYCODE_DEL ->{
-                VshServer.Input.onKeyDown(VshServer.InputKeys.Back)
+                Input.onKeyDown(Input.Keys.Cross)
                 retval = true
             }
             KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_BUTTON_Y -> {
-                VshServer.Input.onKeyDown(VshServer.InputKeys.Menu)
+                Input.onKeyDown(Input.Keys.Triangle)
                 retval = true
             }
         }
@@ -429,31 +426,31 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
 
         when(keyCode){
             KeyEvent.KEYCODE_DPAD_UP -> {
-                VshServer.Input.onKeyUp(VshServer.InputKeys.DPadU)
+                Input.onKeyUp(Input.Keys.DPadU)
                 retval = true
             }
             KeyEvent.KEYCODE_DPAD_DOWN -> {
-                VshServer.Input.onKeyUp(VshServer.InputKeys.DPadD)
+                Input.onKeyUp(Input.Keys.DPadD)
                 retval = true
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
-                VshServer.Input.onKeyUp(VshServer.InputKeys.DPadL)
+                Input.onKeyUp(Input.Keys.DPadL)
                 retval = true
             }
             KeyEvent.KEYCODE_DPAD_RIGHT ->{
-                VshServer.Input.onKeyUp(VshServer.InputKeys.DPadR)
+                Input.onKeyUp(Input.Keys.DPadR)
                 retval = true
             }
             KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_DPAD_CENTER ->{
-                VshServer.Input.onKeyUp(VshServer.InputKeys.Select)
+                Input.onKeyUp(Input.Keys.Circle)
                 retval = true
             }
             KeyEvent.KEYCODE_DEL ->{
-                VshServer.Input.onKeyUp(VshServer.InputKeys.Back)
+                Input.onKeyUp(Input.Keys.Cross)
                 retval = true
             }
             KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_BUTTON_Y -> {
-                VshServer.Input.onKeyUp(VshServer.InputKeys.Menu)
+                Input.onKeyUp(Input.Keys.Triangle)
                 retval = true
             }
         }
@@ -482,7 +479,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         val games = VshServer.findCategory(VshCategory.games) ?: return
         apps.content.clear()
         games.content.clear()
-        VshServer.StatusBar.isLoading = true
+        StatusBar.isLoading = true
 
         val intent = Intent(Intent.ACTION_MAIN, null)
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
@@ -506,7 +503,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         apps.content.sortBy { it.name }
         games.content.sortBy { it.name }
 
-        VshServer.StatusBar.isLoading = false
+        StatusBar.isLoading = false
         apps.selectedIndex = 10
     }
 
@@ -519,7 +516,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     }
 
     fun startApp(packageName: String){
-        VshServer.ContextMenu.visible = false
+        ContextMenu.visible = false
         val intent = packageManager.getLaunchIntentForPackage(packageName)
         if(null != intent){
             if(useGameBoot){
@@ -621,7 +618,7 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
     var isDrag = false
 
     fun recalculateChooseRect(){
-        VshServer.Input.recalculateLaunchPos()
+        Input.recalculateLaunchPos()
     }
 
     private var touchCount = 0
@@ -648,18 +645,18 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         when(event.actionMasked){
             MotionEvent.ACTION_UP, MotionEvent.ACTION_HOVER_EXIT, MotionEvent.ACTION_POINTER_UP ->{
                 points.remove(id)
-                VshServer.Input.onTouchUp(id,PointF(x,y))
+                Input.onTouchUp(id,PointF(x,y))
                 retval = true
             }
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_HOVER_ENTER, MotionEvent.ACTION_POINTER_DOWN -> {
                 points.put(id, PointF(x,y))
-                VshServer.Input.onTouchDown(id,PointF(x,y))
+                Input.onTouchDown(id,PointF(x,y))
                 retval = true
             }
             MotionEvent.ACTION_MOVE ->{
                 points[id]?.x = x
                 points[id]?.y = y
-                VshServer.Input.onTouchMove(id,PointF(x,y))
+                Input.onTouchMove(id,PointF(x,y))
                 retval = true
             }
         }

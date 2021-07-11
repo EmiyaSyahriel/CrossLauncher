@@ -4,18 +4,31 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PointF
+import android.view.InputEvent
+import android.view.MotionEvent
+import id.psw.vshlauncher.distanceTo
 import id.psw.vshlauncher.views.VshServer
 import id.psw.vshlauncher.views.VshServer.times
 
 object Input {
+    enum class Keys {
+        DPadU, DPadD, DPadL, DPadR,
+        Square, Cross, Circle, Triangle
+    }
+
     var useUSMode = false
     private var lastPos = PointF(0f,0f)
     private val launchPos : PointF
         get() = PointF(
-        CrossMenu.xLoc * VshServer.refWidth,
-        (CrossMenu.yLoc * 1.5f * VshServer.refHeight) + (CrossMenu.selectedIconSize/2f)
+        CrossMenu.xLoc * VshServer.orientWidth,
+        (CrossMenu.yLoc * VshServer.orientHeight) + (CrossMenu.selectedIconSize * 1.4f)
     )
     val launchPosRad : Float get() = CrossMenu.selectedIconSize/1.5f
+
+    /** Delay of the first hold tap after first keydown */
+    val holdReTapFirstDelay = 0.3f
+    /** Delay between hold re-taps */
+    val holdReTapRepeatDelay = 0.05f
 
     enum class DirectionPad(val value:Int) {
         Up(0),
@@ -25,18 +38,17 @@ object Input {
     }
 
     val directionalPadPos : Array<PointF> get() {
-
         return Array<PointF>(4){
             val halfIcon = CrossMenu.selectedIconSize
             when(it){
                 // 0 = Up
-                DirectionPad.Up.value -> PointF(CrossMenu.xLoc * VshServer.refWidth,halfIcon)
+                DirectionPad.Up.value -> PointF(CrossMenu.xLoc * VshServer.orientWidth, 0f)
                 // 1 = Down
-                DirectionPad.Down.value -> PointF(CrossMenu.xLoc * VshServer.refWidth, VshServer.refHeight - halfIcon)
+                DirectionPad.Down.value -> PointF(CrossMenu.xLoc * VshServer.orientWidth, VshServer.orientHeight)
                 // 2 = Left
-                DirectionPad.Left.value -> PointF(halfIcon, CrossMenu.yLoc * VshServer.refHeight)
+                DirectionPad.Left.value -> PointF(0f, CrossMenu.yLoc * VshServer.orientHeight)
                 // 3 = Right
-                DirectionPad.Right.value -> PointF(VshServer.refWidth - halfIcon, CrossMenu.yLoc * VshServer.refHeight)
+                DirectionPad.Right.value -> PointF(VshServer.orientWidth, CrossMenu.yLoc * VshServer.orientHeight)
                 // else = None
                 else -> PointF(0F,0F)
             }
@@ -55,18 +67,23 @@ object Input {
 
     }
 
-    data class Taps(val id:Int, var pos: PointF)
-    val taps = ArrayList<Taps>()
-    var moveTap = Taps(0, PointF(0F,0F))
+    class TapPoint(val id:Int, var pos: PointF){
+        var hasFirstTap = false
+        var time : Float = 0.0f
+        var totalTime : Float = 0.0f
+        var lastTapTime : Float = 0.0F
+    }
+    val taps = ArrayList<TapPoint>()
+    var moveTap = TapPoint(0, PointF(0F,0F))
 
-    fun onKeyDown(key: VshServer.InputKeys){
+    fun onKeyDown(key: Keys){
         when(key){
-            VshServer.InputKeys.Back -> VshServer.sendBackSignal()
-            VshServer.InputKeys.Select -> VshServer.sendConfirmSignal()
-            VshServer.InputKeys.DPadU -> setSelectionRel(0,-1)
-            VshServer.InputKeys.DPadD -> setSelectionRel(0,1)
-            VshServer.InputKeys.DPadL -> setSelectionRel(-1,0)
-            VshServer.InputKeys.DPadR -> setSelectionRel(1,0)
+            Keys.Cross -> if(useUSMode) VshServer.sendConfirmSignal() else VshServer.sendBackSignal()
+            Keys.Circle -> if(useUSMode)  VshServer.sendBackSignal() else VshServer.sendConfirmSignal()
+            Keys.DPadU -> setSelectionRel(0,-1)
+            Keys.DPadD -> setSelectionRel(0,1)
+            Keys.DPadL -> setSelectionRel(-1,0)
+            Keys.DPadR -> setSelectionRel(1,0)
             else -> { /** TODO: */ }
         }
     }
@@ -87,14 +104,13 @@ object Input {
         }catch(e:Exception){}
     }
 
-    fun onKeyUp(key: VshServer.InputKeys){
+    fun onKeyUp(key: Keys){
     }
 
     fun onTouchDown(id:Int, pos: PointF){
-        taps.add(Taps(id, pos * (1/ VshServer.calculatedScale)))
-        directionalPadPos.forEachIndexed { i, it ->
-
-        }
+        val tap = TapPoint(id, pos * (1/ VshServer.calculatedScale))
+        taps.add(tap)
+        doInputTapEvaluation(tap, MotionEvent.ACTION_POINTER_DOWN)
     }
 
     var moveTapId = -1
@@ -104,6 +120,11 @@ object Input {
             if(it.id == id){
                 val lastPos = it.pos
                 it.pos = pos * (1/ VshServer.calculatedScale)
+                var lastDist = lastPos.distanceTo(it.pos)
+                if(lastDist > 20){
+                    it.hasFirstTap = false
+                    it.time = 0.0f
+                }
             }
         }
     }
@@ -112,7 +133,53 @@ object Input {
         val item = taps.filter { it.id == id }
         if(item.isNotEmpty()){
             item.forEach{
+                doInputTapEvaluation(it, MotionEvent.ACTION_POINTER_UP)
                 taps.remove(it)
+            }
+        }
+    }
+
+
+    fun doInputTapEvaluation(tap:TapPoint, action:Int){
+
+        if(action != MotionEvent.ACTION_POINTER_UP){
+            directionalPadPos.forEachIndexed { i, it ->
+                if(tap.pos.distanceTo(it) < directionalPadRad ){
+                    when(i){
+                        DirectionPad.Up.value -> onKeyDown(Keys.DPadU)
+                        DirectionPad.Down.value -> onKeyDown(Keys.DPadD)
+                        DirectionPad.Left.value -> onKeyDown(Keys.DPadL)
+                        DirectionPad.Right.value -> onKeyDown(Keys.DPadR)
+                    }
+                }
+            }
+        }
+
+            if(tap.pos.distanceTo(launchPos) < launchPosRad ){
+                if(action == MotionEvent.ACTION_POINTER_UP && tap.totalTime < 0.5f){
+                    VshServer.getActiveItem()?.onLaunch()
+                }else{
+                    VshServer.showContextMenu()
+                }
+            }
+    }
+
+    fun tickInput(){
+        var time = Time.deltaTime
+        taps.forEach {
+            it.totalTime += time;
+            it.time += time
+            if(it.hasFirstTap){
+                if(time > holdReTapRepeatDelay){
+                    time = 0.0f
+                    doInputTapEvaluation(it, MotionEvent.ACTION_POINTER_INDEX_SHIFT)
+                }
+            }else{
+                if(time > holdReTapFirstDelay){
+                    time = 0.0f
+                    it.hasFirstTap = true
+                    doInputTapEvaluation(it, MotionEvent.ACTION_MASK)
+                }
             }
         }
     }

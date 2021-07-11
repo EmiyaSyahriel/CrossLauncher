@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.views.VshServer
+import id.psw.vshlauncher.views.VshServerSubcomponent.xMath
 
 open class XMBIcon(val itemId: String) {
 
@@ -28,7 +29,7 @@ open class XMBIcon(val itemId: String) {
     private var _selectedIndexF = 0.0F
     val selectedIndexF : Float
     get (){
-        _selectedIndexF = VshServer.xMath.lerp(_selectedIndexF, selectedIndex * 1.0F, 0.3F)
+        _selectedIndexF = xMath.lerp(_selectedIndexF, selectedIndex * 1.0F, 0.3F)
         return _selectedIndexF
     }
     /// endregion

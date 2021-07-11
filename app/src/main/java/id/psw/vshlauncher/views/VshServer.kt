@@ -1,33 +1,20 @@
 package id.psw.vshlauncher.views
 
-import android.annotation.SuppressLint
 import android.graphics.*
 import android.util.Log
 import androidx.core.graphics.withScale
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.VSH
-import id.psw.vshlauncher.customtypes.SSADrawing
-import id.psw.vshlauncher.getRect
 import id.psw.vshlauncher.icontypes.XMBIcon
 import id.psw.vshlauncher.icontypes.XMBRootIcon
-import id.psw.vshlauncher.staticdata.StaticData
-import id.psw.vshlauncher.toLerp
 import id.psw.vshlauncher.views.VshServerSubcomponent.*
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.ConcurrentModificationException
 import kotlin.collections.ArrayList
-import kotlin.math.abs
 
 // TODO: Finish this
 object VshServer {
 
     const val TAG = "VshServer"
-
-    enum class InputKeys {
-        DPadU, DPadD, DPadL, DPadR,
-        Sort, Back, Select, Menu
-    }
 
     fun recalculateClockRect() {
         // TODO("Not yet implemented")
@@ -35,14 +22,20 @@ object VshServer {
 
     var density = 0.0f
     var scaledDensity = 0.0f
-    var width = 0.0f
-    var height = 0.0f
-    var refWidth = 1520.0f
-    var refHeight = 720.0f
+    var targetWidth = 0.0f
+    var targetHeight = 0.0f
+    var _refWidth = 1280.0f
+    var _refHeight = 720.0f
+
+    val isLandscape get() = targetWidth > targetHeight
+
+    val orientWidth get()= if(isLandscape) _refWidth else _refHeight
+    val orientHeight get()= if(isLandscape) _refHeight else _refWidth
+
     var refSafeWidth = 960.0f
     var overalScale = 1.0f
-    val scaledScreenWidth  get()= width / calculatedScale
-    val scaledScreenHeight get()= height / calculatedScale
+    val scaledScreenWidth  get()= targetWidth / calculatedScale
+    val scaledScreenHeight get()= targetHeight / calculatedScale
     val root : XMBRootIcon = XMBRootIcon()
     var showDesktop = false
     var coldBootTime = 0.0f
@@ -77,26 +70,27 @@ object VshServer {
         scaledDensity = ctx.resources.displayMetrics.scaledDensity
     }
 
-    public val calculatedScale get()= (if(width / refWidth < height / refHeight) width/ refWidth else height/ refHeight) * overalScale
+    public val calculatedScale get()= (if(targetWidth / orientWidth < targetHeight / orientHeight) targetWidth/ orientWidth else targetHeight/ orientHeight) * overalScale
     public val calculatedAROffset :PointF get(){
-        val x = (((width / calculatedScale)  / 2f)-  (refWidth  / 2f))
-        val y = (((height / calculatedScale) / 2f) - (refHeight / 2f))
+        val x = (((targetWidth / calculatedScale)  / 2f)-  (orientWidth  / 2f))
+        val y = (((targetHeight / calculatedScale) / 2f) - (orientHeight / 2f))
         return PointF(x,y)
     }
-    public val fitAR get()= (if(width / refWidth > height / refHeight) width/ height else height/ width) * overalScale
+    public val fitAR get()= (if(targetWidth / orientWidth > targetHeight / orientHeight) targetWidth/ targetHeight else targetHeight/ targetWidth) * overalScale
 
     fun calculateCenteringArea() : PointF{
         val s = 1f/ calculatedScale
-        val screen = PointF(width * s, height * s)
-        val target = PointF(refWidth, refHeight)
+        val screen = PointF(targetWidth * s, targetHeight * s)
+        val target = PointF(orientWidth, orientHeight)
         return PointF((screen.x - target.x)/2f, (screen.y - target.y) / 2f)
     }
 
     fun draw(canvas: Canvas){
         Time.updateTime()
         Paints.updatePaints()
-        width = canvas.width.toFloat()
-        height = canvas.height.toFloat()
+        Input.tickInput()
+        targetWidth = canvas.width.toFloat()
+        targetHeight = canvas.height.toFloat()
         val center = calculateCenteringArea()
         canvas.withScale(calculatedScale, calculatedScale) {
             canvas.withTranslation(center.x, center.y) {
@@ -107,7 +101,7 @@ object VshServer {
                     try{
                         CrossMenu.lVerticalMenu(canvas)
                         CrossMenu.lHorizontalMenu(canvas)
-                        Input.lDebugInput(canvas)
+                        Debug.lDebug(canvas)
                     }catch(cce:ConcurrentModificationException){
                         Log.w("VshServer.Render","Rendering suspended waiting for item population.. Safe to ignore")
                     }
@@ -182,6 +176,10 @@ object VshServer {
             Log.d(TAG, "Item with ID $id not found")
         }
         return item
+    }
+
+    fun showContextMenu() {
+        ContextMenu.visible = true
     }
 }
 

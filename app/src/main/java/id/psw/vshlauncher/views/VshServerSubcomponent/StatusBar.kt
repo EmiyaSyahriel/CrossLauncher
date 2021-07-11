@@ -66,9 +66,9 @@ object StatusBar {
     }
 
     fun lStatusBar(ctx : Canvas){
-        val y = VshServer.refHeight * 0.1f
+        val y = VshServer.orientHeight * 0.1f
         val stHeight = if(shouldClockExpanded) 75 else 40
-        val statusRect = RectF(VshServer.refWidth -600,y, VshServer.scaledScreenWidth + 20f,y + stHeight)
+        val statusRect = RectF(VshServer.orientWidth -600,y, VshServer.scaledScreenWidth + 20f,y + stHeight)
 
         ctx.drawRoundRect(statusRect, 5f,5f, fillPaint)
         ctx.drawRoundRect(statusRect, 5f,5f, outlinePaint)
@@ -77,11 +77,11 @@ object StatusBar {
         val sb = StringBuilder()
         if(showOperatorName) sb.append(operatorName).append("        ")
         sb.append(getFormattedClock())
-        ctx.drawText(sb.toString(), VshServer.refWidth -80, y, Paints.statusPaint, 1.2f)
+        ctx.drawText(sb.toString(), VshServer.orientWidth -80, y, Paints.statusPaint, 1.2f)
         if(shouldClockExpanded){
-            ctx.drawText(clockExpandInfo, VshServer.refWidth -80, y, Paints.statusPaint, 2.2f)
+            ctx.drawText(clockExpandInfo, VshServer.orientWidth -80, y, Paints.statusPaint, 2.2f)
         }
 
-        drawClock(ctx, VshServer.refWidth - 40f, statusRect.centerY(), 22f)
+        drawClock(ctx, VshServer.orientWidth - 40f, statusRect.centerY(), 22f)
     }
 }
