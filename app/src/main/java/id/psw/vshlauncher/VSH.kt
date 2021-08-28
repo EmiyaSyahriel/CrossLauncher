@@ -132,6 +132,9 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
         playColdbootSound()
         setOperatorName()
 
+
+        Notification.postNotification("", VshServer.root.activeIcon, "", Notification.NOTIF_MEDIUM)
+
         checkFileReadWritePermission()
         initServerData()
         appListerThread = Thread( Runnable {

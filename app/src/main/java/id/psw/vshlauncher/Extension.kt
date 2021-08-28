@@ -34,8 +34,6 @@ fun <T> Boolean.choose(ifTrue : T, ifFalse: T):T{
     return if (this) {ifTrue} else {ifFalse}
 }
 
-
-
 fun View.getSystemPadding() : Rect{
     val res = context.resources
     val retval = Rect(0,0,res.displayMetrics.widthPixels, res.displayMetrics.heightPixels)

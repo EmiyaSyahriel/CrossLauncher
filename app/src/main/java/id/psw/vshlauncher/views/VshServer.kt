@@ -107,6 +107,8 @@ object VshServer {
                     }
                 }
                 StatusBar.lStatusBar(canvas)
+
+                Notification.lNotification(canvas, Time.deltaTime)
             }
         }
     }

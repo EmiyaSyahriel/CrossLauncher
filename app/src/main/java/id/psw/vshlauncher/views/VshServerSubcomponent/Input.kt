@@ -4,7 +4,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PointF
-import android.view.InputEvent
 import android.view.MotionEvent
 import id.psw.vshlauncher.distanceTo
 import id.psw.vshlauncher.views.VshServer
@@ -96,11 +95,11 @@ object Input {
             val xidx = (horz.selectedIndex + x).coerceIn(0, (horz.contentSize - 1).coerceAtLeast(0))
             val yidx = (vert.selectedIndex + y).coerceIn(0, (vert.contentSize - 1).coerceAtLeast(0))
 
-            if(horz.selectedIndex != xidx) CrossMenu.xLerpOffset= x * -1.0F;
-            if(vert.selectedIndex != yidx) CrossMenu.yLerpOffset= y * -1.0F;
+            if(horz.selectedIndex != xidx) CrossMenu.xLerpOffset= x * -1.0F
+            if(vert.selectedIndex != yidx) CrossMenu.yLerpOffset= y * -1.0F
 
-            vert.selectedIndex = yidx;
-            horz.selectedIndex = xidx;
+            vert.selectedIndex = yidx
+            horz.selectedIndex = xidx
         }catch(e:Exception){}
     }
 
@@ -139,12 +138,14 @@ object Input {
         }
     }
 
-
     fun doInputTapEvaluation(tap:TapPoint, action:Int){
+
+        val screenOffset = VshServer.calculateCenteringArea()
+        val offsetTap = PointF(tap.pos.x - screenOffset.x, tap.pos.y - screenOffset.y)
 
         if(action != MotionEvent.ACTION_POINTER_UP){
             directionalPadPos.forEachIndexed { i, it ->
-                if(tap.pos.distanceTo(it) < directionalPadRad ){
+                if(offsetTap.distanceTo(it) < (directionalPadRad* 2) ){
                     when(i){
                         DirectionPad.Up.value -> onKeyDown(Keys.DPadU)
                         DirectionPad.Down.value -> onKeyDown(Keys.DPadD)
@@ -155,13 +156,13 @@ object Input {
             }
         }
 
-            if(tap.pos.distanceTo(launchPos) < launchPosRad ){
-                if(action == MotionEvent.ACTION_POINTER_UP && tap.totalTime < 0.5f){
-                    VshServer.getActiveItem()?.onLaunch()
-                }else{
-                    VshServer.showContextMenu()
-                }
+        if(offsetTap.distanceTo(launchPos) < launchPosRad ){
+            if(action == MotionEvent.ACTION_POINTER_UP && tap.totalTime < 0.5f){
+                VshServer.getActiveItem()?.onLaunch()
+            }else{
+                VshServer.showContextMenu()
             }
+        }
     }
 
     fun tickInput(){

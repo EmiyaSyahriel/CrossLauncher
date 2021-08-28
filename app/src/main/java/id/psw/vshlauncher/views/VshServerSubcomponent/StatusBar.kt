@@ -13,7 +13,7 @@ object StatusBar {
     var showOperatorName = true
     var operatorName = "No Operator"
     var use24Format = false
-    var clockExpandInfo = "Some info here --"
+    var clockExpandInfo = ""
     val shouldClockExpanded : Boolean get() = clockExpandInfo.isNotBlank()
     var isLoading = true
     var animateLoadClock = true
