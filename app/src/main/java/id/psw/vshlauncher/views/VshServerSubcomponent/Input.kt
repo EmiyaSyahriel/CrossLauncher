@@ -83,23 +83,28 @@ object Input {
             Keys.DPadD -> setSelectionRel(0,1)
             Keys.DPadL -> setSelectionRel(-1,0)
             Keys.DPadR -> setSelectionRel(1,0)
+            Keys.Triangle -> ContextMenu.switchVisibility()
             else -> { /** TODO: */ }
         }
     }
 
     fun setSelectionRel(x:Int,y:Int){
         try{
-            val horz = VshServer.getActiveHorizontalParentMenu()
-            val vert = VshServer.getActiveVerticalParentMenu()
+            if(ContextMenu.visible){
+                ContextMenu.setSelection(y)
+            }else{
+                val horz = VshServer.getActiveHorizontalParentMenu()
+                val vert = VshServer.getActiveVerticalParentMenu()
 
-            val xidx = (horz.selectedIndex + x).coerceIn(0, (horz.contentSize - 1).coerceAtLeast(0))
-            val yidx = (vert.selectedIndex + y).coerceIn(0, (vert.contentSize - 1).coerceAtLeast(0))
+                val xidx = (horz.selectedIndex + x).coerceIn(0, (horz.contentCount - 1).coerceAtLeast(0))
+                val yidx = (vert.selectedIndex + y).coerceIn(0, (vert.contentCount - 1).coerceAtLeast(0))
 
-            if(horz.selectedIndex != xidx) CrossMenu.xLerpOffset= x * -1.0F
-            if(vert.selectedIndex != yidx) CrossMenu.yLerpOffset= y * -1.0F
+                if(horz.selectedIndex != xidx) CrossMenu.xLerpOffset= x * -1.0F
+                if(vert.selectedIndex != yidx) CrossMenu.yLerpOffset= y * -1.0F
 
-            vert.selectedIndex = yidx
-            horz.selectedIndex = xidx
+                vert.selectedIndex = yidx
+                horz.selectedIndex = xidx
+            }
         }catch(e:Exception){}
     }
 
@@ -119,7 +124,7 @@ object Input {
             if(it.id == id){
                 val lastPos = it.pos
                 it.pos = pos * (1/ VshServer.calculatedScale)
-                var lastDist = lastPos.distanceTo(it.pos)
+                val lastDist = lastPos.distanceTo(it.pos)
                 if(lastDist > 20){
                     it.hasFirstTap = false
                     it.time = 0.0f
@@ -145,12 +150,13 @@ object Input {
 
         if(action != MotionEvent.ACTION_POINTER_UP){
             directionalPadPos.forEachIndexed { i, it ->
-                if(offsetTap.distanceTo(it) < (directionalPadRad* 2) ){
+                if(offsetTap.distanceTo(it) < (directionalPadRad) ){
                     when(i){
                         DirectionPad.Up.value -> onKeyDown(Keys.DPadU)
                         DirectionPad.Down.value -> onKeyDown(Keys.DPadD)
                         DirectionPad.Left.value -> onKeyDown(Keys.DPadL)
                         DirectionPad.Right.value -> onKeyDown(Keys.DPadR)
+
                     }
                 }
             }
@@ -158,9 +164,11 @@ object Input {
 
         if(offsetTap.distanceTo(launchPos) < launchPosRad ){
             if(action == MotionEvent.ACTION_POINTER_UP && tap.totalTime < 0.5f){
-                VshServer.getActiveItem()?.onLaunch()
-            }else{
-                VshServer.showContextMenu()
+                if(tap.totalTime < 0.5f){
+                    VshServer.getActiveItem()?.onLaunch()
+                }else{
+                    VshServer.showContextMenu()
+                }
             }
         }
     }

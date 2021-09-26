@@ -35,10 +35,14 @@ object CrossMenu {
                 val itemX = (posX - iconHalf) + (deltaF * (iconSize + 50))
                 val iconRect = RectF(itemX, posY - iconHalf, itemX + iconSize, posY +iconHalf)
 
-                ctx.drawRect(iconRect, Debug.debugPaint)
+                // ctx.drawRect(iconRect, Debug.debugPaint)
 
-                val icon = if(isSelected) it.activeIcon else it.inactiveIcon
-                ctx.drawBitmap(icon, icon.getRect(), iconRect, Paints.itemTitleSelected)
+                //val icon = if(isSelected) it.activeIcon else it.inactiveIcon
+
+                val icon = it.activeIcon
+                val paint = if(isSelected) Paints.itemTitleSelected else Paints.itemTitleUnselected
+
+                ctx.drawBitmap(icon, icon.getRect(), iconRect, paint)
                 if(isSelected){
                     Paints.categoryTitleSelected .textAlign = Paint.Align.CENTER
                     ctx.drawText(it.name, iconRect.centerX(), iconRect.bottom + 10f, Paints.categoryTitleSelected , 1.0f)
@@ -90,12 +94,13 @@ object CrossMenu {
             val descPaint = if(isSelected) Paints.itemSubtitleSelected else Paints.itemSubtitleUnselected
 
             val iconRect = RectF(posX - iconHalf, itemY, posX + iconHalf, itemY + iconSize)
-            val icon = if(isSelected) it.activeIcon else it.inactiveIcon
+            //val icon = if(isSelected) it.activeIcon else it.inactiveIcon
+            val icon = it.activeIcon
             ctx.drawBitmap(icon, icon.getRect(), iconRect, titlePaint)
             titlePaint.textAlign = Paint.Align.LEFT
             descPaint.textAlign = Paint.Align.LEFT
 
-            ctx.drawRect(iconRect, Debug.debugPaint)
+            // ctx.drawRect(iconRect, Debug.debugPaint)
 
             val textYOffset = if(it.hasDescription) -0.25f else 0.5f
 

@@ -588,8 +588,8 @@ class VshView : View {
 
     private val isSelectionValid : Boolean get() {
         var retval = false
-        if(selectedX < itemRoot.contentSize){
-            retval = selectedY < deepestSubContent.contentSize
+        if(selectedX < itemRoot.contentCount){
+            retval = selectedY < deepestSubContent.contentCount
         }
         return retval
     }
@@ -747,7 +747,7 @@ class VshView : View {
         if(x != 0){
             // On Root
             if(isOnRoot){
-                selectedX = (selectedX + x).coerceIn(0, itemRoot.contentSize)
+                selectedX = (selectedX + x).coerceIn(0, itemRoot.contentCount)
             }else{ // On Sub-Content
                 if(x < 0){
                     sendBackSignal()
@@ -767,9 +767,9 @@ class VshView : View {
     fun setSelectionAbs(x:Int, y:Int){
         if(hideMenu) return
 
-        selectedX = x.coerceIn(0, itemRoot.contentSize - 1)
+        selectedX = x.coerceIn(0, itemRoot.contentCount - 1)
         if(deepestSubContent.hasContent){
-            selectedY = y.coerceIn(0, deepestSubContent.contentSize - 1)
+            selectedY = y.coerceIn(0, deepestSubContent.contentCount - 1)
         }
 
         // Skip vertical sliding animation
@@ -788,7 +788,7 @@ class VshView : View {
     }
 
     fun reassignYPos(open: Boolean){
-        val maxSizePosition = deepestSubContent.contentSize
+        val maxSizePosition = deepestSubContent.contentCount
         selectedXf += open.choose(-1f, 1f)
         subContentOffset = open.choose(-1f, 1f)
         selectedY = selectedY.coerceIn(0,  maxSizePosition - 1)

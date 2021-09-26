@@ -15,9 +15,12 @@ object Paints {
         color=  Color.WHITE
         setShadowLayer(10f, 0f,0f, Color.WHITE)
     }
+    val menuBackground: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.argb(64,255,255,255)
+    }
     var itemTitleUnselected : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = 30f
-        color=  Color.GRAY
+        color =  Color.argb(128,255,255,255)
     }
     var categoryTitleSelected : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = 20f
@@ -39,7 +42,7 @@ object Paints {
     }
     var itemSubtitleUnselected : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = 20f
-        color=  Color.GRAY
+        color=  Color.argb(128,255,255,255)
     }
 
     fun setFont(tf: Typeface){

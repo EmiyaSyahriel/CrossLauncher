@@ -27,6 +27,7 @@
         tools:ignore="UnusedAttribute">
         <activity android:name=".test_activity.XMBWaveTestActivity" android:exported="true" android:launchMode="singleInstance"/>
         <activity android:name=".mediaplayer.XMBAudioPlayer" />
+        <activity android:name=".activities.AppInfoActivity" android:exported="true" />
 
         <!-- Some attribute is unused on older version of Android, most of them were safe to ignore -->
         <service

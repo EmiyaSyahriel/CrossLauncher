@@ -38,12 +38,18 @@ class VshDialogLayout : ViewGroup {
     private var paintButton = Paint(Paint.ANTI_ALIAS_FLAG)
     private var selectedButtonIndex = 0
     private var titleText = "VshDialogLayout"
-    private lateinit var iconBitmap : Bitmap
+    private var iconBitmap : Bitmap? = null
     private var confirmButton = KeyEvent.KEYCODE_A
 
     constructor(ctx:Context):super(ctx){
         init()
     }
+
+    fun setTitle(title:Int) : VshDialogLayout { titleText = context.getString(title) ; return this }
+    fun setTitle(title:String) : VshDialogLayout { titleText = title; return this }
+    fun setIcon(icon:Bitmap) : VshDialogLayout { iconBitmap = icon; return this }
+    fun setIcon(icon:Int) : VshDialogLayout { iconBitmap = context.resources.getDrawable(icon).toBitmap(64,64); return this }
+
     constructor(ctx:Context,attrs:AttributeSet):super(ctx,attrs){
         // Load attributes
         val a = context.obtainStyledAttributes(
@@ -212,7 +218,9 @@ class VshDialogLayout : ViewGroup {
         val leftPadding = d(50f) + rendRect.left
 
         canvas.drawTextWithYOffset(titleText, leftPadding,outlineRect.top - sd(10f),paintText,0f)
-        canvas.drawBitmap(iconBitmap, leftPadding - d(40f), outlineRect.top - d(10f) - d(32f), paintFill)
+        if(iconBitmap != null){
+            canvas.drawBitmap(iconBitmap!!, leftPadding - d(40f), outlineRect.top - d(10f) - d(32f), paintFill)
+        }
 
         paintText.textAlign = Paint.Align.CENTER
         buttonRects.forEachIndexed { index, rectF ->

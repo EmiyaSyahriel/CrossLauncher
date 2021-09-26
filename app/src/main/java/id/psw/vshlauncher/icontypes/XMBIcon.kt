@@ -39,7 +39,7 @@ open class XMBIcon(val itemId: String) {
     open val hasContent : Boolean
         get() = content.isNotEmpty()
     var contentIndex : Int = 0
-    val contentSize : Int get() = content.size
+    val contentCount : Int get() = content.size
     /// endregion
 
     /// region Menu

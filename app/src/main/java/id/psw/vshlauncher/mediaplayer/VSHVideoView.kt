@@ -21,8 +21,8 @@ class VSHVideoView : VideoView {
     fun getVideoResoultion() : Point{
         val wStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
         val hStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-        val w = wStr.toIntOrNull() ?: 854
-        val h = hStr.toIntOrNull() ?: 480
+        val w = wStr?.toIntOrNull() ?: 854
+        val h = hStr?.toIntOrNull() ?: 480
         return Point(w,h)
     }
 }

@@ -2,6 +2,7 @@ package id.psw.vshlauncher.views
 
 import android.graphics.*
 import android.util.Log
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withScale
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.VSH
@@ -65,6 +66,26 @@ object VshServer {
         println("XMB Rendering Server is initialized")
     }
 
+    var internalBitmaps = mutableMapOf<String, Bitmap?>()
+
+    fun loadCachedInternalBitmap(id:String, resId: Int, ctx:VSH) : Bitmap {
+        var retval = XMBIcon.blankBmp
+        if(internalBitmaps.containsKey(id)){
+            val bitmap =internalBitmaps[id]
+            if(bitmap != null){
+                retval = bitmap
+            }
+        }else{
+            retval = ctx.resources.getDrawable(resId).toBitmap(128,128)
+            if(internalBitmaps.containsKey(id)){
+                internalBitmaps[id] = retval
+            }else{
+                internalBitmaps.put(id, retval)
+            }
+        }
+        return retval
+    }
+
     fun reinitContext(ctx: VSH){
         density = ctx.resources.displayMetrics.density
         scaledDensity = ctx.resources.displayMetrics.scaledDensity
@@ -101,13 +122,14 @@ object VshServer {
                     try{
                         CrossMenu.lVerticalMenu(canvas)
                         CrossMenu.lHorizontalMenu(canvas)
-                        Debug.lDebug(canvas)
+                        // Debug.lDebug(canvas)
                     }catch(cce:ConcurrentModificationException){
                         Log.w("VshServer.Render","Rendering suspended waiting for item population.. Safe to ignore")
                     }
                 }
-                StatusBar.lStatusBar(canvas)
 
+                StatusBar.lStatusBar(canvas)
+                ContextMenu.lContextMenu(canvas)
                 Notification.lNotification(canvas, Time.deltaTime)
             }
         }
@@ -132,14 +154,16 @@ object VshServer {
         return retval
     }
 
-    fun getActiveItem() : XMBIcon
+    fun getActiveItem() : XMBIcon?
     {
         val item = getActiveVerticalParentMenu()
-        return item.content[item.selectedIndex]
+        return if(item.selectedIndex < item.contentCount){
+            item.content[item.selectedIndex]
+        }else null
     }
 
     fun sendBackSignal() {
-        if(!ContextMenu.visible){
+        if(ContextMenu.visible){
             ContextMenu.visible = false
         }else if(showDesktop){
             showDesktop = false
@@ -151,7 +175,11 @@ object VshServer {
     }
 
     fun sendConfirmSignal(){
-        getActiveItem().onLaunch()
+        if(ContextMenu.visible){
+            ContextMenu.launchMenu()
+        }else{
+            getActiveItem()?.onLaunch()
+        }
     }
 
     fun setSelection(vararg indices:Int)
@@ -181,8 +209,7 @@ object VshServer {
     }
 
     fun showContextMenu() {
+        Log.d("VSH::CtxMenu", "Showing context menu")
         ContextMenu.visible = true
     }
 }
-
-
