@@ -140,7 +140,7 @@ class VshDialogLayout : ViewGroup {
     private fun updatePath(){
         outlinePath.reset()
         val wf = width * 1.1f
-        val barHeight = rendRect.height() * 0.1f
+        val barHeight = rendRect.height() * 0.15f
         outlinePath.moveTo(-10f, barHeight)
         outlinePath.lineTo(wf,  barHeight)
         outlinePath.lineTo(wf, height - barHeight)
@@ -179,10 +179,10 @@ class VshDialogLayout : ViewGroup {
         val paddingSize = d(3f)
         buttons.forEachIndexed { index, _ ->
             buttonRects.add(RectF(
-                (btnWidth * index.toFloat()) + paddingSize + rendRect.left,
-                (renderHeight * 0.85f) + paddingSize + rendRect.top,
+                (btnWidth * index.toFloat()),
+                (renderHeight * 0.85f) + paddingSize,
                 (btnWidth * (index + 1f)) - paddingSize + rendRect.left,
-                (renderHeight + rendRect.top * 1f) - paddingSize
+                (renderHeight * 1f) - paddingSize
             ))
         }
     }
@@ -201,6 +201,7 @@ class VshDialogLayout : ViewGroup {
                 Runnable { runnable() })
         )
     }
+
     private fun Canvas.drawTextWithYOffset(text:String, x:Float, y:Float, paint:Paint, yOff : Float = 0.5f){
         val yCalc = y + (paint.textSize * yOff)
         this.drawText(text,x,yCalc,paint)
@@ -212,12 +213,16 @@ class VshDialogLayout : ViewGroup {
         updatePath()
         recalculateButtonSize()
 
+
+
+        canvas.drawARGB(128,0,0,0)
+
         canvas.drawRect(outlineRect, paintOutline)
         paintText.textAlign = Paint.Align.LEFT
 
         val leftPadding = d(50f) + rendRect.left
 
-        canvas.drawTextWithYOffset(titleText, leftPadding,outlineRect.top - sd(10f),paintText,0f)
+        canvas.drawTextWithYOffset(titleText, leftPadding,outlineRect.top - sd(20f),paintText,0f)
         if(iconBitmap != null){
             canvas.drawBitmap(iconBitmap!!, leftPadding - d(40f), outlineRect.top - d(10f) - d(32f), paintFill)
         }

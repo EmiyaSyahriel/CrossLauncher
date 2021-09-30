@@ -126,15 +126,15 @@ class VshDialogView : View {
         outlinePath.reset()
         val w = renderableArea.width()
         val h = renderableArea.bottom
-        outlinePath.moveTo(-w * 0.25f, h * 0.20f)
-        outlinePath.lineTo(w * 1.25f,  h * 0.20f)
+        outlinePath.moveTo(-w * 0.25f, h * 0.15f)
+        outlinePath.lineTo(w * 1.25f,  h * 0.15f)
         outlinePath.lineTo(w * 1.25f, h * 0.85f)
         outlinePath.lineTo( -w * 0.25f, h * 0.85f)
         outlinePath.close()
 
         outlineRect.set(
-            -w * 0.25f, h * 0.20f,
-            w * 1.25f, h * 0.85f
+            -w * 0.25f, h * 0.10f,
+            w * 1.25f, h * 0.90f
         )
     }
 
@@ -168,7 +168,7 @@ class VshDialogView : View {
 
         val leftPadding = d(50f) + renderableArea.left
 
-        canvas.drawText(titleText, leftPadding,(height * 0.20f) - d(20f),paintText)
+        canvas.drawText(titleText, leftPadding,(height * 0.15f) - d(20f),paintText)
         canvas.drawBitmap(iconBitmap, leftPadding - d(40f), (height * 0.20f) -d(10f) - d(32f), paintFill)
 
         paintText.textAlign = Paint.Align.CENTER
@@ -282,7 +282,7 @@ class VshDialogView : View {
                 (btnWidth * index.toFloat()) + paddingSize + renderableArea.left,
                 (renderHeight * 0.85f) + paddingSize + renderableArea.top,
                 (btnWidth * (index + 1f)) - paddingSize + renderableArea.left,
-                (renderHeight + renderableArea.top * 1f) - paddingSize
+                (renderHeight) - paddingSize
             ))
         }
     }
