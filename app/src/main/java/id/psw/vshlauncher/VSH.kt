@@ -127,8 +127,8 @@ class VSH : AppCompatActivity(), VshDialogView.IDialogBackable {
             }
         }
 
-        // setContentView(coldboot)
-        setContentView(vsh)
+        setContentView(coldboot)
+        // setContentView(vsh)
         playColdbootSound()
         setOperatorName()
 
