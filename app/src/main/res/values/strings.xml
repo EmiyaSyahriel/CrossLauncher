@@ -85,5 +85,12 @@
     <string name="app_name_wave">Wave Wallpaper</string>
     <string name="app_launch">Launch</string>
     <string name="app_find_on_playstore">Find on Play Store</string>
-    <string name="view_app_info">Application Info</string>
+    <string name="view_app_info">Application Details</string>
+    <string name="app_show_details">Details</string>
+    <string name="common_back">Back</string>
+    <string name="app_open_data_dir">Open Data Directory</string>
+    <string name="app_open_mod_dir">Open Customization Dir</string>
+    <string name="app_open_obb_dir">Open OBB</string>
+    <string name="app_uninstall">Uninstall</string>
+    <string name="app_info_system_activity">Open in Settings</string>
 </resources>
