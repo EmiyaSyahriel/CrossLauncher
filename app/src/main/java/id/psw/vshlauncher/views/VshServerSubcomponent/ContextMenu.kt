@@ -66,8 +66,7 @@ object ContextMenu{
                     item.menu.forEachIndexed { i, menu ->
                         val paint = if(i == item.menuIndex && menu.selectable) Paints.itemTitleSelected else Paints.itemTitleUnselected
                         val textSize =  paint.textSize
-                        val textTopSide = (VshServer.orientHeight / 2) - ((item.menuCount * textSize) / 2f) + (i * textSize)
-
+                        val textTopSide = (VshServer.orientHeight / 2) - ((item.menuCount * textSize * 1.25f) / 2f) + (i * textSize * 1.25f)
                         canvas.drawText(menu.name, leftSide, textTopSide, paint)
                     }
                 }
