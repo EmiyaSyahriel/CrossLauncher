@@ -60,7 +60,22 @@ page for pre-built packages
 ## Contribution
 Translations and fixes are welcome.
 
-I am still a beginner on Android programming. one and a half year experience in non-professional capacity.
+## Building
+### Prerequisites
+- Android Studio with:
+    - Android SDK 29+
+    - NDK 21+
+    - CMake 3.8+
+- .NET Scripting tool (Build script only, optional)
+    - .NET Core 3.1 (.NET 5.0 is recommended)
+### Steps
+- Clone or Download this repository
+- Open Android Studio
+
+To compile without the entire Android Studio package, please refer to this page : 
+[Build your app from the command line | Android Developers](https://developer.android.com/studio/build/building-cmdline)
+However, you would still need the Android SDK, NDK, CMake and optionally .NET Scripting tool.
 
 ## License
-MIT License.
+The main project is licensed under MIT License.
+Some build-helper tool files is licensed under CC0 Public Domain.
