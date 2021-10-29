@@ -1,0 +1,5 @@
+function(embed_res ns line_limit target_dir target_file shaders)
+    message("CS/Invoke : Embed Res (${ns} ${line_limit} ${target_dir} ${target_file} ${shaders})")
+    execute_process(COMMAND dotnet script "../../../csx/embed_res.csx" -- ${ns} ${line_limit} ${target_dir} ${target_file} "${shaders}" "cpp;hpp" WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} RESULT_VARIABLE embed_res_rv)
+    message("${embed_res_rv}")
+endfunction()

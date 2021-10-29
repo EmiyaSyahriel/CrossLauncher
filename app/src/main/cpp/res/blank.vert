@@ -1,8 +1,9 @@
+precision highp float;
 attribute vec3 vpos;
-attribute vec2 uv;
-varying vec2 screenPos;
+attribute vec3 uv;
+attribute vec3 normal;
 
 void main(){
-    screenPos = uv;
     gl_Position = vec4(vpos, 1.0);
 }
+

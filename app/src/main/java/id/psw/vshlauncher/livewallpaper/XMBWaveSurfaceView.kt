@@ -2,6 +2,7 @@ package id.psw.vshlauncher.livewallpaper
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.PixelFormat
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.util.AttributeSet
@@ -30,11 +31,12 @@ class XMBWaveSurfaceView : GLSurfaceView {
     lateinit var renderer : XMBWaveRenderer
 
     fun init(){
-        setEGLConfigChooser(8,8,8,8,16,0)
+        setEGLConfigChooser(8,8,8,8,8,8)
         setEGLContextClientVersion(2)
         renderer = XMBWaveRenderer()
         setRenderer(renderer)
-        renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+        renderMode = RENDERMODE_CONTINUOUSLY
+        holder?.setFormat(PixelFormat.TRANSLUCENT)
         Log.d(TAG, "Wave Surface Initialized")
     }
 

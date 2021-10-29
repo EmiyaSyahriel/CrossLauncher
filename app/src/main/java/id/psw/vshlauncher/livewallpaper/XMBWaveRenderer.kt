@@ -32,6 +32,8 @@ class XMBWaveRenderer() : GLSurfaceView.Renderer {
         val cTime = System.currentTimeMillis()
         val dTime = (cTime - lastTime) / 1000f;
         lastTime = cTime
+
+
         NativeGL.draw(dTime)
     }
 

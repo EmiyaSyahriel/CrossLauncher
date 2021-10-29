@@ -9,7 +9,6 @@
 #include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
 #include <glm/ext/matrix_clip_space.hpp> // glm::perspective
 #include <glm/ext/scalar_constants.hpp> // glm::pi
-#include "dictionary.h" // glm::pi
 
 #if ANDROID
     #ifndef _PSW_GL_VER_
@@ -27,10 +26,9 @@ typedef unsigned char byte;
 #define uint unsigned int
 #endif
 
-class Vertex {
-public:
-    glm::vec3 position, normal;
-    glm::vec2 uv;
-
-    Vertex(glm::vec3 p){position = p;normal = glm::vec3(0,0,0); uv = glm::vec2 (0,0);} ;
+enum class WAVE_TYPE : int8_t {
+    PS3_NORMAL = 0x00,
+    PS3_BLINKS = 0x01,
+    PSP_BOTTOM = 0x10,
+    PSP_CENTER = 0x11,
 };
