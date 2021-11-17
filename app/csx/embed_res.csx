@@ -66,7 +66,7 @@ hpp_content.AppendLine($"#pragma once");
 hpp_content.AppendLine($"#ifndef {include_guard}");
 hpp_content.AppendLine($"#define {include_guard}");
 
-cpp_content.AppendLine($"#include \"{Args[3]}.hpp\"");
+cpp_content.AppendLine($"#include \"{Args[3]}.{hpp_type}\"");
 cpp_content.AppendLine(AUTO_GEN_TEMPLATE);
 hpp_content.AppendLine(AUTO_GEN_TEMPLATE);
 hpp_content.Append("\n\n");

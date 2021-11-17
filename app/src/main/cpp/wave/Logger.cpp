@@ -3,9 +3,6 @@
 #include <cstdarg>
 #include <stdio.h>
 
-void W32_PRINT(char* format, ...) {
-}
-
 void W32_PRINT(char stype, char* tag, char* format, ...)
 {
 	va_list args;

@@ -23,5 +23,6 @@
 void W32_PRINT(char stype, char* tag, char* format, ...);
 
 #define Log_i(...) W32_PRINT('I', WAVE_TAG, __VA_ARGS__);
+#define Log_d(...) W32_PRINT('D', WAVE_TAG, __VA_ARGS__);
 #define Log_e(...) W32_PRINT('E', WAVE_TAG, __VA_ARGS__);
 #endif

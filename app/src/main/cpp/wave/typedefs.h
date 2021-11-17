@@ -3,6 +3,7 @@
 // Created by EmiyaSyahriel on 20/05/2021.
 //
 #pragma once
+#include <glm/vec2.hpp> // glm::vec3
 #include <glm/vec3.hpp> // glm::vec3
 #include <glm/vec4.hpp> // glm::vec4
 #include <glm/mat4x4.hpp> // glm::mat4
@@ -27,8 +28,15 @@ typedef unsigned char byte;
 #endif
 
 enum class WAVE_TYPE : int8_t {
-    PS3_NORMAL = 0x00,
-    PS3_BLINKS = 0x01,
-    PSP_BOTTOM = 0x10,
-    PSP_CENTER = 0x11,
+    PS3 = 0b0000,
+    PSP = 0b0100,
+    DEFAULT = 0b0000,
+    PS3_NORMAL = 0b0000,
+    PS3_BLINKS = 0b0010,
+    PSP_BOTTOM = 0b0100,
+    PSP_CENTER = 0b0110,
 };
+
+#ifndef HAS_FLAG
+#define HAS_FLAG(source,target,s_type) ((static_cast<s_type>(source) & static_cast<s_type>(target)) == static_cast<s_type>(target))
+#endif

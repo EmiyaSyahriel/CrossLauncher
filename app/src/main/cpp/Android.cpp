@@ -5,7 +5,7 @@
 #include <android/asset_manager_jni.h>
 #include "wave/typedefs.h"
 #include "wave/states.h"
-#include "wave/wave_gl.h"
+#include "wave/wave.h"
 
 extern "C" JNIEXPORT void JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL_setMode(JNIEnv *env, jobject obj, jbyte mode){
     wave_type = static_cast<WAVE_TYPE>(mode);
@@ -16,7 +16,7 @@ extern "C" JNIEXPORT void JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL
     }
 
 extern "C" JNIEXPORT void JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL_destroy(JNIEnv *env, jobject obj){
-        wave_kill();
+        wave_destroy();
     }
 
 extern "C" JNIEXPORT void JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL_setAssetManager(JNIEnv* env, jobject obj, jobject mgr){

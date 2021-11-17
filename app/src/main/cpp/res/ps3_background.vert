@@ -1,3 +1,4 @@
+precision highp float;
 attribute vec2 vpos;
 attribute vec2 uv;
 varying vec2 screenPos;

@@ -3,11 +3,9 @@
 #include "states.h"
 #include "typedefs.h"
 
-void ps3_compile_shaders();
-void ps3_generate_buffers();
-void ps3_onresize();
+void ps3_resize(float w, float h);
 void ps3_start();
-void ps3_draw();
+void ps3_draw(float ms);
 void ps3_destroy();
 
 #endif
