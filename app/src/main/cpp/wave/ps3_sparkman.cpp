@@ -18,15 +18,20 @@ float rng_get(){
 }
 
 #define COLOR_RNG lerp(0.75f, 1.0f, rng_get())
+#define WEIGHTING(x) powf(fabs(cosf((1.0f - x) * M_PI)), 1.0f)
 
 void sparkman_reset(Particle &particle, bool prewarm) {
 	particle.color = glm::vec3(COLOR_RNG, COLOR_RNG, COLOR_RNG);
 	particle.speed = lerp(0.005f, 0.1f, rng_get());
 	
-	particle.pos_from = glm::vec2(snrange(rng_get()), lerp(-0.15f, 0.15f, rng_get()));
+	float from_x = WEIGHTING(rng_get());
+	float y_range = 0.15f * WEIGHTING(from_x);
+	float from_y = lerp(-y_range, y_range, rng_get());// *;
+
+	particle.pos_from = glm::vec2(snrange(from_x), from_y);
 
 	float rot = rng_get() * (float)(M_PI * 2);
-	float dis = lerp(0.05f, 0.3f, rng_get());
+	float dis = lerp(0.05f, 0.3f, rng_get() * WEIGHTING(from_x));
 	particle.pos_to = particle.pos_from + (glm::vec2(cosf(rot), sinf(rot)) * dis);
 	particle.size_from = lerp(0.001f, 0.005f, rng_get());
 	particle.size_to = particle.size_from + lerp(0.001f, 0.005f, rng_get());
@@ -72,7 +77,7 @@ num++;
 
 	std::vector<glm::vec2> precalcs;
 	for (int i = 0; i <= xmb_particle_ring_count; i++) {
-		float r = ((float)i / xmb_particle_ring_count) * (M_PI *2);
+		float r = ((float)i / xmb_particle_ring_count) * ((float)M_PI *2);
 		precalcs.push_back(glm::vec2(sinf(r), cosf(r)));
 	}
 

@@ -1,9 +1,10 @@
 //
 // Created by ainaa on 17/11/2021.
 //
+#pragma once
 #ifndef H_MATHUTIL
 #define H_MATHUTIL
-#pragma once
+#include "typedefs.h"
 
 #ifndef lerp
 #define lerp(a,b,t) (a + ((b - a) * t))
@@ -32,5 +33,18 @@
 #ifndef int2color
 #define int2color(i) glm::vec4(getbyte(i,16) / 255.0f,getbyte(i,8) / 255.0f,getbyte(i,0) / 255.0f,getbyte(i,24) / 255.0f)
 #endif
+
+#ifndef max
+#define max(a,b) (a > b ? a : b)
+#endif
+
+#ifndef min
+#define min(a,b) (a < b ? a : b)
+#endif
+
+float timeofday();
+float timeofday_shader(float clock);
+int monthofday();
+glm::vec2 get_month_uv(int month);
 
 #endif
