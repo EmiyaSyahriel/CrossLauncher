@@ -1,0 +1,25 @@
+<resources>
+    <!-- Reply Preference -->
+    <string-array name="reply_entries">
+        <item>Reply</item>
+        <item>Reply to all</item>
+    </string-array>
+
+    <string-array name="reply_values">
+        <item>reply</item>
+        <item>reply_all</item>
+    </string-array>
+
+    <string-array name="xmb_wave_type_names">
+        <item>PS3 Classic</item>
+        <item>PS3 Modern</item>
+        <item>PSP Classic</item>
+        <item>PSP Original</item>
+    </string-array>
+    <string-array name="xmb_wave_type_values">
+        <item>0</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+    </string-array>
+</resources>

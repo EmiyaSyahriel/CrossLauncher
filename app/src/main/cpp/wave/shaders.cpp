@@ -5,6 +5,16 @@ namespace R {
 	const char* const blank_frag = R"EMBEDRES(precision lowp float;
 void main(){ gl_FragColor = vec4(0.6, 0.0, 1, 1.0); }
 )EMBEDRES";
+	const char* const blank_vert = R"EMBEDRES(precision highp float;
+attribute vec3 vpos;
+attribute vec3 uv;
+attribute vec3 normal;
+
+void main(){
+    gl_Position = vec4(vpos, 1.0);
+}
+
+)EMBEDRES";
 	const char* const ps3_background_frag = R"EMBEDRES(precision lowp float;
 float lerp(float a, float b, float t){ return a + ((b - a) * t); }
 vec3 lerp3(vec3 a, vec3 b, float t){ return vec3(lerp(a.x, b.x, t), lerp(a.y, b.y, t), lerp(a.z, b.z, t)); }
@@ -18,11 +28,34 @@ void main(){
     gl_FragColor = vec4(lerp3(_ColorB, _ColorA, screenPos.y), 1.0);
 }
 )EMBEDRES";
+	const char* const ps3_background_vert = R"EMBEDRES(precision highp float;
+attribute vec2 vpos;
+attribute vec2 uv;
+varying vec2 screenPos;
+
+void main(){
+    screenPos = uv;
+    gl_Position = vec4(vpos, 0.0, 1.0);
+}
+)EMBEDRES";
 	const char* const ps3_sparkle_frag = R"EMBEDRES(precision lowp float;
 varying vec4 f_vcol;
 
 void main(){
     gl_FragColor = f_vcol;
+}
+)EMBEDRES";
+	const char* const ps3_sparkle_vert = R"EMBEDRES(precision highp float;
+attribute vec2 vpos;
+attribute vec4 vcol;
+
+uniform mat4 matrix;
+
+varying vec4 f_vcol;
+
+void main(){
+    gl_Position = vec4(vpos, 0.0f, 1.0f) * matrix;
+    f_vcol = vcol;
 }
 )EMBEDRES";
 	const char* const ps3_wave_frag = R"EMBEDRES(precision lowp float;
@@ -42,39 +75,6 @@ vec3 irange(vec3 r){ return vec3(irange(r.x),irange(r.y),irange(r.z)); }
 void main(){
     gl_FragColor = lerp4(color, white, alpha);
     // gl_FragColor = vec4(v2f_normal, 1);
-}
-)EMBEDRES";
-	const char* const blank_vert = R"EMBEDRES(precision highp float;
-attribute vec3 vpos;
-attribute vec3 uv;
-attribute vec3 normal;
-
-void main(){
-    gl_Position = vec4(vpos, 1.0);
-}
-
-)EMBEDRES";
-	const char* const ps3_background_vert = R"EMBEDRES(precision highp float;
-attribute vec2 vpos;
-attribute vec2 uv;
-varying vec2 screenPos;
-
-void main(){
-    screenPos = uv;
-    gl_Position = vec4(vpos, 0.0, 1.0);
-}
-)EMBEDRES";
-	const char* const ps3_sparkle_vert = R"EMBEDRES(precision highp float;
-attribute vec2 vpos;
-attribute vec4 vcol;
-
-uniform mat4 matrix;
-
-varying vec4 f_vcol;
-
-void main(){
-    gl_Position = vec4(vpos, 0.0f, 1.0f) * matrix;
-    f_vcol = vcol;
 }
 )EMBEDRES";
 	const char* const ps3_wave_vert = R"EMBEDRES(precision highp float;

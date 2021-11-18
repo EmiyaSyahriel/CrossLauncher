@@ -8,7 +8,6 @@ import id.psw.vshlauncher.livewallpaper.NativeGL
 class XMBWaveTestActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NativeGL.setAssetManager(assets)
         setContentView(R.layout.layout_xmbwave)
     }
 }

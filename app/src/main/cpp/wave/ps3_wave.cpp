@@ -118,9 +118,11 @@ void ps3_start(){
 
     if (wave_type == WAVE_TYPE::PS3_BLINKS) {
         sparkman_init();
+        Log_d("Profile: PS3 SPARKLE");
+    }else{
+        Log_d("Profile: PS3 CLASSIC");
     }
 
-    Log_d("Starting PS3 Profile");
 }
 
 void ps3_wave_setup_blend(){
@@ -142,8 +144,11 @@ void ps3_draw_background(){
     glBindBuffer(GL_ARRAY_BUFFER, vtbuff_bg); CGL();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idbuff_bg); CGL();
 
-    glUniform3f(vunif_bg_ColorA, 0.6f, 0.0f, 1.0f); CGL();
-    glUniform3f(vunif_bg_ColorB, 0.0f, 0.6f, 1.0f); CGL();
+    glm::vec4 cA = background_color_top;
+    glm::vec4 cB = background_color_bottom;
+
+    glUniform3f(vunif_bg_ColorA, cA.r, cA.g, cA.b); CGL();
+    glUniform3f(vunif_bg_ColorB, cB.r, cB.g, cB.b); CGL();
 
     glVertexAttribPointer(vattr_bg_vpos, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(0 * sizeof(GLfloat))); CGL();
     glVertexAttribPointer(vattr_bg_tpos, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat))); CGL();
@@ -172,8 +177,12 @@ void ps3_draw_wave(){
     glUniform1f(vunif_wave_NormalStep, 0.01f); CGL();
     glUniform2f(vunif_wave_ScreenSize, screenWidth, screenHeight); CGL();
     glUniform2f(vunif_wave_RefSize, refWidth, refHeight); CGL();
-    glUniform4f(vunif_wave_white, 1.0f, 1.0f, 1.0f, 0.5f); CGL();
-    glUniform4f(vunif_wave_color, 1.0f, 1.0f, 1.0f, 0.2f); CGL();
+
+    glm::vec4 cA = foreground_color_edge;
+    glm::vec4 cB = foreground_color_center;
+
+    glUniform4f(vunif_wave_white, cA.r, cA.g, cA.b, cA.a); CGL();
+    glUniform4f(vunif_wave_color, cB.r, cB.g, cB.b, cB.a); CGL();
 
     glm::mat4 matrix = ps3_wave_matrix(); CGL();
     glUniformMatrix4fv(vunif_wave_Ortho, 1, GL_FALSE, &matrix[0][0]); CGL();

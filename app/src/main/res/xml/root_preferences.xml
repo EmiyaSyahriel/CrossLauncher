@@ -1,0 +1,50 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:key="libwave_setting"
+    android:theme="@style/Theme.AppCompat.DayNight">
+
+    <PreferenceCategory app:title="@string/waveset_category_behavior" />
+    <ListPreference
+        android:defaultValue="0"
+        android:entries="@array/xmb_wave_type_names"
+        android:entryValues="@array/xmb_wave_type_values"
+        android:key="wave_style"
+        android:title="@string/waveset_behavior_style" />
+    <EditTextPreference
+        android:defaultValue="1.0"
+        android:inputType="numberDecimal"
+        android:key="wave_speed"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/waveset_behavior_speed" />
+    <PreferenceCategory android:title="@string/waveset_category_color">
+
+    </PreferenceCategory>
+    <EditTextPreference
+        android:key="wave_cback_a"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/waveset_color_back_top" />
+    <EditTextPreference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:key="wave_cback_b"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/waveset_color_back_bottom" />
+    <EditTextPreference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:key="wave_cfore_a"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/waveset_color_fore_top" />
+    <EditTextPreference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:key="wave_cfore_b"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/waveset_color_fore_bottom" />
+
+</PreferenceScreen>

@@ -10,7 +10,6 @@ class XMBWaveWallpaperService : OpenGLES2WallpaperService() {
 
     override fun onCreate() {
         super.onCreate()
-        NativeGL.setAssetManager(applicationContext.assets)
     }
 
     override fun getNewRenderer(): GLSurfaceView.Renderer {

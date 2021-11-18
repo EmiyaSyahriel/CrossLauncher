@@ -10,3 +10,5 @@ int xmb_screen_w = 1280, xmb_screen_h = 720;
 const int xmb_refscr_w = 1280, xmb_refscr_h = 720;
 int xmb_particle_count = 256;
 int xmb_particle_ring_count = 12;
+glm::vec4 background_color_top, background_color_bottom;
+glm::vec4 foreground_color_edge, foreground_color_center;

@@ -25,4 +25,12 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+#ifndef getbyte
+#define getbyte(i, shift) ((i >> shift) & 0xFF)
+#endif
+
+#ifndef int2color
+#define int2color(i) glm::vec4(getbyte(i,16) / 255.0f,getbyte(i,8) / 255.0f,getbyte(i,0) / 255.0f,getbyte(i,24) / 255.0f)
+#endif
+
 #endif

@@ -12,5 +12,7 @@ extern int xmb_screen_w, xmb_screen_h;
 extern const int xmb_refscr_w, xmb_refscr_h;
 extern int xmb_particle_count;
 extern int xmb_particle_ring_count;
+extern glm::vec4 background_color_top, background_color_bottom;
+extern glm::vec4 foreground_color_edge, foreground_color_center;
 
 #endif

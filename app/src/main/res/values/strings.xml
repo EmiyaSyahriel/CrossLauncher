@@ -93,4 +93,13 @@
     <string name="app_open_obb_dir">Open OBB</string>
     <string name="app_uninstall">Uninstall</string>
     <string name="app_info_system_activity">Open in Settings</string>
+    <string name="title_activity_wave_wallpaper_setting">Wave Wallpaper Settings</string>
+    <string name="waveset_category_behavior">Wave Behaviour</string>
+    <string name="waveset_category_color">Wave Colors</string>
+    <string name="waveset_behavior_style">Wave Style</string>
+    <string name="waveset_behavior_speed">Wave Speed</string>
+    <string name="waveset_color_back_top">Background Top</string>
+    <string name="waveset_color_back_bottom">Background Bottom</string>
+    <string name="waveset_color_fore_top">Wave Edge</string>
+    <string name="waveset_color_fore_bottom">Wave Center</string>
 </resources>
