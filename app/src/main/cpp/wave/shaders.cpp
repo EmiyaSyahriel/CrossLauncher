@@ -5,16 +5,6 @@ namespace R {
 	const char* const blank_frag = R"EMBEDRES(precision lowp float;
 void main(){ gl_FragColor = vec4(0.6, 0.0, 1, 1.0); }
 )EMBEDRES";
-	const char* const blank_vert = R"EMBEDRES(precision highp float;
-attribute vec3 vpos;
-attribute vec3 uv;
-attribute vec3 normal;
-
-void main(){
-    gl_Position = vec4(vpos, 1.0);
-}
-
-)EMBEDRES";
 	const char* const ps3_background_frag = R"EMBEDRES(precision lowp float;
 #define lerp(a,b,t) (a + ((b - a) * t))
 #define nrange(a) ((a + 1) / 2)
@@ -51,6 +41,42 @@ void main(){
     gl_FragColor = vec4(lerp(cA, cB, t), 1.0);
 }
 )EMBEDRES";
+	const char* const ps3_sparkle_frag = R"EMBEDRES(precision lowp float;
+varying vec4 f_vcol;
+
+void main(){
+    gl_FragColor = f_vcol;
+}
+)EMBEDRES";
+	const char* const ps3_wave_frag = R"EMBEDRES(precision lowp float;
+varying float alpha;
+
+float lerp(float a, float b, float t){ return a + ((b - a) * t); }
+vec4 lerp4(vec4 a, vec4 b, float t){ return vec4(lerp(a.x, b.x, t), lerp(a.y, b.y, t), lerp(a.z, b.z, t), lerp(a.w, b.w, t)); }
+
+uniform vec4 white;
+uniform vec4 color;
+
+float irange(float r){ return (min(1.0, max(0.0, r)) * 2.0) - 1.0; }
+vec3 irange(vec3 r){ return vec3(irange(r.x),irange(r.y),irange(r.z)); }
+
+// float ndl(){ return dot(vec3(0,0,1), abs(v2f_normal * v2f_normal));  }
+
+void main(){
+    gl_FragColor = lerp4(color, white, alpha);
+    // gl_FragColor = vec4(v2f_normal, 1);
+}
+)EMBEDRES";
+	const char* const blank_vert = R"EMBEDRES(precision highp float;
+attribute vec3 vpos;
+attribute vec3 uv;
+attribute vec3 normal;
+
+void main(){
+    gl_Position = vec4(vpos, 1.0);
+}
+
+)EMBEDRES";
 	const char* const ps3_background_vert = R"EMBEDRES(precision highp float;
 attribute vec2 vpos;
 attribute vec2 uv;
@@ -73,13 +99,6 @@ void main(){
     gl_Position = vec4(vpos, 0.0, 1.0);
 }
 )EMBEDRES";
-	const char* const ps3_sparkle_frag = R"EMBEDRES(precision lowp float;
-varying vec4 f_vcol;
-
-void main(){
-    gl_FragColor = f_vcol;
-}
-)EMBEDRES";
 	const char* const ps3_sparkle_vert = R"EMBEDRES(precision highp float;
 attribute vec2 vpos;
 attribute vec4 vcol;
@@ -91,25 +110,6 @@ varying vec4 f_vcol;
 void main(){
     gl_Position = vec4(vpos, 0.0f, 1.0f) * matrix;
     f_vcol = vcol;
-}
-)EMBEDRES";
-	const char* const ps3_wave_frag = R"EMBEDRES(precision lowp float;
-varying float alpha;
-
-float lerp(float a, float b, float t){ return a + ((b - a) * t); }
-vec4 lerp4(vec4 a, vec4 b, float t){ return vec4(lerp(a.x, b.x, t), lerp(a.y, b.y, t), lerp(a.z, b.z, t), lerp(a.w, b.w, t)); }
-
-uniform vec4 white;
-uniform vec4 color;
-
-float irange(float r){ return (min(1.0, max(0.0, r)) * 2.0) - 1.0; }
-vec3 irange(vec3 r){ return vec3(irange(r.x),irange(r.y),irange(r.z)); }
-
-// float ndl(){ return dot(vec3(0,0,1), abs(v2f_normal * v2f_normal));  }
-
-void main(){
-    gl_FragColor = lerp4(color, white, alpha);
-    // gl_FragColor = vec4(v2f_normal, 1);
 }
 )EMBEDRES";
 	const char* const ps3_wave_vert = R"EMBEDRES(precision highp float;

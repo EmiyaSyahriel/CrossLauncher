@@ -17,6 +17,7 @@
         android:required="true" />
 
     <application
+        android:name=".VSH"
         android:allowAudioPlaybackCapture="true"
         android:allowBackup="true"
         android:banner="@drawable/ic_launcher_foreground"
@@ -28,62 +29,25 @@
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
         <activity
-            android:name=".activities.settings.WaveWallpaperSetting"
-            android:exported="true"
-            android:label="@string/title_activity_wave_wallpaper_setting" />
+            android:name=".activities.XMB"
+            android:exported="true" />
         <activity
             android:name=".test_activity.XMBWaveTestActivity"
             android:exported="true"
             android:launchMode="singleInstance" />
-        <activity android:name=".mediaplayer.XMBAudioPlayer" />
-        <activity
-            android:name=".activities.AppInfoActivity"
-            android:exported="true" /> <!-- Some attribute is unused on older version of Android, most of them were safe to ignore -->
-        <service
-            android:name=".mediaplayer.XMBAudioPlayerService"
-            android:enabled="true"
-            android:exported="true" /> <!-- Some attribute is unused on older version of Android, most of them were safe to ignore -->
+
         <service
             android:name=".livewallpaper.XMBWaveWallpaperService"
             android:label="@string/app_name_wave"
-            android:permission="android.permission.BIND_WALLPAPER"
-            >
+            android:permission="android.permission.BIND_WALLPAPER">
             <intent-filter>
-                <action android:name="android.service.wallpaper.WallpaperService"/>
+                <action android:name="android.service.wallpaper.WallpaperService" />
             </intent-filter>
 
             <meta-data
                 android:name="android.service.wallpaper"
-                android:resource="@xml/ps3_lines_wallpaper"/>
-
+                android:resource="@xml/ps3_lines_wallpaper" />
         </service>
-
-        <activity
-            android:name=".mediaplayer.XMBVideoPlayer"
-            android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="landscape">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".VSH"
-            android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="fullUser">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.HOME" />
-            </intent-filter>
-        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
