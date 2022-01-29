@@ -37,6 +37,10 @@ enum class WAVE_TYPE : int8_t {
     PSP_CENTER = 0b0110,
 };
 
+#ifndef POS_NORMALIZE
+#define POS_NORMALIZE(t) (((float)t / (float)(xmb_detail_size - 1)) * 2) - 1
+#endif
+
 #ifndef HAS_FLAG
 #define HAS_FLAG(source,target,s_type) ((static_cast<s_type>(source) & static_cast<s_type>(target)) == static_cast<s_type>(target))
 #endif

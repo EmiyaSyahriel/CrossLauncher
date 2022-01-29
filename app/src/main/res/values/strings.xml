@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cross Launcher</string>
+    <string name="orient_unknown">Unknown Orientation</string>
+    <string name="orient_landscape">Landscape</string>
+    <string name="orient_portrait">Portrait</string>
+    <string name="orient_user">System Default</string>
+    <string name="item_orientation">Screen Orientation</string>
+    <string name="first_run_instruction_title">First Run</string>
+    <string name="first_run_instruction_content">
+    Since this is your first run, this is how you can interact with this launcher
+    \n
+    \n Touch :
+    \n- Executing Item : Tap the icon of the item
+    \n- Changing between Categories : Swipe left or right
+    \n- Changing between Items : Swipe up or down
+    \n- Show / Hide Item Options : Two-fingers tap anywhere
+    \n- Re-reveal the Menu : Tap anywhere on screen
+    \n
+    \n Keyboard / TV Remote :
+    \n- Executing Item : Enter / OK Button
+    \n- Changing between Categories : Arrow Left and Right
+    \n- Changing between Items : Arrow Up and Down
+    \n- Show / Hide Item Options : Tab Button / Menu Button (Right side of Spacebar)
+    \n- Re-reveal the Menu : Enter
+    \n- Jump to item by first letter : Any alphanumeric key
+    \n
+    \n PlayStation Controller:
+    \n- Executing Item : Cross / Circle Button (Depending on setting)
+    \n- Changing between Categories : D-Pad Left and Right
+    \n- Changing between Items : D-Pad Up and Down
+    \n- Show / Hide Item Options : Triangle Button
+    \n- Re-reveal the Menu : Start
+    \n
+    \n Xbox Controller:
+    \n- Executing Item : A / B Button (Depending on setting)
+    \n- Changing between Categories : D-Pad Left and Right
+    \n- Changing between Items : D-Pad Up and Down
+    \n- Show / Hide Item Options : Y Button
+    \n- Re-reveal the Menu : Menu
+    \n
+    \n If "Mimic Non-Asian Console" option is active, PlayStation and Xbox Controller
+    \n will use Cross / A Button to as confirm, otherwise it will use Circle / B Button
+  </string>
+    <string name="storage_permission_not_granted">Storage permission is not granted, players may not usable</string>
+    <string name="setting_show_gameboot">Show Brand Logo on App Launch</string>
+    <string name="setting_mimic_dynamic_theme">Show Dynamic Theme Twinkles</string>
+    <string name="setting_gameboot_custom_guide">Brand Logo customization guide</string>
+    <string name="setting_coldboot_custom_guide">Launcher Startup Logo customization guide</string>
+    <string name="click_here">Click here</string>
+    <string name="app_not_installed">App is not installed</string>
+    <string name="audioplayer_pause">Pause</string>
+    <string name="audioplayer_resume">Resume</string>
+    <string name="audioplayer_stop">Stop</string>
+    <string name="unknown"><![CDATA[<Unknown>]]></string>
+    <string name="category_home">Home</string>
+    <string name="category_apps">Apps</string>
+    <string name="category_games">Games</string>
+    <string name="category_videos">Videos</string>
+    <string name="category_music">Music</string>
+    <string name="category_settings">Settings</string>
+    <string name="videoplayer_pause">Pause</string>
+    <string name="videoplayer_stop">Stop</string>
+    <string name="videoplayer_play">Play</string>
+    <string name="videoplayer_bwd">Backward</string>
+    <string name="videoplayer_fwd">Forward</string>
+    <string name="videoplayer_switchar">Zoom</string>
+    <string name="videoplayer_viewsetting">View Setting</string>
+    <string name="videoplayer_volume">Volume</string>
+    <string name="videoplayer_switchdisplay">Display</string>
+    <string name="videoplayer_delete">Delete</string>
+    <string name="videoplayer_setthumbnail">Set as Preview Start</string>
+    <string name="common_yes">Yes</string>
+    <string name="common_no">No</string>
+    <string name="menu_rebuild_db">Rebuild App and Game Database</string>
+    <string name="common_click_here">Click here</string>
+    <string name="menu_rebuild_db_desc">If new item is not added automatically.</string>
+    <string name="common_corrupted">Corrupted data</string>
+    <string name="audio_corrupted">Audio data is corrupted</string>
+    <string name="app_hide_menu">Hide Menu</string>
+    <string name="app_hide_menu_desc">Tap anywhere to reveal menu once it\'s hidden</string>
+    <string name="xmb_wave_livewp_desc">XMB Wave Live Wallpaper</string>
+    <string name="xmb_icon_desc_root">This icon shouldn\'t be visible</string>
+    <string name="unknown_symbols" translatable="false">\???</string>
+    <string name="app_name_wave">Wave Wallpaper</string>
+    <string name="app_launch">Launch</string>
+    <string name="app_find_on_playstore">Find on Play Store</string>
+    <string name="view_app_info">Application Details</string>
+    <string name="app_show_details">Details</string>
+    <string name="common_back">Back</string>
+    <string name="app_open_data_dir">Open Data Directory</string>
+    <string name="app_open_mod_dir">Open Customization Dir</string>
+    <string name="app_open_obb_dir">Open OBB</string>
+    <string name="app_uninstall">Uninstall</string>
+    <string name="app_info_system_activity">Open in Settings</string>
+    <string name="title_activity_wave_wallpaper_setting">Wave Wallpaper Settings</string>
+    <string name="waveset_category_behavior">Wave Behaviour</string>
+    <string name="waveset_category_color">Wave Colors</string>
+    <string name="waveset_behavior_style">Wave Style</string>
+    <string name="waveset_behavior_speed">Wave Speed</string>
+    <string name="waveset_color_back_top">Background Top</string>
+    <string name="waveset_color_back_bottom">Background Bottom</string>
+    <string name="waveset_color_fore_top">Wave Edge</string>
+    <string name="waveset_color_fore_bottom">Wave Center</string>
+    <string name="plugin_name_musiclist">Music List (Internal)</string>
+    <string name="plugin_desc_musiclist">Lists all music in device via Android MediaStore</string>
+    <string name="error_common_header">Error</string>
+    <string name="error_category_launch">A category item isn\'t supposed to be launched</string>
+    <string name="nettype_ethernet">Ethernet</string>
+    <string name="nettype_no_connection">No Internet</string>
+    <string name="nettype_wifi">Wi-Fi</string>
+</resources>

@@ -1,0 +1,82 @@
+package id.psw.vshlauncher.activities
+
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.os.Build
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.telephony.SubscriptionManager
+import android.telephony.TelephonyManager
+import android.view.KeyEvent
+import android.view.MotionEvent
+import android.view.View
+import android.view.WindowManager
+import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import id.psw.vshlauncher.R
+import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.views.VshView
+import id.psw.vshlauncher.vsh
+
+class XMB : AppCompatActivity() {
+
+    private lateinit var vshView : VshView
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        vshView = VshView(this)
+        sysBarTranslucent()
+        setContentView(vshView)
+    }
+
+    private fun sysBarTranslucent(){
+        //if(Build.VERSION.SDK_INT >= 19){
+            window.apply {
+                clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+                if(Build.VERSION.SDK_INT >= 21){
+                    addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                    statusBarColor = Color.TRANSPARENT
+                }
+                if(Build.VERSION.SDK_INT >= 28){
+                    attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                }
+            }
+        //}
+    }
+
+    override fun onGenericMotionEvent(event: MotionEvent?): Boolean {
+        var retval = false
+        if(event != null){
+            retval = VSH.Input.motionEventReceiver(event)
+        }
+        return retval || super.onGenericMotionEvent(event)
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        var retval = false
+        if(event != null){
+            retval = VSH.Input.touchEventReceiver(event)
+        }
+        return super.onTouchEvent(event)
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        var retval = false
+        if(event != null){
+            retval = VSH.Input.keyEventReceiver(false, keyCode, event)
+        }
+        return retval || super.onKeyUp(keyCode, event)
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        var retval = false
+        if(event != null){
+            retval = VSH.Input.keyEventReceiver(true, keyCode, event)
+        }
+        return retval ||  super.onKeyDown(keyCode, event)
+    }
+
+}
