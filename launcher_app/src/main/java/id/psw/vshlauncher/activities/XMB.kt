@@ -7,6 +7,8 @@ import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.view.KeyEvent
@@ -15,10 +17,8 @@ import android.view.View
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import id.psw.vshlauncher.R
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.*
 import id.psw.vshlauncher.views.VshView
-import id.psw.vshlauncher.vsh
 
 class XMB : AppCompatActivity() {
 
@@ -28,6 +28,7 @@ class XMB : AppCompatActivity() {
         vshView = VshView(this)
         sysBarTranslucent()
         setContentView(vshView)
+        vsh.vshView = vshView
     }
 
     private fun sysBarTranslucent(){
@@ -45,6 +46,11 @@ class XMB : AppCompatActivity() {
                 }
             }
         //}
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vsh.vshView = vshView
     }
 
     override fun onGenericMotionEvent(event: MotionEvent?): Boolean {
@@ -75,6 +81,12 @@ class XMB : AppCompatActivity() {
         var retval = false
         if(event != null){
             retval = VSH.Input.keyEventReceiver(true, keyCode, event)
+        }
+        if(keyCode == KeyEvent.KEYCODE_SLASH
+        ) swapLayoutType = true
+        if(keyCode == KeyEvent.KEYCODE_C){
+            val handle  = vsh.addLoadHandle()
+            Handler(Looper.getMainLooper()).postDelayed({ vsh.setLoadingFinished(handle) }, 1500L)
         }
         return retval ||  super.onKeyDown(keyCode, event)
     }

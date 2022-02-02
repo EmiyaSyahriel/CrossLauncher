@@ -87,3 +87,4 @@ lint/tmp/
 /*/.cxx/
 /*/build/
 /*/src/main/cpp/.vs/
+/references/

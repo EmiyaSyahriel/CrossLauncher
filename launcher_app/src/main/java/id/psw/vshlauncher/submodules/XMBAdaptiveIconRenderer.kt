@@ -11,15 +11,12 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.drawable.toBitmap
-import id.psw.vshlauncher.combine
-import id.psw.vshlauncher.fitFillSelect
-import id.psw.vshlauncher.hasSize
-import id.psw.vshlauncher.toLerp
+import id.psw.vshlauncher.*
 import java.io.File
 import java.io.FileDescriptor
 import java.lang.Exception
 
-class XMBAdaptiveIconRenderer(ctx: Context) {
+class XMBAdaptiveIconRenderer(ctx: VSH) {
 
     companion object {
         private const val TAG = "XMBIconGen"
@@ -42,32 +39,24 @@ class XMBAdaptiveIconRenderer(ctx: Context) {
             var BackYAnchor = 0.5f
             var ForeXAnchor = 0.5f
             var BackXAnchor = 0.5f
-            var LegacyScale = 0.5f
+            var LegacyScale = 0.0f
             var LegacyXAnchor = 0.5f
             var LegacyYAnchor = 0.5f
         }
-
-        object LegacyRenderSetting{
-            var scale = 0.0f
-            var xAnchor = 0.5f
-            var yAnchor = 0.5f
-        }
-
     }
 
     private val pm = ctx.packageManager
-    private val fileRoots = arrayListOf<File>()
+    private val fileRoots = ArrayList<File>()
 
     init {
         val d = ctx.resources.displayMetrics.density
         WIDTH = (320 * d).toInt()
         HEIGHT = (176 * d).toInt()
         val mSb = StringBuilder()
-        mSb.appendLine("File source : ")
-        ctx.getExternalFilesDirs("").forEach {
-            val rootFile = it.combine("dev_hdd0","game")
-            mSb.appendLine(rootFile)
-            fileRoots.add(rootFile)
+        mSb.appendLine("Icon file source : ")
+        ctx.getAllPathsFor(VshBaseDirs.APPS_DIR, createParentDir = true).forEach {
+            fileRoots.add(it)
+            mSb.appendLine(it.absolutePath)
         }
         Log.d(TAG, mSb.toString())
     }
@@ -75,14 +64,13 @@ class XMBAdaptiveIconRenderer(ctx: Context) {
     private fun drawFittedBitmap(c:Canvas, d:Drawable?, scale:Float, xAnchor:Float, yAnchor:Float, drawRect:RectF){
         var b : Bitmap? = null
         if(d != null){
+            val fw = WIDTH.toFloat()
+            val fh = HEIGHT.toFloat()
             b = if(d.hasSize){
                 val fbScale = fitFillSelect(
-                    d.intrinsicWidth.toFloat(),
-                    WIDTH.toFloat(),
-                    d.intrinsicHeight.toFloat(),
-                    HEIGHT.toFloat(),
-                    WIDTH.toFloat(),
-                    HEIGHT.toFloat(),
+                    d.intrinsicWidth.toFloat(), fw,
+                    d.intrinsicHeight.toFloat(), fh,
+                    fw, fh,
                     scale
                 )
                 d.toBitmap(
@@ -105,33 +93,43 @@ class XMBAdaptiveIconRenderer(ctx: Context) {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private fun drawAdaptive(ctx:Canvas, icon : Drawable, banner : Drawable?){
         var fbScale = 1.0f
-        val drawRect = RectF()
+        val drawRect = emptyRectF
         with(AdaptiveRenderSetting){
-            if(banner is AdaptiveIconDrawable)
-            {
-                drawFittedBitmap(ctx, banner.background, BackScale, BackXAnchor, BackYAnchor, drawRect)
-                drawFittedBitmap(ctx, banner.foreground, ForeScale, ForeXAnchor, ForeYAnchor, drawRect)
-            }else if(banner != null && banner.hasSize){
-                drawLegacy(ctx, banner)
-            }else if(icon is AdaptiveIconDrawable){
-                drawFittedBitmap(ctx, icon.background, BackScale, BackXAnchor, BackYAnchor, drawRect)
-                drawFittedBitmap(ctx, icon.foreground, ForeScale, ForeXAnchor, ForeYAnchor, drawRect)
+            var isBannerUsed = false
+            if(banner.hasSize){
+                isBannerUsed = banner?.intrinsicHeight != banner?.intrinsicWidth
+            }
+
+            if(isBannerUsed){
+                if(banner is AdaptiveIconDrawable)
+                {
+                    drawFittedBitmap(ctx, banner.background, BackScale, BackXAnchor, BackYAnchor, drawRect)
+                    drawFittedBitmap(ctx, banner.foreground, ForeScale, ForeXAnchor, ForeYAnchor, drawRect)
+                }else if(banner != null && banner.hasSize){
+                    drawLegacy(ctx, banner)
+                }
             }else{
-                drawLegacy(ctx, icon);
+                if(icon is AdaptiveIconDrawable){
+                    drawFittedBitmap(ctx, icon.background, BackScale, BackXAnchor, BackYAnchor, drawRect)
+                    drawFittedBitmap(ctx, icon.foreground, ForeScale, ForeXAnchor, ForeYAnchor, drawRect)
+                }else{
+                    drawLegacy(ctx, icon);
+                }
             }
         }
     }
 
+    private val emptyRectF =RectF()
     private fun drawLegacy(ctx:Canvas, legacyIcon:Drawable){
         with(AdaptiveRenderSetting)
         {
-            drawFittedBitmap(ctx, legacyIcon, LegacyScale, LegacyXAnchor, LegacyYAnchor, RectF())
+            drawFittedBitmap(ctx, legacyIcon, LegacyScale, LegacyXAnchor, LegacyYAnchor, emptyRectF)
         }
     }
 
     private fun loadCustomIcon(act:ActivityInfo) :Bitmap?{
         fileRoots.forEach {
-            val f = it.combine(act.name, "ICON0.PNG")
+            val f = it.combine(act.uniqueActivityName, "ICON0.PNG")
             if(f.exists()){
                 try{
                     val b = BitmapFactory.decodeFile(f.absolutePath)
@@ -157,7 +155,7 @@ class XMBAdaptiveIconRenderer(ctx: Context) {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
                 val b = act.loadBanner(pm)
 
-                if(act.packageName.contains("myPiano")){
+                if(act.packageName.contains("bandai")){
                     print("Debug Breakpoint here")
                 }
 

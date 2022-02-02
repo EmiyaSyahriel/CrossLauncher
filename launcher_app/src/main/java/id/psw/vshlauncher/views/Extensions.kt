@@ -33,6 +33,7 @@ fun Canvas.drawBitmap(bm:Bitmap, src: Rect?, dst: RectF, paint: Paint?, fitMode:
     }
 }
 
+fun Paint.removeShadowLayer() = setShadowLayer(0.0f, 0.0f, 0.0f, Color.TRANSPARENT)
 
 private var extCanvasDrawTextRectFBuffer = RectF()
 private var extCanvasDrawTextRectBuffer = Rect()

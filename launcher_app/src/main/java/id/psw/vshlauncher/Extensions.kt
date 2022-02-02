@@ -8,6 +8,8 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.core.content.res.ResourcesCompat
 import id.psw.vshlauncher.activities.XMB
+import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XMBItemCategory
 import id.psw.vshlauncher.views.VshView
 import java.io.File
 import kotlin.experimental.and
@@ -33,6 +35,8 @@ val Context.xmb : XMB
 
 fun <T> Boolean.select(a:T, b:T) : T =  if(this) a else b
 
+val Iterable<XMBItem>.visibleItems get() = synchronized(this) { this.filter { !it.isHidden } }
+
 infix fun Int.hasFlag(b:Int) : Boolean = this and b == b
 infix fun Byte.hasFlag(b:Byte) : Boolean = this and b == b
 infix fun UByte.hasFlag(b:UByte) : Boolean = this and b == b
@@ -42,6 +46,8 @@ fun Float.lerpFactor(a:Float, b:Float) : Float = (this - a) / (b - a)
 fun Double.toLerp(a:Double, b:Double) : Double = a + ((b - a) * this)
 fun Double.lerpFactor(a:Double, b:Double) : Double = (this - a) / (b - a)
 
+var swapLayoutType = false
+
 val Drawable?.hasSize : Boolean get() = if(this != null) this.intrinsicWidth > 0 && this.intrinsicHeight > 0 else false
 fun File.combine(vararg paths : String) : File {
     var rv = this
@@ -50,11 +56,12 @@ fun File.combine(vararg paths : String) : File {
 }
 
 fun fit(sx:Float,dx:Float,sy:Float,dy:Float,w:Float,h:Float) : Float {
-    return (w / sx).coerceAtMost(w / sy)
+    return (w / sx).coerceAtMost(h / sy)
 }
 fun fill(sx:Float,dx:Float,sy:Float,dy:Float,w:Float,h:Float) : Float {
-    return (h / sx).coerceAtLeast(h / sy)
+    return (w / sx).coerceAtLeast(h / sy)
 }
+
 fun fitFillSelect(sx:Float,dx:Float,sy:Float,dy:Float,w:Float,h:Float,select:Float) : Float {
     return when {
         select < 0.0f -> (select+1).coerceIn(0.0f, 1.0f).toLerp(0.0f, fit(sx,dx,sy,dy,w,h))
@@ -62,6 +69,15 @@ fun fitFillSelect(sx:Float,dx:Float,sy:Float,dy:Float,w:Float,h:Float,select:Flo
         else -> fill(sx,dx,sy,dy,w,h) * select
     }
 }
+const val fPI = Math.PI.toFloat()
+const val f2PI = 2.0f * fPI
+
+val Float.nrm2Rad : Float get() = this * f2PI
+val Float.nrm2Deg : Float get() = this * 360.0f
+val Float.deg2Rad : Float get() = (this / 180.0f) * fPI
+val Float.deg2nrm : Float get() = this / 360.0f
+val Float.rad2Deg : Float get() = (this / fPI) * 180.0f
+val Float.rad2Nrm : Float get() = this / f2PI
 
 fun VshView.getDrawable(id:Int) : Drawable?{
     return ResourcesCompat.getDrawable(context.resources, id, context.theme)

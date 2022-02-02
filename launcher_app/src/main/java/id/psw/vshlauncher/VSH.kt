@@ -21,7 +21,9 @@ import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.pluginservices.IconPluginServiceHandle
 import id.psw.vshlauncher.submodules.*
 import id.psw.vshlauncher.types.*
+import id.psw.vshlauncher.views.VshView
 import java.lang.Exception
+import java.lang.IllegalArgumentException
 import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -43,17 +45,59 @@ class VSH : Application(), ServiceConnection {
         const val CATEGORY_PLUGIN_ICON = "id.psw.vshlauncher.category.PLUGIN_ICON"
         const val CATEGORY_PLUGIN_WAVE_VISUALIZER = "id.psw.vshlauncher.category.PLUGIN_VISUALIZER"
         const val TAG = "VshApp"
+        const val ITEM_CATEGORY_HOME = "vsh_home"
+        const val ITEM_CATEGORY_APPS = "vsh_apps"
+        const val ITEM_CATEGORY_GAME = "vsh_game"
+        const val ITEM_CATEGORY_VIDEO = "vsh_video"
+        const val ITEM_CATEGORY_MUSIC = "vsh_music"
+        const val ITEM_CATEGORY_SETTINGS = "vsh_settings"
     }
 
+    private var appUserUid = 0
+    /** Used as user's identifier when using an external storage */
+    val UserUid get() = appUserUid
+
+    val selectStack = Stack<String>()
+    /** This will change several behaviour :
+     * - Application icon and decorative assets will be recycled / unloaded upon hidden from screen
+     *
+     * Advantage :
+     * - Smaller RAM usage
+     *
+     * Disadvantage :
+     * - It will cause a lot of loading
+     * - Tend to cause a lot of storage reading access, causing faster medium degradation (usually not a problem)
+     */
+    var aggressiveUnloading = false
+    var vshView : VshView? = null
+    var gameFilterList = arrayListOf<String>()
     val categories = arrayListOf<XMBItemCategory>()
-    var itemCursorX = 0
+    /** Return all item in current selected category or current active item, including the hidden ones */
+    val items : ArrayList<XMBItem>? get(){
+        var root = categories.visibleItems.find { it.id == selectedCategoryId }?.content
+        var i = 0
+        while(root != null && i < selectStack.size){
+            root = root.find { it.id == selectStack[i]}?.content
+            i++
+        }
+        return root
+    }
+    val hoveredItem : XMBItem? get() = items?.find { it.id == selectedItemId }
+
+    var selectedCategoryId = ITEM_CATEGORY_APPS
+    var selectedItemId = ""
+
+    val itemCursorX get() = categories.visibleItems.indexOfFirst { it.id == selectedCategoryId }
+    val itemCursorY get() = (items?.visibleItems?.indexOfFirst { it.id == selectedItemId } ?: -1).coerceAtLeast(0)
     var itemOffsetX = 0.0f
-    val selectStack = Stack<Int>()
+    var itemOffsetY = 0.0f
+
     val isInRoot : Boolean get() = selectStack.size == 0
     var notificationLastCheckTime = 0L
     val notifications = arrayListOf<XMBNotification>()
     val threadPool: ExecutorService = Executors.newFixedThreadPool(8)
     val loadingHandles = arrayListOf<XMBLoadingHandle>()
+    val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
 
     override fun onCreate() {
         notificationLastCheckTime = SystemClock.uptimeMillis()
@@ -64,9 +108,44 @@ class VSH : Application(), ServiceConnection {
         registerInternalCategory()
         listInstalledIconPlugins()
         listInstalledWaveRenderPlugins()
+        reloadAppList()
 
         super.onCreate()
     }
+
+    fun moveCursorX(right:Boolean){
+        val items = categories.visibleItems
+        if(items.size > 0){
+            var cIdx = items.indexOfFirst { it.id == selectedCategoryId }
+            val oldIdx = cIdx
+            items[cIdx].lastSelectedItemId = selectedItemId // Save last category item id
+            if(right) cIdx++ else cIdx--
+            cIdx = cIdx.coerceIn(0, items.size - 1)
+            if(cIdx != oldIdx) itemOffsetX = right.select(1.0f, -1.0f)
+            selectedItemId = items[cIdx].lastSelectedItemId // Load new category item id
+            selectedCategoryId = items[cIdx].id
+        }
+    }
+
+    fun moveCursorY(bottom:Boolean){
+        try{
+            val items = items?.visibleItems
+            if(items != null){
+                if(items.size > 0){
+                    var cIdx = items.indexOfFirst { it.id == selectedItemId }
+                    val oldIdx = cIdx
+                    if(bottom) cIdx++ else cIdx--
+                    cIdx  = cIdx.coerceIn(0, items.size - 1)
+                    if(cIdx != oldIdx) itemOffsetY = bottom.select(1.0f, -1.0f);
+                    selectedItemId = items[cIdx].id
+                }
+            }
+        }catch (e:ArrayIndexOutOfBoundsException){
+            //
+        }
+    }
+
+    fun isCategoryHidden(id:String) : Boolean = hiddenCategories.find { it == id } != null
 
     private fun testLoading(){
         val loadHandle = addLoadHandle()
@@ -74,11 +153,16 @@ class VSH : Application(), ServiceConnection {
     }
 
     private fun registerInternalCategory(){
-        categories.add(XMBItemCategory(this, R.string.category_home, R.drawable.category_home))
-        categories.add(XMBItemCategory(this, R.string.category_settings, R.drawable.category_setting))
-        categories.add(XMBItemCategory(this, R.string.category_videos, R.drawable.category_video))
-        categories.add(XMBItemCategory(this, R.string.category_music, R.drawable.category_music))
-        categories.add(XMBItemCategory(this, R.string.category_games, R.drawable.category_games))
+        try {
+            categories.add(XMBItemCategory(this, ITEM_CATEGORY_HOME, R.string.category_home, R.drawable.category_home))
+            categories.add(XMBItemCategory(this, ITEM_CATEGORY_SETTINGS, R.string.category_settings, R.drawable.category_setting))
+            categories.add(XMBItemCategory(this, ITEM_CATEGORY_VIDEO, R.string.category_videos, R.drawable.category_video))
+            categories.add(XMBItemCategory(this, ITEM_CATEGORY_MUSIC, R.string.category_music, R.drawable.category_music))
+            categories.add(XMBItemCategory(this, ITEM_CATEGORY_GAME, R.string.category_games, R.drawable.category_games))
+            categories.add(XMBItemCategory(this, ITEM_CATEGORY_APPS, R.string.category_apps, R.drawable.category_apps))
+        }catch(e:Exception){
+
+        }
     }
 
     private fun createPluginIntent(category: String) : Intent {

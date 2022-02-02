@@ -62,6 +62,7 @@ class InputSubmodule(ctx: VSH) {
     class InputState {
         var state : KeyState = KeyState.Free
         var axisValue : Float = 0.0f
+        var downSince : Float = 0.0f
 
         override fun toString(): String = "$state : $axisValue"
     }
@@ -104,6 +105,43 @@ class InputSubmodule(ctx: VSH) {
             AXIS_HAT_X to Key.PadL,
             AXIS_HAT_Y to Key.PadR,
         )
+        private val kbd2psKey = mapOf(
+            KEYCODE_X to Key.Cross,
+            KEYCODE_S to Key.Circle,
+            KEYCODE_Z to Key.Square,
+            KEYCODE_A to Key.Triangle,
+            KEYCODE_SHIFT_RIGHT to Key.Select,
+            KEYCODE_ENTER to Key.Start,
+            KEYCODE_BREAK to Key.PS,
+            KEYCODE_1 to Key.L2,
+            KEYCODE_2 to Key.L3,
+            KEYCODE_3 to Key.R2,
+            KEYCODE_Q to Key.L1,
+            KEYCODE_W to Key.R3,
+            KEYCODE_E to Key.R1,
+            KEYCODE_DPAD_UP to Key.PadU,
+            KEYCODE_DPAD_DOWN to Key.PadD,
+            KEYCODE_DPAD_LEFT to Key.PadL,
+            KEYCODE_DPAD_RIGHT to Key.PadR,
+            KEYCODE_T to Key.LSY,
+            KEYCODE_F to Key.LSX,
+            KEYCODE_G to Key.LSY,
+            KEYCODE_H to Key.LSX,
+            KEYCODE_I to Key.RSY,
+            KEYCODE_J to Key.RSX,
+            KEYCODE_K to Key.RSY,
+            KEYCODE_L to Key.RSX,
+        )
+        private val kbd2psKeyAxisMul = mapOf(
+            KEYCODE_T to -1.0f,
+            KEYCODE_F to -1.0f,
+            KEYCODE_G to 1.0f,
+            KEYCODE_H to 1.0f,
+            KEYCODE_I to -1.0f,
+            KEYCODE_J to -1.0f,
+            KEYCODE_K to 1.0f,
+            KEYCODE_L to 1.0f
+        )
     }
 
     private val inputPairs = mutableMapOf<Key, InputState>()
@@ -123,10 +161,13 @@ class InputSubmodule(ctx: VSH) {
         return inputPairs[k]?.axisValue ?: 0.0f;
     }
 
-    fun getKeyDown(k:Key) : Boolean = inputPairs[k]?.state == KeyState.Down
-    fun getKey(k:Key) : Boolean = inputPairs[k]?.state == KeyState.Held
+    fun getKeyDown(k:Key) : Boolean =
+        inputPairs[k]?.state == KeyState.Down
+    fun getKey(k:Key) : Boolean =
+        inputPairs[k]?.state == KeyState.Held
     fun getKeyUp(k:Key) : Boolean = inputPairs[k]?.state == KeyState.Up
     fun getKeyFree(k:Key) : Boolean = inputPairs[k]?.state == KeyState.Free
+    fun getDownTime(k:Key) : Float = inputPairs[k]?.downSince ?: 0.0f
 
     var activeRemap = Remap.DualSense
     private fun getRemappedKeyCode(keyCode:Int) : Int {
@@ -139,6 +180,14 @@ class InputSubmodule(ctx: VSH) {
     private fun androidToPsKey(keyCode: Int, isAxis:Boolean) : Key {
         val remapKeyCode = (activeRemap != Remap.Normal).select(getRemappedKeyCode(keyCode), keyCode)
         return (if(isAxis) android2psAxis else android2psKey)[remapKeyCode] ?: Key.None
+    }
+
+    private fun keyboardToPsKey(keyCode:Int) : Key {
+        return kbd2psKey[keyCode] ?: Key.None
+    }
+
+    private fun getKbdAxis(keyCode:Int) : Float {
+        return kbd2psKeyAxisMul[keyCode] ?: 0.0f
     }
 
     fun touchEventReceiver(evt: MotionEvent) : Boolean{
@@ -207,13 +256,24 @@ class InputSubmodule(ctx: VSH) {
                 }
             }
         }else if(evt.source hasFlag InputDevice.SOURCE_KEYBOARD){
-
+            if(evt.repeatCount == 0){
+                val key = keyboardToPsKey(keyCode)
+                if(key != Key.None){
+                    inputPairs[key]?.apply {
+                        axisValue += isDown.select(1.0f, -1.0f) * getKbdAxis(keyCode)
+                        axisValue = axisValue.coerceIn(-1.0f, 1.0f)
+                        state = isDown.select(KeyState.Down, KeyState.Up)
+                    }
+                }
+            }
         }
         return false
     }
 
-    fun update(){
+    fun update(time:Float){
         inputPairs.values.forEach{
+            if(it.state == KeyState.Down || it.state == KeyState.Held) it.downSince += time
+            if(it.state == KeyState.Up || it.state == KeyState.Free) it.downSince = 0.0f
             if(it.state == KeyState.Down){ it.state = KeyState.Held }
             if(it.state == KeyState.Up){ it.state = KeyState.Free }
             if(it.axisValue >= downThreshold && it.state == KeyState.Free){ it.state = KeyState.Down }

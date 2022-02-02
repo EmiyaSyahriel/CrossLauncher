@@ -10,6 +10,7 @@ import androidx.core.graphics.withScale
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.InputSubmodule
+import kotlin.math.roundToInt
 
 class VshView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -39,6 +40,10 @@ class VshView @JvmOverloads constructor(
     var scaling = ScaleInfo()
     var tempRect = RectF()
     var useInternalWallpaper = false
+    val dummyPaint = Paint().apply {
+        color = Color.GREEN
+        textSize = 20.0f
+    }
 
     private fun adaptScreenSize(){
         if(!fitsSystemWindows){  fitsSystemWindows = true }
@@ -139,16 +144,57 @@ class VshView @JvmOverloads constructor(
         }
     }
 
+    private fun isKeyDownOrRepeat(key:InputSubmodule.Key): Boolean{
+        val downTime =  VSH.Input.getDownTime(key)
+        val validDownTime = (downTime % 0.2f) > 0.1f
+        return VSH.Input.getKeyDown(key) || (downTime > 0.5f && validDownTime)
+    }
+
     fun onUpdate(){
-        context.vsh.itemOffsetX = (time.deltaTime * 10.0f).toLerp(context.vsh.itemOffsetX, 0.0f)
-        if(VSH.Input.getKeyDown(InputSubmodule.Key.PadL)){
-            context.vsh.itemCursorX--
-            context.vsh.itemOffsetX = -1.0f
+        if(currentPage == VshViewPage.MainMenu){
+
+            context.vsh.itemOffsetX = (time.deltaTime * 10.0f).toLerp(context.vsh.itemOffsetX, 0.0f)
+            context.vsh.itemOffsetY = (time.deltaTime * 10.0f).toLerp(context.vsh.itemOffsetY, 0.0f)
+            when {
+                isKeyDownOrRepeat(InputSubmodule.Key.PadL) -> context.vsh.moveCursorX(false)
+                isKeyDownOrRepeat(InputSubmodule.Key.PadR) -> context.vsh.moveCursorX(true)
+                isKeyDownOrRepeat(InputSubmodule.Key.PadU) -> context.vsh.moveCursorY(false)
+                isKeyDownOrRepeat(InputSubmodule.Key.PadD) -> context.vsh.moveCursorY(true)
+            }
+
+            if(swapLayoutType){
+                state.menu.layoutMode = when(state.menu.layoutMode){
+                    XMBLayoutType.PS3 -> XMBLayoutType.PSP
+                    XMBLayoutType.PSP -> XMBLayoutType.Bravia
+                    else -> XMBLayoutType.PS3
+                }
+                state.menu.menuScaleTime = 1.0f
+                swapLayoutType = false
+            }
         }
-        if(VSH.Input.getKeyDown(InputSubmodule.Key.PadR)){
-            context.vsh.itemCursorX++
-            context.vsh.itemOffsetX = 1.0f
-        }
+    }
+    private val fpsRect = Rect()
+    private val fpsRectF = RectF()
+    private fun drawFPS(ctx:Canvas){
+        val fps = (1.0f / time.deltaTime).roundToInt()
+        val fpstxt = "$fps FPS / ${(time.deltaTime * 1000).roundToInt()} ms"
+        dummyPaint.getTextBounds(fpstxt, 0, fpstxt.length, fpsRect)
+        fpsRectF.set(
+            fpsRect.left + 20f - 10.0f,
+            fpsRect.top + 70f - 5.0f,
+            fpsRect.right + 20f + 10.0f,
+            fpsRect.bottom + 70f + 5.0f)
+        dummyPaint.color = FColor.setAlpha(Color.WHITE, 0.5f)
+        dummyPaint.style = Paint.Style.FILL
+        ctx.drawRoundRect(fpsRectF, 5.0f, dummyPaint)
+        dummyPaint.color = Color.WHITE
+        dummyPaint.style = Paint.Style.STROKE
+        ctx.drawRoundRect(fpsRectF, 5.0f, dummyPaint)
+        dummyPaint.color = Color.GREEN
+        dummyPaint.style = Paint.Style.FILL
+        dummyPaint.setShadowLayer(2.0f, 2.0f, 2.0f, Color.BLACK)
+        ctx.drawText(fpstxt, 20f, 50f, dummyPaint, 1.0f)
+        dummyPaint.removeShadowLayer()
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -169,10 +215,12 @@ class VshView @JvmOverloads constructor(
                     }
 
                     drawNotifications(canvas)
+                    drawFPS(canvas)
+
                 }
             }
         }
-        VSH.Input.update()
+        VSH.Input.update(time.deltaTime)
         invalidate()
     }
 

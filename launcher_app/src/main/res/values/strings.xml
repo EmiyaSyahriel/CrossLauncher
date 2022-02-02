@@ -109,4 +109,5 @@
     <string name="nettype_ethernet">Ethernet</string>
     <string name="nettype_no_connection">No Internet</string>
     <string name="nettype_wifi">Wi-Fi</string>
+    <string name="font_load_failed">An error occured during custom font loading : %s</string>
 </resources>

@@ -3,12 +3,10 @@ package id.psw.vshlauncher.typography
 import android.content.Context
 import android.graphics.Typeface
 import android.graphics.fonts.Font
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import id.psw.vshlauncher.VSH
-import id.psw.vshlauncher.VshDirs
-import id.psw.vshlauncher.formatDirPathAndCreate
-import id.psw.vshlauncher.getFilesPath
+import id.psw.vshlauncher.*
 import java.lang.Exception
 
 object FontCollections {
@@ -31,7 +29,7 @@ object FontCollections {
      *
      * But as long as you dump it from your own hardware, it should be alright. since it's forbidden to redistribute the original file from the PS3 itself
      */
-    var masterFont : Typeface? = null
+    lateinit var masterFont : Typeface
     /**
      * The Button symbol font `"/assets/vshbtn.ttf"` is partially compliant with how PS3 draw it's font,
      * though it's not colored like it originally was due to FontForge haven't supported it in TTF
@@ -39,26 +37,30 @@ object FontCollections {
     lateinit var buttonFont : Typeface
 
     const val TAG = "fntmgr.self"
+    private const val FONT_NAME = "VSH-CustomFont.ttf"
 
     fun init(ctx: VSH){
-        try {
-            val customFontPath = ctx.formatDirPathAndCreate(VshDirs.SYSTEM_DIR, ctx.getFilesPath()).listFiles()
-            if(customFontPath != null && customFontPath.isNotEmpty()){
-                customFontPath.forEach {
-                    Log.d(TAG, "Found file : ${it.absolutePath}")
-                    if(it.name.equals("font.ttf", true)){
-                        masterFont = Typeface.createFromFile(it)
-                        Log.d(TAG, "Loaded custom font at ${it.absolutePath}")
+        buttonFont = Typeface.createFromAsset(ctx.assets, "vshbtn.ttf")
+        val fontLocations = ctx.getAllPathsFor(VshBaseDirs.FLASH_DATA_DIR, "font")
+        var isCustomFontFound = false
+        fontLocations.forEach { dir ->
+            if(!isCustomFontFound){
+                dir.listFiles()?.forEach {
+                    if(it.name.lowercase().contentEquals(FONT_NAME.lowercase()) && !isCustomFontFound){
+                        try{
+                            masterFont = Typeface.createFromFile(it)
+                            isCustomFontFound = true
+                        }catch(e:Exception){
+                            ctx.postNotification(null, "Font Manager", ctx.getString(R.string.font_load_failed, e.message))
+                        }
                     }
                 }
-            }else{
-                Log.d(TAG, "Cannot find custom font")
             }
-        }catch(e:Exception){
-            Toast.makeText(ctx,
-                "Cannot load custom font : ${e.message}",
-                Toast.LENGTH_SHORT).show()
         }
-        buttonFont = Typeface.createFromAsset(ctx.assets, "vshbtn.ttf")
+
+        if(!isCustomFontFound){
+
+            masterFont = Typeface.SANS_SERIF
+        }
     }
 }
