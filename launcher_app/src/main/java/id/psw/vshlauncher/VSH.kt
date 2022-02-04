@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.graphics.fonts.Font
 import android.graphics.fonts.FontFamily
+import android.media.MediaPlayer
 import android.net.ConnectivityManager
 import android.os.*
 import android.telephony.SubscriptionManager
@@ -18,9 +19,12 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import id.psw.vshlauncher.activities.XMB
+// import com.facebook.drawee.backends.pipeline.Fresco
 import id.psw.vshlauncher.pluginservices.IconPluginServiceHandle
 import id.psw.vshlauncher.submodules.*
 import id.psw.vshlauncher.types.*
+import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.VshView
 import java.lang.Exception
 import java.lang.IllegalArgumentException
@@ -68,9 +72,14 @@ class VSH : Application(), ServiceConnection {
      * - It will cause a lot of loading
      * - Tend to cause a lot of storage reading access, causing faster medium degradation (usually not a problem)
      */
-    var aggressiveUnloading = false
+    var aggressiveUnloading = true
     var vshView : VshView? = null
-    var gameFilterList = arrayListOf<String>()
+    val activeMediaPlayers = ArrayList<XMBStatefulMediaPlayer>()
+    var playAnimatedIcon = true
+    var gameFilterList = arrayListOf<String>(
+        "bandai",
+        "unity"
+    )
     val categories = arrayListOf<XMBItemCategory>()
     /** Return all item in current selected category or current active item, including the hidden ones */
     val items : ArrayList<XMBItem>? get(){
@@ -91,25 +100,26 @@ class VSH : Application(), ServiceConnection {
     val itemCursorY get() = (items?.visibleItems?.indexOfFirst { it.id == selectedItemId } ?: -1).coerceAtLeast(0)
     var itemOffsetX = 0.0f
     var itemOffsetY = 0.0f
+    var itemBackdropAlphaTime = 0.0f
 
     val isInRoot : Boolean get() = selectStack.size == 0
     var notificationLastCheckTime = 0L
     val notifications = arrayListOf<XMBNotification>()
     val threadPool: ExecutorService = Executors.newFixedThreadPool(8)
     val loadingHandles = arrayListOf<XMBLoadingHandle>()
-    val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
+    private val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
 
     override fun onCreate() {
+        FontCollections.init(this)
+        // Fresco.initialize(this)
         notificationLastCheckTime = SystemClock.uptimeMillis()
         _input = InputSubmodule(this)
         _adaptIcon = XMBAdaptiveIconRenderer(this)
         _network = NetworkSubmodule(this)
-
         registerInternalCategory()
         listInstalledIconPlugins()
         listInstalledWaveRenderPlugins()
         reloadAppList()
-
         super.onCreate()
     }
 
@@ -119,10 +129,15 @@ class VSH : Application(), ServiceConnection {
             var cIdx = items.indexOfFirst { it.id == selectedCategoryId }
             val oldIdx = cIdx
             items[cIdx].lastSelectedItemId = selectedItemId // Save last category item id
+            items[cIdx].content?.forEach { it.isHovered = false }
             if(right) cIdx++ else cIdx--
             cIdx = cIdx.coerceIn(0, items.size - 1)
-            if(cIdx != oldIdx) itemOffsetX = right.select(1.0f, -1.0f)
+            if(cIdx != oldIdx) {
+                itemOffsetX = right.select(1.0f, -1.0f)
+                itemBackdropAlphaTime = 0.0f
+            }
             selectedItemId = items[cIdx].lastSelectedItemId // Load new category item id
+            items[cIdx].content?.forEach { it.isHovered = it.id == selectedItemId }
             selectedCategoryId = items[cIdx].id
         }
     }
@@ -131,13 +146,21 @@ class VSH : Application(), ServiceConnection {
         try{
             val items = items?.visibleItems
             if(items != null){
-                if(items.size > 0){
+                if(items.isNotEmpty()){
                     var cIdx = items.indexOfFirst { it.id == selectedItemId }
                     val oldIdx = cIdx
                     if(bottom) cIdx++ else cIdx--
                     cIdx  = cIdx.coerceIn(0, items.size - 1)
-                    if(cIdx != oldIdx) itemOffsetY = bottom.select(1.0f, -1.0f);
+                    if(cIdx != oldIdx) {
+                        itemOffsetY = bottom.select(1.0f, -1.0f)
+                        itemBackdropAlphaTime = 0.0f
+                    }
                     selectedItemId = items[cIdx].id
+                }
+
+                // Update hovering
+                items.forEach {
+                    it.isHovered = it.id == selectedItemId
                 }
             }
         }catch (e:ArrayIndexOutOfBoundsException){

@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable
 import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioTrack
+import android.media.MediaPlayer
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.Consts
 import id.psw.vshlauncher.VSH
@@ -28,14 +29,25 @@ open class XMBItem(private val vsh: VSH) {
             AudioTrack.MODE_STATIC,
             90
         )
+        var BLANK_MEDIA_PLAYER = XMBStatefulMediaPlayer()
         val EmptyLaunchImpl : (XMBItem) -> Unit = { }
     }
 
     // Metadata
     open val hasDescription : Boolean get() = false
+    // ICON0.PNG
     open val hasIcon : Boolean get() = false
+    // ICON1.PMF / ICON1.PAM
     open val hasAnimatedIcon : Boolean get() = false
+    // PIC0.PNG
+    open val hasBackOverlay : Boolean get() = false
+    // PIC1.PNG
     open val hasBackdrop : Boolean get() = false
+    // PIC1_P.PNG
+    open val hasPortraitBackdrop : Boolean get() = false
+    // PIC0_P.PNG
+    open val hasPortraitBackdropOverlay : Boolean get() = false
+    // SND0.AT3
     open val hasBackSound : Boolean get() = false
     open val hasMenu : Boolean get() = (menuItems?.size ?: 0) > 0
     open val hasContent : Boolean get() = (content?.size ?: 0) > 0
@@ -43,6 +55,9 @@ open class XMBItem(private val vsh: VSH) {
     open val isIconLoaded : Boolean get() = false
     open val isAnimatedIconLoaded : Boolean get() = false
     open val isBackdropLoaded : Boolean get() = false
+    open val isBackdropOverlayLoaded : Boolean get() = false
+    open val isPortraitBackdropLoaded : Boolean get() = false
+    open val isPortraitBackdropOverlayLoaded : Boolean get() = false
     open val isBackSoundLoaded : Boolean get() = false
     open val isHidden : Boolean get() = false
 
@@ -54,8 +69,8 @@ open class XMBItem(private val vsh: VSH) {
     open val icon : Bitmap get() = XMBItem.TRANSPARENT_BITMAP
     open val animatedIcon : XMBFrameAnimation get() = XMBItem.TRANSPARENT_ANIM_BITMAP
     open val backdrop : Bitmap get() = XMBItem.TRANSPARENT_BITMAP
-    open val animatedBackdrop : XMBFrameAnimation get() = XMBItem.TRANSPARENT_ANIM_BITMAP
-    open val backSound : AudioTrack get() = SILENT_AUDIO
+    open val portraitBackdrop : Bitmap get() = XMBItem.TRANSPARENT_BITMAP
+    open val backSound : XMBStatefulMediaPlayer get() = BLANK_MEDIA_PLAYER
 
     open val menuItems : ArrayList<XMBMenuItem>? = null
     open val content : ArrayList<XMBItem>? = null
@@ -63,6 +78,8 @@ open class XMBItem(private val vsh: VSH) {
     open val onLaunch : (XMBItem) -> Unit = EmptyLaunchImpl
     open val onScreenVisible : (XMBItem) -> Unit = EmptyLaunchImpl
     open val onScreenInvisible : (XMBItem) -> Unit = EmptyLaunchImpl
+    open val onHovered : (XMBItem) -> Unit = EmptyLaunchImpl
+    open val onUnHovered : (XMBItem) -> Unit = EmptyLaunchImpl
 
     open val menuItemCount get() = menuItems?.size ?: 0
     open val contentCount get() = content?.size ?: 0
@@ -72,6 +89,7 @@ open class XMBItem(private val vsh: VSH) {
     }
 
     private var lastScreenVisibility = false
+    private var lastIsHovered =false
     var lastSelectedItemId = ""
 
     var screenVisibility : Boolean
@@ -82,6 +100,14 @@ open class XMBItem(private val vsh: VSH) {
             lastScreenVisibility = v
         }
     }
+    var isHovered : Boolean
+    get() = lastIsHovered
+    set(v){
+        if(v != lastIsHovered){
+            v.select(onHovered, onUnHovered)(this)
+            lastIsHovered = v
+        }
+    }
 
-    override fun toString(): String = "${displayName} - [${id}]"
+    override fun toString(): String = "$displayName - [${id}]"
 }

@@ -216,7 +216,6 @@ class VshView @JvmOverloads constructor(
 
                     drawNotifications(canvas)
                     drawFPS(canvas)
-
                 }
             }
         }

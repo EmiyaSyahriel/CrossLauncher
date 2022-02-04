@@ -57,7 +57,7 @@
         <activity
             android:name=".activities.XMB"
             android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
-            android:excludeFromRecents="true"
+            android:excludeFromRecents="false"
             android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="fullUser"

@@ -59,11 +59,17 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.1")
     implementation("androidx.preference:preference:1.1.1")
     implementation("com.google.android.material:material:1.4.0")
+    /**
     implementation("com.facebook.fresco:fresco:2.6.0")
+    implementation("com.facebook.fresco:webpsupport:2.6.0")
     implementation("com.facebook.fresco:animated-base:2.6.0")
     implementation("com.facebook.fresco:animated-webp:2.6.0")
     implementation("com.facebook.fresco:animated-gif:2.6.0")
-    implementation("com.facebook.fresco:webpsupport:2.6.0")
+    implementation("com.linecorp:apng:1.11.0")
+     **/
+    implementation("com.github.penfeizhou.android.animation:awebp:2.17.2")
+    implementation("com.github.penfeizhou.android.animation:apng:2.17.2")
+    implementation("com.github.penfeizhou.android.animation:gif:2.17.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")

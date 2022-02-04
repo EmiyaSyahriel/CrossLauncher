@@ -17,7 +17,7 @@ fun VSH.isAGame(rInfo: ResolveInfo): Boolean {
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
         retval = retval || appInfo.category == ApplicationInfo.CATEGORY_GAME
     }
-    retval = retval || gameFilterList.contains(rInfo.activityInfo.name)
+    retval = retval || (gameFilterList.indexOfFirst { rInfo.activityInfo.name.lowercase().contains(it.lowercase()) } >= 0)
     return retval
 }
 

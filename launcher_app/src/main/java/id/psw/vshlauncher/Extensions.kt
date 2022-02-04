@@ -23,14 +23,14 @@ val Context.vsh : VSH
         if(this is VSH) return this
             // Check if current context's application is an VSH App Context
         if(this.applicationContext is VSH) return this.applicationContext as VSH
-        return this as VSH // TODO: Do additional checking
+        return this as VSH
     }
 
 val Context.xmb : XMB
     get() {
-        // Check if current context is an VSH App Context
+        // Check if current context is an XMB Activity Context
         if(this is XMB) return this
-        return this as XMB // TODO: Do additional checking
+        return this as XMB
     }
 
 fun <T> Boolean.select(a:T, b:T) : T =  if(this) a else b

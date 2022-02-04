@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.media.MediaPlayer
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -19,6 +20,8 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.views.VshView
+import java.lang.Exception
+import java.lang.IllegalStateException
 
 class XMB : AppCompatActivity() {
 
@@ -48,9 +51,23 @@ class XMB : AppCompatActivity() {
         //}
     }
 
+    override fun onPause() {
+        vsh.activeMediaPlayers.forEach {
+        try{
+            it.pause()
+        }catch(ise:IllegalStateException){}
+        }
+        super.onPause()
+    }
+
     override fun onResume() {
-        super.onResume()
         vsh.vshView = vshView
+        vsh.activeMediaPlayers.forEach {
+            try{
+                it.start()
+            }catch(ise:IllegalStateException){}
+        }
+        super.onResume()
     }
 
     override fun onGenericMotionEvent(event: MotionEvent?): Boolean {
