@@ -1,6 +1,5 @@
 package id.psw.vshlauncher
 
-import android.Manifest
 import android.app.Application
 import android.content.ComponentName
 import android.content.Context
@@ -8,31 +7,21 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.graphics.Typeface
-import android.graphics.fonts.Font
-import android.graphics.fonts.FontFamily
 import android.media.MediaPlayer
-import android.net.ConnectivityManager
 import android.os.*
-import android.telephony.SubscriptionManager
-import android.telephony.TelephonyManager
 import android.util.Log
-import androidx.core.app.ActivityCompat
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
-import id.psw.vshlauncher.activities.XMB
 // import com.facebook.drawee.backends.pipeline.Fresco
 import id.psw.vshlauncher.pluginservices.IconPluginServiceHandle
 import id.psw.vshlauncher.submodules.*
 import id.psw.vshlauncher.types.*
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.VshView
+import java.io.File
+import java.io.IOException
 import java.lang.Exception
-import java.lang.IllegalArgumentException
-import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
-import kotlin.concurrent.timer
 
 class VSH : Application(), ServiceConnection {
 
@@ -55,6 +44,7 @@ class VSH : Application(), ServiceConnection {
         const val ITEM_CATEGORY_VIDEO = "vsh_video"
         const val ITEM_CATEGORY_MUSIC = "vsh_music"
         const val ITEM_CATEGORY_SETTINGS = "vsh_settings"
+        const val COPY_DATA_SIZE_BUFFER = 10240
     }
 
     private var appUserUid = 0
@@ -109,8 +99,62 @@ class VSH : Application(), ServiceConnection {
     val loadingHandles = arrayListOf<XMBLoadingHandle>()
     private val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
 
+    private val bgmPlayer = MediaPlayer()
+    private lateinit var bgmPlayerActiveSrc : File
+    private var bgmPlayerDontAutoPlay = false
+
+    private fun preparePlaceholderAudio(){
+        assets.open("silent.aac").use { ins ->
+            val bArray = ByteArray(COPY_DATA_SIZE_BUFFER)
+            val file = File.createTempFile("silent",".aac")
+            file.deleteOnExit()
+            file.outputStream().use { outs ->
+                var readSize = ins.read(bArray, 0, COPY_DATA_SIZE_BUFFER)
+                while(readSize > 0){
+                    outs.write(bArray, 0, readSize)
+                    readSize = ins.read(bArray, 0, COPY_DATA_SIZE_BUFFER)
+                }
+            }
+            XMBItem.SILENT_AUDIO = file
+            bgmPlayerActiveSrc = file
+        }
+    }
+
+    fun setAudioSource(newSrc: File, dontStart : Boolean = false){
+        if(newSrc.absolutePath != bgmPlayerActiveSrc.absolutePath){
+            try{
+                bgmPlayerActiveSrc = newSrc
+                if(bgmPlayer.isPlaying){
+                    bgmPlayer.stop()
+                }
+                bgmPlayer.reset()
+                bgmPlayer.setDataSource(newSrc.absolutePath)
+                bgmPlayer.prepareAsync()
+                bgmPlayerDontAutoPlay = dontStart
+                Log.d(TAG, "Changing BGM Player Source to ${newSrc.absolutePath}")
+            }catch(e:Exception){
+                Log.e(TAG, "BGM Player Failed : ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun removeAudioSource(){
+        if(bgmPlayerActiveSrc != XMBItem.SILENT_AUDIO){
+            if(bgmPlayer.isPlaying) bgmPlayer.stop()
+            bgmPlayer.reset()
+            bgmPlayerActiveSrc = XMBItem.SILENT_AUDIO
+        }
+    }
+
     override fun onCreate() {
         FontCollections.init(this)
+        preparePlaceholderAudio()
+        bgmPlayer.setOnPreparedListener {
+            it.isLooping = true
+            if(!bgmPlayerDontAutoPlay) it.start()
+        }
+
         // Fresco.initialize(this)
         notificationLastCheckTime = SystemClock.uptimeMillis()
         _input = InputSubmodule(this)

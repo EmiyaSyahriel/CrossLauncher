@@ -4,8 +4,11 @@ import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withScale
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
@@ -40,10 +43,17 @@ class VshView @JvmOverloads constructor(
     var scaling = ScaleInfo()
     var tempRect = RectF()
     var useInternalWallpaper = false
+    lateinit var gamepadNotifIcon : Bitmap
     val dummyPaint = Paint().apply {
         color = Color.GREEN
         textSize = 20.0f
     }
+
+    init {
+        val gpIconDr = ResourcesCompat.getDrawable(context.resources, R.drawable.category_games, null)
+        gamepadNotifIcon = gpIconDr!!.toBitmap(50,50)
+    }
+
 
     private fun adaptScreenSize(){
         if(!fitsSystemWindows){  fitsSystemWindows = true }
@@ -98,7 +108,7 @@ class VshView @JvmOverloads constructor(
 
     private val notificationTitleTextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
-        textSize = 22.0f
+        textSize = 25.0f
         // typeface = Typeface.create(typeface, Typeface.BOLD)
         textAlign = Paint.Align.LEFT
     }
@@ -150,7 +160,35 @@ class VshView @JvmOverloads constructor(
         return VSH.Input.getKeyDown(key) || (downTime > 0.5f && validDownTime)
     }
 
+    private fun updateGamepadList(){
+        val ids = InputDevice.getDeviceIds()
+        for(id in ids){
+            if(!VSH.Input.gamePads.containsKey(id)){
+
+                val gm = InputDevice.getDevice(id)
+                if(gm.sources hasFlag InputDevice.SOURCE_GAMEPAD){
+                    val desc = "${gm.name} (${Integer.toHexString(gm.vendorId).padStart(4,'0')} ${Integer.toHexString(gm.productId).padStart(4,'0')})"
+                    context.vsh.postNotification(gamepadNotifIcon, "New Gamepad Connected", desc)
+                    VSH.Input.gamePads[id] = InputSubmodule.GamePadInfo(
+                        gm.id,
+                        gm.productId,
+                        gm.vendorId,
+                        gm.name
+                    )
+                }
+            }
+        }
+
+        for(id in VSH.Input.gamePads){
+            if(!ids.contains(id.key)){
+                context.vsh.postNotification(gamepadNotifIcon, "Gamepad Disconnected", id.value.displayName)
+                VSH.Input.gamePads.remove(id.key)
+            }
+        }
+    }
+
     fun onUpdate(){
+        updateGamepadList()
         if(currentPage == VshViewPage.MainMenu){
 
             context.vsh.itemOffsetX = (time.deltaTime * 10.0f).toLerp(context.vsh.itemOffsetX, 0.0f)

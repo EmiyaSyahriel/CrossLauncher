@@ -142,7 +142,28 @@ class InputSubmodule(ctx: VSH) {
             KEYCODE_K to 1.0f,
             KEYCODE_L to 1.0f
         )
+
+        const val SONY_DUALSHOCK_3_HID_ID = 0x054C0268
+        const val SONY_DUALSHOCK_4_V1_HID_ID = 0x054C05C4
+        const val SONY_DUALSHOCK_4_V2_HID_ID = 0x054C09CC
+        const val SONY_DUALSENSE_HID_ID = 0x054C0CE6
     }
+
+    data class GamePadInfo(
+        val id : Int,
+        val product : Int,
+        val vendor : Int,
+        val name : String){
+        companion object {
+            fun hexform(int:Int): String{
+                return Integer.toHexString(int).padStart(4,'0').uppercase()
+            }
+        }
+        val displayName = "$name (${hexform(vendor)} ${hexform(product)})"
+        val deviceId = (vendor shl 16) or (product)
+    }
+
+    val gamePads = mutableMapOf<Int, GamePadInfo>()
 
     private val inputPairs = mutableMapOf<Key, InputState>()
     private val touchPairs = SparseArray<PointF>()
@@ -169,16 +190,17 @@ class InputSubmodule(ctx: VSH) {
     fun getKeyFree(k:Key) : Boolean = inputPairs[k]?.state == KeyState.Free
     fun getDownTime(k:Key) : Float = inputPairs[k]?.downSince ?: 0.0f
 
-    var activeRemap = Remap.DualSense
-    private fun getRemappedKeyCode(keyCode:Int) : Int {
-        return when(activeRemap){
-            Remap.DualSense -> remapOfDualSense[keyCode] ?: keyCode
-            else -> keyCode
-        }
+    private val keyReMap = mutableMapOf(SONY_DUALSENSE_HID_ID to remapOfDualSense)
+    private val keyReMapActive = mutableMapOf(SONY_DUALSENSE_HID_ID to true)
+
+    private fun getRemappedKeyCode(keyCode:Int, device:Int) : Int {
+        return if(keyReMapActive[device] == true){
+            keyReMap[device]?.get(keyCode) ?: keyCode
+        }else keyCode
     }
 
-    private fun androidToPsKey(keyCode: Int, isAxis:Boolean) : Key {
-        val remapKeyCode = (activeRemap != Remap.Normal).select(getRemappedKeyCode(keyCode), keyCode)
+    private fun androidToPsKey(keyCode: Int, isAxis:Boolean, deviceId : Int) : Key {
+        val remapKeyCode = getRemappedKeyCode(keyCode, deviceId)
         return (if(isAxis) android2psAxis else android2psKey)[remapKeyCode] ?: Key.None
     }
 
@@ -215,38 +237,40 @@ class InputSubmodule(ctx: VSH) {
             (evt.source hasFlag InputDevice.SOURCE_JOYSTICK ||
             evt.source hasFlag InputDevice.SOURCE_DPAD) &&
             evt.action == ACTION_MOVE){
-            arrayOf(AXIS_X, AXIS_Y, AXIS_Z, AXIS_RZ, AXIS_HAT_X, AXIS_HAT_Y).forEach { axis ->
-                val axVal = evt.getAxisValue(axis)
-                val nVal = if(axVal <= 0.0f) abs(axVal) else 0.0f
-                val pVal = if(axVal >= 0.0f) abs(axVal) else 0.0f
-                when (axis) {
-                    AXIS_HAT_X -> {
-                        inputPairs[Key.PadL]?.axisValue = nVal
-                        inputPairs[Key.PadR]?.axisValue = pVal
-                        inputPairs[Key.PadL]?.state = (nVal > downThreshold).select(KeyState.Down, KeyState.Up)
-                        inputPairs[Key.PadR]?.state = (pVal > downThreshold).select(KeyState.Down, KeyState.Up)
-                    }
-                    AXIS_HAT_Y -> {
-                        inputPairs[Key.PadU]?.axisValue = nVal
-                        inputPairs[Key.PadD]?.axisValue = pVal
-                        inputPairs[Key.PadU]?.state = (nVal > downThreshold).select(KeyState.Down, KeyState.Up)
-                        inputPairs[Key.PadD]?.state = (pVal > downThreshold).select(KeyState.Down, KeyState.Up)
-                    }
-                    else -> {
-                        val psKey = androidToPsKey(axis, true)
-                        inputPairs[psKey]?.axisValue = axVal
-                        inputPairs[psKey]?.state = (axVal > downThreshold).select(KeyState.Down, KeyState.Up)
+                val padId = gamePads[evt.deviceId]?.deviceId ?: -1
+                arrayOf(AXIS_X, AXIS_Y, AXIS_Z, AXIS_RZ, AXIS_HAT_X, AXIS_HAT_Y).forEach { axis ->
+                    val axVal = evt.getAxisValue(axis)
+                    val nVal = if(axVal <= 0.0f) abs(axVal) else 0.0f
+                    val pVal = if(axVal >= 0.0f) abs(axVal) else 0.0f
+                    when (axis) {
+                        AXIS_HAT_X -> {
+                            inputPairs[Key.PadL]?.axisValue = nVal
+                            inputPairs[Key.PadR]?.axisValue = pVal
+                            inputPairs[Key.PadL]?.state = (nVal > downThreshold).select(KeyState.Down, KeyState.Up)
+                            inputPairs[Key.PadR]?.state = (pVal > downThreshold).select(KeyState.Down, KeyState.Up)
+                        }
+                        AXIS_HAT_Y -> {
+                            inputPairs[Key.PadU]?.axisValue = nVal
+                            inputPairs[Key.PadD]?.axisValue = pVal
+                            inputPairs[Key.PadU]?.state = (nVal > downThreshold).select(KeyState.Down, KeyState.Up)
+                            inputPairs[Key.PadD]?.state = (pVal > downThreshold).select(KeyState.Down, KeyState.Up)
+                        }
+                        else -> {
+                            val psKey = androidToPsKey(axis, true, padId)
+                            inputPairs[psKey]?.axisValue = axVal
+                            inputPairs[psKey]?.state = (axVal > downThreshold).select(KeyState.Down, KeyState.Up)
+                        }
                     }
                 }
-            }
-            true
+                true
         } else false
     }
 
     fun keyEventReceiver(isDown: Boolean, keyCode:Int, evt:KeyEvent) : Boolean {
         if(evt.source hasFlag InputDevice.SOURCE_GAMEPAD){
             if(evt.repeatCount == 0){
-                val key = androidToPsKey(keyCode, false)
+                val padId = gamePads[evt.deviceId]?.deviceId ?: -1
+                val key = androidToPsKey(keyCode, false, padId)
                 if(key != Key.None){
                     inputPairs[key]?.apply {
                         axisValue = isDown.select(1.0f, 0.0f)

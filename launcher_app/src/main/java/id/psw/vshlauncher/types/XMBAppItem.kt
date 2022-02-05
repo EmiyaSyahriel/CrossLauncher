@@ -30,7 +30,7 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     private var _backOverlay = TRANSPARENT_BITMAP
     private var _portBackdrop = TRANSPARENT_BITMAP
     private var _portBackdropOverlay = TRANSPARENT_BITMAP
-    private var _backSound : XMBStatefulMediaPlayer = BLANK_MEDIA_PLAYER
+    private var _backSound : File = SILENT_AUDIO
     private var displayedDescription = "Please check launcher setting"
 
     private fun requestCustomizationFiles(fileName:String) : ArrayList<File>{
@@ -60,7 +60,7 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
         addAll(requestCustomizationFiles("ICON1.GIF")) // GIF (Facebook Fresco), low quality, small file, Renderer Bad
     }
     private var backSoundFiles = ArrayList<File>().apply {
-        addAll(requestCustomizationFiles("SND0.MP4"))
+        addAll(requestCustomizationFiles("SND0.MP3"))
         addAll(requestCustomizationFiles("SND0.AAC"))
     }
     private var _iconSync = Object()
@@ -71,7 +71,7 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
 
     override val isIconLoaded: Boolean get()= hasIconLoaded
     override val isAnimatedIconLoaded: Boolean get() = hasAnimIconLoaded
-    override val isBackSoundLoaded: Boolean get() = hasBackdropLoaded
+    override val isBackSoundLoaded: Boolean get() = hasBackSoundLoaded
     override val isBackdropLoaded: Boolean get() = hasBackdropLoaded
     override val isPortraitBackdropLoaded: Boolean get() = hasPortBackdropLoaded
 
@@ -88,7 +88,7 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     override val displayName: String get()= appLabel
     override val icon: Bitmap get()= synchronized(_icon) { _icon }
     override val backdrop: Bitmap get() = _backdrop
-    override val backSound: XMBStatefulMediaPlayer get() = _backSound
+    override val backSound: File get() = _backSound
     override val animatedIcon: XMBFrameAnimation get() = synchronized(_animatedIcon) { _animatedIcon }
     override val hasDescription: Boolean get() = description.isNotEmpty()
 
@@ -149,18 +149,8 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     private fun pSoundLoad(){
         synchronized(_backSoundSync){
             backSoundFiles.find { it.exists() }?.let {
-                if(!hasBackSoundLoaded) {
-                    try{
-                        hasBackSoundLoaded = true
-                        _backSound = XMBStatefulMediaPlayer()
-                        vsh.activeMediaPlayers.add(_backSound)
-                        _backSound.setDataSource(it.absolutePath)
-                        _backSound.isLooping = true
-                        _backSound.volume = 0f
-                    }catch(ise:IllegalStateException){
-                        Log.e(TAG, "Failed to load back sound file",ise)
-                    }
-                }
+                _backSound = it
+                hasBackSoundLoaded = true
             }
         }
     }
@@ -168,14 +158,8 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     private fun pSoundUnload(){
         synchronized(_backSoundSync){
             if(hasBackSoundLoaded) {
-                try{
-                    hasBackSoundLoaded = false
-                    vsh.activeMediaPlayers.remove(_backSound)
-                    _backSound.stop()
-                    _backSound.release()
-                }catch(ise:IllegalStateException){
-                    Log.e(TAG, "Failed to unload back sound file",ise)
-                }
+                hasBackSoundLoaded = false
+                _backSound = SILENT_AUDIO
             }
         }
     }
@@ -227,9 +211,6 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     private fun pOnUnHovered(i: XMBItem){
         vsh.threadPool.execute {
             pBackdropUnload()
-            if(hasBackSoundLoaded){
-                _backSound.volume = 0.0f
-            }
             pSoundUnload()
         }
     }

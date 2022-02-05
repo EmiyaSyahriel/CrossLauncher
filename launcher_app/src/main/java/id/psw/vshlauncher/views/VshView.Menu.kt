@@ -44,7 +44,7 @@ class VshViewMainMenuState {
         var showBackdrop : Boolean = true
     )
 
-    val dateTimeFormat = "dd/M KK:MM a"
+    val dateTimeFormat = "dd/M HH:mm a"
     val statusBar = StatusBarSetting()
     val verticalMenu = VerticalMenu()
 
@@ -360,8 +360,10 @@ fun VshView.menu3HorizontalMenu(ctx:Canvas){
 
                 val radius = kotlin.math.abs((kotlin.math.sin(currentTime / 3.0f)) * 10f)
                 menuHorizontalNamePaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
+                menuHorizontalIconPaint.setShadowLayer(radius, 0f, 0f, Color.BLACK)
             }else{
                 menuHorizontalNamePaint.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
+                menuHorizontalIconPaint.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
             }
 
             val hSizeX = size.x / 2.0f
@@ -384,7 +386,6 @@ fun VshView.menu3HorizontalMenu(ctx:Canvas){
                     menuHorizontalNamePaint.textSize = (layoutMode == XMBLayoutType.PSP).select(25f, 20f)
                     ctx.drawText(item.displayName, centerX, yPos + (iconCtrToText / 2.0f), menuHorizontalNamePaint, 1.0f)
                 }
-
             }
         }
     }
@@ -415,7 +416,7 @@ fun VshView.menuRenderVerticalMenu(ctx:Canvas){
                 menuVerticalNamePaint.alpha = textAlpha
 
                 if(selected){
-                    val radius = kotlin.math.abs((kotlin.math.sin(currentTime / 3.0f)) * 10f)
+                    val radius = abs((kotlin.math.sin(currentTime / 3.0f)) * 10f)
                     menuVerticalNamePaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
                     menuVerticalDescPaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
                     iconPaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
@@ -479,19 +480,11 @@ fun VshView.menuRenderVerticalMenu(ctx:Canvas){
                         }
                     }
 
-                    if(item.hasBackSound && item.isBackSoundLoaded){
-                        try{
-                            try{
-                                if(!item.backSound.isPlaying){
-                                    item.backSound.start()
-                                }else{
-                                    item.backSound.volume += time.deltaTime * 2.0f
-                                }
-                            }catch(upae:UninitializedPropertyAccessException){
-
-                            }
-                        }catch(ise:IllegalStateException){
-                            // TODO: Properly check for states
+                    if(selected){
+                        if(item.hasBackSound && item.isBackSoundLoaded){
+                            context.vsh.setAudioSource(item.backSound)
+                        }else{
+                            context.vsh.removeAudioSource()
                         }
                     }
 
@@ -504,6 +497,11 @@ fun VshView.menuRenderVerticalMenu(ctx:Canvas){
                             menuVerticalDescPaint.textSize = 20.0f
                         }
                         ctx.drawText(item.displayName, xPos + iconCenterToText, centerY, menuVerticalNamePaint, -0.25f)
+                        if(item.hasValue){
+                            menuVerticalDescPaint.textAlign = Paint.Align.RIGHT
+                            ctx.drawText(item.value, scaling.target.right - 30f, centerY, menuVerticalDescPaint, -0.25f)
+                            menuVerticalDescPaint.textAlign = Paint.Align.LEFT
+                        }
                         ctx.drawText(item.description, xPos + iconCenterToText, centerY, menuVerticalDescPaint, 1.25f)
                         if(isPSP){
                             statusOutlinePaint.strokeWidth = 2.0f
@@ -516,6 +514,11 @@ fun VshView.menuRenderVerticalMenu(ctx:Canvas){
                         }
                     }else{
                         ctx.drawText(item.displayName, xPos + iconCenterToText, centerY, menuVerticalNamePaint, 0.5f)
+                        if(item.hasValue){
+                            menuVerticalDescPaint.textAlign = Paint.Align.RIGHT
+                            ctx.drawText(item.value, scaling.target.right - 30f, centerY, menuVerticalDescPaint, 0.5f)
+                            menuVerticalDescPaint.textAlign = Paint.Align.LEFT
+                        }
                     }
                 }
             }
@@ -533,9 +536,11 @@ fun VshView.menuRender(ctx: Canvas){
     val menuScale = state.menu.menuScaleTime.toLerp(1.0f, 2.0f)
     menuDrawBackground(ctx)
     ctx.withScale(menuScale, menuScale, scaling.target.centerX(), scaling.target.centerY()){
-        menuRenderVerticalMenu(ctx)
-        menuRenderHorizontalMenu(ctx)
-        menuRenderStatusBar(ctx)
+        try{
+            menuRenderVerticalMenu(ctx)
+            menuRenderHorizontalMenu(ctx)
+            menuRenderStatusBar(ctx)
+        }catch(cme:ConcurrentModificationException){}
     }
 }
 
