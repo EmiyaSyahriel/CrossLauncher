@@ -264,6 +264,7 @@ class InputSubmodule(ctx: VSH) {
                         axisValue = axisValue.coerceIn(-1.0f, 1.0f)
                         state = isDown.select(KeyState.Down, KeyState.Up)
                     }
+                    return true
                 }
             }
         }

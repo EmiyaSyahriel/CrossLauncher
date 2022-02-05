@@ -160,6 +160,7 @@ class VshView @JvmOverloads constructor(
                 isKeyDownOrRepeat(InputSubmodule.Key.PadR) -> context.vsh.moveCursorX(true)
                 isKeyDownOrRepeat(InputSubmodule.Key.PadU) -> context.vsh.moveCursorY(false)
                 isKeyDownOrRepeat(InputSubmodule.Key.PadD) -> context.vsh.moveCursorY(true)
+                VSH.Input.getKeyDown(InputSubmodule.Key.Circle) -> context.vsh.hoveredItem?.launch()
             }
 
             if(swapLayoutType){

@@ -27,7 +27,9 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     private var appLabel = ""
     private var _animatedIcon : XMBFrameAnimation = TRANSPARENT_ANIM_BITMAP
     private var _backdrop = TRANSPARENT_BITMAP
+    private var _backOverlay = TRANSPARENT_BITMAP
     private var _portBackdrop = TRANSPARENT_BITMAP
+    private var _portBackdropOverlay = TRANSPARENT_BITMAP
     private var _backSound : XMBStatefulMediaPlayer = BLANK_MEDIA_PLAYER
     private var displayedDescription = "Please check launcher setting"
 
@@ -39,9 +41,17 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
         addAll(requestCustomizationFiles("PIC1.PNG"))
         addAll(requestCustomizationFiles("PIC1.JPG"))
     }
+    private var backdropOverlayFiles = ArrayList<File>().apply {
+        addAll(requestCustomizationFiles("PIC0.PNG"))
+        addAll(requestCustomizationFiles("PIC0.JPG"))
+    }
     private var portraitBackdropFiles = ArrayList<File>().apply {
         addAll(requestCustomizationFiles("PIC1_P.PNG"))
         addAll(requestCustomizationFiles("PIC1_P.JPG"))
+    }
+    private var portraitBackdropOverlayFiles = ArrayList<File>().apply {
+        addAll(requestCustomizationFiles("PIC0_P.PNG"))
+        addAll(requestCustomizationFiles("PIC0_P.JPG"))
     }
     private var animatedIconFiles = ArrayList<File>().apply{
         addAll(requestCustomizationFiles("ICON1.APNG")) // Animated PNG (Line APNG-Drawable), best quality, just bigger file, Renderer OK
@@ -68,6 +78,8 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     override val hasIcon: Boolean get()= true
     override val hasBackdrop: Boolean get() = backdropFiles.any { it.exists() }
     override val hasPortraitBackdrop: Boolean get() = portraitBackdropFiles.any { it.exists() }
+    override val hasBackOverlay: Boolean get() = backdropOverlayFiles.any { it.exists() }
+    override val hasPortraitBackdropOverlay: Boolean get() = portraitBackdropOverlayFiles.any { it.exists() }
     override val hasBackSound: Boolean get() = backSoundFiles.any { it.exists() }
     override val hasAnimatedIcon: Boolean get() = animatedIconFiles.any { it.exists() }
 

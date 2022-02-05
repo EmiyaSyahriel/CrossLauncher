@@ -9,9 +9,11 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withRotation
 import androidx.core.graphics.withScale
 import id.psw.vshlauncher.*
+import java.lang.Exception
 import java.lang.IllegalStateException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.ConcurrentModificationException
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -272,31 +274,35 @@ fun VshView.menuDrawBackground(ctx:Canvas) {
         statusFillPaint.color = FColor.setAlpha(Color.BLACK, 0.25f)
         ctx.drawRect(scaling.target, statusFillPaint)
         if(verticalMenu.showBackdrop){
-            val activeItem = context.vsh.items?.visibleItems?.find{it.id == context.vsh.selectedItemId}
-            if(activeItem != null){
-                context.vsh.itemBackdropAlphaTime =context.vsh.itemBackdropAlphaTime.coerceIn(0f, 1f)
-                backgroundPaint.alpha = (context.vsh.itemBackdropAlphaTime * 255).roundToInt().coerceIn(0, 255)
-                if((scaling.screen.height() > scaling.screen.width()) && activeItem.hasPortraitBackdrop){
-                    if(activeItem.isPortraitBackdropLoaded){
-                        ctx.drawBitmap(
-                            activeItem.portraitBackdrop,
-                            null,
-                            scaling.viewport,
-                            backgroundPaint,
-                            FittingMode.FILL, 0.5f, 0.5f)
-                        if(context.vsh.itemBackdropAlphaTime < 1.0f) context.vsh.itemBackdropAlphaTime += (time.deltaTime) * 2.0f
-                    }
-                }else if(activeItem.hasBackdrop){
-                    if(activeItem.isBackdropLoaded){
-                        ctx.drawBitmap(
-                            activeItem.backdrop,
-                            null,
-                            scaling.viewport,
-                            backgroundPaint,
-                            FittingMode.FILL, 0.5f, 0.5f)
-                        if(context.vsh.itemBackdropAlphaTime < 1.0f) context.vsh.itemBackdropAlphaTime += (time.deltaTime) * 2.0f
+            try{
+                val activeItem = context.vsh.items?.visibleItems?.find{it.id == context.vsh.selectedItemId}
+                if(activeItem != null){
+                    context.vsh.itemBackdropAlphaTime =context.vsh.itemBackdropAlphaTime.coerceIn(0f, 1f)
+                    backgroundPaint.alpha = (context.vsh.itemBackdropAlphaTime * 255).roundToInt().coerceIn(0, 255)
+                    if((scaling.screen.height() > scaling.screen.width()) && activeItem.hasPortraitBackdrop){
+                        if(activeItem.isPortraitBackdropLoaded){
+                            ctx.drawBitmap(
+                                activeItem.portraitBackdrop,
+                                null,
+                                scaling.viewport,
+                                backgroundPaint,
+                                FittingMode.FILL, 0.5f, 0.5f)
+                            if(context.vsh.itemBackdropAlphaTime < 1.0f) context.vsh.itemBackdropAlphaTime += (time.deltaTime) * 2.0f
+                        }
+                    }else if(activeItem.hasBackdrop){
+                        if(activeItem.isBackdropLoaded){
+                            ctx.drawBitmap(
+                                activeItem.backdrop,
+                                null,
+                                scaling.viewport,
+                                backgroundPaint,
+                                FittingMode.FILL, 0.5f, 0.5f)
+                            if(context.vsh.itemBackdropAlphaTime < 1.0f) context.vsh.itemBackdropAlphaTime += (time.deltaTime) * 2.0f
+                        }
                     }
                 }
+            }catch(cme:ConcurrentModificationException){
+
             }
         }
     }
@@ -309,13 +315,15 @@ private val ps3UnselectedCategoryIconSize = PointF(80.0f, 80.0f)
 private val pspSelectedCategoryIconSize = PointF(150.0f, 150.0f)
 private val pspUnselectedCategoryIconSize = PointF(100.0f, 100.0f)
 
+// PS3 Base Icon Aspect Ratio = 20:11 (320x176)
 private val ps3SelectedIconSize = PointF(240.0f, 132.0f)
 private val ps3UnselectedIconSize = PointF(160.0f, 88.0f)
 
-private val pspSelectedIconSize = PointF(144.0f, 80.0f)
-private val pspUnselectedIconSize = PointF(72.0f, 40.0f)
+// PSP Base Icon Aspect Ratio = 18:10 (144x80)
+private val pspSelectedIconSize = PointF(270.0f, 150.0f)
+private val pspUnselectedIconSize = PointF(180.0f, 100.0f)
 
-private val pspIconSeparation = PointF(200.0f, 150.0f)
+private val pspIconSeparation = PointF(200.0f, 105.0f)
 private val ps3IconSeparation = PointF(150.0f, 100.0f)
 private val horizontalRectF = RectF()
 
@@ -348,6 +356,12 @@ fun VshView.menu3HorizontalMenu(ctx:Canvas){
                 tmpPointFA.x = sizeTransition.toLerp(targetSize.x, previousSize.x)
                 tmpPointFA.y = sizeTransition.toLerp(targetSize.y, previousSize.y)
                 size = tmpPointFA
+
+
+                val radius = kotlin.math.abs((kotlin.math.sin(currentTime / 3.0f)) * 10f)
+                menuHorizontalNamePaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
+            }else{
+                menuHorizontalNamePaint.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
             }
 
             val hSizeX = size.x / 2.0f
@@ -389,7 +403,7 @@ fun VshView.menuRenderVerticalMenu(ctx:Canvas){
             val separation = (isPSP).select(pspIconSeparation, ps3IconSeparation).y
             val xPos = (scaling.target.width() * center.x) + (context.vsh.itemOffsetX * hSeparation)
             val yPos = (scaling.target.height() * center.y) + (separation * 2.0f)
-            val iconCenterToText = ((isPSP).select(pspSelectedIconSize, ps3SelectedIconSize).x) * 0.60f
+            val iconCenterToText = (isPSP).select(pspSelectedIconSize.x * 0.40f, ps3SelectedIconSize.x * 0.60f)
             val cursorY = context.vsh.itemCursorY
             for(wx in items.indices){
                 val iy = wx - cursorY
@@ -401,9 +415,14 @@ fun VshView.menuRenderVerticalMenu(ctx:Canvas){
                 menuVerticalNamePaint.alpha = textAlpha
 
                 if(selected){
-                    val radius = kotlin.math.abs((kotlin.math.sin(currentTime * 2.0f)) * 10f)
+                    val radius = kotlin.math.abs((kotlin.math.sin(currentTime / 3.0f)) * 10f)
                     menuVerticalNamePaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
                     menuVerticalDescPaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
+                    iconPaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
+                }else{
+                    menuVerticalNamePaint.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
+                    menuVerticalDescPaint.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
+                    iconPaint.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
                 }
 
                 val targetSize =
@@ -436,7 +455,12 @@ fun VshView.menuRenderVerticalMenu(ctx:Canvas){
                 item.screenVisibility = isInViewport
 
                 if(isInViewport){
-                    verticalRectF.set(xPos - hSizeX, centerY - hSizeY, xPos + hSizeX, centerY + hSizeY)
+                    if(isPSP){
+                        val pspCX = xPos - (pspUnselectedIconSize.x * 0.25f)
+                        verticalRectF.set(pspCX - hSizeX, centerY - hSizeY, pspCX + hSizeX, centerY + hSizeY)
+                    }else{
+                        verticalRectF.set(xPos - hSizeX, centerY - hSizeY, xPos + hSizeX, centerY + hSizeY)
+                    }
                     if(item.hasIcon){
                         val iconAnchorX = (isPSP).select(1.0f, 0.5f)
                         if(item.hasAnimatedIcon && item.isAnimatedIconLoaded){
@@ -472,9 +496,18 @@ fun VshView.menuRenderVerticalMenu(ctx:Canvas){
                     }
 
                     if(item.hasDescription){
-                        ctx.drawText(item.displayName, xPos + iconCenterToText, centerY, menuVerticalNamePaint, 0.0f)
-                        ctx.drawText(item.displayName, xPos + iconCenterToText, centerY, menuVerticalDescPaint, 1.0f)
                         if(isPSP){
+                            menuVerticalNamePaint.textSize = 35.0f
+                            menuVerticalDescPaint.textSize = 25.0f
+                        }else{
+                            menuVerticalNamePaint.textSize = 30.0f
+                            menuVerticalDescPaint.textSize = 20.0f
+                        }
+                        ctx.drawText(item.displayName, xPos + iconCenterToText, centerY, menuVerticalNamePaint, -0.25f)
+                        ctx.drawText(item.description, xPos + iconCenterToText, centerY, menuVerticalDescPaint, 1.25f)
+                        if(isPSP){
+                            statusOutlinePaint.strokeWidth = 2.0f
+                            statusOutlinePaint.color = Color.WHITE
                             ctx.drawLine(
                                 xPos + iconCenterToText, centerY,
                                 scaling.viewport.right - 20.0f, centerY,
