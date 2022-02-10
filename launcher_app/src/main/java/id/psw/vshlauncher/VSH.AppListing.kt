@@ -1,12 +1,10 @@
 package id.psw.vshlauncher
 
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
 import android.os.Build
-import id.psw.vshlauncher.types.XMBAppItem
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.items.XMBAppItem
 
 fun VSH.isAGame(rInfo: ResolveInfo): Boolean {
     val appInfo = packageManager.getApplicationInfo(rInfo.activityInfo.packageName, 0)
@@ -23,13 +21,15 @@ fun VSH.isAGame(rInfo: ResolveInfo): Boolean {
 
 fun VSH.reloadAppList(){
     threadPool.execute {
+        // categories.find {it.id == VSH.ITEM_CATEGORY_GAME }
         val intent = Intent(Intent.ACTION_MAIN, null);
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
+        val lh = addLoadHandle()
         packageManager.queryIntentActivities(intent, 0).forEach {
-            val lh = addLoadHandle()
             val item = XMBAppItem(vsh, it)
             addToCategory(isAGame(it).select(VSH.ITEM_CATEGORY_GAME,VSH.ITEM_CATEGORY_APPS), item)
-            setLoadingFinished(lh)
         }
+        Thread.sleep(5000)
+        setLoadingFinished(lh)
     }
 }

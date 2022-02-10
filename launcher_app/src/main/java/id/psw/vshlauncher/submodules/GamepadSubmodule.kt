@@ -12,7 +12,7 @@ import id.psw.vshlauncher.hasFlag
 import id.psw.vshlauncher.select
 import kotlin.math.abs
 
-class InputSubmodule(ctx: VSH) {
+class GamepadSubmodule(ctx: VSH) {
     enum class Key (val base:UByte){
         None (0b0u),
         MaskSystem      (0b00000000u),
@@ -42,7 +42,18 @@ class InputSubmodule(ctx: VSH) {
         R2              (0b10000010u),
         R3              (0b10000100u),
         RSX             (0b10001001u),
-        RSY             (0b10001010u),
+        RSY             (0b10001010u);
+
+        companion object {
+            /** Let the Asian and Western Console users to have their preference in here. they have their preference and culture
+             *
+             * And also... Who maps Triangle as Back button? isn't that adds more complexity than just swapping Circle and Cross? */
+            var spotMarkedByX = false
+            /** Standard Confirm Button */
+            val Confirm get() = spotMarkedByX.select(Cross, Circle)
+            /** Standard Cancel Button */
+            val Cancel get() = spotMarkedByX.select(Circle, Cross)
+        }
     }
 
     enum class KeyState(val base:UByte) {
@@ -213,7 +224,7 @@ class InputSubmodule(ctx: VSH) {
     }
 
     fun touchEventReceiver(evt: MotionEvent) : Boolean{
-        if(evt.source hasFlag  InputDevice.SOURCE_TOUCHSCREEN){
+        if(evt.source hasFlag InputDevice.SOURCE_TOUCHSCREEN){
             val ptri = evt.actionIndex
             val ptrid = evt.getPointerId(ptri)
             when(evt.actionMasked){

@@ -3,14 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="id.psw.vshlauncher">
 
+    <!-- Based on Google Launcher3 source code -->
+    <permission
+        android:name="com.android.launcher.permission.INSTALL_SHORTCUT"
+        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
+        android:protectionLevel="dangerous"
+        android:label="@string/perm_install_shortcut_label"
+        android:description="@string/perm_install_shortcut_desc" />
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Needed for the app to uninstall packages -->
-    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" /> <!-- Tell if touchscreen can be used but is not required -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
 
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <!-- Touchscreen is not always needed -->
@@ -67,6 +75,7 @@
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER_APP" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.HOME" />
@@ -76,11 +85,20 @@
             android:name=".test_activity.XMBWaveTestActivity"
             android:exported="true"
             android:launchMode="singleInstance" />
+        <activity android:name=".activities.ShortcutReceiverActivity"
+            android:exported="true"
+            >
+            <intent-filter>
+                <action android:name="android.content.pm.action.CONFIRM_PIN_SHORTCUT"/>
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".livewallpaper.XMBWaveWallpaperService"
             android:label="@string/app_name_wave"
-            android:permission="android.permission.BIND_WALLPAPER">
+            android:permission="android.permission.BIND_WALLPAPER"
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
             </intent-filter>

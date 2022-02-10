@@ -5,12 +5,14 @@ import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withScale
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.typography.FontCollections
 
-class VshViewGameBootState{
+class VshViewGameBootState {
     var currentTime : Float = 0.0f
     var image : Bitmap? = null
     val imagePaint : Paint = Paint().apply{
         alpha = 0
+        typeface = FontCollections.masterFont
     }
     var skip = false
     var defaultSkip = false
@@ -25,7 +27,7 @@ class VshViewGameBootState{
     val TAG = "xmb.gameboot"
 }
 
-private fun VshView.gbColorFilterCache(color:Int): PorterDuffColorFilter{
+private fun XmbView.gbColorFilterCache(color:Int): PorterDuffColorFilter{
     with(state.gameBoot){
         return if(cachedPDuffFilter.containsKey(color)){
             cachedPDuffFilter[color]!!
@@ -38,19 +40,19 @@ private fun VshView.gbColorFilterCache(color:Int): PorterDuffColorFilter{
     }
 }
 
-private fun VshView.gbUpdateParticlePaintColor(color:Int){
+private fun XmbView.gbUpdateParticlePaintColor(color:Int){
     with(state.gameBoot){
         pParticlePaint.color = color
         pParticlePaint.colorFilter = gbColorFilterCache(color)
     }
 }
 
-fun VshView.gbStart(){
+fun XmbView.gbStart(){
     state.gameBoot.currentTime = 0.0f
     gbEnsureImageLoaded()
 }
 
-private fun VshView.gbEnsureImageLoaded(){
+private fun XmbView.gbEnsureImageLoaded(){
     if(state.gameBoot.image == null){
         state.gameBoot.image = getDrawable(R.drawable.gameboot_internal)?.toBitmap(1280, 720)
     }
@@ -60,13 +62,14 @@ private fun VshView.gbEnsureImageLoaded(){
     }
 }
 
-fun VshView.bootInto(skip:Boolean, bootFunc : () -> Unit){
+fun XmbView.bootInto(skip:Boolean, bootFunc : () -> Unit){
     state.gameBoot.skip = skip
     state.gameBoot.onBoot = bootFunc
     switchPage(VshViewPage.GameBoot)
+    context.vsh.removeAudioSource()
 }
 
-private fun VshView.bootDirectly(){
+private fun XmbView.bootDirectly(){
     with(state.gameBoot){
         onBoot?.invoke()
         onBoot = null
@@ -74,7 +77,7 @@ private fun VshView.bootDirectly(){
     }
 }
 
-private fun VshView.drawParticle(ctx:Canvas){
+private fun XmbView.drawParticle(ctx:Canvas){
     with(state.gameBoot){
         val pTex = pParticleTexture
         if(pTex != null){
@@ -94,7 +97,7 @@ private fun VshView.drawParticle(ctx:Canvas){
     }
 }
 
-fun VshView.gbRender(ctx: Canvas){
+fun XmbView.gbRender(ctx: Canvas){
     gbEnsureImageLoaded()
     with(state.gameBoot){
         if(skip || defaultSkip){
@@ -148,6 +151,6 @@ fun VshView.gbRender(ctx: Canvas){
     }
 }
 
-fun VshView.gbEnd(){
+fun XmbView.gbEnd(){
     state.gameBoot.currentTime = 0.0f
 }

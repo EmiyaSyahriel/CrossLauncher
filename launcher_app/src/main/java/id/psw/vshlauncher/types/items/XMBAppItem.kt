@@ -1,15 +1,14 @@
-package id.psw.vshlauncher.types
+package id.psw.vshlauncher.types.items
 
+import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.*
-import android.util.Log
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.sequentialimages.*
 import id.psw.vshlauncher.views.bootInto
 import java.io.File
-import java.lang.IllegalStateException
 
 class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBItem(vsh) {
     companion object {
@@ -62,6 +61,8 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     private var backSoundFiles = ArrayList<File>().apply {
         addAll(requestCustomizationFiles("SND0.MP3"))
         addAll(requestCustomizationFiles("SND0.AAC"))
+        addAll(requestCustomizationFiles("SND0.MID"))
+        addAll(requestCustomizationFiles("SND0.MIDI"))
     }
     private var _iconSync = Object()
     private var _animIconSync = Object()
@@ -82,6 +83,7 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     override val hasPortraitBackdropOverlay: Boolean get() = portraitBackdropOverlayFiles.any { it.exists() }
     override val hasBackSound: Boolean get() = backSoundFiles.any { it.exists() }
     override val hasAnimatedIcon: Boolean get() = animatedIconFiles.any { it.exists() }
+    override val hasMenu: Boolean get() = true
 
     override val id: String get()= iconId
     override val description: String get()= displayedDescription
@@ -91,12 +93,29 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     override val backSound: File get() = _backSound
     override val animatedIcon: XMBFrameAnimation get() = synchronized(_animatedIcon) { _animatedIcon }
     override val hasDescription: Boolean get() = description.isNotEmpty()
+    override val menuItems: ArrayList<XMBMenuItem> = arrayListOf()
+
+    private val isSystemApp : Boolean get() {
+        return resInfo.activityInfo.applicationInfo.flags hasFlag (ApplicationInfo.FLAG_UPDATED_SYSTEM_APP or ApplicationInfo.FLAG_SYSTEM)
+    }
 
     init {
         vsh.threadPool.execute {
             val handle = vsh.addLoadHandle()
             appLabel = resInfo.loadLabel(vsh.packageManager).toString()
             vsh.setLoadingFinished(handle)
+            menuItems.add(
+                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_launch) }, { false }, 0){ _launch(this) })
+            menuItems.add(
+                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_find_on_playstore) }, { false }, 1) {
+                    vsh.xmbView?.context?.xmb?.appOpenInPlayStore(resInfo.activityInfo.packageName)
+                }
+            )
+                menuItems.add(
+                    XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_uninstall) }, { isSystemApp },2){
+                        vsh.xmbView?.context?.xmb?.appRequestUninstall(resInfo.activityInfo.packageName)
+                    }
+                )
         }
     }
 
@@ -221,9 +240,14 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     override val onUnHovered: (XMBItem) -> Unit get() = ::pOnUnHovered
 
     private fun _launch(i: XMBItem){
-        vsh.vshView?.bootInto(false){
-            val launchInfo = vsh.packageManager.getLaunchIntentForPackage(resInfo.activityInfo.packageName)
-            vsh.startActivity(launchInfo)
+        vsh.xmbView?.bootInto(false){
+            try{
+                val launchInfo = vsh.packageManager.getLaunchIntentForPackage(resInfo.activityInfo.packageName)
+                vsh.startActivity(launchInfo)
+                vsh.preventPlayMedia = true
+            }catch(e:Exception){
+                vsh.postNotification(null, "Launch failed","Unable to launch this app, most likely due to this app is not available on the device", 10.0f)
+            }
         }
     }
 

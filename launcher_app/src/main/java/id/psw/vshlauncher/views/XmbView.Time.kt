@@ -10,7 +10,7 @@ data class VshViewTimeData (
     var currentTimeDbl: Double = 0.0
         )
 
-fun VshView.tickTime(){
+fun XmbView.tickTime(){
     if(time.lastRenderTime == 0L){
         time.lastRenderTime = SystemClock.elapsedRealtime()
     }
@@ -25,6 +25,6 @@ fun VshView.tickTime(){
     when(currentPage){
         VshViewPage.GameBoot -> state.gameBoot.currentTime += time.deltaTime
         VshViewPage.ColdBoot -> state.coldBoot.currentTime += time.deltaTime
-        VshViewPage.MainMenu -> state.menu.currentTime += time.deltaTime
+        VshViewPage.MainMenu -> state.crossMenu.currentTime += time.deltaTime
     }
 }
