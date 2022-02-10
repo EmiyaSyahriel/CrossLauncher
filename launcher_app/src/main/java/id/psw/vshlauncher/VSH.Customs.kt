@@ -34,7 +34,7 @@ fun VSH.getAllPathsFor(base:String, vararg args:String, createParentDir:Boolean 
     return retval
 }
 
-val ActivityInfo.uniqueActivityName get() = "${processName}_${name}"
+val ActivityInfo.uniqueActivityName get() = "${processName}_${name.removeSimilarPrefixes(processName)}"
 val ResolveInfo.uniqueActivityName get() = activityInfo.uniqueActivityName
 
 val VSH.allCacheDirs : Array<File> get() {
@@ -44,21 +44,19 @@ val VSH.allCacheDirs : Array<File> get() {
 fun String.removeSimilarPrefixes(b:String) : String{
     // Seek until it finds any differences
     var i = 0
-    var isEqual = false
-    while(i < kotlin.math.min(length, b.length) && !isEqual){
+    var isEqual = true
+    while(i < kotlin.math.min(length, b.length) && isEqual){
         isEqual = get(i) == b[i]
         i++
     }
-    return if(i < length) substring(i) else ""
-}
-
-fun VSH.generateTitleId(pkg:String, act:String) : String {
-    val sb = StringBuilder()
-    for(i in 0 until kotlin.math.max(pkg.length, act.length)){
-        if(i < pkg.length) sb.append(pkg[i])
-        if(i < act.length) sb.append(act[i])
+    // Seek until next dot
+    var isDot = false
+    while(i < length && !isDot){
+        isDot = get(i) == '.'
+        i++
     }
-    return sb.toString()
+    val retval =if(i < length) substring(i) else b
+    return retval
 }
 
 /** Basically Useless on Android 4.2+ when user is exclusively using the emulated internal storage,

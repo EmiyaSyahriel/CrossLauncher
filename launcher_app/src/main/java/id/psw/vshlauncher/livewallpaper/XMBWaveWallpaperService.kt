@@ -8,11 +8,14 @@ import com.learnopengles.android.switchinglivewallpaper.OpenGLES2WallpaperServic
 
 class XMBWaveWallpaperService : OpenGLES2WallpaperService() {
 
+    private lateinit var lastWaveRenderer: XMBWaveRenderer
+
     override fun onCreate() {
         super.onCreate()
     }
 
     override fun getNewRenderer(): GLSurfaceView.Renderer {
-        return XMBWaveRenderer()
+        lastWaveRenderer = XMBWaveRenderer()
+        return lastWaveRenderer
     }
 }

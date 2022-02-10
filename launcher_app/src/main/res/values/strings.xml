@@ -90,7 +90,7 @@
     <string name="common_back">Back</string>
     <string name="app_open_data_dir">Open Data Directory</string>
     <string name="app_open_mod_dir">Open Customization Dir</string>
-    <string name="app_open_obb_dir">Open OBB</string>
+    <string name="app_open_obb_dir">Open OBB Directory</string>
     <string name="app_uninstall">Uninstall</string>
     <string name="app_info_system_activity">Open in Settings</string>
     <string name="title_activity_wave_wallpaper_setting">Wave Wallpaper Settings</string>
@@ -105,9 +105,37 @@
     <string name="plugin_name_musiclist">Music List (Internal)</string>
     <string name="plugin_desc_musiclist">Lists all music in device via Android MediaStore</string>
     <string name="error_common_header">Error</string>
-    <string name="error_category_launch">A category item isn\'t supposed to be launched</string>
+    <string name="error_category_launch">No ... You shouldn\'t launch this item</string>
     <string name="nettype_ethernet">Ethernet</string>
     <string name="nettype_no_connection">No Internet</string>
     <string name="nettype_wifi">Wi-Fi</string>
     <string name="font_load_failed">An error occured during custom font loading : %s</string>
+    <string name="category_is_empty">Category empty</string>
+    <string name="settings_category_display_desc">Adjust settings for rendering system</string>
+    <string name="settings_category_display_name">Display Settings</string>
+    <string name="app_refresh_due_to_uninstall">App uninstalled, refreshing app list...</string>
+    <string name="error_no_appmarket_title">Umm... Play Store?</string>
+    <string name="error_no_appmarket_description">Cannot find \"market:\" URL handler, Do your device have any App Market installed? e.g Google Play Store</string>
+    <string name="bre_name">Broadcast Receiver</string>
+    <string name="perm_install_shortcut_label">Install Shortcut</string>
+    <string name="perm_install_shortcut_desc">Install static shortcuts to XMB Launcher</string>
+    <string name="sdk_widget_shortcut_not_supported">Shortcut is only supported from Android O and later</string>
+    <string name="default_dialog_title">Dialog</string>
+    <string name="setting_display_layout_type">XMB Layout</string>
+    <string name="setting_display_layout_type_desc">Which console should the launcher mimics</string>
+    <string name="settings_category_debug_name" translatable="false">★ Debug Settings</string>
+    <string name="setting_systeminfo_name">Information</string>
+    <string name="setting_systeminfo_desc">"Show additonal informations "</string>
+    <string name="settings_category_debug_desc">" "</string>
+    <string name="string_systeminfo_androidver_name">Android Version</string>
+    <string name="empty_string" translatable="false">" "</string>
+    <string name="settings_category_system_name">System Settings</string>
+    <string name="settings_category_system_desc">Adjust launcher settings</string>
+    <string name="settings_display_show_operator_name">Show Network Name</string>
+    <string name="settings_display_show_operator_desc">Show currently connected network name, it can be Ethernet, Wi-Fi or Mobile Data</string>
+    <string name="settings_display_clock_second_analog_name">Second on Analog Clock</string>
+    <string name="settings_display_clock_second_analog_desc">Show the hand for second to on the analog clock</string>
+    <string name="string_systeminfo_androidmdl_name">Device Model</string>
+    <string name="settings_system_show_fps_name">Show FPS</string>
+    <string name="settings_system_show_fps_desc">Show rendering performance of the launcher</string>
 </resources>

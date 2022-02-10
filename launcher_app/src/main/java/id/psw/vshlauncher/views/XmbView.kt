@@ -4,15 +4,19 @@ import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withScale
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.submodules.InputSubmodule
+import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.views.dialogviews.TestDialogView
 import kotlin.math.roundToInt
 
-class VshView @JvmOverloads constructor(
+class XmbView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
@@ -40,10 +44,17 @@ class VshView @JvmOverloads constructor(
     var scaling = ScaleInfo()
     var tempRect = RectF()
     var useInternalWallpaper = false
+    lateinit var gamepadNotifIcon : Bitmap
     val dummyPaint = Paint().apply {
         color = Color.GREEN
         textSize = 20.0f
     }
+
+    init {
+        val gpIconDr = ResourcesCompat.getDrawable(context.resources, R.drawable.category_games, null)
+        gamepadNotifIcon = gpIconDr!!.toBitmap(50,50)
+    }
+
 
     private fun adaptScreenSize(){
         if(!fitsSystemWindows){  fitsSystemWindows = true }
@@ -76,12 +87,14 @@ class VshView @JvmOverloads constructor(
                 VshViewPage.ColdBoot -> cbEnd()
                 VshViewPage.MainMenu -> menuEnd()
                 VshViewPage.GameBoot -> gbEnd()
+                VshViewPage.Dialog -> dlgEnd()
             }
             currentPage = view
             when(currentPage){
                 VshViewPage.ColdBoot -> cbStart()
                 VshViewPage.MainMenu -> menuStart()
                 VshViewPage.GameBoot -> gbStart()
+                VshViewPage.Dialog -> dlgStart()
             }
         }
     }
@@ -98,7 +111,7 @@ class VshView @JvmOverloads constructor(
 
     private val notificationTitleTextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
-        textSize = 22.0f
+        textSize = 25.0f
         // typeface = Typeface.create(typeface, Typeface.BOLD)
         textAlign = Paint.Align.LEFT
     }
@@ -144,32 +157,119 @@ class VshView @JvmOverloads constructor(
         }
     }
 
-    private fun isKeyDownOrRepeat(key:InputSubmodule.Key): Boolean{
-        val downTime =  VSH.Input.getDownTime(key)
+    private fun isKeyDownOrRepeat(key:GamepadSubmodule.Key): Boolean{
+        val downTime =  VSH.Gamepad.getDownTime(key)
         val validDownTime = (downTime % 0.2f) > 0.1f
-        return VSH.Input.getKeyDown(key) || (downTime > 0.5f && validDownTime)
+        return VSH.Gamepad.getKeyDown(key) || (downTime > 0.5f && validDownTime)
+    }
+
+    private fun updateGamepadList(){
+        val ids = InputDevice.getDeviceIds()
+        for(id in ids){
+            if(!VSH.Gamepad.gamePads.containsKey(id)){
+
+                val gm = InputDevice.getDevice(id)
+                if(gm.sources hasFlag InputDevice.SOURCE_GAMEPAD){
+                    val desc = "${gm.name} (${Integer.toHexString(gm.vendorId).padStart(4,'0')} ${Integer.toHexString(gm.productId).padStart(4,'0')})"
+                    context.vsh.postNotification(gamepadNotifIcon, "New Gamepad Connected", desc)
+                    VSH.Gamepad.gamePads[id] = GamepadSubmodule.GamePadInfo(
+                        gm.id,
+                        gm.productId,
+                        gm.vendorId,
+                        gm.name
+                    )
+                }
+            }
+        }
+
+        for(id in VSH.Gamepad.gamePads){
+            if(!ids.contains(id.key)){
+                context.vsh.postNotification(gamepadNotifIcon, "Gamepad Disconnected", id.value.displayName)
+                VSH.Gamepad.gamePads.remove(id.key)
+            }
+        }
     }
 
     fun onUpdate(){
+        updateGamepadList()
         if(currentPage == VshViewPage.MainMenu){
 
-            context.vsh.itemOffsetX = (time.deltaTime * 10.0f).toLerp(context.vsh.itemOffsetX, 0.0f)
-            context.vsh.itemOffsetY = (time.deltaTime * 10.0f).toLerp(context.vsh.itemOffsetY, 0.0f)
+            context.vsh.itemOffsetX = (time.deltaTime * 10.0f).coerceIn(0.0f, 1.0f).toLerp(context.vsh.itemOffsetX, 0.0f)
+            context.vsh.itemOffsetY = (time.deltaTime * 10.0f).coerceIn(0.0f, 1.0f).toLerp(context.vsh.itemOffsetY, 0.0f)
             when {
-                isKeyDownOrRepeat(InputSubmodule.Key.PadL) -> context.vsh.moveCursorX(false)
-                isKeyDownOrRepeat(InputSubmodule.Key.PadR) -> context.vsh.moveCursorX(true)
-                isKeyDownOrRepeat(InputSubmodule.Key.PadU) -> context.vsh.moveCursorY(false)
-                isKeyDownOrRepeat(InputSubmodule.Key.PadD) -> context.vsh.moveCursorY(true)
+                isKeyDownOrRepeat(GamepadSubmodule.Key.PadL) -> {
+                    if(!state.itemMenu.isDisplayed){
+                        if(context.vsh.isInRoot){
+                            context.vsh.moveCursorX(false)
+                        }else{
+                            context.vsh.backStep()
+                        }
+                    }
+                }
+                isKeyDownOrRepeat(GamepadSubmodule.Key.PadR) && context.vsh.isInRoot -> {
+                    if(!state.itemMenu.isDisplayed){
+                        context.vsh.moveCursorX(true)
+                    }
+                }
+                isKeyDownOrRepeat(GamepadSubmodule.Key.PadU) -> {
+                    if(state.itemMenu.isDisplayed){
+                        menuMoveItemMenuCursor(false)
+                    }else{
+                        context.vsh.moveCursorY(false)
+                    }
+                }
+                isKeyDownOrRepeat(GamepadSubmodule.Key.PadD) -> {
+                    if(state.itemMenu.isDisplayed){
+                        menuMoveItemMenuCursor(true)
+                    }else{
+                        context.vsh.moveCursorY(true)
+                    }
+                }
+                VSH.Gamepad.getKeyDown(GamepadSubmodule.Key.Triangle) -> {
+                    val item = context.vsh.hoveredItem
+                    if(state.itemMenu.isDisplayed){
+                        state.itemMenu.isDisplayed = false
+                    }else{
+                        if(item != null){
+                            if(item.hasMenu){
+                                state.itemMenu.isDisplayed = true
+                            }
+                        }
+                    }
+                }
+                VSH.Gamepad.getKeyDown(GamepadSubmodule.Key.Confirm) -> {
+                    if(state.itemMenu.isDisplayed) {
+                        menuStartItemMenu()
+                        state.itemMenu.isDisplayed = false
+                    }else{
+                        context.vsh.launchActiveItem()
+                    }
+                }
+                VSH.Gamepad.getKeyDown(GamepadSubmodule.Key.Cancel) -> {
+                    if(state.itemMenu.isDisplayed){
+                        state.itemMenu.isDisplayed = false
+                    }else{
+                        context.vsh.backStep()
+                    }
+                }
             }
 
             if(swapLayoutType){
-                state.menu.layoutMode = when(state.menu.layoutMode){
+                state.crossMenu.layoutMode = when(state.crossMenu.layoutMode){
                     XMBLayoutType.PS3 -> XMBLayoutType.PSP
                     XMBLayoutType.PSP -> XMBLayoutType.Bravia
                     else -> XMBLayoutType.PS3
                 }
-                state.menu.menuScaleTime = 1.0f
+                state.crossMenu.menuScaleTime = 1.0f
                 swapLayoutType = false
+            }
+        }else if(currentPage == VshViewPage.GameBoot){
+            if(isKeyDownOrRepeat(GamepadSubmodule.Key.Cross)){
+                switchPage(VshViewPage.MainMenu)
+            }
+        }else if(currentPage == VshViewPage.ColdBoot){
+            if(isKeyDownOrRepeat(GamepadSubmodule.Key.Triangle)){
+                showDialog(TestDialogView(context.vsh))
             }
         }
     }
@@ -212,14 +312,15 @@ class VshView @JvmOverloads constructor(
                         VshViewPage.ColdBoot -> cbRender(canvas)
                         VshViewPage.MainMenu -> menuRender(canvas)
                         VshViewPage.GameBoot -> gbRender(canvas)
+                        VshViewPage.Dialog -> dlgRender(canvas)
                     }
 
                     drawNotifications(canvas)
-                    drawFPS(canvas)
+                    if(context.vsh.showLauncherFPS) drawFPS(canvas)
                 }
             }
         }
-        VSH.Input.update(time.deltaTime)
+        VSH.Gamepad.update(time.deltaTime)
         invalidate()
     }
 

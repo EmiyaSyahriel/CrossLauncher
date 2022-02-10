@@ -10,6 +10,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.SurfaceHolder
 import id.psw.vshlauncher.R
+import id.psw.vshlauncher.vsh
 import java.io.InputStream
 import java.nio.charset.Charset
 
@@ -41,12 +42,8 @@ class XMBWaveSurfaceView : GLSurfaceView {
 
     lateinit var renderer : XMBWaveRenderer
 
-    fun init(){
-        setEGLConfigChooser(8,8,8,8,8,8)
-        setEGLContextClientVersion(2)
-        renderer = XMBWaveRenderer()
-
-
+    private fun readPreferences(){
+        Log.d(TAG, "Re-reading preferences...")
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         NativeGL.setWaveStyle(prefs.getInt(KEY_STYLE, XMBWaveRenderer.WAVE_TYPE_PS3_NORMAL.toInt()).toByte())
         NativeGL.setSpeed(prefs.getFloat(KEY_SPEED, 1.0f))
@@ -58,7 +55,13 @@ class XMBWaveSurfaceView : GLSurfaceView {
             prefs.getInt(KEY_COLOR_FORE_A, Color.argb(0xFF,0xFF,0xFF,0xFF)),
             prefs.getInt(KEY_COLOR_FORE_B, Color.argb(0x88,0xFF,0xFF,0xFF))
         )
+    }
 
+    fun init(){
+        setEGLConfigChooser(8,8,8,0,8,8)
+        setEGLContextClientVersion(2)
+        renderer = XMBWaveRenderer()
+        readPreferences()
         setRenderer(renderer)
         renderMode = RENDERMODE_CONTINUOUSLY
         holder?.setFormat(PixelFormat.TRANSLUCENT)
@@ -66,6 +69,9 @@ class XMBWaveSurfaceView : GLSurfaceView {
     }
 
     override fun onDraw(canvas: Canvas?) {
+        if(context.vsh.waveShouldReReadPreferences){
+            readPreferences()
+        }
         super.onDraw(canvas)
         postInvalidate()
     }

@@ -59,7 +59,6 @@ object FontCollections {
         }
 
         if(!isCustomFontFound){
-
             masterFont = Typeface.SANS_SERIF
         }
     }

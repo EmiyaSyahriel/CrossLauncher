@@ -1,6 +1,5 @@
 package id.psw.vshlauncher
 
-import android.Manifest
 import android.app.Application
 import android.content.ComponentName
 import android.content.Context
@@ -8,40 +7,30 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.graphics.Typeface
-import android.graphics.fonts.Font
-import android.graphics.fonts.FontFamily
 import android.media.MediaPlayer
-import android.net.ConnectivityManager
 import android.os.*
-import android.telephony.SubscriptionManager
-import android.telephony.TelephonyManager
 import android.util.Log
-import androidx.core.app.ActivityCompat
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
-import id.psw.vshlauncher.activities.XMB
 // import com.facebook.drawee.backends.pipeline.Fresco
 import id.psw.vshlauncher.pluginservices.IconPluginServiceHandle
 import id.psw.vshlauncher.submodules.*
 import id.psw.vshlauncher.types.*
+import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
-import id.psw.vshlauncher.views.VshView
+import id.psw.vshlauncher.views.XmbView
+import java.io.File
 import java.lang.Exception
-import java.lang.IllegalArgumentException
-import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
-import kotlin.concurrent.timer
 
 class VSH : Application(), ServiceConnection {
 
     companion object {
-        private lateinit var _input : InputSubmodule
+        private lateinit var _gamepad : GamepadSubmodule
         private lateinit var _adaptIcon : XMBAdaptiveIconRenderer
         private lateinit var _network : NetworkSubmodule
         private lateinit var _appFont : Typeface
-        val Input get() = _input
+        val Gamepad get() = _gamepad
         val IconAdapter get() = _adaptIcon
         val Network get() = _network
         val AppFont get() = _appFont
@@ -55,6 +44,7 @@ class VSH : Application(), ServiceConnection {
         const val ITEM_CATEGORY_VIDEO = "vsh_video"
         const val ITEM_CATEGORY_MUSIC = "vsh_music"
         const val ITEM_CATEGORY_SETTINGS = "vsh_settings"
+        const val COPY_DATA_SIZE_BUFFER = 10240
     }
 
     private var appUserUid = 0
@@ -73,11 +63,13 @@ class VSH : Application(), ServiceConnection {
      * - Tend to cause a lot of storage reading access, causing faster medium degradation (usually not a problem)
      */
     var aggressiveUnloading = true
-    var vshView : VshView? = null
-    val activeMediaPlayers = ArrayList<XMBStatefulMediaPlayer>()
+    var xmbView : XmbView? = null
     var playAnimatedIcon = true
     var gameFilterList = arrayListOf<String>(
         "bandai",
+        "cygames",
+        "sudoku",
+        "umamusume",
         "unity"
     )
     val categories = arrayListOf<XMBItemCategory>()
@@ -92,6 +84,15 @@ class VSH : Application(), ServiceConnection {
         return root
     }
     val hoveredItem : XMBItem? get() = items?.find { it.id == selectedItemId }
+    private var _waveShouldRefresh = false
+    var showLauncherFPS = true
+    var waveShouldReReadPreferences : Boolean get() {
+        val r = _waveShouldRefresh
+        _waveShouldRefresh = false
+        return r
+    }
+
+    set(v) { _waveShouldRefresh = v }
 
     var selectedCategoryId = ITEM_CATEGORY_APPS
     var selectedItemId = ""
@@ -103,29 +104,87 @@ class VSH : Application(), ServiceConnection {
     var itemBackdropAlphaTime = 0.0f
 
     val isInRoot : Boolean get() = selectStack.size == 0
+    var preventPlayMedia = true
     var notificationLastCheckTime = 0L
     val notifications = arrayListOf<XMBNotification>()
     val threadPool: ExecutorService = Executors.newFixedThreadPool(8)
     val loadingHandles = arrayListOf<XMBLoadingHandle>()
     private val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
 
+    private val bgmPlayer = MediaPlayer()
+    private lateinit var bgmPlayerActiveSrc : File
+    private var bgmPlayerDoNotAutoPlay = false
+
+    private fun preparePlaceholderAudio(){
+        assets.open("silent.aac").use { ins ->
+            val bArray = ByteArray(COPY_DATA_SIZE_BUFFER)
+            val file = File.createTempFile("silent",".aac")
+            file.deleteOnExit()
+            file.outputStream().use { outs ->
+                var readSize = ins.read(bArray, 0, COPY_DATA_SIZE_BUFFER)
+                while(readSize > 0){
+                    outs.write(bArray, 0, readSize)
+                    readSize = ins.read(bArray, 0, COPY_DATA_SIZE_BUFFER)
+                }
+            }
+            XMBItem.SILENT_AUDIO = file
+            bgmPlayerActiveSrc = file
+        }
+    }
+
+    fun setAudioSource(newSrc: File, doNotStart : Boolean = false){
+        if(preventPlayMedia) return
+        if(newSrc.absolutePath != bgmPlayerActiveSrc.absolutePath){
+            try{
+                bgmPlayerActiveSrc = newSrc
+                if(bgmPlayer.isPlaying){
+                    bgmPlayer.stop()
+                }
+                bgmPlayer.reset()
+                bgmPlayer.setDataSource(newSrc.absolutePath)
+                bgmPlayer.prepareAsync()
+                bgmPlayerDoNotAutoPlay = doNotStart
+                Log.d(TAG, "Changing BGM Player Source to ${newSrc.absolutePath}")
+            }catch(e:Exception){
+                Log.e(TAG, "BGM Player Failed : ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun removeAudioSource(){
+        if(bgmPlayerActiveSrc != XMBItem.SILENT_AUDIO){
+            if(bgmPlayer.isPlaying) bgmPlayer.stop()
+            bgmPlayer.reset()
+            bgmPlayerActiveSrc = XMBItem.SILENT_AUDIO
+        }
+    }
+
     override fun onCreate() {
         FontCollections.init(this)
+        preparePlaceholderAudio()
+        bgmPlayer.setOnPreparedListener {
+            it.isLooping = true
+            if(!bgmPlayerDoNotAutoPlay) it.start()
+        }
+
         // Fresco.initialize(this)
         notificationLastCheckTime = SystemClock.uptimeMillis()
-        _input = InputSubmodule(this)
+        _gamepad = GamepadSubmodule(this)
         _adaptIcon = XMBAdaptiveIconRenderer(this)
         _network = NetworkSubmodule(this)
         registerInternalCategory()
         listInstalledIconPlugins()
         listInstalledWaveRenderPlugins()
         reloadAppList()
+        fillSettingsCategory()
         super.onCreate()
     }
 
     fun moveCursorX(right:Boolean){
         val items = categories.visibleItems
-        if(items.size > 0){
+        if(items.isNotEmpty()){
+            preventPlayMedia = false
             var cIdx = items.indexOfFirst { it.id == selectedCategoryId }
             val oldIdx = cIdx
             items[cIdx].lastSelectedItemId = selectedItemId // Save last category item id
@@ -146,6 +205,7 @@ class VSH : Application(), ServiceConnection {
         try{
             val items = items?.visibleItems
             if(items != null){
+                preventPlayMedia = false
                 if(items.isNotEmpty()){
                     var cIdx = items.indexOfFirst { it.id == selectedItemId }
                     val oldIdx = cIdx
@@ -165,6 +225,37 @@ class VSH : Application(), ServiceConnection {
             }
         }catch (e:ArrayIndexOutOfBoundsException){
             //
+        }
+    }
+
+    fun launchActiveItem(){
+        val item = hoveredItem
+        if(item != null){
+            if(item.hasContent){
+                preventPlayMedia = false
+                Log.d(TAG, "Found content in item ${item.id}, pushing to content stack...")
+                if(isInRoot){
+                    categories.find { it.id == selectedCategoryId }?.lastSelectedItemId = selectedItemId
+                }else{
+                    items?.find { it.id == selectedItemId }?.lastSelectedItemId = selectedItemId
+                }
+                selectedItemId = hoveredItem?.lastSelectedItemId ?: "id_null"
+                selectStack.push(item.id)
+                itemOffsetX = 1.0f
+            }else{
+                preventPlayMedia = true
+                item.launch()
+            }
+        }
+    }
+
+    fun backStep(){
+        if(selectStack.size > 0){
+            preventPlayMedia = false
+            selectStack.pull()
+            hoveredItem?.lastSelectedItemId = selectedItemId
+            selectedItemId = if(selectStack.size == 0) categories.find {it.id == selectedCategoryId}?.lastSelectedItemId ?: "" else selectStack.peek()
+            itemOffsetX = -1.0f
         }
     }
 
@@ -255,6 +346,10 @@ class VSH : Application(), ServiceConnection {
             iconPlugins.removeAt(iconIdx)
             Log.d(TAG, "Plugin Disconnected : ${name?.className}")
         }
+    }
+
+    fun saveCustomShortcut(intent: Intent) {
+
     }
 
 }

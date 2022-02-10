@@ -1,16 +1,12 @@
 package id.psw.vshlauncher
 
 import android.content.Context
-import android.graphics.*
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Parcel
-import android.os.Parcelable
 import androidx.core.content.res.ResourcesCompat
 import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.types.XMBItem
-import id.psw.vshlauncher.types.XMBItemCategory
-import id.psw.vshlauncher.views.VshView
+import id.psw.vshlauncher.views.XmbView
 import java.io.File
 import kotlin.experimental.and
 
@@ -79,7 +75,7 @@ val Float.deg2nrm : Float get() = this / 360.0f
 val Float.rad2Deg : Float get() = (this / fPI) * 180.0f
 val Float.rad2Nrm : Float get() = this / f2PI
 
-fun VshView.getDrawable(id:Int) : Drawable?{
+fun XmbView.getDrawable(id:Int) : Drawable?{
     return ResourcesCompat.getDrawable(context.resources, id, context.theme)
 }
 

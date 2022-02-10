@@ -84,5 +84,6 @@ fun Paint.wrapText(source:String, maxWidth:Float) : String {
         }
         line.append(word).append(' ')
     }
+    msb.appendLine(line.toString())
     return msb.toString()
 }

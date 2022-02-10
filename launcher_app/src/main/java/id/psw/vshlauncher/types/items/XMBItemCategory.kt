@@ -1,4 +1,4 @@
-package id.psw.vshlauncher.types
+package id.psw.vshlauncher.types.items
 
 import android.graphics.Bitmap
 import androidx.core.content.res.ResourcesCompat
@@ -6,10 +6,11 @@ import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.postNotification
+import id.psw.vshlauncher.types.XMBItem
 
 class XMBItemCategory(private val vsh: VSH, private val cateId:String, private val strId : Int, private val iconId: Int) : XMBItem(vsh) {
     private val _content = ArrayList<XMBItem>()
-    private fun _postNoLaunchNotification(xmb:XMBItem){
+    private fun _postNoLaunchNotification(xmb: XMBItem){
         vsh.postNotification(null, vsh.getString(R.string.error_common_header), vsh.getString(R.string.error_category_launch))
     }
 
@@ -42,7 +43,7 @@ class XMBItemCategory(private val vsh: VSH, private val cateId:String, private v
 
     override val content: ArrayList<XMBItem> get() = _content
 
-    fun addItem(item:XMBItem) {
+    fun addItem(item: XMBItem) {
         if(_content.indexOfFirst { it.id == item.id } == -1){
             _content.add(item)
         }

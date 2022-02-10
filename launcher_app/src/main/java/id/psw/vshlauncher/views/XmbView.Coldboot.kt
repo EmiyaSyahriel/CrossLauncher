@@ -14,18 +14,18 @@ data class VshViewColdBootState(
     }
 )
 
-fun VshView.cbStart(){
+fun XmbView.cbStart(){
     state.coldBoot.currentTime = 0.0f
     cbEnsureImageLoaded()
 }
 
-fun VshView.cbEnsureImageLoaded(){
+fun XmbView.cbEnsureImageLoaded(){
     if(state.coldBoot.image == null){
         state.coldBoot.image = getDrawable(R.drawable.coldboot_internal)?.toBitmap(1280, 720)
     }
 }
 
-fun VshView.cbRender(ctx: Canvas){
+fun XmbView.cbRender(ctx: Canvas){
     cbEnsureImageLoaded()
     val img = state.coldBoot.image
     val cTime = state.coldBoot.currentTime
@@ -56,6 +56,6 @@ fun VshView.cbRender(ctx: Canvas){
     }
 }
 
-fun VshView.cbEnd(){
+fun XmbView.cbEnd(){
 
 }

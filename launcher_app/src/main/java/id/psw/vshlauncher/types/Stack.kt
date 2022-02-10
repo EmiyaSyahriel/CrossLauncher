@@ -8,5 +8,5 @@ class Stack<T> {
     fun push(item:T) = backingList.add(item)
     fun peek() : T = backingList.last()
     fun pull() : T = backingList.removeAt(backingList.size - 1)
-    val size : Int = backingList.size
+    val size : Int get()= backingList.size
 }
