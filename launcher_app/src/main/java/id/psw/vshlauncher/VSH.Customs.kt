@@ -13,6 +13,17 @@ object VshBaseDirs {
     const val CACHE_DIR = "dev_hdd1/caches"
 }
 
+object VshResName {
+    const val COLDBOOT_SOUND_MP3 = "coldboot.mp3"
+    const val COLDBOOT_SOUND_AAC = "coldboot.aac"
+    const val GAMEBOOT_SOUND_MP3 = "gameboot.mp3"
+    const val GAMEBOOT_SOUND_AAC = "gameboot.aac"
+    const val COLDBOOT_BACKGROUND_PNG = "coldboot.png"
+    const val COLDBOOT_BACKGROUND_JPG = "coldboot.jpg"
+    const val GAMEBOOT_BACKGROUND_PNG = "gameboot.png"
+    const val GAMEBOOT_BACKGROUND_JPG = "gameboot.jpg"
+}
+
 /**
  * @param base Base directory after the storage path, treat it like the root of a PS3 HDD
  * @param args Additional directories

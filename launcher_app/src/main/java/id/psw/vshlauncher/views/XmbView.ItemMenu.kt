@@ -4,6 +4,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import androidx.core.graphics.withRotation
+import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.FColor
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.toLerp
@@ -47,12 +49,10 @@ fun XmbView.menuMoveItemMenuCursor(isDown:Boolean){
                     val menuItems = item.menuItems
                     if(menuItems != null){
                         val sortedMenu = menuItems.sortedBy { it.displayOrder }
-                        val cIndex = menuItems.indexOfFirst { it.displayOrder == selectedIndex }
-                        if(isDown && cIndex + 1 < menuItems.size){
-                            selectedIndex = sortedMenu[cIndex + 1].displayOrder
-                        }
-                        if(!isDown && cIndex - 1 >= 0){
-                            selectedIndex = sortedMenu[cIndex - 1].displayOrder
+                        val cIndex = sortedMenu.indexOfFirst { it.displayOrder == selectedIndex }
+                        val newIndex = cIndex + isDown.select(1, -1)
+                        if(cIndex >= 0 && newIndex < menuItems.size){
+                            selectedIndex = sortedMenu[newIndex].displayOrder
                         }
                     }
                 }
@@ -106,12 +106,37 @@ fun XmbView.menuRenderItemMenu(ctx: Canvas){
                 item.menuItems?.forEach {
                     menuContextMenuTextPaint.color = it.isDisabled .select(Color.GRAY, Color.WHITE)
                     if(it.displayOrder == selectedIndex){
-                        menuContextMenuTextPaint.setShadowLayer(abs(sin(time.currentTime)) * 10.0f, 0f,0f, Color.WHITE)
-
-
-
+                        menuContextMenuTextPaint
+                            .setShadowLayer(
+                                abs(sin(time.currentTime)) * 10.0f,
+                                0f,0f, Color.WHITE)
                     } else {
-                        menuContextMenuTextPaint.setShadowLayer(0.0f, 0f,0f, Color.TRANSPARENT)
+                        menuContextMenuTextPaint
+                            .setShadowLayer(0.0f, 0f,0f, Color.TRANSPARENT)
+                    }
+
+                    if(it.displayOrder == selectedIndex){
+                        if(isPSP){
+                            val yOff = zeroIdx + (it.displayOrder * textSize)
+                            itemMenuRectF.set(textLeft - 5.0f, yOff - textSize,
+                                scaling.viewport.right - 5.0f, yOff)
+                            ctx.drawRoundRect(itemMenuRectF,
+                                5.0f, 5.0f, menuContextMenuFill)
+                            ctx.drawRoundRect(itemMenuRectF,
+                                5.0f, 5.0f, menuContextMenuOutline)
+                        }else{
+                            if(state.crossMenu.arrowBitmapLoaded){
+                                val bitmap = state.crossMenu.arrowBitmap
+                                val xOff = textLeft - 20.0f
+                                val yOff = zeroIdx + ((it.displayOrder - 0.75f) * textSize)
+                                ctx.withTranslation(xOff, yOff) {
+                                    ctx.withRotation(180.0f){
+                                        itemMenuRectF.set(-12.0f, -12.0f, 12.0f, 12.0f)
+                                        ctx.drawBitmap(bitmap, null, itemMenuRectF, null)
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     ctx.drawText(it.displayName, textLeft, zeroIdx + (it.displayOrder * textSize), menuContextMenuTextPaint, 0.5f, false)

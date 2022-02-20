@@ -5,10 +5,15 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.types.XMBItem
 
-class XMBItemCategory(private val vsh: VSH, private val cateId:String, private val strId : Int, private val iconId: Int) : XMBItem(vsh) {
+class XMBItemCategory(
+    private val vsh: VSH, private val cateId:String,
+    private val strId : Int, private val iconId: Int,
+    val sortable: Boolean = false
+    ) : XMBItem(vsh) {
     private val _content = ArrayList<XMBItem>()
     private fun _postNoLaunchNotification(xmb: XMBItem){
         vsh.postNotification(null, vsh.getString(R.string.error_common_header), vsh.getString(R.string.error_category_launch))
@@ -31,6 +36,20 @@ class XMBItemCategory(private val vsh: VSH, private val cateId:String, private v
     override val icon: Bitmap get() = _icon
     override val id: String get() = cateId
 
+    private val propertyData = mutableMapOf<String, Any>()
+
+    fun <T> getProperty(name:String, defVal : T) : T{
+        if(propertyData.containsKey(name)){
+            val casted = propertyData[name]!! as T
+            return casted ?: defVal
+        }
+        return defVal
+    }
+
+    fun <T> setProperty(name:String, value:T){
+        propertyData[name] = value as Any
+    }
+
     init {
         vsh.threadPool.execute {
             _isLoadingIcon = true
@@ -48,6 +67,14 @@ class XMBItemCategory(private val vsh: VSH, private val cateId:String, private v
             _content.add(item)
         }
     }
+
+    var onSetSortFunc : (XMBItemCategory, Any) -> Unit = { _, _sortMode -> }
+    var onSwitchSortFunc : (XMBItemCategory) -> Unit = { }
+    var getSortModeNameFunc : (XMBItemCategory) -> String = { "" }
+
+    fun onSwitchSort() = onSwitchSortFunc(this)
+    fun <T> setSort(sort:T) = onSetSortFunc(this, sort as Any)
+    val sortModeName : String get() = getSortModeNameFunc(this)
 
     override val onLaunch: (XMBItem) -> Unit get() = ::_postNoLaunchNotification
 }

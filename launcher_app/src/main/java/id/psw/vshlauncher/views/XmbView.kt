@@ -6,12 +6,14 @@ import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.InputDevice
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withScale
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.views.dialogviews.TestDialogView
 import kotlin.math.roundToInt
@@ -82,7 +84,7 @@ class XmbView @JvmOverloads constructor(
     }
 
     fun switchPage(view:VshViewPage){
-        if(currentPage != view){
+        //if(currentPage != view){
             when(currentPage){
                 VshViewPage.ColdBoot -> cbEnd()
                 VshViewPage.MainMenu -> menuEnd()
@@ -96,7 +98,7 @@ class XmbView @JvmOverloads constructor(
                 VshViewPage.GameBoot -> gbStart()
                 VshViewPage.Dialog -> dlgStart()
             }
-        }
+        //}
     }
 
     private val notificationBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -190,6 +192,19 @@ class XmbView @JvmOverloads constructor(
         }
     }
 
+    private val touchStartPointF = PointF()
+    private val touchCurrentPointF = PointF()
+    private var lastTouchAction = MotionEvent.ACTION_UP
+
+    fun onTouchScreen(start : PointF, current: PointF, action:Int){
+        touchStartPointF.set(start)
+        touchCurrentPointF.set(current)
+        lastTouchAction = action
+        when(currentPage){
+            VshViewPage.MainMenu -> menuOnTouchScreen(start, current, action)
+        }
+    }
+
     fun onUpdate(){
         updateGamepadList()
         if(currentPage == VshViewPage.MainMenu){
@@ -237,6 +252,12 @@ class XmbView @JvmOverloads constructor(
                         }
                     }
                 }
+                VSH.Gamepad.getKeyDown(GamepadSubmodule.Key.Square) -> {
+                    if(context.vsh.isInRoot){
+                        context.vsh.doCategorySorting()
+                        state.crossMenu.sortHeaderDisplay = 5.0f
+                    }
+                }
                 VSH.Gamepad.getKeyDown(GamepadSubmodule.Key.Confirm) -> {
                     if(state.itemMenu.isDisplayed) {
                         menuStartItemMenu()
@@ -273,6 +294,7 @@ class XmbView @JvmOverloads constructor(
             }
         }
     }
+
     private val fpsRect = Rect()
     private val fpsRectF = RectF()
     private fun drawFPS(ctx:Canvas){
@@ -315,6 +337,8 @@ class XmbView @JvmOverloads constructor(
                         VshViewPage.Dialog -> dlgRender(canvas)
                     }
 
+                    drawDebugLocation(canvas, context.xmb)
+
                     drawNotifications(canvas)
                     if(context.vsh.showLauncherFPS) drawFPS(canvas)
                 }
@@ -322,6 +346,15 @@ class XmbView @JvmOverloads constructor(
         }
         VSH.Gamepad.update(time.deltaTime)
         invalidate()
+    }
+
+    private fun drawDebugLocation(ctx: Canvas, xmb: XMB) {
+        if(lastTouchAction == MotionEvent.ACTION_DOWN || lastTouchAction == MotionEvent.ACTION_MOVE){
+            dummyPaint.style= Paint.Style.FILL
+            dummyPaint.color = Color.argb(128,255,255,255)
+            ctx.drawCircle(touchCurrentPointF.x, touchCurrentPointF.y, 10.0f, dummyPaint)
+            ctx.drawCircle(touchStartPointF.x, touchStartPointF.y, 10.0f, dummyPaint)
+        }
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {

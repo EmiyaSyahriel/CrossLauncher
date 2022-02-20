@@ -9,11 +9,22 @@ import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.sequentialimages.*
 import id.psw.vshlauncher.views.bootInto
 import java.io.File
+import java.lang.StringBuilder
 
-class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBItem(vsh) {
+class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh) {
+    enum class DescriptionDisplay {
+        None,
+        PackageName,
+        Date,
+        FileSize,
+        ModificationId
+    }
+
     companion object {
         private const val TAG = "XMBAppItem"
+        var descriptionDisplay : DescriptionDisplay = DescriptionDisplay.PackageName
     }
+
     private var _icon = TRANSPARENT_BITMAP
 
     private var hasIconLoaded = false
@@ -30,10 +41,19 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     private var _portBackdrop = TRANSPARENT_BITMAP
     private var _portBackdropOverlay = TRANSPARENT_BITMAP
     private var _backSound : File = SILENT_AUDIO
-    private var displayedDescription = "Please check launcher setting"
+    private val displayedDescription : String get(){
+        return when (descriptionDisplay){
+            DescriptionDisplay.Date -> apkFile.lastModified().toString()
+            DescriptionDisplay.PackageName -> resInfo.activityInfo.processName
+            DescriptionDisplay.ModificationId -> resInfo.uniqueActivityName
+            DescriptionDisplay.FileSize -> apkFile.length().toString()
+            DescriptionDisplay.None -> ""
+            else -> ""
+        }
+    }
 
     private fun requestCustomizationFiles(fileName:String) : ArrayList<File>{
-        return vsh.getAllPathsFor(VshBaseDirs.APPS_DIR, resInfo.uniqueActivityName, fileName, createParentDir = true)
+        return vsh.getAllPathsFor(VshBaseDirs.APPS_DIR, resInfo.uniqueActivityName, fileName, createParentDir = false)
     }
 
     private var backdropFiles = ArrayList<File>().apply {
@@ -94,6 +114,10 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     override val animatedIcon: XMBFrameAnimation get() = synchronized(_animatedIcon) { _animatedIcon }
     override val hasDescription: Boolean get() = description.isNotEmpty()
     override val menuItems: ArrayList<XMBMenuItem> = arrayListOf()
+    private lateinit var apkFile : File
+
+    val sortUpdateTime get() = if(apkFile.exists()) apkFile.lastModified().toString() else "0"
+    val fileSize get() = if(apkFile.exists()) apkFile.length().toString() else "0"
 
     private val isSystemApp : Boolean get() {
         return resInfo.activityInfo.applicationInfo.flags hasFlag (ApplicationInfo.FLAG_UPDATED_SYSTEM_APP or ApplicationInfo.FLAG_SYSTEM)
@@ -101,6 +125,7 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
 
     init {
         vsh.threadPool.execute {
+            apkFile = File(resInfo.activityInfo.applicationInfo.publicSourceDir)
             val handle = vsh.addLoadHandle()
             appLabel = resInfo.loadLabel(vsh.packageManager).toString()
             vsh.setLoadingFinished(handle)
@@ -116,6 +141,32 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
                         vsh.xmbView?.context?.xmb?.appRequestUninstall(resInfo.activityInfo.packageName)
                     }
                 )
+
+            menuItems.add(
+                XMBMenuItem.XMBMenuItemLambda({vsh.getString(R.string.app_create_customization_folder)}, {false}, 3){
+                    vsh.getAllPathsFor(VshBaseDirs.APPS_DIR, resInfo.uniqueActivityName).forEach { file ->
+                        var found = file.exists()
+                        if(!found){
+                            found = file.mkdirs()
+                        }
+                        val sb = StringBuilder()
+                        for(i in file.absolutePath.indices){
+                            if((i + 1) % 50 == 0) sb.append('\n')
+                            sb.append(file.absolutePath[i])
+                        }
+
+                        if(found){
+                            vsh.postNotification(null, vsh.getString(R.string.app_customization_file_created), sb.toString(), 10.0f)
+                        }
+                    }
+                }
+            )
+
+            menuItems.add(
+                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_category_switch_sort) }, {false}, -2){
+                    vsh.doCategorySorting()
+                }
+            )
         }
     }
 
@@ -211,7 +262,6 @@ class XMBAppItem(private val vsh: VSH, private val resInfo : ResolveInfo) : XMBI
     private fun pOnScreenInvisible(i : XMBItem){
         // Destroy icon, Unload it from memory
         vsh.threadPool.execute {
-            appLabel = "--UNLOADED--"
             if(vsh.aggressiveUnloading){
                 if(_icon != TRANSPARENT_BITMAP){
                     pIconUnload()

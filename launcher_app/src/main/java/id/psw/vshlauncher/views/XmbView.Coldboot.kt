@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
+import java.io.File
 
 data class VshViewColdBootState(
     var currentTime : Float = 0.0f,
@@ -14,9 +15,26 @@ data class VshViewColdBootState(
     }
 )
 
+fun XmbView.playColdBootSound() {
+    var isFound = false
+    val vsh = context.vsh
+    val vshIterator : (File) -> Unit = { it ->
+        if(it.exists() && !isFound){
+            isFound = true
+            vsh.setSystemAudioSource(it)
+        }
+    }
+
+    vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, VshResName.COLDBOOT_SOUND_MP3)
+        .forEach { vshIterator(it) }
+    vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, VshResName.COLDBOOT_SOUND_AAC)
+        .forEach { vshIterator(it) }
+}
+
 fun XmbView.cbStart(){
     state.coldBoot.currentTime = 0.0f
     cbEnsureImageLoaded()
+    playColdBootSound()
 }
 
 fun XmbView.cbEnsureImageLoaded(){

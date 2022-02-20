@@ -223,26 +223,6 @@ class GamepadSubmodule(ctx: VSH) {
         return kbd2psKeyAxisMul[keyCode] ?: 0.0f
     }
 
-    fun touchEventReceiver(evt: MotionEvent) : Boolean{
-        if(evt.source hasFlag InputDevice.SOURCE_TOUCHSCREEN){
-            val ptri = evt.actionIndex
-            val ptrid = evt.getPointerId(ptri)
-            when(evt.actionMasked){
-                MotionEvent.ACTION_DOWN, ACTION_POINTER_DOWN -> {
-                    touchPairs.put(ptrid, PointF(evt.getX(ptri), evt.getY(ptri)))
-                }
-                ACTION_MOVE -> {
-                    touchPairs[ptrid]?.x = evt.getX(ptri)
-                    touchPairs[ptrid]?.y = evt.getY(ptri)
-                }
-                MotionEvent.ACTION_UP, ACTION_POINTER_UP, ACTION_CANCEL -> {
-                    touchPairs.remove(ptrid)
-                }
-            }
-        }
-        return false
-    }
-
     fun motionEventReceiver(evt:MotionEvent) : Boolean {
         return if(
             (evt.source hasFlag InputDevice.SOURCE_JOYSTICK ||

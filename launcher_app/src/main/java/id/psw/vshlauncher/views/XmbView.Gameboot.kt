@@ -6,6 +6,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withScale
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.typography.FontCollections
+import java.io.File
 
 class VshViewGameBootState {
     var currentTime : Float = 0.0f
@@ -47,9 +48,26 @@ private fun XmbView.gbUpdateParticlePaintColor(color:Int){
     }
 }
 
+fun XmbView.playGameBootSound(){
+    var isFound = false
+    val vsh = context.vsh
+    val vshIterator : (File) -> Unit = { it ->
+        if(it.exists() && !isFound){
+            isFound = true
+            vsh.setSystemAudioSource(it)
+        }
+    }
+    vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, VshResName.GAMEBOOT_SOUND_MP3)
+        .forEach { vshIterator(it) }
+    vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, VshResName.GAMEBOOT_SOUND_AAC)
+        .forEach { vshIterator(it) }
+
+}
+
 fun XmbView.gbStart(){
     state.gameBoot.currentTime = 0.0f
     gbEnsureImageLoaded()
+    playGameBootSound()
 }
 
 private fun XmbView.gbEnsureImageLoaded(){
