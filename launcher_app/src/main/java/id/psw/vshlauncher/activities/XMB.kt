@@ -2,6 +2,7 @@ package id.psw.vshlauncher.activities
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PointF
 import android.net.Uri
@@ -27,6 +28,7 @@ class XMB : AppCompatActivity() {
     }
     private lateinit var xmbView : XmbView
     var skipColdBoot = false
+    private var _lastOrientation : Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         xmbView = XmbView(this)
@@ -34,6 +36,21 @@ class XMB : AppCompatActivity() {
         setContentView(xmbView)
         vsh.xmbView = xmbView
         xmbView.switchPage(skipColdBoot.select(VshViewPage.MainMenu, VshViewPage.ColdBoot))
+        _lastOrientation = resources.configuration.orientation
+
+        checkCanvasHwAcceleration()
+
+        if(_lastOrientation == Configuration.ORIENTATION_PORTRAIT){
+            postPortraitScreenOrientationWarning()
+        }
+    }
+
+    private fun checkCanvasHwAcceleration(){
+        if(!xmbView.isHardwareAccelerated){
+            vsh.postNotification(null, getString(R.string.no_hwaccel_warning_title),
+                getString(R.string.no_hwaccel_warning_desc)
+            )
+        }
     }
 
     private fun sysBarTranslucent(){
@@ -86,6 +103,33 @@ class XMB : AppCompatActivity() {
 
     val touchStartPointF = PointF()
     val touchCurrentPointF = PointF()
+
+    private var screenOrientationWarningPosted = false
+    private fun postPortraitScreenOrientationWarning() {
+        if(!screenOrientationWarningPosted){
+            vsh.postNotification(null,
+                getString(R.string.screen_portrait_warning_title),
+                getString(R.string.screen_portrait_warning_desc)
+            )
+            screenOrientationWarningPosted = true
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        if(newConfig.orientation != _lastOrientation){
+            when(newConfig.orientation){
+                Configuration.ORIENTATION_PORTRAIT ->
+                {
+                    postPortraitScreenOrientationWarning()
+                }
+                else-> {
+
+                }
+            }
+            _lastOrientation = newConfig.orientation
+        }
+        super.onConfigurationChanged(newConfig)
+    }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         var retval = false

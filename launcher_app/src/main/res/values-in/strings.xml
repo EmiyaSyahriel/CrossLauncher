@@ -63,7 +63,7 @@
     <string name="category_settings">Pengaturan</string>
     <string name="videoplayer_pause">Jeda</string>
     <string name="videoplayer_stop">Hentikan</string>
-    <string name="videoplayer_play">Play</string>
+    <string name="videoplayer_play">Putar</string>
     <string name="videoplayer_bwd">Mundur</string>
     <string name="videoplayer_fwd">Maju</string>
     <string name="videoplayer_switchar">Perbesaran</string>
@@ -131,4 +131,13 @@
     <string name="app_create_customization_folder">Buat Dir Kustomisasi</string>
     <string name="app_customization_file_created">Direktori Kustomisasi Dibuat</string>
     <string name="settings_system_show_fps_desc">" Tampilkan performa rendering aplikasi"</string>
+    <string name="app_sorting_name">Dari Nama</string>
+    <string name="app_sorting_updtime">Dari Tanggal Update</string>
+    <string name="app_sorting_filesize">Dari Ukuran APK</string>
+    <string name="app_sorting_actname">Dari Nama Paket</string>
+    <string name="app_category_switch_sort">Ganti Urutan</string>
+    <string name="screen_portrait_warning_title">Layar dalam mode Tegak</string>
+    <string name="screen_portrait_warning_desc">Layar tegak dapat menyebabkan performa penggambar yang buruk pada perangkat dengan spesifikasi rendah dan penggunaan RAM tinggi karena lebih banyak ikon yang akan tampil di layar pada satu waktu. Jika itu terjadi, anda bisa memaksa orientasi launcher menjadi miring dari pengaturan.</string>
+    <string name="no_hwaccel_warning_title">Tidak ada Akselerasi Perangkat Keras</string>
+    <string name="no_hwaccel_warning_desc">Tampilan tidak di akselerasi lewat perangkat keras, performa penggambar mungkin lambat. Pada beberapa perangkat, anda bisa mengaktifkan akselerasi perangkat keras dari Opsi Pengembang, antara khusus untuk beberapa aplikasi atau untuk seluruh sistem.</string>
 </resources>

@@ -139,10 +139,14 @@
     <string name="settings_system_show_fps_name">Show FPS</string>
     <string name="settings_system_show_fps_desc">Show rendering performance of the launcher</string>
     <string name="app_create_customization_folder">Create Customization Dir</string>
-    <string name="app_customization_file_created">Customization Directory  Created</string>
+    <string name="app_customization_file_created">Customization Directory Created</string>
     <string name="app_sorting_name">By Name</string>
     <string name="app_sorting_updtime">By Update Time</string>
     <string name="app_sorting_filesize">By APK File Size</string>
     <string name="app_sorting_actname">By Package Name</string>
     <string name="app_category_switch_sort">Switch Sort</string>
+    <string name="screen_portrait_warning_title">Screen is in Portrait Orientation</string>
+    <string name="screen_portrait_warning_desc">Portrait screen may cause bad rendering performance on lower device and high RAM usage due to more icon is visible on-screen at the same time. In case it happens, you can enforce the launcher orientation to landscape.</string>
+    <string name="no_hwaccel_warning_desc">View is not hardware accelerated, rendering performance might be slower. On some device, you can enforce HW acceleration via Developer Option, either for a specific app or system-wide.</string>
+    <string name="no_hwaccel_warning_title">No Hardware Acceleration</string>
 </resources>
