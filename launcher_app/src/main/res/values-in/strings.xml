@@ -140,4 +140,5 @@
     <string name="screen_portrait_warning_desc">Layar tegak dapat menyebabkan performa penggambar yang buruk pada perangkat dengan spesifikasi rendah dan penggunaan RAM tinggi karena lebih banyak ikon yang akan tampil di layar pada satu waktu. Jika itu terjadi, anda bisa memaksa orientasi launcher menjadi miring dari pengaturan.</string>
     <string name="no_hwaccel_warning_title">Tidak ada Akselerasi Perangkat Keras</string>
     <string name="no_hwaccel_warning_desc">Tampilan tidak di akselerasi lewat perangkat keras, performa penggambar mungkin lambat. Pada beberapa perangkat, anda bisa mengaktifkan akselerasi perangkat keras dari Opsi Pengembang, antara khusus untuk beberapa aplikasi atau untuk seluruh sistem.</string>
+    <string name="language_name">Bahasa Indonesia</string>
 </resources>
