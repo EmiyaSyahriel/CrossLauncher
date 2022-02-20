@@ -112,6 +112,7 @@ class VSH : Application(), ServiceConnection {
     private val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
 
     private val bgmPlayer = MediaPlayer()
+    private val systemBgmPlayer = MediaPlayer()
     private lateinit var bgmPlayerActiveSrc : File
     private var bgmPlayerDoNotAutoPlay = false
 
@@ -130,6 +131,13 @@ class VSH : Application(), ServiceConnection {
             XMBItem.SILENT_AUDIO = file
             bgmPlayerActiveSrc = file
         }
+    }
+
+    fun setSystemAudioSource(newSrc:File){
+        if(systemBgmPlayer.isPlaying) systemBgmPlayer.stop()
+        systemBgmPlayer.reset()
+        systemBgmPlayer.setDataSource(newSrc.absolutePath)
+        systemBgmPlayer.prepareAsync()
     }
 
     fun setAudioSource(newSrc: File, doNotStart : Boolean = false){
@@ -166,6 +174,10 @@ class VSH : Application(), ServiceConnection {
         bgmPlayer.setOnPreparedListener {
             it.isLooping = true
             if(!bgmPlayerDoNotAutoPlay) it.start()
+        }
+        systemBgmPlayer.setOnPreparedListener {
+            it.isLooping = false
+            it.start()
         }
 
         // Fresco.initialize(this)
@@ -208,8 +220,14 @@ class VSH : Application(), ServiceConnection {
                 preventPlayMedia = false
                 if(items.isNotEmpty()){
                     var cIdx = items.indexOfFirst { it.id == selectedItemId }
+
+                    if(cIdx == -1 && items.isNotEmpty()) cIdx = 0
+
                     val oldIdx = cIdx
                     if(bottom) cIdx++ else cIdx--
+                    if(cIdx < 0) cIdx = items.size - 1
+                    if(cIdx >= items.size ) cIdx = 0
+
                     cIdx  = cIdx.coerceIn(0, items.size - 1)
                     if(cIdx != oldIdx) {
                         itemOffsetY = bottom.select(1.0f, -1.0f)
@@ -228,6 +246,18 @@ class VSH : Application(), ServiceConnection {
         }
     }
 
+    fun doCategorySorting(){
+        if(isInRoot){
+            val cat = categories.visibleItems.find { it.id == selectedCategoryId }
+            if(cat is XMBItemCategory){
+                if(cat.sortable){
+                    cat.onSwitchSort()
+                    xmbView?.state?.crossMenu?.sortHeaderDisplay = 5.25f
+                }
+            }
+        }
+    }
+
     fun launchActiveItem(){
         val item = hoveredItem
         if(item != null){
@@ -239,7 +269,8 @@ class VSH : Application(), ServiceConnection {
                 }else{
                     items?.find { it.id == selectedItemId }?.lastSelectedItemId = selectedItemId
                 }
-                selectedItemId = hoveredItem?.lastSelectedItemId ?: "id_null"
+
+                selectedItemId = item.lastSelectedItemId
                 selectStack.push(item.id)
                 itemOffsetX = 1.0f
             }else{
@@ -253,8 +284,9 @@ class VSH : Application(), ServiceConnection {
         if(selectStack.size > 0){
             preventPlayMedia = false
             selectStack.pull()
-            hoveredItem?.lastSelectedItemId = selectedItemId
+            val lastItem = selectedItemId
             selectedItemId = if(selectStack.size == 0) categories.find {it.id == selectedCategoryId}?.lastSelectedItemId ?: "" else selectStack.peek()
+            hoveredItem?.lastSelectedItemId =lastItem
             itemOffsetX = -1.0f
         }
     }
@@ -270,10 +302,10 @@ class VSH : Application(), ServiceConnection {
         try {
             categories.add(XMBItemCategory(this, ITEM_CATEGORY_HOME, R.string.category_home, R.drawable.category_home))
             categories.add(XMBItemCategory(this, ITEM_CATEGORY_SETTINGS, R.string.category_settings, R.drawable.category_setting))
-            categories.add(XMBItemCategory(this, ITEM_CATEGORY_VIDEO, R.string.category_videos, R.drawable.category_video))
-            categories.add(XMBItemCategory(this, ITEM_CATEGORY_MUSIC, R.string.category_music, R.drawable.category_music))
-            categories.add(XMBItemCategory(this, ITEM_CATEGORY_GAME, R.string.category_games, R.drawable.category_games))
-            categories.add(XMBItemCategory(this, ITEM_CATEGORY_APPS, R.string.category_apps, R.drawable.category_apps))
+            categories.add(XMBItemCategory(this, ITEM_CATEGORY_VIDEO, R.string.category_videos, R.drawable.category_video, true))
+            categories.add(XMBItemCategory(this, ITEM_CATEGORY_MUSIC, R.string.category_music, R.drawable.category_music, true))
+            categories.add(XMBItemCategory(this, ITEM_CATEGORY_GAME, R.string.category_games, R.drawable.category_games, true))
+            categories.add(XMBItemCategory(this, ITEM_CATEGORY_APPS, R.string.category_apps, R.drawable.category_apps, true))
         }catch(e:Exception){
 
         }

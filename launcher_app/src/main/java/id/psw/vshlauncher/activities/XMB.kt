@@ -1,11 +1,9 @@
 package id.psw.vshlauncher.activities
 
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.PointF
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +16,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbView
 
 class XMB : AppCompatActivity() {
@@ -27,12 +26,14 @@ class XMB : AppCompatActivity() {
         const val INSTALL_SHORTCUT = "com.android.launcher.action.INSTALL_SHORTCUT"
     }
     private lateinit var xmbView : XmbView
+    var skipColdBoot = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         xmbView = XmbView(this)
         sysBarTranslucent()
         setContentView(xmbView)
         vsh.xmbView = xmbView
+        xmbView.switchPage(skipColdBoot.select(VshViewPage.MainMenu, VshViewPage.ColdBoot))
     }
 
     private fun sysBarTranslucent(){
@@ -83,12 +84,31 @@ class XMB : AppCompatActivity() {
         return retval || super.onGenericMotionEvent(event)
     }
 
+    val touchStartPointF = PointF()
+    val touchCurrentPointF = PointF()
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         var retval = false
         if(event != null){
-            retval = VSH.Gamepad.touchEventReceiver(event)
+            val sc = xmbView.scaling
+            val x = (event.x / sc.fitScale) + sc.viewport.left
+            val y = (event.y / sc.fitScale) + sc.viewport.top
+            if(event.action == MotionEvent.ACTION_DOWN){
+                retval = true
+                touchStartPointF.set(x, y)
+            }
+            touchCurrentPointF.set(x, y)
+
+            xmbView.onTouchScreen(touchStartPointF, touchCurrentPointF, event.action)
         }
-        return super.onTouchEvent(event)
+        return retval || super.onTouchEvent(event)
+    }
+
+    override fun onBackPressed() {
+
+        // Do not call super.onBackPressed() which causing the app to close
+        // Substitute this with Escape Button
+        VSH.Gamepad.keyEventReceiver(true, KeyEvent.KEYCODE_X, KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_X))
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {

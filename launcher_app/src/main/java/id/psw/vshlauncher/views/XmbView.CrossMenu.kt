@@ -4,11 +4,15 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.*
 import android.os.BatteryManager
+import android.view.MotionEvent
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withRotation
 import androidx.core.graphics.withScale
+import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
 import java.text.SimpleDateFormat
 import java.util.*
@@ -17,9 +21,18 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
 
+enum class DirectionLock {
+    None,
+    Vertical,
+    Horizontal
+}
+
 class VshViewMainMenuState {
+    var sortHeaderDisplay: Float = 0.0f
     var currentTime : Float = 0.0f
     var layoutMode : XMBLayoutType = XMBLayoutType.PS3
+    lateinit var arrowBitmap : Bitmap
+    var arrowBitmapLoaded = false
     var bgOverlayColorA : Int = 0x88FF0000u.toInt()
     var bgOverlayColorB : Int = 0x8800FF00u.toInt()
     var isFocused : Boolean = false
@@ -46,7 +59,7 @@ class VshViewMainMenuState {
     val dateTimeFormat = "dd/M HH:mm a"
     val statusBar = StatusBarSetting()
     val verticalMenu = VerticalMenu()
-
+    var directionLock : DirectionLock = DirectionLock.None
     val backgroundPaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val statusOutlinePaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -96,6 +109,14 @@ class VshViewMainMenuState {
 fun XmbView.menuStart(){
     state.crossMenu.currentTime = 0.0f
     state.crossMenu.menuScaleTime = 1.0f
+
+    if(!state.crossMenu.arrowBitmapLoaded){
+        state.crossMenu.arrowBitmap =
+            ResourcesCompat.getDrawable(resources, R.drawable.miptex_arrow, null)
+                ?.toBitmap(128,128)
+                ?: XMBItem.TRANSPARENT_BITMAP
+        state.crossMenu.arrowBitmapLoaded = true
+    }
 
     if(state.crossMenu.loadingIconBitmap == null){
         state.crossMenu.loadingIconBitmap = ResourcesCompat.getDrawable(context.resources,R.drawable.ic_sync_loading,null)?.toBitmap(256,256)
@@ -413,15 +434,51 @@ fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
     val isPSP = state.crossMenu.layoutMode == XMBLayoutType.PSP
     val menuDispT = state.itemMenu.showMenuDisplayFactor
     with(state.crossMenu){
+
+        val hSeparation = (isPSP).select(pspIconSeparation, ps3IconSeparation).x
+        val separation = (isPSP).select(pspIconSeparation, ps3IconSeparation).y
+        val center = (isPSP).select(pspMenuIconCenter,ps3MenuIconCenter)
+        val xPos =
+            ((scaling.target.width() * center.x) + (context.vsh.itemOffsetX * hSeparation))
+        val yPos = (scaling.target.height() * center.y) + (separation * 2.0f)
+        val iconCenterToText = (isPSP).select(pspSelectedIconSize, ps3SelectedIconSize).x * menuDispT.toLerp(0.60f, 0.75f)
+        val cursorY = context.vsh.itemCursorY
+
+        if(!context.vsh.isInRoot){
+            val vsh = context.vsh
+            val rootItem = vsh.categories.visibleItems.find { it.id == vsh.selectedCategoryId }
+            var i = 0
+            val iconSize = (isPSP).select(pspUnselectedIconSize, ps3UnselectedIconSize)
+            val hSizeY = iconSize.y / 2.0f
+            val hSizeX = iconSize.x / 2.0f
+
+            iconPaint.alpha = 255
+
+            val dxOffArr = xPos - (ps3IconSeparation.x * 0.625f)
+            ctx.withTranslation(dxOffArr, yPos){
+                ctx.withRotation(180f){
+                    tmpRectF.set(-16f, -16f, 16f, 16f)
+                    ctx.drawBitmap(arrowBitmap, null, tmpRectF, iconPaint, FittingMode.FIT, 0.5f, 0.5f)
+                }
+            }
+
+            iconPaint.alpha = 192
+
+            if(i < vsh.selectStack.size){
+                var sItem = rootItem?.content?.find {it.id == vsh.selectStack[i] }
+                while(sItem != null && i < vsh.selectStack.size){
+                    val dxOff = xPos - ((ps3IconSeparation.x * 1.25f) * (i + 1))
+                    tmpRectF.set(dxOff - hSizeX, yPos - hSizeY, dxOff + hSizeY, yPos + hSizeY )
+                    if(sItem.hasIcon){
+                        ctx.drawBitmap(sItem.icon, null, tmpRectF, iconPaint, FittingMode.FIT, 0.5f )
+                    }
+                    sItem = sItem.content?.find { it.id == vsh.selectStack[i] }
+                    i++
+                }
+            }
+        }
+
         if(items != null){
-            val center = (isPSP).select(pspMenuIconCenter,ps3MenuIconCenter)
-            val hSeparation = (isPSP).select(pspIconSeparation, ps3IconSeparation).x
-            val separation = (isPSP).select(pspIconSeparation, ps3IconSeparation).y
-            val xPos =
-                ((scaling.target.width() * center.x) + (context.vsh.itemOffsetX * hSeparation)) // + isPSP.select(0f - (pspUnselectedIconSize.x * 0.25f),0f)
-            val yPos = (scaling.target.height() * center.y) + (separation * 2.0f)
-            val iconCenterToText = (isPSP).select(pspSelectedIconSize, ps3SelectedIconSize).x * menuDispT.toLerp(0.60f, 0.75f)
-            val cursorY = context.vsh.itemCursorY
             if(items.isNotEmpty()) {
                 for (wx in items.indices) {
                     val iy = wx - cursorY
@@ -561,6 +618,146 @@ fun XmbView.menuRenderHorizontalMenu(ctx:Canvas){
     menu3HorizontalMenu(ctx)
 }
 
+private val touchTestRectF = RectF()
+private val touchTestPointRectF = RectF()
+
+
+
+fun XmbView.menuOnTouchScreen(a:PointF, b:PointF, act:Int){
+    with(state.crossMenu){
+        if(state.itemMenu.isDisplayed){
+            when(act){
+                MotionEvent.ACTION_DOWN ->{
+                    run { // Is Up
+                        if(b.x < scaling.target.right - 400.0f){
+                            state.itemMenu.isDisplayed = false
+                        }else{
+                            if(b.y < 200.0f){
+                                menuMoveItemMenuCursor(false)
+                            }else if(b.y > scaling.target.bottom - 200.0f){
+                                menuMoveItemMenuCursor(true)
+                            }else{
+                                menuStartItemMenu()
+                            }
+                        }
+                    }
+                }
+            }
+        }else {
+            val isPSP = layoutMode == XMBLayoutType.PSP
+
+
+            when (act) {
+                MotionEvent.ACTION_UP -> {
+
+                    run { // Run Active Icon
+                        if(directionLock == DirectionLock.None){
+                            val iconSize = isPSP.select(pspSelectedIconSize, ps3SelectedIconSize)
+                            val hSeparation = (isPSP).select(pspIconSeparation, ps3IconSeparation).x
+                            val separation = (isPSP).select(pspIconSeparation, ps3IconSeparation).y
+                            val center = (isPSP).select(pspMenuIconCenter,ps3MenuIconCenter)
+                            val xPos =
+                                ((scaling.target.width() * center.x) + (context.vsh.itemOffsetX * hSeparation))
+                            val yPos = (scaling.target.height() * center.y) + (separation * 2.0f)
+                            val hSizeX = iconSize.x * 0.5f
+                            val hSizeY = iconSize.y * 0.5f
+                            touchTestRectF.set(
+                                xPos - hSizeX,
+                                yPos - hSizeY,
+                                xPos + hSizeX,
+                                yPos + hSizeY
+                            )
+                            touchTestPointRectF.set(a.x, a.y, a.x + 0.1f, b.x + 0.1f)
+
+                            if (touchTestRectF.contains(touchTestPointRectF)) {
+                                context.vsh.launchActiveItem()
+                            }else if(b.x < 200.0f){
+                                context.vsh.backStep()
+                            }
+                        }
+                    }
+
+                    directionLock = DirectionLock.None
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val isMenu = a.x > scaling.target.right - 200.0f
+                    run{
+                        if(isMenu){
+                            if(b.x <  scaling.target.right - 400.0f){
+                                state.itemMenu.isDisplayed = true
+                            }
+                        }
+                    }
+                    if(!isMenu) {
+                        run { //
+                            val iconSize =
+                                (isPSP).select(pspUnselectedIconSize, ps3UnselectedIconSize)
+                            if (directionLock != DirectionLock.Horizontal) { // Vertical
+                                val yLen = b.y - a.y
+                                if (abs(yLen) > iconSize.y) {
+                                    context.vsh.moveCursorY(yLen < 0.0f)
+                                    context.xmb.touchStartPointF.set(b)
+                                    directionLock = DirectionLock.Vertical
+                                }
+                            }
+
+                            if (directionLock != DirectionLock.Vertical) { // Horizontal
+                                val xLen = b.x - a.x
+                                if (abs(xLen) > iconSize.x) {
+                                    if (context.vsh.isInRoot) {
+                                        context.vsh.moveCursorX(xLen < 0.0f)
+                                    } else {
+                                        if (xLen > 0.0f) {
+                                            context.vsh.backStep()
+                                        }
+                                    }
+                                    context.xmb.touchStartPointF.set(b)
+                                    directionLock = DirectionLock.Horizontal
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+            }
+        }
+    }
+}
+
+fun XmbView.menuRenderSortHeaderDisplay(ctx: Canvas) {
+    with(state.crossMenu){
+        if(sortHeaderDisplay > 0.0f){
+            val vsh = context.vsh
+            val selCat = vsh.categories.visibleItems.find {it.id == vsh.selectedCategoryId}
+            if(selCat is XMBItemCategory){
+                if(selCat.sortable){
+                    val t = (
+                            if(sortHeaderDisplay > 3.0f) sortHeaderDisplay.lerpFactor(5.0f, 4.75f)
+                            else sortHeaderDisplay.lerpFactor(0.0f, 0.25f)
+                            ).coerceIn(0.0f, 1.0f)
+                    val textName = selCat.sortModeName
+                    val scale = t.toLerp(2.0f, 1.0f)
+                    ctx.withScale(scale, scale,  scaling.target.width() / 2.0f, scaling.target.height() / 2.0f){
+                        statusFillPaint.alpha = (t * t).toLerp(0.0f,128.0f).toInt()
+                        statusOutlinePaint.alpha = (t * t).toLerp(0.0f,255.0f).toInt()
+                        statusTextPaint.alpha = (t * t).toLerp(0.0f,255.0f).toInt()
+                        statusTextPaint.textAlign = Paint.Align.LEFT
+
+                        tmpRectF.set(scaling.viewport.left - 10.0f, scaling.viewport.top - 10.0f,
+                            scaling.viewport.right + 10.0f, 150.0f)
+                        ctx.drawRect(tmpRectF, statusFillPaint)
+                        ctx.drawRect(tmpRectF, statusOutlinePaint)
+
+                        ctx.drawText(textName, 75f, tmpRectF.bottom - 50.0f, statusTextPaint, 0.5f)
+                    }
+                }
+            }
+            sortHeaderDisplay -= time.deltaTime
+        }
+    }
+}
+
 fun XmbView.menuRender(ctx: Canvas){
     state.crossMenu.currentTime += time.deltaTime
     state.crossMenu.menuScaleTime = (time.deltaTime * 10.0f).toLerp(state.crossMenu.menuScaleTime, 0.0f).coerceIn(0f,1f)
@@ -572,6 +769,7 @@ fun XmbView.menuRender(ctx: Canvas){
             menuRenderHorizontalMenu(ctx)
             menuRenderStatusBar(ctx)
             menuRenderItemMenu(ctx)
+            menuRenderSortHeaderDisplay(ctx)
         }catch(cme:ConcurrentModificationException){}
     }
 }

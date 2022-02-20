@@ -34,7 +34,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
             XMBSettingsItem(vsh, "settings_system_show_fps",
                 R.string.settings_system_show_fps_name,
                 R.string.settings_system_show_fps_desc,
-                R.drawable.icon_network,
+                R.drawable.category_setting,
                 { showLauncherFPS.select(vsh.getString(R.string.common_yes),vsh.getString(R.string.common_no))  }
             ){ showLauncherFPS = !showLauncherFPS }
         )

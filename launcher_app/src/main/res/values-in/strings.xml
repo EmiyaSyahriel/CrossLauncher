@@ -127,4 +127,8 @@
     <string name="settings_display_show_operator_name">Tampilkan Nama Jaringan</string>
     <string name="settings_display_show_operator_desc">Tampilkan nama jaringan yang sedang tersambung, antara Wi-Fi, Ethernet maupun Data Seluler</string>
     <string name="string_systeminfo_androidmdl_name">Model Perangkat</string>
+    <string name="settings_system_show_fps_name">Tampilkan FPS</string>
+    <string name="app_create_customization_folder">Buat Dir Kustomisasi</string>
+    <string name="app_customization_file_created">Direktori Kustomisasi Dibuat</string>
+    <string name="settings_system_show_fps_desc">" Tampilkan performa rendering aplikasi"</string>
 </resources>

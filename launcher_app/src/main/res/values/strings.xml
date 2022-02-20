@@ -138,4 +138,11 @@
     <string name="string_systeminfo_androidmdl_name">Device Model</string>
     <string name="settings_system_show_fps_name">Show FPS</string>
     <string name="settings_system_show_fps_desc">Show rendering performance of the launcher</string>
+    <string name="app_create_customization_folder">Create Customization Dir</string>
+    <string name="app_customization_file_created">Customization Directory  Created</string>
+    <string name="app_sorting_name">By Name</string>
+    <string name="app_sorting_updtime">By Update Time</string>
+    <string name="app_sorting_filesize">By APK File Size</string>
+    <string name="app_sorting_actname">By Package Name</string>
+    <string name="app_category_switch_sort">Switch Sort</string>
 </resources>
