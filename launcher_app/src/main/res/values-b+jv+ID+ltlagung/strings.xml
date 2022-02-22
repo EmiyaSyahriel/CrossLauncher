@@ -36,7 +36,7 @@
     <string name="xmb_wave_livewp_desc">Latar Tembok Urip Ghelombang XMB</string>
     <string name="app_hide_menu_desc">Tap nyang ngendhi ae ngge mbukak menu lek wes kadung ketutup</string>
     <string name="app_launch">Bukak</string>
-    <string name="app_find_on_playstore">Golek i nyang Play Store</string>
+    <string name="app_find_on_playstore">Goleki nyang Play Store</string>
     <string name="view_app_info">Info Aplikasi</string>
     <string name="app_show_details">Rincian</string>
     <string name="common_back">Balik</string>
@@ -46,7 +46,7 @@
     <string name="plugin_name_musiclist">Daftar Lagu (Gawan)</string>
     <string name="plugin_desc_musiclist">Dhaftar kabeh musik nyang piranti lewat MediaStore e Android</string>
     <string name="error_common_header">Galat</string>
-    <string name="error_category_launch">Nggak ... Kudune nggak di bukak item iki</string>
+    <string name="error_category_launch">Nggak … Kudune nggak di bukak item iki</string>
     <string name="nettype_ethernet">Kabel LAN</string>
     <string name="nettype_no_connection">Ora nyambung Internet</string>
     <string name="nettype_wifi">Wi-Fi</string>
@@ -66,7 +66,7 @@
     <string name="setting_display_layout_type_desc">Konsol seng ndhi seng bakal di terokne</string>
     <string name="setting_systeminfo_name">Informasi</string>
     <string name="setting_systeminfo_desc">Buka info tambahan</string>
-    <string name="string_systeminfo_androidver_name">Veri Android</string>
+    <string name="string_systeminfo_androidver_name">Versi Android</string>
     <string name="settings_category_system_name">Setelan Sistem</string>
     <string name="settings_category_system_desc">Ganti Setelan Paluncur</string>
     <string name="settings_display_show_operator_name">Dudohne Jeneng Jaringan</string>
@@ -102,6 +102,9 @@
     <string name="setting_mimic_dynamic_theme">Dudohna kemerlap pas mbukak aplikasi</string>
     <string name="setting_gameboot_custom_guide">Cara nge-kustomisasi logo brand</string>
     <string name="setting_coldboot_custom_guide">Cara nge-kustomisasi logo awal</string>
-    <string name="first_run_instruction_content">[...]</string>
-    <string name="language_name">Basa Jawa Ngoko Tulungagungan</string>
+    <string name="first_run_instruction_content">[…]</string>
+    <string name="locale_lang_display_name">Basa Jawa Ngoko Tulungagungan</string>
+    <string name="vboard_name">Ketikan Layar Paluncur Cross</string>
+    <string name="settings_system_language">Basa Paluncur</string>
+    <string name="settings_system_language_description">Basa sing di ketokne nyang paluncur</string>
 </resources>

@@ -14,11 +14,14 @@ import android.util.Log
 import id.psw.vshlauncher.pluginservices.IconPluginServiceHandle
 import id.psw.vshlauncher.submodules.*
 import id.psw.vshlauncher.types.*
+import id.psw.vshlauncher.types.Stack
 import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbView
 import java.io.File
 import java.lang.Exception
+import java.lang.StringBuilder
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
@@ -80,6 +83,11 @@ class VSH : Application(), ServiceConnection {
         while(root != null && i < selectStack.size){
             root = root.find { it.id == selectStack[i]}?.content
             i++
+        }
+        if(root != null){
+            if(root.indexOfFirst { it.id == selectedItemId } < 0 && root.size > 0){
+                selectedItemId = root[0].id
+            }
         }
         return root
     }
@@ -190,7 +198,19 @@ class VSH : Application(), ServiceConnection {
         listInstalledWaveRenderPlugins()
         reloadAppList()
         fillSettingsCategory()
+
+        listLogAllSupportedLocale()
+
         super.onCreate()
+    }
+
+    private fun listLogAllSupportedLocale() {
+        val sb = StringBuilder()
+        sb.appendLine("Listed supported languages / locales in this app: ")
+        supportedLocaleList.forEach {
+            sb.appendLine("- ${getStringLocale(it, R.string.category_games)}")
+        }
+        Log.d(TAG, sb.toString())
     }
 
     fun moveCursorX(right:Boolean){

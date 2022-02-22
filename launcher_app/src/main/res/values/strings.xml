@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Cross Launcher</string>
-    <string name="language_name">Default</string>
+    <string name="locale_lang_display_name">English (Default)</string>
     <string name="orient_unknown">Unknown Orientation</string>
     <string name="orient_landscape">Landscape</string>
     <string name="orient_portrait">Portrait</string>
@@ -150,4 +150,7 @@
     <string name="screen_portrait_warning_desc">Portrait screen may cause bad rendering performance on lower device and high RAM usage due to more icon is visible on-screen at the same time. In case it happens, you can enforce the launcher orientation to landscape.</string>
     <string name="no_hwaccel_warning_desc">View is not hardware accelerated, rendering performance might be slower. On some device, you can enforce HW acceleration via Developer Option, either for a specific app or system-wide.</string>
     <string name="no_hwaccel_warning_title">No Hardware Acceleration</string>
+    <string name="vboard_name">Cross Launcher Virtual Keyboard</string>
+    <string name="settings_system_language">Launcher Display Language</string>
+    <string name="settings_system_language_description">Display language of the Launcher</string>
 </resources>
