@@ -15,8 +15,8 @@ class XMBSettingsCategory(
 ) :
     XMBItem(vsh) {
     override val icon : Bitmap = ResourcesCompat.getDrawable(vsh.resources, iconResId, null)!!.toBitmap(100,100)
-    override val displayName: String = vsh.getString(nameResId)
-    override val description: String = vsh.getString(descResId)
+    override val displayName: String get() = vsh.getString(nameResId)
+    override val description: String get() = vsh.getString(descResId)
     override val content: ArrayList<XMBItem> = arrayListOf()
 
     override val hasIcon: Boolean = true

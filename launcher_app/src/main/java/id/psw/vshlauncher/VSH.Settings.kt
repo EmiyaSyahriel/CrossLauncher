@@ -1,6 +1,7 @@
 package id.psw.vshlauncher
 
 import android.os.Build
+import id.psw.vshlauncher.types.items.XMBMenuItem
 import id.psw.vshlauncher.types.items.XMBSettingsCategory
 import id.psw.vshlauncher.types.items.XMBSettingsItem
 import id.psw.vshlauncher.views.XMBLayoutType
@@ -21,6 +22,14 @@ fun VSH.fillSettingsCategory(){
     }
 }
 
+private fun VSH.getCurrentLocaleName() : String {
+    return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+        resources.configuration.locales[0].displayName
+    }else{
+        resources.configuration.locale.displayName
+    }
+}
+
 private fun VSH.createCategorySystem() : XMBSettingsCategory{
     val vsh = this
     return XMBSettingsCategory(this,
@@ -38,6 +47,26 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 { showLauncherFPS.select(vsh.getString(R.string.common_yes),vsh.getString(R.string.common_no))  }
             ){ showLauncherFPS = !showLauncherFPS }
         )
+
+        content.add(XMBSettingsItem(vsh, "settings_system_language",
+            R.string.settings_system_language, R.string.settings_system_language_description,
+            R.drawable.icon_language, { getCurrentLocaleName() }
+        ) {
+            vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+        }.apply {
+            hasMenu = true
+            val dMenuItems = arrayListOf<XMBMenuItem>()
+            supportedLocaleList.forEachIndexed { i, it ->
+                val item = XMBMenuItem.XMBMenuItemLambda(
+                    { it.displayName },
+                    { false }, i)
+                {
+                    vsh.setActiveLocale(it)
+                }
+                dMenuItems.add(item)
+            }
+            menuItems = dMenuItems
+        })
     }
 }
 

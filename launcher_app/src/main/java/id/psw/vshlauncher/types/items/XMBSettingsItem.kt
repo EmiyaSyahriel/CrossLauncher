@@ -20,7 +20,8 @@ class XMBSettingsItem(
     override val value: String get() = value_get()
     override val hasValue: Boolean = true
     override val hasDescription: Boolean get() = description.isNotBlank()
-    override val hasMenu: Boolean = false
+    override var hasMenu: Boolean = false
+    override var menuItems: ArrayList<XMBMenuItem>? = null
     override val hasIcon: Boolean = true
     override val isIconLoaded: Boolean = true
     override val icon = ResourcesCompat.getDrawable(vsh.resources, r_icon, null)?.toBitmap(256,256) ?: TRANSPARENT_BITMAP
