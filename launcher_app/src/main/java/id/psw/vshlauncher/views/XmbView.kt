@@ -106,14 +106,14 @@ class XmbView @JvmOverloads constructor(
     }
 
     private val notificationTextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = 20.0f
+        textSize = 15.0f
         color = Color.WHITE
         textAlign = Paint.Align.LEFT
     }
 
     private val notificationTitleTextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
-        textSize = 25.0f
+        textSize = 20.0f
         // typeface = Typeface.create(typeface, Typeface.BOLD)
         textAlign = Paint.Align.LEFT
     }

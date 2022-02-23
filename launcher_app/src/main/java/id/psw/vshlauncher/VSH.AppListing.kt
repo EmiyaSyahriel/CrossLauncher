@@ -80,7 +80,7 @@ fun VSH.reloadAppList(){
         packageManager.queryIntentActivities(intent, 0).forEach {
             val item = XMBAppItem(vsh, it)
             val isGame = isAGame(it)
-            addToCategory(isGame.select(VSH.ITEM_CATEGORY_GAME,VSH.ITEM_CATEGORY_APPS), item)
+            addToCategory(isGame.select(VSH.ITEM_CATEGORY_GAME, VSH.ITEM_CATEGORY_APPS), item)
             isGame.select(gameCat, appCat)?.setSort(AppItemSorting.Name)
         }
         Thread.sleep(5000)

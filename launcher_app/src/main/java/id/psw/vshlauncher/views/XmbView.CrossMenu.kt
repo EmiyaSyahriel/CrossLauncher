@@ -6,6 +6,7 @@ import android.graphics.*
 import android.os.BatteryManager
 import android.view.MotionEvent
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.contains
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withRotation
 import androidx.core.graphics.withScale
@@ -39,6 +40,7 @@ class VshViewMainMenuState {
     var clockLoadTransition : Float = 1.0f
     var menuScaleTime : Float = 0.0f
     var loadingIconBitmap : Bitmap? = null
+    var playVideoIcon = false
 
     data class StatusBarSetting(
         var disabled : Boolean = false,
@@ -75,7 +77,7 @@ class VshViewMainMenuState {
         style = Paint.Style.FILL
         strokeWidth = 3.0f
         color = Color.WHITE
-        textSize = 20f
+        textSize = 10f
         typeface = FontCollections.masterFont
     }
     val iconPaint: Paint= Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -84,20 +86,20 @@ class VshViewMainMenuState {
     val menuVerticalNamePaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
         textAlign = Paint.Align.LEFT
-        textSize = 30.0f
+        textSize = 20.0f
         typeface = FontCollections.masterFont
     }
     val menuVerticalDescPaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
         textAlign = Paint.Align.LEFT
-        textSize = 20.0f
+        textSize = 10.0f
         typeface = FontCollections.masterFont
     }
 
     val menuHorizontalNamePaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         color = Color.WHITE
-        textSize = 20.0f
+        textSize = 15.0f
         textAlign = Paint.Align.CENTER
         typeface = FontCollections.masterFont
     }
@@ -149,15 +151,15 @@ fun XmbView.drawClock(ctx:Canvas, calendar:Calendar, top:Float){
         }
 
         statusFillPaint.color = FColor.argb(0.5f, 0f, 0f, 0f)
-        ctx.drawCircle(tmpPointFB.x, tmpPointFB.y, 20.0f, statusFillPaint)
-        ctx.drawCircle(tmpPointFB.x, tmpPointFB.y, 20.0f, statusOutlinePaint)
+        ctx.drawCircle(tmpPointFB.x, tmpPointFB.y, 15.0f, statusFillPaint)
+        ctx.drawCircle(tmpPointFB.x, tmpPointFB.y, 15.0f, statusOutlinePaint)
 
         if(context.vsh.hasConcurrentLoading){
             for(off in 0 until 2){
-                val radTime = (((time.currentTime + (off * 1.5f)) % 3.0f) / 3.0f) * 30.0f
+                val radTime = (((time.currentTime + (off * 1.5f)) % 3.0f) / 3.0f) * 20.0f
                 val alphaTime = 1.0f - ((radTime - 20.0f) / 10.0f).coerceIn(0.0f, 1.0f)
                 statusOutlinePaint.color = FColor.setAlpha(Color.WHITE, alphaTime)
-                ctx.drawCircle(tmpPointFB.x, tmpPointFB.y,radTime, statusOutlinePaint)
+                ctx.drawCircle(tmpPointFB.x, tmpPointFB.y, radTime, statusOutlinePaint)
             }
         }
 
@@ -168,13 +170,13 @@ fun XmbView.drawClock(ctx:Canvas, calendar:Calendar, top:Float){
         var handPt : PointF = tmpPointFA
         if(statusBar.secondOnAnalog){
             statusOutlinePaint.color = Color.RED
-            handPt = calcHand(fss, 20.0f)
+            handPt = calcHand(fss, 15.0f)
             ctx.drawLine(tmpPointFB.x, tmpPointFB.y, handPt.x, handPt.y, statusOutlinePaint)
         }
         statusOutlinePaint.color = Color.WHITE
-        handPt = calcHand(fmm, 20.0f)
+        handPt = calcHand(fmm, 15.0f)
         ctx.drawLine(tmpPointFB.x, tmpPointFB.y, handPt.x, handPt.y, statusOutlinePaint)
-        handPt = calcHand(fhh, 10.0f)
+        handPt = calcHand(fhh, 7.0f)
         ctx.drawLine(tmpPointFB.x, tmpPointFB.y, handPt.x, handPt.y, statusOutlinePaint)
     }
 }
@@ -182,7 +184,7 @@ fun XmbView.drawClock(ctx:Canvas, calendar:Calendar, top:Float){
 fun XmbView.menu3StatusBar(ctx:Canvas){
     with(state.crossMenu){
         val top = scaling.target.top + (scaling.target.height() * 0.1f)
-        val hSize = 50.0f /2.0f
+        val hSize = 40.0f / 2.0f
         val leftRound = (scaling.screen.width() > scaling.screen.height()).select(0.5f, 0.75f)
         baseDefRect.set(
             scaling.target.right - (scaling.target.width() * leftRound),
@@ -196,7 +198,7 @@ fun XmbView.menu3StatusBar(ctx:Canvas){
         ctx.drawRoundRect(baseDefRect, 10.0f, statusFillPaint)
         ctx.drawRoundRect(baseDefRect, 10.0f, statusOutlinePaint)
 
-        statusTextPaint.setColorAndSize(Color.WHITE, 25.0f, Paint.Align.RIGHT)
+        statusTextPaint.setColorAndSize(Color.WHITE, 20.0f, Paint.Align.RIGHT)
 
         val calendar = Calendar.getInstance()
 
@@ -343,21 +345,21 @@ fun XmbView.menuDrawBackground(ctx:Canvas) {
 
 private val ps3MenuIconCenter = PointF(0.30f, 0.25f)
 private val pspMenuIconCenter = PointF(0.20f, 0.25f)
-private val ps3SelectedCategoryIconSize = PointF(100.0f, 100.0f)
-private val ps3UnselectedCategoryIconSize = PointF(80.0f, 80.0f)
+private val ps3SelectedCategoryIconSize = PointF(75.0f, 75.0f)
+private val ps3UnselectedCategoryIconSize = PointF(60.0f, 60.0f)
 private val pspSelectedCategoryIconSize = PointF(150.0f, 150.0f)
 private val pspUnselectedCategoryIconSize = PointF(100.0f, 100.0f)
 
 // PS3 Base Icon Aspect Ratio = 20:11 (320x176)
-private val ps3SelectedIconSize = PointF(240.0f, 132.0f)
-private val ps3UnselectedIconSize = PointF(160.0f, 88.0f)
+private val ps3SelectedIconSize = PointF(200.0f, 110.0f)
+private val ps3UnselectedIconSize = PointF(120.0f, 66.0f)
 
 // PSP Base Icon Aspect Ratio = 18:10 (144x80)
 private val pspSelectedIconSize = PointF(270.0f, 150.0f)
 private val pspUnselectedIconSize = PointF(180.0f, 100.0f)
 
 private val pspIconSeparation = PointF(200.0f, 105.0f)
-private val ps3IconSeparation = PointF(150.0f, 100.0f)
+private val ps3IconSeparation = PointF(150.0f, 70.0f)
 private val horizontalRectF = RectF()
 
 fun XmbView.menu3HorizontalMenu(ctx:Canvas){
@@ -418,7 +420,7 @@ fun XmbView.menu3HorizontalMenu(ctx:Canvas){
                 ctx.drawBitmap(item.icon, null, horizontalRectF, menuHorizontalIconPaint, FittingMode.FIT, 0.5f, 1.0f)
                 if(selected && context.vsh.isInRoot){
                     val iconCtrToText = (layoutMode == XMBLayoutType.PSP).select(pspSelectedCategoryIconSize, ps3SelectedCategoryIconSize).y
-                    menuHorizontalNamePaint.textSize = (layoutMode == XMBLayoutType.PSP).select(25f, 20f)
+                    menuHorizontalNamePaint.textSize = (layoutMode == XMBLayoutType.PSP).select(25f, 15f)
                     ctx.drawText(item.displayName, centerX, yPos + (iconCtrToText / 2.0f), menuHorizontalNamePaint, 1.0f)
                 }
             }
@@ -545,7 +547,7 @@ fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
                         verticalRectF.set(xPos - hSizeX, centerY - hSizeY, xPos + hSizeX, centerY + hSizeY)
                         if (item.hasIcon) {
                             val iconAnchorX = (isPSP).select(1.0f, 0.5f)
-                            if (item.hasAnimatedIcon && item.isAnimatedIconLoaded) {
+                            if (item.hasAnimatedIcon && item.isAnimatedIconLoaded && playVideoIcon) {
                                 val animIconBm = item.animatedIcon.getFrame(time.deltaTime)
                                 ctx.drawBitmap(animIconBm, null, verticalRectF, iconPaint, FittingMode.FIT, iconAnchorX, 0.5f)
                             } else {
@@ -575,17 +577,15 @@ fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
                                 menuVerticalNamePaint.textSize = 35.0f
                                 menuVerticalDescPaint.textSize = 25.0f
                             } else {
-                                menuVerticalNamePaint.textSize = 30.0f
-                                menuVerticalDescPaint.textSize = 20.0f
+                                menuVerticalNamePaint.textSize = 25.0f
+                                menuVerticalDescPaint.textSize = 15.0f
                             }
                             ctx.drawText(item.displayName, textLeft, centerY, menuVerticalNamePaint, -0.25f
                             )
-                            if (item.hasValue) {
-                                menuVerticalDescPaint.textAlign = Paint.Align.RIGHT
-                                ctx.drawText(item.value, (scaling.target.right - 30f), centerY, menuVerticalDescPaint, -0.25f)
-                                menuVerticalDescPaint.textAlign = Paint.Align.LEFT
+                            if (item.hasValue && !state.itemMenu.isDisplayed) {
+                                ctx.drawText(item.value, (scaling.target.right - 400f), centerY, menuVerticalDescPaint, -0.25f)
                             }
-                            ctx.drawText(item.description, textLeft, centerY, menuVerticalDescPaint, 1.25f
+                            ctx.drawText(item.description, textLeft, centerY, menuVerticalDescPaint, 1.1f
                             )
                             if (isPSP) {
                                 statusOutlinePaint.strokeWidth = 2.0f
@@ -619,9 +619,6 @@ fun XmbView.menuRenderHorizontalMenu(ctx:Canvas){
 }
 
 private val touchTestRectF = RectF()
-private val touchTestPointRectF = RectF()
-
-
 
 fun XmbView.menuOnTouchScreen(a:PointF, b:PointF, act:Int){
     with(state.crossMenu){
@@ -667,9 +664,7 @@ fun XmbView.menuOnTouchScreen(a:PointF, b:PointF, act:Int){
                                 xPos + hSizeX,
                                 yPos + hSizeY
                             )
-                            touchTestPointRectF.set(a.x, a.y, a.x + 0.1f, b.x + 0.1f)
-
-                            if (touchTestRectF.contains(touchTestPointRectF)) {
+                            if (touchTestRectF.contains(a)) {
                                 context.vsh.launchActiveItem()
                             }else if(b.x < 200.0f){
                                 context.vsh.backStep()

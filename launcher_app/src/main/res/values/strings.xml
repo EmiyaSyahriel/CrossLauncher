@@ -66,7 +66,7 @@
     <string name="videoplayer_bwd">Backward</string>
     <string name="videoplayer_fwd">Forward</string>
     <string name="videoplayer_switchar">Zoom</string>
-    <string name="videoplayer_viewsetting">View Setting</string>
+    <string name="videoplayer_viewsetting">Display Setting</string>
     <string name="videoplayer_volume">Volume</string>
     <string name="videoplayer_switchdisplay">Display</string>
     <string name="videoplayer_delete">Delete</string>
@@ -106,27 +106,24 @@
     <string name="plugin_name_musiclist">Music List (Internal)</string>
     <string name="plugin_desc_musiclist">Lists all music in device via Android MediaStore</string>
     <string name="error_common_header">Error</string>
-    <string name="error_category_launch">No ... You shouldn\'t launch this item</string>
+    <string name="error_category_launch">No … You shouldn\'t launch this item</string>
     <string name="nettype_ethernet">Ethernet</string>
     <string name="nettype_no_connection">No Internet</string>
     <string name="nettype_wifi">Wi-Fi</string>
-    <string name="font_load_failed">An error occured during custom font loading : %s</string>
     <string name="category_is_empty">Category empty</string>
     <string name="settings_category_display_desc">Adjust settings for rendering system</string>
-    <string name="settings_category_display_name">Display Settings</string>
-    <string name="app_refresh_due_to_uninstall">App uninstalled, refreshing app list...</string>
-    <string name="error_no_appmarket_title">Umm... Play Store?</string>
+    <string name="app_refresh_due_to_uninstall">App uninstalled, refreshing app list…</string>
+    <string name="error_no_appmarket_title">Umm… Play Store?</string>
     <string name="error_no_appmarket_description">Cannot find \"market:\" URL handler, Do your device have any App Market installed? e.g Google Play Store</string>
     <string name="bre_name">Broadcast Receiver</string>
     <string name="perm_install_shortcut_label">Install Shortcut</string>
-    <string name="perm_install_shortcut_desc">Install static shortcuts to XMB Launcher</string>
     <string name="sdk_widget_shortcut_not_supported">Shortcut is only supported from Android O and later</string>
     <string name="default_dialog_title">Dialog</string>
     <string name="setting_display_layout_type">XMB Layout</string>
     <string name="setting_display_layout_type_desc">Which console should the launcher mimics</string>
     <string name="settings_category_debug_name" translatable="false">★ Debug Settings</string>
     <string name="setting_systeminfo_name">Information</string>
-    <string name="setting_systeminfo_desc">"Show additonal informations "</string>
+    <string name="setting_systeminfo_desc">"Show additional informations "</string>
     <string name="settings_category_debug_desc">" "</string>
     <string name="string_systeminfo_androidver_name">Android Version</string>
     <string name="empty_string" translatable="false">" "</string>
@@ -146,11 +143,31 @@
     <string name="app_sorting_filesize">By APK File Size</string>
     <string name="app_sorting_actname">By Package Name</string>
     <string name="app_category_switch_sort">Switch Sort</string>
-    <string name="screen_portrait_warning_title">Screen is in Portrait Orientation</string>
     <string name="screen_portrait_warning_desc">Portrait screen may cause bad rendering performance on lower device and high RAM usage due to more icon is visible on-screen at the same time. In case it happens, you can enforce the launcher orientation to landscape.</string>
-    <string name="no_hwaccel_warning_desc">View is not hardware accelerated, rendering performance might be slower. On some device, you can enforce HW acceleration via Developer Option, either for a specific app or system-wide.</string>
     <string name="no_hwaccel_warning_title">No Hardware Acceleration</string>
-    <string name="vboard_name">Cross Launcher Virtual Keyboard</string>
     <string name="settings_system_language">Launcher Display Language</string>
     <string name="settings_system_language_description">Display language of the Launcher</string>
+    <string name="photoepilepsy_warning">
+        PHOTOSENSITIVE EPILEPSY
+        \nIF YOU HAVE A HISTORY OF EPILEPSY OR SEIZURES, CONSULT A DOCTOR BEFORE USE, CERTAIN
+        \nPATTERN MAY TRIGGER SEIZURES WITH NO PRIOR HISTORY, BEFORE USING THIS LAUNCHER,
+        \nCAREFULLY READ THE INSTRUCTION MANUAL HOSTED AT GITHUB.
+        \n
+        \nTHIS APP IS NOT AN EMULATOR!
+        \nTHIS APP IS PURELY A LAUNCHER THAT SIMULATES A PS3/PSP HOME MENU EXPERIENCES,
+        \nNOT A PS3/PSP EMULATOR. IN CASE YOU DOWNLOAD THIS APP THINKING THIS AS AN EMULATOR
+        \nYOU ARE FREE TO UNINSTALL IT.
+        \n
+        \nTHIS WARNING CAN BE DISABLED FROM SYSTEM MENU
+    </string>
+    <string name="settings_system_hide_boot_warning">Hide Photosensitive Warning</string>
+    <string name="settings_system_asian_console_name">Circle Button Behaviour</string>
+    <string name="settings_system_asian_console_desc">What the Circle Button (B on Xbox, A on Nintendo) do on system</string>
+    <string name="settings_system_asian_console_true">Confirm</string>
+    <string name="settings_system_asian_console_false">Cancel</string>
+    <string name="font_load_failed">An error occurred during custom font loading : %s</string>
+    <string name="settings_category_display_name">Display Settings</string>
+    <string name="perm_install_shortcut_desc">Install static shortcuts to XMB Launcher</string>
+    <string name="screen_portrait_warning_title">Screen is in Portrait Orientation</string>
+    <string name="no_hwaccel_warning_desc">View is not hardware accelerated, rendering performance might be slower. On some device, you can enforce HW acceleration via Developer Option, either for a specific app or system-wide.</string>
 </resources>

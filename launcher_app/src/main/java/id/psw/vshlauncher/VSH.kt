@@ -1,15 +1,13 @@
 package id.psw.vshlauncher
 
 import android.app.Application
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.media.MediaPlayer
 import android.os.*
 import android.util.Log
+import androidx.preference.Preference
 // import com.facebook.drawee.backends.pipeline.Fresco
 import id.psw.vshlauncher.pluginservices.IconPluginServiceHandle
 import id.psw.vshlauncher.submodules.*
@@ -55,16 +53,6 @@ class VSH : Application(), ServiceConnection {
     val UserUid get() = appUserUid
 
     val selectStack = Stack<String>()
-    /** This will change several behaviour :
-     * - Application icon and decorative assets will be recycled / unloaded upon hidden from screen
-     *
-     * Advantage :
-     * - Smaller RAM usage
-     *
-     * Disadvantage :
-     * - It will cause a lot of loading
-     * - Tend to cause a lot of storage reading access, causing faster medium degradation (usually not a problem)
-     */
     var aggressiveUnloading = true
     var xmbView : XmbView? = null
     var playAnimatedIcon = true
@@ -104,6 +92,7 @@ class VSH : Application(), ServiceConnection {
 
     var selectedCategoryId = ITEM_CATEGORY_APPS
     var selectedItemId = ""
+    lateinit var pref : SharedPreferences
 
     val itemCursorX get() = categories.visibleItems.indexOfFirst { it.id == selectedCategoryId }
     val itemCursorY get() = (items?.visibleItems?.indexOfFirst { it.id == selectedItemId } ?: -1).coerceAtLeast(0)
@@ -176,7 +165,12 @@ class VSH : Application(), ServiceConnection {
         }
     }
 
+    fun reloadPreference() {
+        pref = getSharedPreferences("xRegistry.sys", Context.MODE_PRIVATE)
+    }
+
     override fun onCreate() {
+        reloadPreference()
         FontCollections.init(this)
         preparePlaceholderAudio()
         bgmPlayer.setOnPreparedListener {
@@ -230,6 +224,7 @@ class VSH : Application(), ServiceConnection {
             selectedItemId = items[cIdx].lastSelectedItemId // Load new category item id
             items[cIdx].content?.forEach { it.isHovered = it.id == selectedItemId }
             selectedCategoryId = items[cIdx].id
+            xmbView?.state?.itemMenu?.selectedIndex = 0
         }
     }
 
@@ -260,6 +255,7 @@ class VSH : Application(), ServiceConnection {
                 items.forEach {
                     it.isHovered = it.id == selectedItemId
                 }
+                xmbView?.state?.itemMenu?.selectedIndex = 0
             }
         }catch (e:ArrayIndexOutOfBoundsException){
             //

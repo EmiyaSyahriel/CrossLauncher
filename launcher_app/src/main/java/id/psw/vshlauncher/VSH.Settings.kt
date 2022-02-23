@@ -114,6 +114,20 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                         else -> XMBLayoutType.PS3
                     }
                 }
+            }.apply{
+                hasMenu = true
+                val dMenu = ArrayList<XMBMenuItem>()
+
+                    dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                        {"PlayStation Portable"}, {false}, 1)
+                    {  xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PSP })
+                    dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                        {"PlayStation 3"}, {false}, 0)
+                    { xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PS3 })
+                    dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                        {"Bravia TV"}, {false}, 2)
+                    { xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.Bravia })
+                menuItems = dMenu
             }
         )
         //endregion

@@ -104,7 +104,24 @@
     <string name="setting_coldboot_custom_guide">Cara nge-kustomisasi logo awal</string>
     <string name="first_run_instruction_content">[…]</string>
     <string name="locale_lang_display_name">Basa Jawa Ngoko Tulungagungan</string>
-    <string name="vboard_name">Ketikan Layar Paluncur Cross</string>
     <string name="settings_system_language">Basa Paluncur</string>
     <string name="settings_system_language_description">Basa sing di ketokne nyang paluncur</string>
+    <string name="photoepilepsy_warning">
+        EPILEPSI MERGO SENSITIFITAS CAHAYA
+        \nLEK SEMISAL UMAK NDUWE RIWAYAT EPILEPSI UTOWO KEJANG, JAJAL KONSULTASI NOK DOKTER SAK
+        \nDURUNG E NGGAWE. ONOK POLA SING ISO NGGARAI GEJALA TANPA RIWAYAT, SAK DURUNG E UMAK
+        \nNGGAWE PALUNCUR IKI, MONGGO DIWACA HALAMAN PANDUAN SING ONOK GITHUB.
+        \n
+        \nAPLIKASI IKI UDUK EMULATOR!
+        \nAPLIKASI IKI MURNI PELUNCUR SING NYIMULASIKNO BENTUK E HALAMAN NGAREP E PS3/PSP,
+        \nGUDUK EMULATOR. SEMISAL UMAK NGUNDHUH APLIKASI IKI NGIRANE EMULATOR, UMAK BEBAS NGEHAPUS
+        \nAPLIKASI IKI TEKAN PERANGKAT E UMAK.
+        \n
+        \nTULISAN IKI ISO DISINGITNO TEKAN SETELAN SISTEM
+    </string>
+    <string name="settings_system_hide_boot_warning">Singitno Tulisan Epilepsi</string>
+    <string name="settings_system_asian_console_name">Gunane Pijetan Bunder</string>
+    <string name="settings_system_asian_console_desc">Opo sing dilakoni pijetan bunder (B nyang Xbox, A nyang Nintendo) marang sistem.</string>
+    <string name="settings_system_asian_console_true">Laku</string>
+    <string name="settings_system_asian_console_false">Balik</string>
 </resources>

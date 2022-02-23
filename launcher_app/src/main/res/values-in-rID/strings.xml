@@ -132,7 +132,7 @@
     <string name="app_customization_file_created">Direktori Kustomisasi Dibuat</string>
     <string name="settings_system_show_fps_desc">" Tampilkan performa rendering aplikasi"</string>
     <string name="app_sorting_name">Dari Nama</string>
-    <string name="app_sorting_updtime">Dari Tanggal Update</string>
+    <string name="app_sorting_updtime">Dari Tanggal Diperbarui</string>
     <string name="app_sorting_filesize">Dari Ukuran APK</string>
     <string name="app_sorting_actname">Dari Nama Paket</string>
     <string name="app_category_switch_sort">Ganti Urutan</string>
@@ -141,7 +141,24 @@
     <string name="no_hwaccel_warning_title">Tidak ada Akselerasi Perangkat Keras</string>
     <string name="no_hwaccel_warning_desc">Tampilan tidak di akselerasi lewat perangkat keras, performa penggambar mungkin lambat. Pada beberapa perangkat, anda bisa mengaktifkan akselerasi perangkat keras dari Opsi Pengembang, antara khusus untuk beberapa aplikasi atau untuk seluruh sistem.</string>
     <string name="locale_lang_display_name">Bahasa Indonesia</string>
-    <string name="vboard_name">Papan Ketik Maya Peluncur Cross</string>
     <string name="settings_system_language">Bahasa Tampilan Peluncur</string>
     <string name="settings_system_language_description">Bahasa yang di tampilkan pada launcher</string>
+    <string name="photoepilepsy_warning">
+        PERINGATAN EPILEPSI FOTOSENSITIF
+        \nJIKA ANDA MEMILIKI RIWAYAT EPILEPSI ATAU KEJANG, SILAHKAN BERKONSULTASI KE DOKTER SEBELUM
+        \nPEMAKAIAN. BEBERAPA POLA DAPAT MEMICU GEJALA TANPA RIWAYAT SEBELUMNYA, SEBELUM MEMAKAI
+        \nPELUNCUR INI, SILAHKAN BACA HALAMAN PANDUAN DI GITHUB DENGAN SEKSAMA.
+        \n
+        \nAPLIKASI INI BUKAN EMULATOR!
+        \nAPLIKASI INI HANYA SEBUAH PELUNCUR YANG MENIRU PENGALAMAN HALAMAN DEPAN PS3/PSP DI ANDROID,
+        \nBUKAN EMULATOR PS3/PSP. JIKALAU ANDA MEMASANG APLIKASI INI MENGIRA ADALAH SEBUAH EMULATOR,
+        \nANDA BEBAS MENCOPOT PEMASANGAN APLIKASI INI.
+        \n
+        \nPERINGATAN INI BISA DI MATIKAN LEWAT PENGATURAN SISTEM
+    </string>
+    <string name="settings_system_hide_boot_warning">Sembunyikan Peringatan Pembukaan</string>
+    <string name="settings_system_asian_console_name">Perilaku Tombol Bulat</string>
+    <string name="settings_system_asian_console_desc">Apa yang akan dilakukan tombol bulat (B di Xbox, A di Nintendo) ke sistem</string>
+    <string name="settings_system_asian_console_true">Setuju</string>
+    <string name="settings_system_asian_console_false">Batal</string>
 </resources>
