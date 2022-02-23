@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.os.Parcel
 import androidx.core.content.res.ResourcesCompat
 import id.psw.vshlauncher.activities.XMB
+import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.views.XmbView
 import java.io.File
@@ -82,3 +83,20 @@ fun XmbView.getDrawable(id:Int) : Drawable?{
 
 fun Parcel.writeByteBoolean(boolean: Boolean) = this.writeByte(boolean.select(1,0))
 fun Parcel.readByteBoolean() : Boolean = this.readByte() != 0.toByte()
+
+fun <TType, TReturn> TType.callOnCount(countRef: Ref<Int>, lastStateRef: Ref<TReturn>, pollEveryNCall:Int, func: (TType) -> TReturn) : TReturn {
+    if(countRef.p >= pollEveryNCall){
+        countRef.p = 0
+        lastStateRef.p = func(this)
+    }
+    countRef.p++
+    return lastStateRef.p
+}
+
+/** Delay ```File.exists()``` call until the call time count equal or more than ```pollEveryNCall```
+ * The call result then will be cached, then the cache will be returned, Done like this since
+ * File.exists() is an expensive call and calling it on every frame is basically killing the phone or
+ * storage media faster
+ */
+fun File.delayedExistenceCheck(iTrack: Ref<Int>, lastState:Ref<Boolean>, pollEveryNCall:Int = 60) : Boolean =
+    callOnCount(iTrack, lastState, pollEveryNCall) { it.exists() }

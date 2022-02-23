@@ -5,6 +5,7 @@ import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.sequentialimages.*
 import id.psw.vshlauncher.views.bootInto
@@ -23,6 +24,11 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     companion object {
         private const val TAG = "XMBAppItem"
         var descriptionDisplay : DescriptionDisplay = DescriptionDisplay.PackageName
+
+        var disableAnimatedIcon = false
+        var disableBackSound = false
+        var disableBackdrop = false
+        var disableBackdropOverlay = false
     }
 
     private var _icon = TRANSPARENT_BITMAP
@@ -32,6 +38,20 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     private var hasBackdropLoaded = false
     private var hasPortBackdropLoaded = false
     private var hasBackSoundLoaded = false
+
+    private val ioCPollAnimIcon = Ref(0)
+    private val ioCPollBackdrop = Ref(0)
+    private val ioCPollPortBackdrop = Ref(0)
+    private val ioCPollBackOverlay = Ref(0)
+    private val ioCPollPortBackOverlay = Ref(0)
+    private val ioCPollBackSound = Ref(0)
+
+    private val ioEPollAnimIcon = Ref(false)
+    private val ioEPollBackdrop = Ref(false)
+    private val ioEPollPortBackdrop = Ref(false)
+    private val ioEPollBackSound = Ref(false)
+    private val ioEPollPortBackOverlay = Ref(false)
+    private val ioEPollBackOverlay = Ref(false)
 
     private val iconId : String = "${resInfo.activityInfo.processName}::${resInfo.activityInfo.packageName}"
     private var appLabel = ""
@@ -57,32 +77,44 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     }
 
     private var backdropFiles = ArrayList<File>().apply {
-        addAll(requestCustomizationFiles("PIC1.PNG"))
-        addAll(requestCustomizationFiles("PIC1.JPG"))
+        if(!disableBackdrop) {
+            addAll(requestCustomizationFiles("PIC1.PNG"))
+            addAll(requestCustomizationFiles("PIC1.JPG"))
+        }
     }
     private var backdropOverlayFiles = ArrayList<File>().apply {
-        addAll(requestCustomizationFiles("PIC0.PNG"))
-        addAll(requestCustomizationFiles("PIC0.JPG"))
+        if(!disableBackdropOverlay) {
+            addAll(requestCustomizationFiles("PIC0.PNG"))
+            addAll(requestCustomizationFiles("PIC0.JPG"))
+        }
     }
     private var portraitBackdropFiles = ArrayList<File>().apply {
-        addAll(requestCustomizationFiles("PIC1_P.PNG"))
-        addAll(requestCustomizationFiles("PIC1_P.JPG"))
+        if(!disableBackdrop) {
+            addAll(requestCustomizationFiles("PIC1_P.PNG"))
+            addAll(requestCustomizationFiles("PIC1_P.JPG"))
+        }
     }
     private var portraitBackdropOverlayFiles = ArrayList<File>().apply {
-        addAll(requestCustomizationFiles("PIC0_P.PNG"))
-        addAll(requestCustomizationFiles("PIC0_P.JPG"))
+        if(!disableBackdropOverlay) {
+            addAll(requestCustomizationFiles("PIC0_P.PNG"))
+            addAll(requestCustomizationFiles("PIC0_P.JPG"))
+        }
     }
     private var animatedIconFiles = ArrayList<File>().apply{
-        addAll(requestCustomizationFiles("ICON1.APNG")) // Animated PNG (Line APNG-Drawable), best quality, just bigger file, Renderer OK
-        addAll(requestCustomizationFiles("ICON1.WEBP")) // WEBP (Facebook Fresco), good quality, relatively small file, Renderer Bad
-        addAll(requestCustomizationFiles("ICON1.MP4")) // MP4 (Android MediaMetadataRetriever), average quality, small file, Renderer Slow
-        addAll(requestCustomizationFiles("ICON1.GIF")) // GIF (Facebook Fresco), low quality, small file, Renderer Bad
+        if(!disableAnimatedIcon) {
+            addAll(requestCustomizationFiles("ICON1.APNG")) // Animated PNG (Line APNG-Drawable), best quality, just bigger file, Renderer OK
+            addAll(requestCustomizationFiles("ICON1.WEBP")) // WEBP (Facebook Fresco), good quality, relatively small file, Renderer Bad
+            addAll(requestCustomizationFiles("ICON1.MP4")) // MP4 (Android MediaMetadataRetriever), average quality, small file, Renderer Slow
+            addAll(requestCustomizationFiles("ICON1.GIF")) // GIF (Facebook Fresco), low quality, small file, Renderer Bad
+        }
     }
     private var backSoundFiles = ArrayList<File>().apply {
-        addAll(requestCustomizationFiles("SND0.MP3"))
-        addAll(requestCustomizationFiles("SND0.AAC"))
-        addAll(requestCustomizationFiles("SND0.MID"))
-        addAll(requestCustomizationFiles("SND0.MIDI"))
+        if(!disableBackSound) {
+            addAll(requestCustomizationFiles("SND0.MP3"))
+            addAll(requestCustomizationFiles("SND0.AAC"))
+            addAll(requestCustomizationFiles("SND0.MID"))
+            addAll(requestCustomizationFiles("SND0.MIDI"))
+        }
     }
     private var _iconSync = Object()
     private var _animIconSync = Object()
@@ -97,12 +129,18 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     override val isPortraitBackdropLoaded: Boolean get() = hasPortBackdropLoaded
 
     override val hasIcon: Boolean get()= true
-    override val hasBackdrop: Boolean get() = backdropFiles.any { it.exists() }
-    override val hasPortraitBackdrop: Boolean get() = portraitBackdropFiles.any { it.exists() }
-    override val hasBackOverlay: Boolean get() = backdropOverlayFiles.any { it.exists() }
-    override val hasPortraitBackdropOverlay: Boolean get() = portraitBackdropOverlayFiles.any { it.exists() }
-    override val hasBackSound: Boolean get() = backSoundFiles.any { it.exists() }
-    override val hasAnimatedIcon: Boolean get() = animatedIconFiles.any { it.exists() }
+    override val hasBackdrop: Boolean get() = !disableBackdrop &&
+            backdropFiles.any { it.delayedExistenceCheck(ioCPollBackdrop, ioEPollBackdrop) }
+    override val hasPortraitBackdrop: Boolean get() = !disableBackdrop &&
+            portraitBackdropFiles.any { it.delayedExistenceCheck(ioCPollPortBackdrop, ioEPollPortBackdrop)  }
+    override val hasBackOverlay: Boolean get() = !disableBackdropOverlay &&
+            backdropOverlayFiles.any { it.delayedExistenceCheck(ioCPollBackOverlay, ioEPollBackOverlay) }
+    override val hasPortraitBackdropOverlay: Boolean get() = !disableBackdropOverlay &&
+            portraitBackdropOverlayFiles.any { it.delayedExistenceCheck(ioCPollPortBackOverlay, ioEPollPortBackOverlay) }
+    override val hasBackSound: Boolean get() = !disableBackSound &&
+            backSoundFiles.any {  it.delayedExistenceCheck(ioCPollBackSound, ioEPollBackSound) }
+    override val hasAnimatedIcon: Boolean get() = !disableAnimatedIcon &&
+            animatedIconFiles.any { it.delayedExistenceCheck(ioCPollAnimIcon, ioEPollAnimIcon) }
     override val hasMenu: Boolean get() = true
 
     override val id: String get()= iconId
