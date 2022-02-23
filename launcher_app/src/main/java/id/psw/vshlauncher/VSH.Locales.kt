@@ -13,7 +13,8 @@ val VSH.supportedLocaleList: ArrayList<Locale>
     get() = arrayListOf(
         Locale.getDefault(),
         Locale("en"),
-        Locale("in"),
+        Locale("in","ID"),
+        Locale("ms","MY"),
         /* Ngoko (to lower age) Tulungagung Javanese at Indonesia */
         Locale("jv","ID","ltlagung"),
         /* Malang (to lower age) Javanese at Indonesia */

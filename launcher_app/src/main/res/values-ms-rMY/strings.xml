@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cross Launcher</string>
+    <string name="locale_lang_display_name">Bahasa Melayu</string>
+    <string name="orient_unknown">Tak dikenal</string>
+    <string name="orient_landscape">Landskap</string>
+    <string name="orient_portrait">Potret</string>
+    <string name="orient_user">Lalai Sistem</string>
+    <string name="item_orientation">Orientasi Skrin</string>
+    <string name="first_run_instruction_title">Larian Pertama</string>
+    <string name="storage_permission_not_granted">Kebenaran perangkat penyimpan tidak diberikan, pemain media mungkin tidak boleh digunakan</string>
+    <string name="setting_show_gameboot">Logo pelancaran Apl</string>
+    <string name="setting_mimic_dynamic_theme">Tampilkan kelipan pada tema dinamik</string>
+    <string name="click_here">Tekan di sini</string>
+    <string name="app_not_installed">Apl tidak dipasang</string>
+    <string name="audioplayer_pause">Jeda</string>
+    <string name="audioplayer_resume">Sambung Semula</string>
+    <string name="audioplayer_stop">Henti</string>
+    <string name="category_home">Skrin Utama</string>
+    <string name="category_apps">Apl</string>
+    <string name="category_games">Permainan</string>
+    <string name="category_videos">Video</string>
+    <string name="category_music">Muzik</string>
+    <string name="category_settings">Tetapan</string>
+    <string name="videoplayer_pause">Jeda</string>
+    <string name="videoplayer_stop">Henti</string>
+    <string name="videoplayer_play">Mainkan</string>
+    <string name="videoplayer_bwd">Pnts Belakang</string>
+    <string name="videoplayer_fwd">Pnts Hadapan</string>
+    <string name="videoplayer_switchar">Zum</string>
+    <string name="videoplayer_viewsetting">Tetapan Paparan</string>
+    <string name="videoplayer_volume">Kelantangan</string>
+    <string name="videoplayer_switchdisplay">Paparan</string>
+    <string name="videoplayer_delete">Padam</string>
+    <string name="videoplayer_setthumbnail">Tetapkan Sebagai Mula Pratonton</string>
+    <string name="common_yes">Ya</string>
+    <string name="common_no">Tidak</string>
+    <string name="menu_rebuild_db">Membina semula pangkalan data</string>
+    <string name="common_click_here">Tekan di sini</string>
+    <string name="common_corrupted">Data rosak</string>
+    <string name="audio_corrupted">Data audio rosak</string>
+    <string name="app_hide_menu">Sembunyikan Menu</string>
+    <string name="app_hide_menu_desc">Ketik mana-mana sahaja untuk membuka menu setelah ia disembunyikan.</string>
+    <string name="xmb_wave_livewp_desc">Kertas Dinding Langsung XMB Wave</string>
+    <string name="xmb_icon_desc_root">Ikon ini tak seharusnya tampil</string>
+    <string name="app_name_wave">Kertas Dinding Wave</string>
+    <string name="app_launch">Lancarkan</string>
+    <string name="app_find_on_playstore">Cari di Gedung Play</string>
+    <string name="view_app_info">Butiran Apl</string>
+    <string name="app_show_details">Butiran</string>
+    <string name="common_back">Balik</string>
+    <string name="app_open_data_dir">Buka Direktori Data</string>
+    <string name="app_open_mod_dir">Buka Direktori Penyesuaian</string>
+    <string name="app_open_obb_dir">Buka Direktori OBB</string>
+    <string name="app_uninstall">Nyahpasang</string>
+    <string name="app_info_system_activity">Buka di Tetapan</string>
+    <string name="title_activity_wave_wallpaper_setting">Tetapan Kertas Dinding Wave</string>
+    <string name="plugin_name_musiclist">Senarai Muzik (Dalaman)</string>
+    <string name="plugin_desc_musiclist">Senaraikan semua muzik dalam peranti melalui Android MediaStore</string>
+    <string name="error_common_header">Ralat</string>
+    <string name="error_category_launch">Jangan lah … Item ini tak selayaknya dilancarkan</string>
+    <string name="nettype_ethernet">Wayar LAN</string>
+    <string name="nettype_no_connection">Tiada sambungan Internet</string>
+    <string name="nettype_wifi">Wi-Fi</string>
+    <string name="font_load_failed">Ralat berlaku semasa memuatkan fon tersuai : %s</string>
+    <string name="category_is_empty">Kategori Kosong</string>
+    <string name="settings_category_display_desc">Laraskan tetapan untuk sistem pemaparan</string>
+    <string name="settings_category_display_name">Tetapan Paparan</string>
+    <string name="app_refresh_due_to_uninstall">Apl dinyahpasang, menyegarkan senarai apl…</string>
+    <string name="error_no_appmarket_title">Gedung Play kat mana e?</string>
+    <string name="error_no_appmarket_description">Tidak menemui penerima URL \"market:\", Adakah peranti anda mempunyai sebarang Pasar Apl dipasang? cth. Gedung Google Play</string>
+    <string name="bre_name">Penerima Siaran</string>
+    <string name="perm_install_shortcut_label">Pasang Pintasan</string>
+    <string name="perm_install_shortcut_desc">Pasang pintasan statik ke Pelancar XMB</string>
+    <string name="sdk_widget_shortcut_not_supported">Pintasan hanya disokong daripada Android O dan yang lebih baru</string>
+    <string name="default_dialog_title">Dialog</string>
+    <string name="setting_display_layout_type">Susun Atur XMB</string>
+    <string name="setting_display_layout_type_desc">Konsol mana yang ditiru oleh pelancar</string>
+    <string name="setting_systeminfo_name">Maklumat</string>
+    <string name="setting_systeminfo_desc">Tunjukkan maklumat tambahan</string>
+    <string name="string_systeminfo_androidver_name">Versi Android</string>
+    <string name="settings_category_system_name">Tetapan Sistem</string>
+    <string name="settings_category_system_desc">Selaraskan tetapan pelancar</string>
+    <string name="settings_display_show_operator_name">Tunjukkan Nama Rangkaian</string>
+    <string name="settings_display_show_operator_desc">Tunjukkan nama rangkaian yang disambungkan pada masa ini, ia boleh menjadi Ethernet, Wi-Fi atau Data Selular</string>
+    <string name="settings_display_clock_second_analog_name">Tangan Saat pada Jam Analog</string>
+    <string name="settings_display_clock_second_analog_desc">Tunjukkan tangan untuk saat ke pada jam analog</string>
+    <string name="string_systeminfo_androidmdl_name">Model Peranti</string>
+    <string name="settings_system_show_fps_name">Tunjukkan FPS</string>
+    <string name="settings_system_show_fps_desc">Tunjukkan prestasi pemaparan pelancar</string>
+    <string name="app_create_customization_folder">Cipta Dir. Sesuaian</string>
+    <string name="app_customization_file_created">Direktori Penyesuaian Dibuat</string>
+    <string name="app_sorting_name">Mengikut Nama</string>
+    <string name="app_sorting_updtime">Mengikut Masa Kemas Kini</string>
+    <string name="app_sorting_filesize">Mengikut Saiz Fail APK</string>
+    <string name="app_sorting_actname">Mengikut Nama Pakej</string>
+    <string name="app_category_switch_sort">Tukar Isih</string>
+    <string name="screen_portrait_warning_title">Skrin berada dalam Orientasi Potret</string>
+    <string name="screen_portrait_warning_desc">Skrin potret boleh menyebabkan prestasi pemaparan buruk pada peranti yang lebih rendah dan penggunaan RAM yang tinggi disebabkan lebih banyak ikon kelihatan pada skrin pada masa yang sama. Sekiranya ia berlaku, anda boleh menguatkuasakan orientasi pelancar kepada landskap.</string>
+    <string name="no_hwaccel_warning_desc">Paparan bukan dipercepatkan perkakasan, prestasi pemaparan mungkin lebih perlahan. Pada sesetengah peranti, anda boleh menguatkuasakan pecutan HW melalui Pilihan Pembangun, sama ada untuk apl tertentu atau seluruh sistem.</string>
+    <string name="no_hwaccel_warning_title">Tiada Percepatan Perkakasan</string>
+    <string name="settings_system_language">Bahasa Sistem</string>
+    <string name="settings_system_language_description">Bahasa paparan Pelancar</string>
+    <string name="settings_system_hide_boot_warning">Sembunyikan Amaran Fotosensitif</string>
+    <string name="settings_system_asian_console_name">Perilaku Tombol Lingkaran</string>
+    <string name="settings_system_asian_console_desc">Apa fungsi Tombol Lingkaran (B di Xbox, A di Nintendo) di sistem</string>
+    <string name="settings_system_asian_console_true">Benarkan</string>
+    <string name="settings_system_asian_console_false">Batal</string>
+    <string name="photoepilepsy_warning">
+        AMARAN EPILEPSI FOTOSENSITIF
+        \nJIKA ANDA MEMPUNYAI SEJARAH EPILEPSI ATAU SAWAN, RUJUK DOKTOR SEBELUM MENGGUNAKAN, CORAK
+        \nTERTENTU MUNGKIN MENCETUS SAWAN TANPA SEJARAH TERDAHULU, SEBELUM MENGGUNAKAN PELANCAR
+        \nINI, BACA DENGAN TELITI MANUAL ARAHAN YANG DIHOSKAN DI GITHUB.
+        \n
+        \nAPL INI BUKAN EMULATOR!
+        \nAPL INI IALAH SEBENARNYA PELANCAR YANG MENYIMULASI PENGALAMAN MENU RUMAH PS3/PSP,
+        \nBUKAN EMULATOR PS3/PSP. JIKA ANDA MUAT TURUN APL INI DENGAN MEMIKIRKAN INI SEBAGAI
+        \nEMULATOR, ANDA BEBAS UNTUK NYAHPASANGNYA.
+        \n
+        \nAMARAN INI BOLEH DISEMBUNYIKAN DARI MENU SISTEM
+    </string>
+</resources>
