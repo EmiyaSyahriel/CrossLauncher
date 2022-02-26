@@ -172,6 +172,7 @@ class VSH : Application(), ServiceConnection {
 
     fun reloadPreference() {
         pref = getSharedPreferences("xRegistry.sys", Context.MODE_PRIVATE)
+        setActiveLocale(readSerializedLocale(pref.getString(PrefEntry.SYSTEM_LANGUAGE, "") ?: ""))
     }
 
     override fun onCreate() {

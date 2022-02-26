@@ -9,9 +9,9 @@ import android.os.LocaleList
 import androidx.annotation.StringRes
 import java.util.*
 
-val VSH.supportedLocaleList: ArrayList<Locale>
+val VSH.supportedLocaleList: ArrayList<Locale?>
     get() = arrayListOf(
-        Locale.getDefault(),
+        null,
         Locale("en"),
         Locale("in","ID"),
         Locale("ms","MY"),
@@ -27,7 +27,7 @@ fun VSH.createLocalizedContext(locale: Locale?) : Context {
     return createConfigurationContext(cfg)
 }
 
-fun VSH.getStringLocale(locale: Locale, @StringRes resId: Int) : String{
+fun VSH.getStringLocale(locale: Locale?, @StringRes resId: Int) : String {
     return createLocalizedContext(locale).getText(resId).toString()
 }
 
@@ -39,6 +39,8 @@ fun VSH.setActiveLocale(locale:Locale?){
         cfg.setLocale(Locale.getDefault())
     }
     resources.updateConfiguration(cfg, resources.displayMetrics)
+
+    pref.edit().putString(PrefEntry.SYSTEM_LANGUAGE, createSerializedLocale(locale)).apply()
 }
 
 fun VSH.getStringLocale(locale:Locale, @StringRes resId:Int, vararg fmt:Any) : String {

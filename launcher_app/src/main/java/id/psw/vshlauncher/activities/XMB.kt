@@ -1,6 +1,7 @@
 package id.psw.vshlauncher.activities
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
@@ -17,6 +18,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbView
 
@@ -36,6 +38,9 @@ class XMB : AppCompatActivity() {
         setContentView(xmbView)
         vsh.xmbView = xmbView
         xmbView.switchPage(skipColdBoot.select(VshViewPage.MainMenu, VshViewPage.ColdBoot))
+
+        readPreferences()
+
         _lastOrientation = resources.configuration.orientation
 
         checkCanvasHwAcceleration()
@@ -43,6 +48,14 @@ class XMB : AppCompatActivity() {
         if(_lastOrientation == Configuration.ORIENTATION_PORTRAIT){
             postPortraitScreenOrientationWarning()
         }
+    }
+
+    private fun readPreferences() {
+        val pref = vsh.pref
+        requestedOrientation = pref.getInt(PrefEntry.DISPLAY_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_SENSOR)
+        GamepadSubmodule.Key.spotMarkedByX = pref.getInt(PrefEntry.CONFIRM_BUTTON, 0) == 1
+        xmbView.fpsLimit = pref.getInt(PrefEntry.SURFACEVIEW_FPS_LIMIT, 0).toLong()
+
     }
 
     private fun checkCanvasHwAcceleration(){

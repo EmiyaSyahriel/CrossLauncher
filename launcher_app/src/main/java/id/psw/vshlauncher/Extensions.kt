@@ -1,6 +1,7 @@
 package id.psw.vshlauncher
 
 import android.content.Context
+import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.os.Parcel
 import androidx.core.content.res.ResourcesCompat
@@ -9,6 +10,7 @@ import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.views.XmbView
 import java.io.File
+import java.util.*
 import kotlin.experimental.and
 
 /**
@@ -108,5 +110,19 @@ fun <K,V> MutableMap<K, V>.getOrMake(k:K, v:() -> V) : V{
         val rv = v()
         put(k, rv)
         rv
+    }
+}
+
+fun createSerializedResolution(size: Point) : Int = (((size.x and 0xFFFF) shl 16) or (size.y and 0xFFFF))
+fun readSerializedResolution(srlSize:Int, buffer: Point) = buffer.set((srlSize shr 16) and 0xFFFF, srlSize and 0xFFFF)
+fun createSerializedLocale(locale: Locale?) : String = if(locale == null) "" else "${locale.language}|${locale.country}|${locale.variant}"
+fun readSerializedLocale(srlLocale:String) : Locale {
+    val locData = srlLocale.split('|')
+    return when(locData.size){
+        0 -> Locale.getDefault()
+        1 -> Locale(locData[0])
+        2 -> Locale(locData[0], locData[1])
+        3 -> Locale(locData[0], locData[1], locData[2])
+        else -> Locale.getDefault()
     }
 }

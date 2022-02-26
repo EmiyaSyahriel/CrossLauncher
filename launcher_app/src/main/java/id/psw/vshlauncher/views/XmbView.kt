@@ -51,7 +51,8 @@ class XmbView @JvmOverloads constructor(
         color = Color.GREEN
         textSize = 20.0f
     }
-    var fps = 30L
+
+    var fpsLimit = 0L
     private lateinit var drawThread : Thread
     private var shouldKeepRenderThreadRunning = true
     private var isRenderThreadRunning = false
@@ -64,6 +65,9 @@ class XmbView @JvmOverloads constructor(
             // Wait for the render thread to run
             while(!holder.surface.isValid && shouldKeepRenderThreadRunning){
                 doNothing()
+                if(fpsLimit != 0L){
+                    Thread.sleep(1000L/fpsLimit)
+                }
             }
 
             // Now draw!
@@ -75,12 +79,12 @@ class XmbView @JvmOverloads constructor(
                 }
                 isHWAccelerated = canvas.isHardwareAccelerated
                 canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-                xmbOnnDraw(canvas)
+                xmbOnDraw(canvas)
 
                 holder.unlockCanvasAndPost(canvas)
 
-                if(fps != 0L){
-                    Thread.sleep(1000L/fps)
+                if(fpsLimit != 0L){
+                    Thread.sleep(1000L/fpsLimit)
                 }
 
             }
@@ -100,11 +104,27 @@ class XmbView @JvmOverloads constructor(
         drawThread = thread(start=true, isDaemon = true){ drawThreadFunc() }.apply { name = "XMB Render Thread" }
     }
 
+    private fun loadPreferences(){
+        val vsh = context.vsh
+        val pref = vsh.pref
+
+        state.crossMenu.layoutMode = when(pref.getInt(PrefEntry.MENU_LAYOUT, 0)){
+            0 -> XMBLayoutType.PS3
+            1 -> XMBLayoutType.PSP
+            2 -> XMBLayoutType.Bravia
+            3 -> XMBLayoutType.PSX
+            else -> XMBLayoutType.PS3
+        }
+
+        state.coldBoot.hideEpilepsyWarning = pref.getBoolean(PrefEntry.DISABLE_EPILEPSY_WARNING, false)
+    }
+
     init {
         val gpIconDr = ResourcesCompat.getDrawable(context.resources, R.drawable.category_games, null)
         gamepadNotifIcon = gpIconDr!!.toBitmap(50,50)
         setZOrderOnTop(true)
         holder.setFormat(PixelFormat.TRANSPARENT)
+        loadPreferences()
     }
 
 
@@ -369,7 +389,7 @@ class XmbView @JvmOverloads constructor(
 
 
 
-    fun xmbOnnDraw(canvas: Canvas?) {
+    fun xmbOnDraw(canvas: Canvas?) {
         adaptScreenSize()
         tickTime()
         onUpdate()

@@ -1,6 +1,8 @@
 package id.psw.vshlauncher
 
+import android.content.pm.ActivityInfo
 import android.os.Build
+import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBAndroidSettingShortcutItem
 import id.psw.vshlauncher.types.items.XMBMenuItem
@@ -62,7 +64,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
             val dMenuItems = arrayListOf<XMBMenuItem>()
             supportedLocaleList.forEachIndexed { i, it ->
                 val item = XMBMenuItem.XMBMenuItemLambda(
-                    { it.displayName },
+                    { it?.displayName ?: "System Default" },
                     { false }, i)
                 {
                     vsh.setActiveLocale(it)
@@ -70,6 +72,62 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 dMenuItems.add(item)
             }
             menuItems = dMenuItems
+        })
+
+        content.add(XMBSettingsItem(vsh, "settings_system_orientation",
+            R.string.item_orientation,
+            R.string.orient_user, R.drawable.icon_orientation, {
+                val xmb = xmbView?.context?.xmb
+                getString(when(xmb?.requestedOrientation){
+                    ActivityInfo.SCREEN_ORIENTATION_USER -> R.string.orient_user
+                    ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> R.string.orient_landscape
+                    ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> R.string.orient_portrait
+                    else -> R.string.orient_unknown
+                })
+            }){
+            val xmb = xmbView?.context?.xmb
+            xmb?.requestedOrientation = when(xmb?.requestedOrientation){
+                ActivityInfo.SCREEN_ORIENTATION_USER -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_USER
+                else -> ActivityInfo.SCREEN_ORIENTATION_USER
+            }
+            pref.edit().putInt(PrefEntry.DISPLAY_ORIENTATION, xmb?.requestedOrientation ?: ActivityInfo.SCREEN_ORIENTATION_SENSOR).apply()
+        }.apply {
+            val xmb = xmbView?.context?.xmb
+            hasMenu = true
+            val dMenuItems = arrayListOf<XMBMenuItem>()
+            arrayOf(
+                ActivityInfo.SCREEN_ORIENTATION_USER,
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT).forEachIndexed { i, it ->
+                val nameStr = getString(when(it){
+                    ActivityInfo.SCREEN_ORIENTATION_USER -> R.string.orient_user
+                    ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> R.string.orient_landscape
+                    ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> R.string.orient_portrait
+                    else -> R.string.orient_unknown
+                })
+                dMenuItems.add(XMBMenuItem.XMBMenuItemLambda({nameStr}, {false}, i){
+                    xmb?.requestedOrientation = it
+                })
+            }
+            menuItems = dMenuItems
+        })
+
+        content.add(XMBSettingsItem(vsh, "settings_system_button",
+        R.string.settings_system_asian_console_name, R.string.settings_system_asian_console_desc,
+        R.drawable.category_games, {
+                getString(
+                    if(GamepadSubmodule.Key.spotMarkedByX)
+                        R.string.settings_system_asian_console_false
+                    else
+                        R.string.settings_system_asian_console_true
+                )
+            }
+        ){
+            GamepadSubmodule.Key.spotMarkedByX = !GamepadSubmodule.Key.spotMarkedByX
+            pref.edit().putInt(PrefEntry.CONFIRM_BUTTON,
+                GamepadSubmodule.Key.spotMarkedByX.select(1,0)).apply()
         })
     }
 }
@@ -117,6 +175,15 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                         XMBLayoutType.PS3 -> XMBLayoutType.PSP
                         else -> XMBLayoutType.PS3
                     }
+
+                    val srlzLayout = when(view.state.crossMenu.layoutMode){
+                        XMBLayoutType.PS3 -> 0
+                        XMBLayoutType.PSP -> 1
+                        XMBLayoutType.Bravia -> 2
+                        XMBLayoutType.PSX -> 3
+                        else -> 0
+                    }
+                    pref.edit().putInt(PrefEntry.MENU_LAYOUT, srlzLayout).apply()
                 }
             }.apply{
                 hasMenu = true
