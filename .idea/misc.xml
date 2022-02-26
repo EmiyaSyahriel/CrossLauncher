@@ -12,10 +12,11 @@
         <entry key="..\:/Works/Android/VSH/launcher_app/src/main/res/drawable/settings_category_display.xml" value="0.2111111111111111" />
         <entry key="..\:/Works/Android/VSH/launcher_app/src/main/res/drawable/settings_category_theme.xml" value="0.2111111111111111" />
         <entry key="..\:/Works/Android/VSH/launcher_app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2" />
+        <entry key="..\:/Works/Android/VSH/launcher_app/src/main/res/xml/root_preferences.xml" value="0.21927083333333333" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_15" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

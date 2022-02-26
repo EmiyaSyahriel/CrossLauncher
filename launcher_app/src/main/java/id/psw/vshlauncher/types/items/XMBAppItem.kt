@@ -29,6 +29,10 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
         var disableBackSound = false
         var disableBackdrop = false
         var disableBackdropOverlay = false
+
+        private val ios = mutableMapOf<File, Ref<Boolean>>()
+        private val ioc = mutableMapOf<File, Ref<Int>>()
+
     }
 
     private var _icon = TRANSPARENT_BITMAP
@@ -38,20 +42,6 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     private var hasBackdropLoaded = false
     private var hasPortBackdropLoaded = false
     private var hasBackSoundLoaded = false
-
-    private val ioCPollAnimIcon = Ref(0)
-    private val ioCPollBackdrop = Ref(0)
-    private val ioCPollPortBackdrop = Ref(0)
-    private val ioCPollBackOverlay = Ref(0)
-    private val ioCPollPortBackOverlay = Ref(0)
-    private val ioCPollBackSound = Ref(0)
-
-    private val ioEPollAnimIcon = Ref(false)
-    private val ioEPollBackdrop = Ref(false)
-    private val ioEPollPortBackdrop = Ref(false)
-    private val ioEPollBackSound = Ref(false)
-    private val ioEPollPortBackOverlay = Ref(false)
-    private val ioEPollBackOverlay = Ref(false)
 
     private val iconId : String = "${resInfo.activityInfo.processName}::${resInfo.activityInfo.packageName}"
     private var appLabel = ""
@@ -121,6 +111,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     private var _backdropSync = Object()
     private var _portBackdropSync = Object()
     private var _backSoundSync = Object()
+    private fun <K> MutableMap<File, Ref<K>>.getOrMake(k:File, refDefVal:K) = getOrMake<File, Ref<K>>(k){ Ref<K>(refDefVal) }
 
     override val isIconLoaded: Boolean get()= hasIconLoaded
     override val isAnimatedIconLoaded: Boolean get() = hasAnimIconLoaded
@@ -130,17 +121,29 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
 
     override val hasIcon: Boolean get()= true
     override val hasBackdrop: Boolean get() = !disableBackdrop &&
-            backdropFiles.any { it.delayedExistenceCheck(ioCPollBackdrop, ioEPollBackdrop) }
+            backdropFiles.any {
+                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
+            }
     override val hasPortraitBackdrop: Boolean get() = !disableBackdrop &&
-            portraitBackdropFiles.any { it.delayedExistenceCheck(ioCPollPortBackdrop, ioEPollPortBackdrop)  }
+            portraitBackdropFiles.any {
+                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
+            }
     override val hasBackOverlay: Boolean get() = !disableBackdropOverlay &&
-            backdropOverlayFiles.any { it.delayedExistenceCheck(ioCPollBackOverlay, ioEPollBackOverlay) }
+            backdropOverlayFiles.any {
+                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
+            }
     override val hasPortraitBackdropOverlay: Boolean get() = !disableBackdropOverlay &&
-            portraitBackdropOverlayFiles.any { it.delayedExistenceCheck(ioCPollPortBackOverlay, ioEPollPortBackOverlay) }
+            portraitBackdropOverlayFiles.any {
+                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
+            }
     override val hasBackSound: Boolean get() = !disableBackSound &&
-            backSoundFiles.any {  it.delayedExistenceCheck(ioCPollBackSound, ioEPollBackSound) }
+            backSoundFiles.any {
+                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
+            }
     override val hasAnimatedIcon: Boolean get() = !disableAnimatedIcon &&
-            animatedIconFiles.any { it.delayedExistenceCheck(ioCPollAnimIcon, ioEPollAnimIcon) }
+            animatedIconFiles.any {
+                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
+            }
     override val hasMenu: Boolean get() = true
 
     override val id: String get()= iconId
@@ -217,7 +220,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
         }
         if(vsh.playAnimatedIcon){
             synchronized(_animIconSync){
-                if((!hasAnimIconLoaded || _animatedIcon.hasRecycled) && hasAnimatedIcon){
+                if((!hasAnimIconLoaded || _animatedIcon.hasRecycled)){
                     animatedIconFiles.find { it.exists() }?.apply{
                         _animatedIcon = when (this.extension.uppercase()) {
                             "WEBP" -> XMBAnimWebP(this)
@@ -235,8 +238,10 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
 
     private fun pBackdropLoad(){
         synchronized(_backdropSync){
-            if(!hasBackdropLoaded && hasBackdrop){
-                backdropFiles.find{ it.exists()}?.apply {
+            if(!hasBackdropLoaded){
+                backdropFiles.find{
+                    it.exists()
+                }?.apply {
                     _backdrop = BitmapFactory.decodeFile(this.absolutePath)
                     hasBackdropLoaded = true
                 }

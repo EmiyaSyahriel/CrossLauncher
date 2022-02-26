@@ -84,7 +84,6 @@ fun XmbView.menuRenderItemMenu(ctx: Canvas){
         val item = context.vsh.hoveredItem
         if(item != null){
             if(item.hasMenu){
-
                 menuContextMenuTextPaint.textSize = isPSP.select(30.0f, 20.0f)
 
                 showMenuDisplayFactor = (time.deltaTime * 10.0f).toLerp(showMenuDisplayFactor, isDisplayed.select(1.0f, 0.0f))
@@ -143,6 +142,8 @@ fun XmbView.menuRenderItemMenu(ctx: Canvas){
 
                     ctx.drawText(it.displayName, textLeft, zeroIdx + (it.displayOrder * textSize), menuContextMenuTextPaint, 0.5f, false)
                 }
+            }else{
+                isDisplayed = false
             }
         }
     }

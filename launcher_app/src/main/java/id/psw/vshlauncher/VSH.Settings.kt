@@ -1,12 +1,15 @@
 package id.psw.vshlauncher
 
 import android.os.Build
+import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.items.XMBAndroidSettingShortcutItem
 import id.psw.vshlauncher.types.items.XMBMenuItem
 import id.psw.vshlauncher.types.items.XMBSettingsCategory
 import id.psw.vshlauncher.types.items.XMBSettingsItem
 import id.psw.vshlauncher.views.XMBLayoutType
 
 object SettingsCategoryID {
+    const val CATEGORY_SETTINGS_ANDROID = "settings_category_android"
     const val CATEGORY_SETTINGS_DISPLAY = "settings_category_display"
     const val CATEGORY_SETTINGS_DEBUG = "settings_category_debug"
     const val CATEGORY_SETTINGS_SYSTEMINFO = "settings_category_systeminfo"
@@ -19,6 +22,7 @@ fun VSH.fillSettingsCategory(){
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategorySystem())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryInfo())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryDebug())
+        addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryAndroidSetting())
     }
 }
 
@@ -186,5 +190,165 @@ private fun VSH.createCategoryInfo() : XMBSettingsCategory{
                 R.string.empty_string,
                 R.drawable.icon_android, { "${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})" }){ }
         )
+    }
+}
+
+private fun VSH.createCategoryAndroidSetting() : XMBSettingsCategory{
+    val vsh = this
+    return XMBSettingsCategory(this,
+        SettingsCategoryID.CATEGORY_SETTINGS_ANDROID,
+        R.drawable.icon_android,
+        R.string.setting_android_name,
+        R.string.setting_android_desc,
+    ).apply {
+
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.category_setting,
+            R.string.android_sys_setting_homepage_name,
+            R.string.android_sys_setting_homepage_desc,
+            android.provider.Settings.ACTION_SETTINGS
+        ))
+
+
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_network,
+            R.string.android_sys_network_name,
+            R.string.android_sys_network_desc,
+            android.provider.Settings.ACTION_WIRELESS_SETTINGS
+        ))
+
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_cda,
+            R.string.android_sys_devices_name,
+            R.string.android_sys_devices_desc,
+            android.provider.Settings.ACTION_BLUETOOTH_SETTINGS
+        ))
+
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.category_apps,
+            R.string.android_sys_apps_name,
+            R.string.android_sys_apps_desc,
+            "CAT_APPS"
+        ).apply {
+            hasContent = true
+            content.add(
+                XMBAndroidSettingShortcutItem(
+                    vsh, R.drawable.category_apps,
+                    R.string.android_sys_all_apps_name,  R.string.android_sys_all_apps_desc,
+                    android.provider.Settings.ACTION_APPLICATION_SETTINGS
+                )
+            )
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                content.add(
+                    XMBAndroidSettingShortcutItem(
+                        vsh, R.drawable.category_notifications,
+                        R.string.android_sys_nodisturb_name, R.string.android_sys_nodisturb_desc,
+                        android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS
+                    )
+                )
+                content.add(
+                    XMBAndroidSettingShortcutItem(
+                        vsh, R.drawable.category_notifications,
+                        R.string.android_sys_notification_name, R.string.android_sys_notification_desc,
+                        android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+                    )
+                )
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                content.add(
+                    XMBAndroidSettingShortcutItem(
+                        vsh, R.drawable.category_apps,
+                        R.string.android_sys_default_apps_name,  R.string.android_sys_default_apps_desc,
+                        android.provider.Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS
+                    )
+                )
+            }
+
+        })
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            content.add(XMBAndroidSettingShortcutItem(
+                vsh, R.drawable.icon_battery,
+                R.string.android_sys_battery_name,
+                R.string.android_sys_battery_desc,
+                android.provider.Settings.ACTION_BATTERY_SAVER_SETTINGS
+            ))
+        }
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_brightness,
+            R.string.android_sys_display_name,
+            R.string.android_sys_display_desc,
+            android.provider.Settings.ACTION_DISPLAY_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_volume,
+            R.string.android_sys_sound_name,
+            R.string.android_sys_sound_desc,
+            android.provider.Settings.ACTION_SOUND_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_storage,
+            R.string.android_sys_storage_name,
+            R.string.android_sys_storage_desc,
+            android.provider.Settings.ACTION_INTERNAL_STORAGE_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_privacy,
+            R.string.android_sys_privacy_name,
+            R.string.android_sys_privacy_desc,
+            android.provider.Settings.ACTION_PRIVACY_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_location,
+            R.string.android_sys_location_name,
+            R.string.android_sys_location_desc,
+            android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_security,
+            R.string.android_sys_security_name,
+            R.string.android_sys_security_desc,
+            android.provider.Settings.ACTION_SECURITY_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_accessibility,
+            R.string.android_sys_accessibility_name,
+            R.string.android_sys_accessibility_desc,
+            android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_info,
+            R.string.android_sys_systeminfo_name,
+            R.string.android_sys_systeminfo_desc,
+            "CAT_SYSTEM"
+        ).apply {
+            hasContent = true
+            content.add(XMBAndroidSettingShortcutItem(
+                vsh, R.drawable.icon_language,
+                R.string.android_sys_locale_name,
+                R.string.android_sys_locale_desc,
+                android.provider.Settings.ACTION_LOCALE_SETTINGS
+            ))
+
+            content.add(XMBAndroidSettingShortcutItem(
+                vsh, R.drawable.icon_datetime,
+                R.string.android_sys_datetime_name,
+                R.string.android_sys_datetime_desc,
+                android.provider.Settings.ACTION_DATE_SETTINGS
+            ))
+
+            content.add(XMBAndroidSettingShortcutItem(
+                vsh, R.drawable.icon_developer,
+                R.string.android_sys_developer_name,
+                R.string.android_sys_developer_desc,
+                android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS
+            ))
+        })
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_device_info,
+            R.string.android_sys_deviceinfo_name,
+            R.string.android_sys_deviceinfo_desc,
+            android.provider.Settings.ACTION_DEVICE_INFO_SETTINGS
+        ))
     }
 }

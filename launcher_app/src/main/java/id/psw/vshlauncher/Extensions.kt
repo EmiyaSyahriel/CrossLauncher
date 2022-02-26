@@ -98,5 +98,15 @@ fun <TType, TReturn> TType.callOnCount(countRef: Ref<Int>, lastStateRef: Ref<TRe
  * File.exists() is an expensive call and calling it on every frame is basically killing the phone or
  * storage media faster
  */
-fun File.delayedExistenceCheck(iTrack: Ref<Int>, lastState:Ref<Boolean>, pollEveryNCall:Int = 60) : Boolean =
+fun File.delayedExistenceCheck(iTrack: Ref<Int>, lastState:Ref<Boolean>, pollEveryNCall:Int = 61) : Boolean =
     callOnCount(iTrack, lastState, pollEveryNCall) { it.exists() }
+
+fun <K,V> MutableMap<K, V>.getOrMake(k:K, v:() -> V) : V{
+    return if(containsKey(k)){
+        get(k)!!
+    }else{
+        val rv = v()
+        put(k, rv)
+        rv
+    }
+}

@@ -46,7 +46,7 @@ class XMB : AppCompatActivity() {
     }
 
     private fun checkCanvasHwAcceleration(){
-        if(!xmbView.isHardwareAccelerated){
+        if(!xmbView.isHWAccelerated){
             vsh.postNotification(null, getString(R.string.no_hwaccel_warning_title),
                 getString(R.string.no_hwaccel_warning_desc)
             )
@@ -85,11 +85,13 @@ class XMB : AppCompatActivity() {
     override fun onPause() {
         vsh.removeAudioSource()
         vsh.preventPlayMedia = true
+        xmbView.pauseRendering()
         super.onPause()
     }
 
     override fun onResume() {
         vsh.xmbView = xmbView
+        xmbView.startDrawThread()
         super.onResume()
     }
 

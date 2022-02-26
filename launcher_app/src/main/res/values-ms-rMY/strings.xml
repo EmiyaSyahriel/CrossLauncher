@@ -119,4 +119,22 @@
         \n
         \nAMARAN INI BOLEH DISEMBUNYIKAN DARI MENU SISTEM
     </string>
+    <string name="setting_android_name">Tetapan Sistem Android</string>
+    <string name="setting_android_desc">Pintasan ke Tetapan Android</string>
+    <string name="android_sys_network_name"><![CDATA[Rangkaian & Internet]]></string>
+    <string name="android_sys_network_desc">Wi-Fi, mudah alih, penggunaan data dan tempat liputan</string>
+    <string name="android_sys_devices_name">Peranti yang disambungkan</string>
+    <string name="android_sys_devices_desc">Bluetooth, USB</string>
+    <string name="android_sys_apps_name"><![CDATA[Apl & pemberitahuan]]></string>
+    <string name="android_sys_apps_desc">Apl terbaharu, apl lalai</string>
+    <string name="android_sys_all_apps_name">Semua apl</string>
+    <string name="android_sys_all_apps_desc">Lihat kesemua apl</string>
+    <string name="android_sys_notification_name">Akses pemberitahuan</string>
+    <string name="android_sys_default_apps_name">Apl lalai</string>
+    <string name="android_sys_default_apps_desc">Peramban, Media, Telefon dan Mesej</string>
+    <string name="android_sys_setting_homepage_name">Halaman utama tetapan</string>
+    <string name="android_sys_setting_homepage_desc">Lancarkan halaman utama tetapan</string>
+    <string name="android_sys_nodisturb_name">Jangan ganggu</string>
+    <string name="android_sys_nodisturb_desc">Ganti semula apl yang boleh memberitahu walaupun dengan Jangan ganggu sedang aktif</string>
+    <string name="android_sys_notification_desc">Tetapkan akses pemberitahuan ke semua apl.</string>
 </resources>

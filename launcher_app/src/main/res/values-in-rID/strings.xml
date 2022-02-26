@@ -161,4 +161,22 @@
     <string name="settings_system_asian_console_desc">Apa yang akan dilakukan tombol bulat (B di Xbox, A di Nintendo) ke sistem</string>
     <string name="settings_system_asian_console_true">Setuju</string>
     <string name="settings_system_asian_console_false">Batal</string>
+    <string name="setting_android_name">Pengaturan Sistem Android</string>
+    <string name="setting_android_desc">Pintasan ke pengaturan sistem Android</string>
+    <string name="android_sys_network_name"><![CDATA[Jaringan & Internet]]></string>
+    <string name="android_sys_network_desc">Wi-Fi, seluler, penggunaan kuota, dan hotspot</string>
+    <string name="android_sys_devices_name">Perangkat tersambung</string>
+    <string name="android_sys_devices_desc">Bluetooth, USB</string>
+    <string name="android_sys_apps_name"><![CDATA[Aplikasi & notifikasi]]></string>
+    <string name="android_sys_apps_desc">Aplikasi baru-baru ini, aplikasi default</string>
+    <string name="android_sys_all_apps_name">Semua aplikasi</string>
+    <string name="android_sys_all_apps_desc">Lihat semua aplikasi</string>
+    <string name="android_sys_notification_name">Akses notifikasi</string>
+    <string name="android_sys_notification_desc">Atur akses notifikasi untuk semua aplikasi</string>
+    <string name="android_sys_default_apps_name">Aplikasi default</string>
+    <string name="android_sys_default_apps_desc">Peramban, Media, Telefon dan Perpesanan</string>
+    <string name="android_sys_setting_homepage_name">Halaman utama pengaturan</string>
+    <string name="android_sys_setting_homepage_desc">Luncurkan halaman utama aplikasi pengaturan</string>
+    <string name="android_sys_nodisturb_name">Jangan ganggu</string>
+    <string name="android_sys_nodisturb_desc">Ganti aplikasi yang bisa memberi notifikasi bahkan ketika mode Jangan ganggu aktif</string>
 </resources>

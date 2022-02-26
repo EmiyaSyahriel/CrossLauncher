@@ -1,5 +1,6 @@
 package id.psw.vshlauncher
 
+import android.app.ActivityManager
 import android.app.Application
 import android.content.*
 import android.content.pm.PackageManager
@@ -23,6 +24,7 @@ import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
+import kotlin.concurrent.thread
 
 class VSH : Application(), ServiceConnection {
 
@@ -46,6 +48,9 @@ class VSH : Application(), ServiceConnection {
         const val ITEM_CATEGORY_MUSIC = "vsh_music"
         const val ITEM_CATEGORY_SETTINGS = "vsh_settings"
         const val COPY_DATA_SIZE_BUFFER = 10240
+
+        val dbgMemInfo = Debug.MemoryInfo()
+        val actMemInfo = ActivityManager.MemoryInfo()
     }
 
     private var appUserUid = 0
@@ -196,6 +201,20 @@ class VSH : Application(), ServiceConnection {
         listLogAllSupportedLocale()
 
         super.onCreate()
+        meminfoThread = thread(name = "Memory Info Thread") {
+            memoryInfoReaderFunc()
+        }
+    }
+
+    private var shouldExit = false
+    private lateinit var meminfoThread : Thread
+    private fun memoryInfoReaderFunc(){
+        val actman = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        while(!shouldExit){
+            Debug.getMemoryInfo(dbgMemInfo)
+            actman.getMemoryInfo(actMemInfo)
+            Thread.sleep(1000)
+        }
     }
 
     private fun listLogAllSupportedLocale() {

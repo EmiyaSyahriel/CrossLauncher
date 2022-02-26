@@ -40,7 +40,7 @@ class VshViewMainMenuState {
     var clockLoadTransition : Float = 1.0f
     var menuScaleTime : Float = 0.0f
     var loadingIconBitmap : Bitmap? = null
-    var playVideoIcon = false
+    var playVideoIcon = true
 
     data class StatusBarSetting(
         var disabled : Boolean = false,
@@ -546,7 +546,7 @@ fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
                     if (isInViewport) {
                         verticalRectF.set(xPos - hSizeX, centerY - hSizeY, xPos + hSizeX, centerY + hSizeY)
                         if (item.hasIcon) {
-                            val iconAnchorX = (isPSP).select(1.0f, 0.5f)
+                            val iconAnchorX = (isPSP).select(0.5f, 0.5f)
                             if (item.hasAnimatedIcon && item.isAnimatedIconLoaded && playVideoIcon) {
                                 val animIconBm = item.animatedIcon.getFrame(time.deltaTime)
                                 ctx.drawBitmap(animIconBm, null, verticalRectF, iconPaint, FittingMode.FIT, iconAnchorX, 0.5f)

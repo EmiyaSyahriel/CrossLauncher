@@ -124,4 +124,22 @@
     <string name="settings_system_asian_console_desc">Opo sing dilakoni pijetan bunder (B nyang Xbox, A nyang Nintendo) nok sistem.</string>
     <string name="settings_system_asian_console_true">Laku</string>
     <string name="settings_system_asian_console_false">Balik</string>
+    <string name="setting_android_name">Setelan Sistem Android</string>
+    <string name="setting_android_desc">Terabasan menyang setelan sistem Android</string>
+    <string name="android_sys_network_name">Jaringan lan Internet</string>
+    <string name="android_sys_network_desc">Wi-Fi, data seluler, kuota lan hotspot</string>
+    <string name="android_sys_devices_name">Piranti sing kesambung</string>
+    <string name="android_sys_devices_desc">Bluetooth, USB</string>
+    <string name="android_sys_apps_name">Apl lan weweruhan</string>
+    <string name="android_sys_apps_desc">Apl sing tas digawe, apl biasa ne</string>
+    <string name="android_sys_all_apps_name">Kabeh Apl</string>
+    <string name="android_sys_all_apps_desc">Delok dhaftar kabeh apl</string>
+    <string name="android_sys_notification_name">Akses weweruhan</string>
+    <string name="android_sys_notification_desc">Ganti akses weweruhan dinggo kabeh apl</string>
+    <string name="android_sys_default_apps_name">Apl biasane</string>
+    <string name="android_sys_default_apps_desc">Peramban, Media, Telepon lan Lelayangan</string>
+    <string name="android_sys_setting_homepage_name">Emper setelan</string>
+    <string name="android_sys_setting_homepage_desc">Bukak langsung halaman ngarep setelan</string>
+    <string name="android_sys_nodisturb_name">Ojo ngganggu</string>
+    <string name="android_sys_nodisturb_desc">Ganti apl sing endi wae sing panggah iso ngeweruhi wayah mode Ojo ngganggu aktif</string>
 </resources>
