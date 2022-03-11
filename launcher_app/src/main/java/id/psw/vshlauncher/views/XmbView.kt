@@ -14,6 +14,7 @@ import id.psw.vshlauncher.*
 import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.views.dialogviews.TestDialogView
+import java.util.*
 import kotlin.concurrent.thread
 import kotlin.math.roundToInt
 
@@ -51,6 +52,7 @@ class XmbView @JvmOverloads constructor(
         color = Color.GREEN
         textSize = 20.0f
     }
+    var keygenActive = false
 
     var fpsLimit = 0L
     private lateinit var drawThread : Thread
@@ -270,9 +272,13 @@ class XmbView @JvmOverloads constructor(
         touchStartPointF.set(start)
         touchCurrentPointF.set(current)
         lastTouchAction = action
-        when(currentPage){
-            VshViewPage.MainMenu -> menuOnTouchScreen(start, current, action)
+        val call : (PointF, PointF, Int) -> Unit = when(currentPage){
+            VshViewPage.MainMenu -> ::menuOnTouchScreen
+            VshViewPage.Dialog -> ::dlgOnTouchScreen
+            VshViewPage.GameBoot -> ::cbOnTouchScreen
+            VshViewPage.ColdBoot -> ::gbOnTouchScreen
         }
+        call(start, current, action)
     }
 
     fun onUpdate(){
@@ -407,13 +413,36 @@ class XmbView @JvmOverloads constructor(
                     }
 
                     drawDebugLocation(canvas, context.xmb)
-
+                    drawKeygen(canvas)
                     drawNotifications(canvas)
                     if(context.vsh.showLauncherFPS) drawFPS(canvas)
                 }
             }
         }
         VSH.Gamepad.update(time.deltaTime)
+    }
+
+    private fun drawKeygen(ctx: Canvas) {
+        if(keygenActive) return
+        val cal = Calendar.getInstance()
+        val mon = cal.get(Calendar.MONTH)
+        val day = cal.get(Calendar.DAY_OF_MONTH)
+
+        // April Mob wkwkwkwkwkwk
+        if(day == 1 && mon == 3){
+            dummyPaint.textAlign = Paint.Align.LEFT
+            dummyPaint.color = Color.WHITE
+            dummyPaint.alpha = 64
+
+            val xs = scaling.viewport.right - 200.0f
+            val ys = scaling.viewport.bottom - 50.0f
+            dummyPaint.textSize = 15.0f
+            ctx.drawText(context.getString(R.string.settings_system_test_display_title), xs, ys, dummyPaint)
+            dummyPaint.textSize = 10.0f
+            ctx.drawText(context.getString(R.string.settings_system_test_display_desc), xs, ys + 20.0f, dummyPaint)
+            dummyPaint.alpha = 255
+            dummyPaint.textSize = 15.0f
+        }
     }
 
     private fun drawDebugLocation(ctx: Canvas, xmb: XMB) {
@@ -444,4 +473,5 @@ class XmbView @JvmOverloads constructor(
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         pauseRendering()
     }
+
 }

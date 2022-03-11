@@ -20,8 +20,10 @@ class XMBAdaptiveIconRenderer(ctx: VSH) {
 
     companion object {
         private const val TAG = "XMBIconGen"
-        private var WIDTH = 320
-        private var HEIGHT = 176
+        var BaseWidth = 120
+        var BaseHeight = 66
+        var WIDTH = BaseWidth
+        var HEIGHT = BaseHeight
         val Width get() = WIDTH
         val Height get() = HEIGHT
 
@@ -50,8 +52,8 @@ class XMBAdaptiveIconRenderer(ctx: VSH) {
 
     init {
         val d = ctx.resources.displayMetrics.density
-        WIDTH = (320 * d).toInt()
-        HEIGHT = (176 * d).toInt()
+        WIDTH = (BaseWidth * d).toInt()
+        HEIGHT = (BaseHeight * d).toInt()
         val mSb = StringBuilder()
         mSb.appendLine("Icon file source : ")
         ctx.getAllPathsFor(VshBaseDirs.APPS_DIR, createParentDir = true).forEach {

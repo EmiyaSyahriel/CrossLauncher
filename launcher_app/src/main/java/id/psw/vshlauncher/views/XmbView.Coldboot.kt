@@ -1,9 +1,7 @@
 package id.psw.vshlauncher.views
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
+import android.view.MotionEvent
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.typography.FontCollections
@@ -83,7 +81,8 @@ fun XmbView.cbRender(ctx: Canvas){
             }
 
             ctx.drawARGB((epiwarnPaint.alpha * 0.75f).toInt(), 0, 0, 0)
-            val lines = context.getString(R.string.photoepilepsy_warning).lines()
+            val lines =
+                epiwarnPaint.wrapText(context.getString(R.string.photoepilepsy_warning), scaling.target.width() - 300.0f).lines()
             val lCount = lines.size
             val centerY = scaling.target.centerY()
             val hCount = lines.maxOf {
@@ -99,6 +98,18 @@ fun XmbView.cbRender(ctx: Canvas){
             }
         } else {
             switchPage(VshViewPage.MainMenu)
+        }
+    }
+}
+
+fun XmbView.cbOnTouchScreen(a: PointF, b:PointF, act:Int){
+    if(act == MotionEvent.ACTION_DOWN){
+        // Skip coldboot
+        with(state.coldBoot){
+            when {
+                currentTime <= 5.0f -> currentTime = 5.0f
+                currentTime > 5.0f && currentTime <= 10.0f && !hideEpilepsyWarning -> currentTime = 10.0f
+            }
         }
     }
 }

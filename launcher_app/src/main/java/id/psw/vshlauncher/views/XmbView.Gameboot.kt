@@ -2,6 +2,7 @@ package id.psw.vshlauncher.views
 
 import android.graphics.*
 import android.util.Log
+import android.view.MotionEvent
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withScale
 import id.psw.vshlauncher.*
@@ -165,6 +166,14 @@ fun XmbView.gbRender(ctx: Canvas){
                     ctx.drawBitmap(bootImg, null, scaling.target, imagePaint, FittingMode.FIT)
                 }
             }
+        }
+    }
+}
+
+fun XmbView.gbOnTouchScreen(a:PointF, b:PointF, act:Int){
+    if(act == MotionEvent.ACTION_DOWN){
+        with(state.gameBoot){
+            currentTime = 4.0f
         }
     }
 }

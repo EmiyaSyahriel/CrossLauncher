@@ -108,14 +108,10 @@
     <string name="settings_system_language_description">Basa sing di ketokne nyang paluncur</string>
     <string name="photoepilepsy_warning">
         EPILEPSI MERGO SENSITIFITAS CAHAYA
-        \nLEK SEMISAL UMAK NDUWE RIWAYAT EPILEPSI UTOWO KEJANG, JAJAL KONSULTASI NOK DOKTER SAK
-        \nDURUNG E NGGAWE. ONOK POLA SING ISO NGGARAI GEJALA TANPA RIWAYAT, SAK DURUNG E UMAK
-        \nNGGAWE PALUNCUR IKI, MONGGO DIWACA HALAMAN PANDUAN SING ONOK GITHUB.
+        \nLEK SEMISAL UMAK NDUWE RIWAYAT EPILEPSI UTOWO KEJANG, JAJAL KONSULTASI NOK DOKTER SAK DURUNG E NGGAWE. ONOK POLA SING ISO NGGARAI GEJALA TANPA RIWAYAT, SAK DURUNG E UMAK NGGAWE PALUNCUR IKI, MONGGO DIWACA HALAMAN PANDUAN SING ONOK GITHUB.
         \n
         \nAPLIKASI IKI UDUK EMULATOR!
-        \nAPLIKASI IKI MURNI PELUNCUR SING NYIMULASIKNO BENTUK E HALAMAN NGAREP E PS3/PSP,
-        \nGUDUK EMULATOR. SEMISAL UMAK NGUNDHUH APLIKASI IKI NGIRANE EMULATOR, UMAK BEBAS NGEHAPUS
-        \nAPLIKASI IKI TEKAN PERANGKAT E UMAK.
+        \nAPLIKASI IKI MURNI PELUNCUR SING NYIMULASIKNO BENTUK E HALAMAN NGAREP E PS3/PSP, GUDUK EMULATOR. SEMISAL UMAK NGUNDHUH APLIKASI IKI NGIRANE EMULATOR, UMAK BEBAS NGEHAPUS APLIKASI IKI TEKAN PERANGKAT E UMAK.
         \n
         \nTULISAN IKI ISO DISINGITNO TEKAN SETELAN SISTEM
     </string>
@@ -142,4 +138,17 @@
     <string name="android_sys_setting_homepage_desc">Bukak langsung halaman ngarep setelan</string>
     <string name="android_sys_nodisturb_name">Ojo ngganggu</string>
     <string name="android_sys_nodisturb_desc">Ganti apl sing endi ae sing panggah iso ngeweruhi wayah mode Ojo ngganggu aktif</string>
+    <string name="common_install">Pasang</string>
+    <string name="app_force_kill">Peksa Mandheg</string>
+    <string name="force_kill_sent_desc">Panjalukan kanggo nutup aplikasi wes dikirim menyang sistem Android : %s</string>
+    <string name="force_kill_sent_title">Aplikasi di endheg peksa</string>
+    <string name="install_shortcut_dialog_title">Pasang Terabasan</string>
+    <string name="android_sys_battery_name">Batu</string>
+    <string name="android_sys_battery_desc">Kanggonan batu, setelan pengawet batu</string>
+    <string name="android_sys_display_name">Tampilan</string>
+    <string name="android_sys_display_desc">Latar belakang, layar turu, ukuran tulisan</string>
+    <string name="android_sys_sound_name">Suara</string>
+    <string name="android_sys_sound_desc">Volume, geter, Ojo Ganggu</string>
+    <string name="android_sys_storage_name">Penyimpanan</string>
+    <string name="android_sys_storage_desc">Penyimpanan sing kosong, info piranti penyimpanan</string>
 </resources>

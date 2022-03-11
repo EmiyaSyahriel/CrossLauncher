@@ -1,5 +1,7 @@
 package id.psw.vshlauncher.types.items
 
+import android.app.ActivityManager
+import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
@@ -172,19 +174,36 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
             vsh.setLoadingFinished(handle)
             menuItems.add(
                 XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_launch) }, { false }, 0){ _launch(this) })
+
+
             menuItems.add(
-                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_find_on_playstore) }, { false }, 1) {
+                XMBMenuItem.XMBMenuItemLambda({vsh.getString(R.string.app_force_kill)},
+                    { false }, 1)
+                {
+                    val actMan = vsh.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                    actMan.killBackgroundProcesses(resInfo.activityInfo.processName)
+                    vsh.postNotification(null,
+                        vsh.getString(R.string.force_kill_sent_title),
+                        vsh.getString(R.string.force_kill_sent_desc, resInfo.activityInfo.processName))
+                }
+            )
+
+            menuItems.add(
+                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_uninstall) },
+                    { isSystemApp },2){
+                    vsh.xmbView?.context?.xmb?.appRequestUninstall(resInfo.activityInfo.packageName)
+                }
+            )
+
+
+            menuItems.add(
+                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_find_on_playstore) }, { false }, 4) {
                     vsh.xmbView?.context?.xmb?.appOpenInPlayStore(resInfo.activityInfo.packageName)
                 }
             )
-                menuItems.add(
-                    XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_uninstall) }, { isSystemApp },2){
-                        vsh.xmbView?.context?.xmb?.appRequestUninstall(resInfo.activityInfo.packageName)
-                    }
-                )
 
             menuItems.add(
-                XMBMenuItem.XMBMenuItemLambda({vsh.getString(R.string.app_create_customization_folder)}, {false}, 3){
+                XMBMenuItem.XMBMenuItemLambda({vsh.getString(R.string.app_create_customization_folder)}, {false}, 5){
                     vsh.getAllPathsFor(VshBaseDirs.APPS_DIR, resInfo.uniqueActivityName).forEach { file ->
                         var found = file.exists()
                         if(!found){

@@ -108,14 +108,10 @@
     <string name="settings_system_asian_console_false">Batal</string>
     <string name="photoepilepsy_warning">
         AMARAN EPILEPSI FOTOSENSITIF
-        \nJIKA ANDA MEMPUNYAI SEJARAH EPILEPSI ATAU SAWAN, RUJUK DOKTOR SEBELUM MENGGUNAKAN, CORAK
-        \nTERTENTU MUNGKIN MENCETUS SAWAN TANPA SEJARAH TERDAHULU, SEBELUM MENGGUNAKAN PELANCAR
-        \nINI, BACA DENGAN TELITI MANUAL ARAHAN YANG DIHOSKAN DI GITHUB.
+        \nJIKA ANDA MEMPUNYAI SEJARAH EPILEPSI ATAU SAWAN, RUJUK DOKTOR SEBELUM MENGGUNAKAN, CORAK TERTENTU MUNGKIN MENCETUS SAWAN TANPA SEJARAH TERDAHULU, SEBELUM MENGGUNAKAN PELANCAR INI, BACA DENGAN TELITI MANUAL ARAHAN YANG DIHOSKAN DI GITHUB.
         \n
         \nAPL INI BUKAN EMULATOR!
-        \nAPL INI IALAH SEBENARNYA PELANCAR YANG MENYIMULASI PENGALAMAN MENU RUMAH PS3/PSP,
-        \nBUKAN EMULATOR PS3/PSP. JIKA ANDA MUAT TURUN APL INI DENGAN MEMIKIRKAN INI SEBAGAI
-        \nEMULATOR, ANDA BEBAS UNTUK NYAHPASANGNYA.
+        \nAPL INI IALAH SEBENARNYA PELANCAR YANG MENYIMULASI PENGALAMAN MENU RUMAH PS3/PSP, BUKAN EMULATOR PS3/PSP. JIKA ANDA MUAT TURUN APL INI DENGAN MEMIKIRKAN INI SEBAGAI EMULATOR, ANDA BEBAS UNTUK NYAHPASANGNYA.
         \n
         \nAMARAN INI BOLEH DISEMBUNYIKAN DARI MENU SISTEM
     </string>
@@ -137,4 +133,35 @@
     <string name="android_sys_nodisturb_name">Jangan ganggu</string>
     <string name="android_sys_nodisturb_desc">Ganti semula apl yang boleh memberitahu walaupun dengan Jangan ganggu sedang aktif</string>
     <string name="android_sys_notification_desc">Tetapkan akses pemberitahuan ke semua apl.</string>
+    <string name="common_install">Pasang</string>
+    <string name="app_force_kill">Paksa Hentikan</string>
+    <string name="force_kill_sent_desc">Isyarat berhenti paksa telah dihantar ke sistem Android : %s</string>
+    <string name="force_kill_sent_title">Aplikasi telah dihentikan paksa</string>
+    <string name="install_shortcut_dialog_title">Pasang Pintasan</string>
+    <string name="android_sys_battery_name">Bateri</string>
+    <string name="android_sys_battery_desc">Penggunaan bateri, tetapan penjimat bateri</string>
+    <string name="android_sys_display_name">Paparan</string>
+    <string name="android_sys_sound_name">Suara</string>
+    <string name="android_sys_display_desc">Kertas dinding, tidur, saiz fon</string>
+    <string name="android_sys_sound_desc">Kelantangan, getaran, Jangan Ganggu</string>
+    <string name="android_sys_storage_name">Penyimpanan</string>
+    <string name="android_sys_storage_desc">Ruang kosong, maklumat peranti storan</string>
+    <string name="android_sys_privacy_name">Privasi</string>
+    <string name="android_sys_privacy_desc">Kebenaran, aktiviti akaun, data peribadi</string>
+    <string name="android_sys_location_name">Lokasi</string>
+    <string name="android_sys_location_desc">Tunjukkan apl mempunyai akses lokasi</string>
+    <string name="android_sys_security_name">Keselamatan</string>
+    <string name="android_sys_security_desc">Kunci skrin, cap jari</string>
+    <string name="android_sys_accessibility_name">Kebolehcapaian</string>
+    <string name="android_sys_accessibility_desc">Pembaca skrin, paparan, kawalan interaksi</string>
+    <string name="android_sys_systeminfo_name">Sistem</string>
+    <string name="android_sys_systeminfo_desc">Bahasa, gerak isyarat, masa, sandaran</string>
+    <string name="android_sys_locale_name"><![CDATA[Bahasa & Input]]></string>
+    <string name="android_sys_locale_desc">Bahasa paparan, pemformatan nombor, sistem input</string>
+    <string name="android_sys_datetime_name"><![CDATA[Date & time]]></string>
+    <string name="android_sys_datetime_desc">Tarikh, masa, zon masa</string>
+    <string name="android_sys_developer_name">Pilihan pemaju</string>
+    <string name="android_sys_developer_desc">Tetapan pembangun, tweak grafik</string>
+    <string name="android_sys_deviceinfo_name">Mengenai peranti</string>
+    <string name="android_sys_deviceinfo_desc">Versi Android, alamat IP, IMEI</string>
 </resources>

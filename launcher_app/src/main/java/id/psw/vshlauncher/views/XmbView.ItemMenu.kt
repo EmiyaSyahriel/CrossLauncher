@@ -51,7 +51,7 @@ fun XmbView.menuMoveItemMenuCursor(isDown:Boolean){
                         val sortedMenu = menuItems.sortedBy { it.displayOrder }
                         val cIndex = sortedMenu.indexOfFirst { it.displayOrder == selectedIndex }
                         val newIndex = cIndex + isDown.select(1, -1)
-                        if(cIndex >= 0 && newIndex < menuItems.size){
+                        if(cIndex >= 0 && newIndex < menuItems.size && newIndex >= 0){
                             selectedIndex = sortedMenu[newIndex].displayOrder
                         }
                     }

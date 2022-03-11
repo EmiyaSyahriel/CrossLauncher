@@ -6,6 +6,7 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.media.MediaPlayer
+import android.media.SoundPool
 import android.os.*
 import android.util.Log
 import androidx.preference.Preference
@@ -142,6 +143,8 @@ class VSH : Application(), ServiceConnection {
         systemBgmPlayer.prepareAsync()
     }
 
+
+
     fun setAudioSource(newSrc: File, doNotStart : Boolean = false){
         if(preventPlayMedia) return
         if(newSrc.absolutePath != bgmPlayerActiveSrc.absolutePath){
@@ -208,12 +211,15 @@ class VSH : Application(), ServiceConnection {
     }
 
     private var shouldExit = false
+    var doMemoryInfoGrab = false
     private lateinit var meminfoThread : Thread
     private fun memoryInfoReaderFunc(){
         val actman = getSystemService(ACTIVITY_SERVICE) as ActivityManager
         while(!shouldExit){
-            Debug.getMemoryInfo(dbgMemInfo)
-            actman.getMemoryInfo(actMemInfo)
+            if(doMemoryInfoGrab){
+                Debug.getMemoryInfo(dbgMemInfo)
+                actman.getMemoryInfo(actMemInfo)
+            }
             Thread.sleep(1000)
         }
     }
@@ -417,6 +423,10 @@ class VSH : Application(), ServiceConnection {
     }
 
     fun saveCustomShortcut(intent: Intent) {
+
+    }
+
+    fun installShortcut(intent: Intent) {
 
     }
 

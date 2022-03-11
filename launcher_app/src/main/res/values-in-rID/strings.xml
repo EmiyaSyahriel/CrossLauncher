@@ -145,14 +145,10 @@
     <string name="settings_system_language_description">Bahasa yang di tampilkan pada launcher</string>
     <string name="photoepilepsy_warning">
         PERINGATAN EPILEPSI FOTOSENSITIF
-        \nJIKA ANDA MEMILIKI RIWAYAT EPILEPSI ATAU KEJANG, SILAHKAN BERKONSULTASI KE DOKTER SEBELUM
-        \nPEMAKAIAN. BEBERAPA POLA DAPAT MEMICU GEJALA TANPA RIWAYAT SEBELUMNYA, SEBELUM MEMAKAI
-        \nPELUNCUR INI, SILAHKAN BACA HALAMAN PANDUAN DI GITHUB DENGAN SEKSAMA.
+        \nJIKA ANDA MEMILIKI RIWAYAT EPILEPSI ATAU KEJANG, SILAHKAN BERKONSULTASI KE DOKTER SEBELUM PEMAKAIAN. BEBERAPA POLA DAPAT MEMICU GEJALA TANPA RIWAYAT SEBELUMNYA, SEBELUM MEMAKAI PELUNCUR INI, SILAHKAN BACA HALAMAN PANDUAN DI GITHUB DENGAN SEKSAMA.
         \n
         \nAPLIKASI INI BUKAN EMULATOR!
-        \nAPLIKASI INI HANYA SEBUAH PELUNCUR YANG MENIRU PENGALAMAN HALAMAN DEPAN PS3/PSP DI ANDROID,
-        \nBUKAN EMULATOR PS3/PSP. JIKALAU ANDA MEMASANG APLIKASI INI MENGIRA ADALAH SEBUAH EMULATOR,
-        \nANDA BEBAS MENCOPOT PEMASANGAN APLIKASI INI.
+        \nAPLIKASI INI HANYA SEBUAH PELUNCUR YANG MENIRU PENGALAMAN HALAMAN DEPAN PS3/PSP DI ANDROID, BUKAN EMULATOR PS3/PSP. JIKALAU ANDA MEMASANG APLIKASI INI MENGIRA ADALAH SEBUAH EMULATOR, ANDA BEBAS MENCOPOT PEMASANGAN APLIKASI INI.
         \n
         \nPERINGATAN INI BISA DI MATIKAN LEWAT PENGATURAN SISTEM
     </string>
@@ -179,4 +175,35 @@
     <string name="android_sys_setting_homepage_desc">Luncurkan halaman utama aplikasi pengaturan</string>
     <string name="android_sys_nodisturb_name">Jangan ganggu</string>
     <string name="android_sys_nodisturb_desc">Ganti aplikasi yang bisa memberi notifikasi bahkan ketika mode Jangan ganggu aktif</string>
+    <string name="common_install">Pasang</string>
+    <string name="app_force_kill">Hentikan Paksa</string>
+    <string name="force_kill_sent_desc">Permintaan untuk menghentikan paksa aplikasi terkirim ke sistem Android : %s</string>
+    <string name="force_kill_sent_title">Aplikasi di hentikan paksa</string>
+    <string name="install_shortcut_dialog_title">Pasang Pintasan</string>
+    <string name="android_sys_battery_name">Baterai</string>
+    <string name="android_sys_battery_desc">Penggunaan baterai, pengaturan penghemat baterai</string>
+    <string name="android_sys_display_name">Tampilan</string>
+    <string name="android_sys_display_desc">Wallpaper, tidur, ukuran font</string>
+    <string name="android_sys_sound_name">Suara</string>
+    <string name="android_sys_sound_desc">Volume, getar, Jangan Ganggu</string>
+    <string name="android_sys_storage_name">Penyimpanan</string>
+    <string name="android_sys_storage_desc">Penyimpanan bebas, info perangkat penyimpanan</string>
+    <string name="android_sys_privacy_name">Privasi</string>
+    <string name="android_sys_privacy_desc">Izin, aktifias akun, data pribadi</string>
+    <string name="android_sys_location_name">Lokasi</string>
+    <string name="android_sys_location_desc">Aplikasi yang bisa mengakses lokasi</string>
+    <string name="android_sys_security_name">Keamanan</string>
+    <string name="android_sys_security_desc">Kunci layar, sidik jari</string>
+    <string name="android_sys_accessibility_name">Aksesibiltas</string>
+    <string name="android_sys_accessibility_desc">Pembaca layar, tampilan, kendali interaksi</string>
+    <string name="android_sys_systeminfo_name">Sistem</string>
+    <string name="android_sys_systeminfo_desc">Bahasa, gestur, waktu, backup</string>
+    <string name="android_sys_locale_name"><![CDATA[Bahasa & masukan]]></string>
+    <string name="android_sys_locale_desc">Bahasa tampilan, format angka, sistem masukan</string>
+    <string name="android_sys_datetime_name"><![CDATA[Tanggal & waktu]]></string>
+    <string name="android_sys_datetime_desc">Tanggal, waktu, zona waktu</string>
+    <string name="android_sys_developer_name">Opsi pengembang</string>
+    <string name="android_sys_developer_desc">Pengaturan pengembangan aplikasi, oprekan graifk</string>
+    <string name="android_sys_deviceinfo_name">Tentang perangkat</string>
+    <string name="android_sys_deviceinfo_desc">Versi Android, alamat IP, IMEI</string>
 </resources>

@@ -28,7 +28,7 @@ class XMB : AppCompatActivity() {
         const val ACT_REQ_UNINSTALL = 0xDACED0
         const val INSTALL_SHORTCUT = "com.android.launcher.action.INSTALL_SHORTCUT"
     }
-    private lateinit var xmbView : XmbView
+    lateinit var xmbView : XmbView
     var skipColdBoot = false
     private var _lastOrientation : Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +48,18 @@ class XMB : AppCompatActivity() {
         if(_lastOrientation == Configuration.ORIENTATION_PORTRAIT){
             postPortraitScreenOrientationWarning()
         }
+        vsh.doMemoryInfoGrab = true
+        if(isCreateShortcutIntent(intent)){
+            showShortcutCreationDialog(intent)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+
+        if(isCreateShortcutIntent(intent)){
+            showShortcutCreationDialog(intent)
+        }
+        super.onNewIntent(intent)
     }
 
     private fun readPreferences() {
@@ -99,12 +111,14 @@ class XMB : AppCompatActivity() {
         vsh.removeAudioSource()
         vsh.preventPlayMedia = true
         xmbView.pauseRendering()
+        vsh.doMemoryInfoGrab = false
         super.onPause()
     }
 
     override fun onResume() {
         vsh.xmbView = xmbView
         xmbView.startDrawThread()
+        vsh.doMemoryInfoGrab = true
         super.onResume()
     }
 

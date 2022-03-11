@@ -34,8 +34,21 @@ class XMBAndroidSettingShortcutItem(
     override var content: ArrayList<XMBItem> = arrayListOf()
 
     override val id: String = intentLaunchId
+    private var _isActivityExists = false
+    override val isHidden: Boolean
+        get() = !_isActivityExists
 
-    private fun launchSetting(i:XMBItem){
+    init {
+        val i = Intent(intentLaunchId)
+        i.flags = i.flags or Intent.FLAG_ACTIVITY_NEW_TASK
+        _isActivityExists = i.resolveActivityInfo(vsh.packageManager, 0) != null
+
+        if(intentLaunchId.startsWith("id.psw.vshlauncher")){
+            _isActivityExists = true
+        }
+    }
+
+    private fun launchSetting(xmb:XMBItem){
         try{
             val i = Intent(intentLaunchId)
             i.flags = i.flags or Intent.FLAG_ACTIVITY_NEW_TASK

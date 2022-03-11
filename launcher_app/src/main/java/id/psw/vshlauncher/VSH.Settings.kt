@@ -9,6 +9,10 @@ import id.psw.vshlauncher.types.items.XMBMenuItem
 import id.psw.vshlauncher.types.items.XMBSettingsCategory
 import id.psw.vshlauncher.types.items.XMBSettingsItem
 import id.psw.vshlauncher.views.XMBLayoutType
+import id.psw.vshlauncher.views.dialogviews.TestDialogView
+import id.psw.vshlauncher.views.showDialog
+import java.util.*
+import kotlin.collections.ArrayList
 
 object SettingsCategoryID {
     const val CATEGORY_SETTINGS_ANDROID = "settings_category_android"
@@ -129,6 +133,24 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
             pref.edit().putInt(PrefEntry.CONFIRM_BUTTON,
                 GamepadSubmodule.Key.spotMarkedByX.select(1,0)).apply()
         })
+
+        val cal = Calendar.getInstance()
+        val mon = cal.get(Calendar.MONTH)
+        val day = cal.get(Calendar.DAY_OF_MONTH)
+        if(mon == 3 && day == 1){
+            content.add(XMBSettingsItem(vsh, "settings_what_is_it",
+                R.string.settings_system_test_option_name,
+                R.string.settings_system_test_option_desc,
+                R.drawable.icon_developer, {
+                    val i = xmbView?.keygenActive?.select(
+                        R.string.settings_system_test_option_value_on,
+                        R.string.settings_system_test_option_value_off) ?: R.string.empty_string
+                    getString(i)
+                }
+            ){
+                xmbView?.keygenActive = true
+            })
+        }
     }
 }
 
@@ -139,7 +161,12 @@ private fun VSH.createCategoryDebug() : XMBSettingsCategory{
         R.drawable.category_debug,
         R.string.settings_category_debug_name,
         R.string.settings_category_debug_desc
-    )
+    ).apply {
+        content.add(XMBSettingsItem(vsh, "dbg_launch_dialog_test",
+            R.string.dbg_launch_dialog_test, R.string.empty_string, R.drawable.category_debug, {""}){
+            xmbView?.showDialog(TestDialogView(vsh))
+        })
+    }
 }
 
 private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
@@ -175,15 +202,7 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                         XMBLayoutType.PS3 -> XMBLayoutType.PSP
                         else -> XMBLayoutType.PS3
                     }
-
-                    val srlzLayout = when(view.state.crossMenu.layoutMode){
-                        XMBLayoutType.PS3 -> 0
-                        XMBLayoutType.PSP -> 1
-                        XMBLayoutType.Bravia -> 2
-                        XMBLayoutType.PSX -> 3
-                        else -> 0
-                    }
-                    pref.edit().putInt(PrefEntry.MENU_LAYOUT, srlzLayout).apply()
+                    saveLayoutSetting()
                 }
             }.apply{
                 hasMenu = true
@@ -191,13 +210,22 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
 
                     dMenu.add(XMBMenuItem.XMBMenuItemLambda(
                         {"PlayStation Portable"}, {false}, 1)
-                    {  xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PSP })
+                    {
+                        xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PSP
+                        saveLayoutSetting()
+                    })
                     dMenu.add(XMBMenuItem.XMBMenuItemLambda(
                         {"PlayStation 3"}, {false}, 0)
-                    { xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PS3 })
+                    {
+                        xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PS3
+                        saveLayoutSetting()
+                    })
                     dMenu.add(XMBMenuItem.XMBMenuItemLambda(
                         {"Bravia TV"}, {false}, 2)
-                    { xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.Bravia })
+                    {
+                        xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.Bravia
+                        saveLayoutSetting()
+                    })
                 menuItems = dMenu
             }
         )
@@ -234,6 +262,20 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
             }
         )
         // endregion
+    }
+}
+
+fun VSH.saveLayoutSetting() {
+    val view = xmbView
+    if(view != null) {
+        val srlzLayout = when (view.state.crossMenu.layoutMode) {
+            XMBLayoutType.PS3 -> 0
+            XMBLayoutType.PSP -> 1
+            XMBLayoutType.Bravia -> 2
+            XMBLayoutType.PSX -> 3
+            else -> 0
+        }
+        pref.edit().putInt(PrefEntry.MENU_LAYOUT, srlzLayout).apply()
     }
 }
 
@@ -295,7 +337,7 @@ private fun VSH.createCategoryAndroidSetting() : XMBSettingsCategory{
             vsh, R.drawable.category_apps,
             R.string.android_sys_apps_name,
             R.string.android_sys_apps_desc,
-            "CAT_APPS"
+            "id.psw.vshlauncher.settings.category.apps"
         ).apply {
             hasContent = true
             content.add(
@@ -387,7 +429,7 @@ private fun VSH.createCategoryAndroidSetting() : XMBSettingsCategory{
             vsh, R.drawable.icon_info,
             R.string.android_sys_systeminfo_name,
             R.string.android_sys_systeminfo_desc,
-            "CAT_SYSTEM"
+            "id.psw.vshlauncher.settings.category.system"
         ).apply {
             hasContent = true
             content.add(XMBAndroidSettingShortcutItem(

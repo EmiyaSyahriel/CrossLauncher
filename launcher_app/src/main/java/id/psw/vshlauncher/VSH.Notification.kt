@@ -6,13 +6,13 @@ import android.util.Log
 import id.psw.vshlauncher.VSH.Companion.TAG
 import id.psw.vshlauncher.types.XMBNotification
 
-fun VSH.postNotification(icon: Bitmap?, title:String, description:String, time:Float = 3.0f) : Long {
+fun VSH.postNotification(icon: Bitmap?, title:String, description:String, time:Float = 3.0f, destroy:Boolean = false) : Long {
     synchronized(notifications){
         var hwnd = 0L
         while(notifications.find{it.handle==hwnd} != null){
             hwnd++;
         }
-        val notif = XMBNotification(hwnd, icon, title, description, time);
+        val notif = XMBNotification(hwnd, icon, title, description, time, destroy);
         notifications.add(notif)
         return hwnd
     }
@@ -27,14 +27,16 @@ fun VSH.removeNotification(hWnd:Long) : Boolean =            synchronized(notifi
 
 fun VSH.getUpdatedNotification() : ArrayList<XMBNotification> {
     synchronized(notifications){
-
-
         val cTime = SystemClock.uptimeMillis()
         val dTime = cTime - notificationLastCheckTime
         val fdTime = dTime / 1000.0f
         notificationLastCheckTime = cTime
         notifications.forEach { it.remainingTime -= fdTime }
         val lastNotifCount = notifications.size
+        notifications.filter { it.destroy && it.remainingTime <= 0 }.forEach {
+            it.icon?.recycle()
+        }
+
         if(notifications.removeAll { it.remainingTime <= 0 }){
             Log.d(TAG, "Removed ${lastNotifCount - notifications.size} Notification due to expired")
         }

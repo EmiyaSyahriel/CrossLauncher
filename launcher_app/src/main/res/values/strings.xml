@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Cross Launcher</string>
+    <string name="app_desc">A launcher simulating Sony XrossMediaBar Experiences</string>
     <string name="locale_lang_display_name">English (Default)</string>
     <string name="orient_unknown">Unknown Orientation</string>
     <string name="orient_landscape">Landscape</string>
@@ -149,14 +150,10 @@
     <string name="settings_system_language_description">Display language of the Launcher</string>
     <string name="photoepilepsy_warning">
         PHOTOSENSITIVE EPILEPSY
-        \nIF YOU HAVE A HISTORY OF EPILEPSY OR SEIZURES, CONSULT A DOCTOR BEFORE USE, CERTAIN
-        \nPATTERN MAY TRIGGER SEIZURES WITH NO PRIOR HISTORY, BEFORE USING THIS LAUNCHER,
-        \nCAREFULLY READ THE INSTRUCTION MANUAL HOSTED AT GITHUB.
+        \nIF YOU HAVE A HISTORY OF EPILEPSY OR SEIZURES, CONSULT A DOCTOR BEFORE USE, CERTAIN PATTERN MAY TRIGGER SEIZURES WITH NO PRIOR HISTORY, BEFORE USING THIS LAUNCHER, CAREFULLY READ THE INSTRUCTION MANUAL HOSTED AT GITHUB.
         \n
         \nTHIS APP IS NOT AN EMULATOR!
-        \nTHIS APP IS PURELY A LAUNCHER THAT SIMULATES A PS3/PSP HOME MENU EXPERIENCES,
-        \nNOT A PS3/PSP EMULATOR. IN CASE YOU DOWNLOAD THIS APP THINKING THIS AS AN EMULATOR
-        \nYOU ARE FREE TO UNINSTALL IT.
+        \nTHIS APP IS PURELY A LAUNCHER THAT SIMULATES A PS3/PSP HOME MENU EXPERIENCES, NOT A PS3/PSP EMULATOR. IN CASE YOU DOWNLOAD THIS APP THINKING THIS AS AN EMULATOR YOU ARE FREE TO UNINSTALL IT.
         \n
         \nTHIS WARNING CAN BE DISABLED FROM SYSTEM MENU
     </string>
@@ -208,10 +205,22 @@
     <string name="android_sys_systeminfo_desc">Languages, gestures, time, backup</string>
     <string name="android_sys_locale_name"><![CDATA[Language & input]]></string>
     <string name="android_sys_locale_desc">Display language, number formatting, input system</string>
-    <string name="android_sys_datetime_name"><![CDATA[Date & time]]></string>
     <string name="android_sys_datetime_desc">Date, time, time zone</string>
     <string name="android_sys_developer_name">Developer options</string>
     <string name="android_sys_developer_desc">Developer settings, graphics tweaks</string>
     <string name="android_sys_deviceinfo_name">About device</string>
     <string name="android_sys_deviceinfo_desc">Android version, IP address, IMEI</string>
+    <string name="install_shortcut_dialog_title">Install Shortcut</string>
+    <string name="dbg_launch_dialog_test" translatable="false">Launch Test Dialog View</string>
+    <string name="common_install">Install</string>
+    <string name="app_force_kill">Force Stop</string>
+    <string name="force_kill_sent_desc">Sent force stop request to Android System : %s</string>
+    <string name="force_kill_sent_title">App forced stop</string>
+    <string name="android_sys_datetime_name"><![CDATA[Date & time]]></string>
+    <string name="settings_system_test_option_name">Activate Cross Launcher</string>
+    <string name="settings_system_test_option_desc">Activate Cross Launcher until launcher next restart</string>
+    <string name="settings_system_test_option_value_on">Activated</string>
+    <string name="settings_system_test_option_value_off">Activate</string>
+    <string name="settings_system_test_display_title">Activate Cross Launcher</string>
+    <string name="settings_system_test_display_desc">Go to Settings to active Cross Launcher</string>
 </resources>
