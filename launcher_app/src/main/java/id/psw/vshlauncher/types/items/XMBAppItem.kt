@@ -1,10 +1,13 @@
 package id.psw.vshlauncher.types.items
 
+import android.app.ActivityManager
+import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.sequentialimages.*
 import id.psw.vshlauncher.views.bootInto
@@ -23,6 +26,15 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     companion object {
         private const val TAG = "XMBAppItem"
         var descriptionDisplay : DescriptionDisplay = DescriptionDisplay.PackageName
+
+        var disableAnimatedIcon = false
+        var disableBackSound = false
+        var disableBackdrop = false
+        var disableBackdropOverlay = false
+
+        private val ios = mutableMapOf<File, Ref<Boolean>>()
+        private val ioc = mutableMapOf<File, Ref<Int>>()
+
     }
 
     private var _icon = TRANSPARENT_BITMAP
@@ -57,38 +69,51 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     }
 
     private var backdropFiles = ArrayList<File>().apply {
-        addAll(requestCustomizationFiles("PIC1.PNG"))
-        addAll(requestCustomizationFiles("PIC1.JPG"))
+        if(!disableBackdrop) {
+            addAll(requestCustomizationFiles("PIC1.PNG"))
+            addAll(requestCustomizationFiles("PIC1.JPG"))
+        }
     }
     private var backdropOverlayFiles = ArrayList<File>().apply {
-        addAll(requestCustomizationFiles("PIC0.PNG"))
-        addAll(requestCustomizationFiles("PIC0.JPG"))
+        if(!disableBackdropOverlay) {
+            addAll(requestCustomizationFiles("PIC0.PNG"))
+            addAll(requestCustomizationFiles("PIC0.JPG"))
+        }
     }
     private var portraitBackdropFiles = ArrayList<File>().apply {
-        addAll(requestCustomizationFiles("PIC1_P.PNG"))
-        addAll(requestCustomizationFiles("PIC1_P.JPG"))
+        if(!disableBackdrop) {
+            addAll(requestCustomizationFiles("PIC1_P.PNG"))
+            addAll(requestCustomizationFiles("PIC1_P.JPG"))
+        }
     }
     private var portraitBackdropOverlayFiles = ArrayList<File>().apply {
-        addAll(requestCustomizationFiles("PIC0_P.PNG"))
-        addAll(requestCustomizationFiles("PIC0_P.JPG"))
+        if(!disableBackdropOverlay) {
+            addAll(requestCustomizationFiles("PIC0_P.PNG"))
+            addAll(requestCustomizationFiles("PIC0_P.JPG"))
+        }
     }
     private var animatedIconFiles = ArrayList<File>().apply{
-        addAll(requestCustomizationFiles("ICON1.APNG")) // Animated PNG (Line APNG-Drawable), best quality, just bigger file, Renderer OK
-        addAll(requestCustomizationFiles("ICON1.WEBP")) // WEBP (Facebook Fresco), good quality, relatively small file, Renderer Bad
-        addAll(requestCustomizationFiles("ICON1.MP4")) // MP4 (Android MediaMetadataRetriever), average quality, small file, Renderer Slow
-        addAll(requestCustomizationFiles("ICON1.GIF")) // GIF (Facebook Fresco), low quality, small file, Renderer Bad
+        if(!disableAnimatedIcon) {
+            addAll(requestCustomizationFiles("ICON1.APNG")) // Animated PNG (Line APNG-Drawable), best quality, just bigger file, Renderer OK
+            addAll(requestCustomizationFiles("ICON1.WEBP")) // WEBP (Facebook Fresco), good quality, relatively small file, Renderer Bad
+            addAll(requestCustomizationFiles("ICON1.MP4")) // MP4 (Android MediaMetadataRetriever), average quality, small file, Renderer Slow
+            addAll(requestCustomizationFiles("ICON1.GIF")) // GIF (Facebook Fresco), low quality, small file, Renderer Bad
+        }
     }
     private var backSoundFiles = ArrayList<File>().apply {
-        addAll(requestCustomizationFiles("SND0.MP3"))
-        addAll(requestCustomizationFiles("SND0.AAC"))
-        addAll(requestCustomizationFiles("SND0.MID"))
-        addAll(requestCustomizationFiles("SND0.MIDI"))
+        if(!disableBackSound) {
+            addAll(requestCustomizationFiles("SND0.MP3"))
+            addAll(requestCustomizationFiles("SND0.AAC"))
+            addAll(requestCustomizationFiles("SND0.MID"))
+            addAll(requestCustomizationFiles("SND0.MIDI"))
+        }
     }
     private var _iconSync = Object()
     private var _animIconSync = Object()
     private var _backdropSync = Object()
     private var _portBackdropSync = Object()
     private var _backSoundSync = Object()
+    private fun <K> MutableMap<File, Ref<K>>.getOrMake(k:File, refDefVal:K) = getOrMake<File, Ref<K>>(k){ Ref<K>(refDefVal) }
 
     override val isIconLoaded: Boolean get()= hasIconLoaded
     override val isAnimatedIconLoaded: Boolean get() = hasAnimIconLoaded
@@ -97,12 +122,30 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     override val isPortraitBackdropLoaded: Boolean get() = hasPortBackdropLoaded
 
     override val hasIcon: Boolean get()= true
-    override val hasBackdrop: Boolean get() = backdropFiles.any { it.exists() }
-    override val hasPortraitBackdrop: Boolean get() = portraitBackdropFiles.any { it.exists() }
-    override val hasBackOverlay: Boolean get() = backdropOverlayFiles.any { it.exists() }
-    override val hasPortraitBackdropOverlay: Boolean get() = portraitBackdropOverlayFiles.any { it.exists() }
-    override val hasBackSound: Boolean get() = backSoundFiles.any { it.exists() }
-    override val hasAnimatedIcon: Boolean get() = animatedIconFiles.any { it.exists() }
+    override val hasBackdrop: Boolean get() = !disableBackdrop &&
+            backdropFiles.any {
+                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
+            }
+    override val hasPortraitBackdrop: Boolean get() = !disableBackdrop &&
+            portraitBackdropFiles.any {
+                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
+            }
+    override val hasBackOverlay: Boolean get() = !disableBackdropOverlay &&
+            backdropOverlayFiles.any {
+                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
+            }
+    override val hasPortraitBackdropOverlay: Boolean get() = !disableBackdropOverlay &&
+            portraitBackdropOverlayFiles.any {
+                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
+            }
+    override val hasBackSound: Boolean get() = !disableBackSound &&
+            backSoundFiles.any {
+                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
+            }
+    override val hasAnimatedIcon: Boolean get() = !disableAnimatedIcon &&
+            animatedIconFiles.any {
+                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
+            }
     override val hasMenu: Boolean get() = true
 
     override val id: String get()= iconId
@@ -131,19 +174,36 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
             vsh.setLoadingFinished(handle)
             menuItems.add(
                 XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_launch) }, { false }, 0){ _launch(this) })
+
+
             menuItems.add(
-                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_find_on_playstore) }, { false }, 1) {
+                XMBMenuItem.XMBMenuItemLambda({vsh.getString(R.string.app_force_kill)},
+                    { false }, 1)
+                {
+                    val actMan = vsh.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                    actMan.killBackgroundProcesses(resInfo.activityInfo.processName)
+                    vsh.postNotification(null,
+                        vsh.getString(R.string.force_kill_sent_title),
+                        vsh.getString(R.string.force_kill_sent_desc, resInfo.activityInfo.processName))
+                }
+            )
+
+            menuItems.add(
+                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_uninstall) },
+                    { isSystemApp },2){
+                    vsh.xmbView?.context?.xmb?.appRequestUninstall(resInfo.activityInfo.packageName)
+                }
+            )
+
+
+            menuItems.add(
+                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_find_on_playstore) }, { false }, 4) {
                     vsh.xmbView?.context?.xmb?.appOpenInPlayStore(resInfo.activityInfo.packageName)
                 }
             )
-                menuItems.add(
-                    XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_uninstall) }, { isSystemApp },2){
-                        vsh.xmbView?.context?.xmb?.appRequestUninstall(resInfo.activityInfo.packageName)
-                    }
-                )
 
             menuItems.add(
-                XMBMenuItem.XMBMenuItemLambda({vsh.getString(R.string.app_create_customization_folder)}, {false}, 3){
+                XMBMenuItem.XMBMenuItemLambda({vsh.getString(R.string.app_create_customization_folder)}, {false}, 5){
                     vsh.getAllPathsFor(VshBaseDirs.APPS_DIR, resInfo.uniqueActivityName).forEach { file ->
                         var found = file.exists()
                         if(!found){
@@ -179,7 +239,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
         }
         if(vsh.playAnimatedIcon){
             synchronized(_animIconSync){
-                if((!hasAnimIconLoaded || _animatedIcon.hasRecycled) && hasAnimatedIcon){
+                if((!hasAnimIconLoaded || _animatedIcon.hasRecycled)){
                     animatedIconFiles.find { it.exists() }?.apply{
                         _animatedIcon = when (this.extension.uppercase()) {
                             "WEBP" -> XMBAnimWebP(this)
@@ -197,8 +257,10 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
 
     private fun pBackdropLoad(){
         synchronized(_backdropSync){
-            if(!hasBackdropLoaded && hasBackdrop){
-                backdropFiles.find{ it.exists()}?.apply {
+            if(!hasBackdropLoaded){
+                backdropFiles.find{
+                    it.exists()
+                }?.apply {
                     _backdrop = BitmapFactory.decodeFile(this.absolutePath)
                     hasBackdropLoaded = true
                 }

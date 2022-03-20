@@ -8,28 +8,30 @@ import id.psw.vshlauncher.toLerp
 
 private val drawBitmapFitRectFBuffer = RectF()
 fun Canvas.drawBitmap(bm:Bitmap, src: Rect?, dst: RectF, paint: Paint?, fitMode:FittingMode, anchorX:Float = 0.5f, anchorY:Float = 0.5f){
-    if(fitMode == FittingMode.STRETCH){
-        drawBitmap(bm, src, dst, paint)
-    }else{
-        val w = src?.width() ?: bm.width
-        val h = src?.height() ?: bm.height
+    if(!bm.isRecycled){
+        if (fitMode == FittingMode.STRETCH) {
+            drawBitmap(bm, src, dst, paint)
+        } else {
+            val w = src?.width() ?: bm.width
+            val h = src?.height() ?: bm.height
 
-        val sx = dst.width() / w
-        val sy = dst.height() / h
-        val sc = (fitMode == FittingMode.FIT).select(
-            (sx <= sy).select(sx,sy),
-            (sx >= sy).select(sx,sy),
-        )
+            val sx = dst.width() / w
+            val sy = dst.height() / h
+            val sc = (fitMode == FittingMode.FIT).select(
+                (sx <= sy).select(sx, sy),
+                (sx >= sy).select(sx, sy),
+            )
 
-        val sw = w * sc
-        val sh = h * sc
-        val left = anchorX.toLerp(dst.left, dst.right - sw)
-        val top = anchorY.toLerp(dst.top, dst.bottom - sh)
-        val right = left + sw
-        val bottom = top + sh
+            val sw = w * sc
+            val sh = h * sc
+            val left = anchorX.toLerp(dst.left, dst.right - sw)
+            val top = anchorY.toLerp(dst.top, dst.bottom - sh)
+            val right = left + sw
+            val bottom = top + sh
 
-        drawBitmapFitRectFBuffer.set(left, top, right, bottom)
-        drawBitmap(bm, src, drawBitmapFitRectFBuffer, paint)
+            drawBitmapFitRectFBuffer.set(left, top, right, bottom)
+            drawBitmap(bm, src, drawBitmapFitRectFBuffer, paint)
+        }
     }
 }
 
@@ -78,11 +80,21 @@ fun Paint.wrapText(source:String, maxWidth:Float) : String {
     val msb = StringBuilder()
     val line = StringBuilder()
     for(word in source.split(' ')){
-        if(measureText("$line $word") > maxWidth){
+        if(word.startsWith("\n")){
             msb.appendLine(line.toString())
             line.clear()
+            line.append(word.replace("\n","")).append(' ')
+        }else if(word.endsWith("\n")){
+            line.append(word.replace("\n","")).append(' ')
+            msb.appendLine(line.toString())
+            line.clear()
+        }else{
+            if(measureText("$line $word") > maxWidth){
+                msb.appendLine(line.toString())
+                line.clear()
+            }
+            line.append(word).append(' ')
         }
-        line.append(word).append(' ')
     }
     msb.appendLine(line.toString())
     return msb.toString()

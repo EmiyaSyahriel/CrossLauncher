@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg width="500" height="500" xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <defs>
+        <!-- Is not optimized to be used in HTML page, only use on FontForge -->
+    <font id="CrossLauncher VSH Pad Button Icons" horiz-adv-x="400">
+        <font-face font-family="CrossLauncher Button Icons"
+            font-weight="normal"
+            font-style="normal"
+            units-per-em="375"
+            ascent="300"
+            descent="100"
+            ideographic="300"
+            hanging="300"
+        >
+            <font-face-src>
+                <font-face-name name="CrossLauncher Button Icons"/>
+            </font-face-src>
+        </font-face>
+        <!--
+        Unicode Table for VSH Button Fonts
+        Button            PS3               | Xbox One        |  Switch          | Android
+        Circle            0xF880(Circle  )  | 0xE012  (B   )  |  0xE023 (A    )  | 0xE034 (OK      )
+        Cross             0xF881(Cross   )  | 0xE013  (A   )  |  0xE024 (B    )  | 0xE035 (Back    )
+        Square            0xF882(Square  )  | 0xE014  (X   )  |  0xE025 (Y    )  | 0xE036 (Delete  )
+        Triangle          0xF883(Triangle)  | 0xE015  (Y   )  |  0xE026 (X    )  | 0xE037 (Menu    )
+        Pad Up            0xF884(PadU    )  | 0xE016  (PadU)  |  0xE027 (PadU )  | 0xE038 (PadU    )
+        Pad Down          0xF885(PadD    )  | 0xE017  (PadD)  |  0xE028 (PadD )  | 0xE039 (PadD    )
+        Pad Left          0xF886(PadL    )  | 0xE018  (PadL)  |  0xE029 (PadL )  | 0xE03A (PadL    )
+        Pad Right         0xF887(PadR    )  | 0xE019  (PadR)  |  0xE02A (PadR )  | 0xE03B (PadR    )
+        L1                0xF888(L1      )  | 0xE01A  (LB  )  |  0xE02B (L    )  | 0xE03C (F1      )
+        L2                0xF889(L2      )  | 0xE01B  (LT  )  |  0xE02C (ZL   )  | 0xE03D (F2      )
+        L3                0xF88A(L3      )  | 0xE01C  (LS  )  |  0xE02D (LS   )  | 0xE03E (F3      )
+        R1                0xF88B(R1      )  | 0xE01D  (RB  )  |  0xE02E (R    )  | 0xE03F (F4      )
+        R2                0xF88C(R2      )  | 0xE01E  (RT  )  |  0xE02F (ZR   )  | 0xE040 (F5      )
+        R3                0xF88D(R3      )  | 0xE01F  (RS  )  |  0xE030 (RS   )  | 0xE041 (F6      )
+        Select            0xF88E(Select  )  | 0xE020  (View)  |  0xE031 (Minus)  | 0xE042 (F11     )
+        Start             0xF88F(Start   )  | 0xE021  (Menu)  |  0xE032 (Plus )  | 0xE043 (F12     )
+        PS Button / Home  0xF892(PS      )  | 0xE022  (Xbox)  |  0xE033 (Home )  | 0xE044 (Home    )
+
+        Next              0xE048
+        Prev              0xE049
+        Volume Up         0xE04A
+        Volume Down       0xE04B
+        Mute              0xE04C
+        Play/Pause        0xE04D
+        Pause             0xE04E
+        Camera            0xE04F
+        -->
+        <missing-glyph horiz-adv-x="300" d="M 50 0 h 200 v 300 h -200 v -300 l 20 20 v 260 h 160 v -260 h -160 z
+M 100 250 h 60 a 25 25 0 0 0 0 -100 h -10 v -50 h -20 v 70 h 30 a 15 15 0 0 1 0 60 h -60 z
+M 130 50 h 20 v 20 h -20 z
+"/>
+        <!-- region PlayStation 3 -->
+        <glyph unicode="&#xF880;" horiz-adv-x="350" glyph-name="PlayStation.Circle" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h -0 v 10 h 0 a 140 140 1 0 1 0 280 h -0 a 140 140 1 0 1 0 -280 z
+M 175 50 a 100 100 1 1 0 0 200 a 100 100 1 1 0 0 -200 v 20 a 60 60 1 1 1 0 160 a 60 60 1 1 1 0 -160 z
+"/>
+        <glyph unicode="&#xF881;" horiz-adv-x="350" glyph-name="PlayStation.Cross" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h -0 v 10 h 0 a 140 140 1 0 1 0 280 h -0 a 140 140 1 0 1 0 -280 z
+M 85 220 l 20 20 l 70 -70 l 70 70 l 20 -20 l -70 -70 l 70 -70 l -20 -20 l -70 70 l -70 -70 l -20 20 l 70 70 l -70 70 z
+"/>
+        <glyph unicode="&#xF882;" horiz-adv-x="350" glyph-name="PlayStation.Square" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h -0 v 10 h 0 a 140 140 1 0 1 0 280 h -0 a 140 140 1 0 1 0 -280 z
+M 75 250 h 200 v -200 h -200 v 200 l 20 -20 v -160 h 160 v 160 h -160 z
+"/>
+        <glyph unicode="&#xF883;" horiz-adv-x="350" glyph-name="PlayStation.Triangle" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h -0 v 10 h 0 a 140 140 1 0 1 0 280 h -0 a 140 140 1 0 1 0 -280 z
+M 60 70 L 175 260 L 290 70 L 60 70 L 90 90 L 260 90 L 175 230 L 90 90 z
+"/>
+        <glyph unicode="&#xF884;" horiz-adv-x="350" glyph-name="PlayStation.DPadUp" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300
+L 75 110 l 200 0 l -100 100 l -100 -100 z
+"/>
+        <glyph unicode="&#xF885;" horiz-adv-x="350" glyph-name="PlayStation.DPadDown" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300
+L 275 190 l -200 0 l 100 -100 l 100 100 z
+"/>
+        <glyph unicode="&#xF886;" horiz-adv-x="350" glyph-name="PlayStation.DPadLeft" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300
+L 200 50 l 0 200 l -100 -100 l 100 -100 z
+"/>
+        <glyph unicode="&#xF887;" horiz-adv-x="350" glyph-name="PlayStation.DPadRight" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300
+L 150 50 l 100 100 l -100 100 l 0 -200 z
+"/>
+        <glyph unicode="&#xF888;" horiz-adv-x="500" glyph-name="PlayStation.L1" d="
+M 175 0 a 150 150 1 1 0 0 300 h 150 a 150 150 1 1 0 0 -300 h -150
+v 10 h 150 a 140 140 0 0 1 0 280 h -150 a 140 140 0 0 1 0 -280 zM 150 70 h 0 100 v 20 h -80 v 140 h -20 z
+M 300 70 h 30 v 160 h -30 a 20 20 0 0 0 -20 -20 v -20 h 20 z
+"/>
+        <glyph unicode="&#xF889;" horiz-adv-x="500" glyph-name="PlayStation.L2" d="
+M 175 0 a 150 150 1 1 0 0 300 h 150 a 150 150 1 1 0 0 -300 h -150
+v 10 h 150 a 140 140 0 0 1 0 280 h -150 a 140 140 0 0 1 0 -280 z
+M 140 70 h 0 100 v 20 h -80 v 140 h -20 z
+M 260 70 h 100 v 20 h -80 c 0 30 50 30 70 50 c 20 20 20 50 0 70 c -20 20 -70 20 -90 -10 v -20 h 20 c 0 30 60 30 60 0 c 0 -50 -80 -20 -80 -90 z
+"/>
+        <glyph unicode="&#xF88A;" horiz-adv-x="350" glyph-name="PlayStation.L3" d="M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h 0
+v 10 h 0a 140 140 0 0 1 0 280 h 0 a 140 140 0 0 1 0 -280 z
+M 130 70 h 0 100 v 20 h -80 v 140 h -20 z
+"/>
+        <glyph unicode="&#xF88B;" horiz-adv-x="500" glyph-name="PlayStation.R1" d="
+M 175 0 a 150 150 1 1 0 0 300 h 150 a 150 150 1 1 0 0 -300 h -150
+v 10 h 150 a 140 140 0 0 1 0 280 h -150 a 140 140 0 0 1 0 -280 z
+M 140 225 v -160 h 20 v 70 h 30 c 30 0 30 -50 30 -70 h 20 c 0 30 0 60 -30 80
+c 40 0 40 70 0 80 h -70 l 15 -15 h 40 c 30 0 30 -50 0 -50 h -40 v 50 l -15 15 z
+M 300 70 h 30 v 160 h -30 a 20 20 0 0 0 -20 -20 v -20 h 20 z
+"/>
+        <glyph unicode="&#xF88C;" horiz-adv-x="500" glyph-name="PlayStation.R2" d="
+M 175 0 a 150 150 1 1 0 0 300 h 150 a 150 150 1 1 0 0 -300 h -150
+v 10 h 150 a 140 140 0 0 1 0 280 h -150 a 140 140 0 0 1 0 -280 z
+M 140 225 v -160 h 20 v 70 h 30 c 30 0 30 -50 30 -70 h 20 c 0 30 0 60 -30 80
+c 40 0 40 70 0 80 h -70 l 15 -15 h 40 c 30 0 30 -50 0 -50 h -40 v 50 l -15 15 z
+M 260 70 h 100 v 20 h -80 c 0 30 50 30 70 50 c 20 20 20 50 0 70 c -20 20 -70 20 -90 -10 v -20 h 20 c 0 30 60 30 60 0 c 0 -50 -80 -20 -80 -90 z
+"/>
+        <glyph unicode="&#xF88D;" horiz-adv-x="350" glyph-name="PlayStation.R3" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h 0
+v 10 h 0a 140 140 0 0 1 0 280 h 0 a 140 140 0 0 1 0 -280 z
+M 120 230 v -160 h 20 v 70 h 30 c 30 0 30 -50 30 -70 h 20 c 0 30 0 60 -30 80
+c 40 0 40 70 0 80 h -70 l 15 -15 h 40 c 30 0 30 -50 0 -50 h -40 v 50 l -15 15 z
+"/>
+        <glyph unicode="&#xF88F;" horiz-adv-x="800" glyph-name="PlayStation.Select" d="M 175 0 a 150 150 1 1 0 0 300 h 450 a 150 150 1 1 0 0 -300 h -450
+v 10 h 450 a 140 140 0 0 1 0 280 h -450 a 140 140 0 0 1 0 -280 z
+M 100 70 h 50 a 40 40 0 0 1 0 90 a 25 25 0 0 0 0 50 h 50 v 20 h -50 a 40 40 0 0 1 0 -90 a 20 20 0 0 0 0 -50 h -50 z
+M 270 70 h 10 v 140 h 50 v 20 h -120 v -20 h 50 v -140 h 20 z
+M 400 230 h 10 l 60 -160 h -20 l -20 60 h -60 l -20 -60 h -20 l 60 160 h 10 v -20 l -20 -60 h 40 l -20 60 z
+M 480 230 v -160 h 20 v 70 h 30 c 30 0 30 -50 30 -70 h 20 c 0 30 0 60 -30 80
+c 40 0 40 70 0 80 h -70 l 15 -15 h 40 c 30 0 30 -50 0 -50 h -40 v 50 l -15 15 z
+M 645 70 h 10 v 140 h 50 v 20 h -120 v -20 h 50 v -140 h 20 z
+"/>
+        <glyph unicode="&#xF88E;" horiz-adv-x="900" glyph-name="PlayStation.Start" d="
+        M 175 0 a 150 150 1 1 0 0 300 h 550 a 150 150 1 1 0 0 -300 h -550
+v 10 h 550 a 140 140 0 0 1 0 280 h -550 a 140 140 0 0 1 0 -280 z
+
+M 100 70 h 50 a 40 40 0 0 1 0 90 a 25 25 0 0 0 0 50 h 50 v 20 h -50 a 40 40 0 0 1 0 -90 a 20 20 0 0 0 0 -50 h -50 z
+
+M 220 70 h 100 v 20 h -80 v 50 h 80 v 20 h -80 v 50 h 80 v 20 h -100 v -160 z
+M 340 70 h 100 v 20 h -80 v 140 h -20 v -160 z
+M 450 70 h 100 v 20 h -80 v 50 h 80 v 20 h -80 v 50 h 80 v 20 h -100 v -160 z
+M 670 70 h -50 c -70 0 -70 160 0 160 h 50 v -20 h -40 c -50 0 -50 -120 0 -120 h 50 v -20 z
+M 745 70 h 10 v 140 h 50 v 20 h -120 v -20 h 50 v -140 h 20 z
+"/>
+        <glyph unicode="&#xF892;" horiz-adv-x="350" glyph-name="PlayStation.PS" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h -0 v 10 h 0 a 140
+140 1 0 1 0 280 h -0 a 140 140 1 0 1 0 -280 z
+
+M 145 70 v 170 l 60 -6 c 55 -4 45 -120 -2 -85 v 60 c 0 8 -12 16 -12 0 v -145 z
+m -5 70 l -70 -25 c -35 -15 -10 -30 70 -35 v 20 l -15 -5 c -25 -5 -50 0 0 15 l 15 5 v 25 z
+m 60 -20 v -20 l 40 15 c 25 10 45 0 5 -10 l -45 -15 v -25 l 85 30 c 50 20 0 50 -70 30 l -15 -5 z
+"/>
+        <!-- endregion -->
+
+        <!-- region Xbox One -->
+        <glyph unicode="&#xE012;" horiz-adv-x="350" glyph-name="Xbox.B" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h -0 v 10 h 0 a 140 140 1 0 1 0 280 h -0 a 140 140 1 0 1 0 -280 z
+M 110 50 v 200 l 20 -20 v -65 h 50 c 50 0 50 65 0 65 h -50 l -20 20 h 90 c 60 0 60 -100 0 -100 c 60 0 60 -100 0 -100 h -90 l 20 20 h 50 c 50 0 50 65 0 65 h -50 v -65 l -20 -20 z
+"/>
+        <glyph unicode="&#xE013;" horiz-adv-x="350" glyph-name="Xbox.A" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h -0 v 10 h 0 a 140
+140 1 0 1 0 280 h -0 a 140 140 1 0 1 0 -280 z
+M 100 50 l 60 200 h 15 v -25 l -20 -80 h 40 l -20 80 v 25 h 15 l 65 -200 h -25 l -25 70 h -55 l -25 -70 h -25 z
+"/>
+        <glyph unicode="&#xE014;" horiz-adv-x="350" glyph-name="Xbox.X" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h -0 v 10 h 0 a 140
+140 1 0 1 0 280 h -0 a 140 140 1 0 1 0 -280 z
+M 95 50 h 30 l 50 80 l 50 -80 h 30 l -60 100 l 60 100 h -30 l -50 -80 l -50 80 h -30 l 60 -100 l -60 -100 z
+"/>
+        <glyph unicode="&#xE015;" horiz-adv-x="350" glyph-name="Xbox.Y" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h -0 v 10 h 0 a 140
+140 1 0 1 0 280 h -0 a 140 140 1 0 1 0 -280 z
+M 175 50 h 15 v 100 l 65 100 h -30 l -50 -80 l -50 80 h -30 l 65 -100 v -100 h 15 z
+"/>
+        <glyph unicode="&#xE016;" horiz-adv-x="350" glyph-name="Xbox.DPadU" d="
+M 175 0 h 50 v 100 h 100 v 100 h -100 v 100 h -100 v -100 h -100 v -100 h 100 v -100 h 50 v 230 h -30 l 30 50 l 30 -50 h -30 v -230 z
+"/>
+        <glyph unicode="&#xE017;" horiz-adv-x="350" glyph-name="Xbox.DPadD" d="
+M 175 0 h 50 v 100 h 100 v 100 h -100 v 100 h -100 v -100 h -100 v -100 h 100 v -100 h 50 v 20 l -30 50 h 60 l -30 -50 v -20 z
+"/>
+        <glyph unicode="&#xE018;" horiz-adv-x="350" glyph-name="Xbox.DPadL" d="
+M 175 0 h 50 v 100 h 100 v 100 h -100 v 100 h -100 v -100 h -100 v -100 h 100 v -100 h 50 v 150 h -80 v -30 l -50 30 l 50 30 v -30 h 80 v -150 z
+"/>
+        <glyph unicode="&#xE019;" horiz-adv-x="350" glyph-name="Xbox.DPadR" d="
+M 175 0 h 50 v 100 h 100 v 100 h -100 v 100 h -100 v -100 h -100 v -100 h 100 v -100 h 50 v 150 h 80 v 30 l 50 -30 l -50 -30 v 30 h -80 v -150 z
+"/>
+        <glyph unicode="&#xE01A;" horiz-adv-x="700" glyph-name="Xbox.LB" d="
+M 350 0 h 290 a 10 10 0 0 1 10 10 v 280 a 10 10 0 0 1 -10 10 h -580 a 10 10 0 0 1 -10 -10 v -100 l 300 -190 v 10 l -290 185 v 95 h 580 v -280 h -290 v -10 z
+
+M 400 50 h 80 v 20 h -60 v 80 h -20 z
+M 500 50 v 100 h 50 a 12 12 0 0 0 0 -50 a 12 12 0 0 0 0 -50 h -50 l 10 10 h 30
+a 10 10 0 0 1 0 30 h -30 v 20 h 30 a 10 10 0 0 1 0 30 h -30 v -80 l -10 -10 z
+"/>
+        <glyph unicode="&#xE01B;" horiz-adv-x="400" glyph-name="Xbox.LT" d="
+M 200 -100 h 140 a 10 10 0 0 1 10 10 v 380 a 10 10 0 0 1 -10 10 h -280 a 10 10 0 0 1 -10 -10 v -140 l 150 -250 v 10 l -140 240 v 140 h 280 v -380 h -140 v -10 z
+
+M 130 150 h 80 v 20 h -60 v 80 h -20 z
+M 250 150 h 20 v 80 h 30 v 20 h -80 v -20 h 30 v -80 z
+"/>
+        <glyph unicode="&#xE01C;" horiz-adv-x="350" glyph-name="Xbox.LS" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h 0
+v 10 h 0a 140 140 0 0 1 0 280 h 0 a 140 140 0 0 1 0 -280 z
+M 130 70 h 0 100 v 20 h -80 v 140 h -20 z
+"/>
+        <glyph unicode="&#xE01D;" horiz-adv-x="700" glyph-name="Xbox.RB" d="
+M 350 0 h -290 a 10 10 0 0 0 -10 10 v 280 a 10 10 0 0 0 10 10 h 580 a 10 10 0 0 0 10 -10 v -100 l -300 -190 v 10 l 290 185 v 95 h -580 v -280 h 290 v -10 z
+
+M 100 50 v 100 l 10 -10 v -30 h 30 a 10 10 0 0 1 0 30 h -30 l -10 10 h 45 a 25 25 0 0 0 0 -50 a 25 25 0 0 0 25 -25 v -25 h -10 v 25 a 30 20 0 0 1 -30 20 h -20 v -45 z
+M 200 50 v 100 h 50 a 12 12 0 0 0 0 -50 a 12 12 0 0 0 0 -50 h -50 l 10 10 h 30
+a 10 10 0 0 1 0 30 h -30 v 20 h 30 a 10 10 0 0 1 0 30 h -30 v -80 l -10 -10 z
+"/>
+        <glyph unicode="&#xE01E;" horiz-adv-x="400" glyph-name="Xbox.RT" d="
+M 200 -100 h -140 a 10 10 0 0 0 -10 10 v 380 a 10 10 0 0 0 10 10 h 280 a 10 10 0 0 0 10 -10 v -200 l -150 -190 v 10 l 140 185 v 195 h -280 v -380 h 140 v -10 z
+
+M 80 150 v 100 l 10 -10 v -30 h 30 a 10 10 0 0 1 0 30 h -30 l -10 10 h 45 a 25 25 0 0 0 0 -50 a 25 25 0 0 0 25 -25 v -25 h -10 v 25 a 30 20 0 0 1 -30 20 h -20 v -45 z
+M 200 150 h 20 v 80 h 30 v 20 h -80 v -20 h 30 v -80 z
+"/>
+        <glyph unicode="&#xE01F;" horiz-adv-x="350" glyph-name="Xbox.RS" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h 0
+v 10 h 0a 140 140 0 0 1 0 280 h 0 a 140 140 0 0 1 0 -280 z
+M 120 230 v -160 h 20 v 70 h 30 c 30 0 30 -50 30 -70 h 20 c 0 30 0 60 -30 80
+c 40 0 40 70 0 80 h -70 l 15 -15 h 40 c 30 0 30 -50 0 -50 h -40 v 50 l -15 15 z
+"/>
+        <glyph unicode="&#xE020;" horiz-adv-x="350" glyph-name="Xbox.View" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h 0
+v 10 h 0a 140 140 0 0 1 0 280 h 0 a 140 140 0 0 1 0 -280 z
+M 275 70 v 100 h -150 v -100 h 150 l -20 20 h -110 v 60 h 110 v -60 l 20 -20 z
+M 75 230 h 150 v -50 h -20 v 30 h -110 v -60 h 20 v -20 h -20 h -20 v 100 z
+"/>
+        <glyph unicode="&#xE021;" horiz-adv-x="350" glyph-name="Xbox.Menu" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h 0
+v 10 h 0a 140 140 0 0 1 0 280 h 0 a 140 140 0 0 1 0 -280 z
+M 75 220 h 200 v -30 h -200 v 30 z
+M 75 165 h 200 v -30 h -200 v 30 z
+M 75 110 h 200 v -30 h -200 v 30 z
+"/>
+        <glyph unicode="&#xE022;" horiz-adv-x="350" glyph-name="Xbox.Xbox" d="
+M 135 215 c -50 -60 -90 -100 -75 -160 c -45 35 -55 150 5 200 c 15 15 60 -20 70 -40 z
+M 175 235 c 10 20 60 40 80 40 c -40 35 -120 35 -160 0 c 35 0 60 -10 80 -40 z
+M 215 215 c 5 15 55 50 70 40 c 55 -50 45 -165 5 -200 c 5 30 20 50 -75 160 z
+M 175 180 c 50 -30 100 -115 95 -140 c -60 -55 -125 -55 -190 0 c 0 50 55 110 95 140 z
+"/>
+
+        <!-- endregion -->
+
+        <!-- region Nintendo Switch -->
+        <glyph unicode="&#xE024;" horiz-adv-x="350" glyph-name="Switch.B" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h -0 v 10 h 0 a 140 140 1 0 1 0 280 h -0 a 140 140 1 0 1 0 -280 z
+M 110 50 v 200 l 20 -20 v -65 h 50 c 50 0 50 65 0 65 h -50 l -20 20 h 90 c 60 0 60 -100 0 -100 c 60 0 60 -100 0 -100 h -90 l 20 20 h 50 c 50 0 50 65 0 65 h -50 v -65 l -20 -20 z
+"/>
+        <glyph unicode="&#xE023;" horiz-adv-x="350" glyph-name="Switch.A" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h -0 v 10 h 0 a 140
+140 1 0 1 0 280 h -0 a 140 140 1 0 1 0 -280 z
+M 100 50 l 60 200 h 15 v -25 l -20 -80 h 40 l -20 80 v 25 h 15 l 65 -200 h -25 l -25 70 h -55 l -25 -70 h -25 z
+"/>
+        <glyph unicode="&#xE026;" horiz-adv-x="350" glyph-name="Switch.X" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h -0 v 10 h 0 a 140
+140 1 0 1 0 280 h -0 a 140 140 1 0 1 0 -280 z
+M 95 50 h 30 l 50 80 l 50 -80 h 30 l -60 100 l 60 100 h -30 l -50 -80 l -50 80 h -30 l 60 -100 l -60 -100 z
+"/>
+        <glyph unicode="&#xE025;" horiz-adv-x="350" glyph-name="Switch.Y" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h -0 v 10 h 0 a 140
+140 1 0 1 0 280 h -0 a 140 140 1 0 1 0 -280 z
+M 175 50 h 15 v 100 l 65 100 h -30 l -50 -80 l -50 80 h -30 l 65 -100 v -100 h 15 z
+"/>
+        <glyph unicode="&#xE027;" horiz-adv-x="350" glyph-name="Switch.DPadUp" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300
+L 75 110 l 200 0 l -100 100 l -100 -100 z
+"/>
+        <glyph unicode="&#xE028;" horiz-adv-x="350" glyph-name="Switch.DPadDown" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300
+L 275 190 l -200 0 l 100 -100 l 100 100 z
+"/>
+        <glyph unicode="&#xE029;" horiz-adv-x="350" glyph-name="Switch.DPadLeft" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300
+L 200 50 l 0 200 l -100 -100 l 100 -100 z
+"/>
+        <glyph unicode="&#xE02A;" horiz-adv-x="350" glyph-name="Switch.DPadRight" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300
+L 150 50 l 100 100 l -100 100 l 0 -200 z
+"/>
+        <glyph unicode="&#xE02B;" horiz-adv-x="700" glyph-name="Switch.L" d="
+M 350 0 h 290 a 10 10 0 0 1 10 10 v 280 a 10 10 0 0 1 -10 10 h -580 a 10 10 0 0 1 -10 -10 v -100 l 300 -190 v 10 l -290 185 v 95 h 580 v -280 h -290 v -10 z
+
+M 500 50 h 80 v 20 h -60 v 80 h -20 z
+"/>
+        <glyph unicode="&#xE02C;" horiz-adv-x="400" glyph-name="Switch.ZL" d="
+M 200 -100 h 140 a 10 10 0 0 1 10 10 v 380 a 10 10 0 0 1 -10 10 h -280 a 10 10 0 0 1 -10 -10 v -140 l 150 -250 v 10 l -140 240 v 140 h 280 v -380 h -140 v -10 z
+
+M 130 150 h 80 v 20 h -60 l 60 60 v 20 h -80 v -20 h 60 l -60 -60 v -20 z
+M 230 150 h 80 v 20 h -60 v 80 h -20 z
+"/>
+        <glyph unicode="&#xE02D;" horiz-adv-x="350" glyph-name="Switch.LS" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h 0
+v 10 h 0a 140 140 0 0 1 0 280 h 0 a 140 140 0 0 1 0 -280 z
+M 130 70 h 0 100 v 20 h -80 v 140 h -20 z
+"/>
+        <glyph unicode="&#xE02E;" horiz-adv-x="700" glyph-name="Switch.R" d="
+M 350 0 h -290 a 10 10 0 0 0 -10 10 v 280 a 10 10 0 0 0 10 10 h 580 a 10 10 0 0 0 10 -10 v -100 l -300 -190 v 10 l 290 185 v 95 h -580 v -280 h 290 v -10 z
+
+M 100 50 v 100 l 10 -10 v -30 h 30 a 10 10 0 0 1 0 30 h -30 l -10 10 h 45 a 25 25 0 0 0 0 -50 a 25 25 0 0 0 25 -25 v -25 h -10 v 25 a 30 20 0 0 1 -30 20 h -20 v -45 z
+"/>
+        <glyph unicode="&#xE02F;" horiz-adv-x="400" glyph-name="Switch.ZR" d="
+M 200 -100 h -140 a 10 10 0 0 0 -10 10 v 380 a 10 10 0 0 0 10 10 h 280 a 10 10 0 0 0 10 -10 v -200 l -150 -190 v 10 l 140 185 v 195 h -280 v -380 h 140 v -10 z
+
+M 80 150 h 80 v 20 h -60 l 60 60 v 20 h -80 v -20 h 60 l -60 -60 v -20 z
+M 180 150 v 100 l 10 -10 v -30 h 30 a 10 10 0 0 1 0 30 h -30 l -10 10 h 45 a 25 25 0 0 0 0 -50 a 25 25 0 0 0 25 -25 v -25 h -10 v 25 a 30 20 0 0 1 -30 20 h -20 v -45 z
+"/>
+        <glyph unicode="&#xE030;" horiz-adv-x="350" glyph-name="Switch.RS" d="
+M 175 0 a 150 150 1 1 0 0 300 h 0 a 150 150 1 1 0 0 -300 h 0
+v 10 h 0a 140 140 0 0 1 0 280 h 0 a 140 140 0 0 1 0 -280 z
+M 120 230 v -160 h 20 v 70 h 30 c 30 0 30 -50 30 -70 h 20 c 0 30 0 60 -30 80
+c 40 0 40 70 0 80 h -70 l 15 -15 h 40 c 30 0 30 -50 0 -50 h -40 v 50 l -15 15 z
+"/>
+        <glyph unicode="&#xE031;" horiz-adv-x="350" glyph-name="Switch.Minus" d="
+M 175 100 h 50 h 100 v 100 h -300 v -100 h 100 h 50 z
+"/>
+        <glyph unicode="&#xE032;" horiz-adv-x="350" glyph-name="Switch.Plus" d="
+M 175 0 h 50 v 100 h 100 v 100 h -100 v 100 h -100 v -100 h -100 v -100 h 100 v -100 h 50  z
+"/>
+        <glyph unicode="&#xE033;" horiz-adv-x="350" glyph-name="Switch.Home" d="
+M 175 0 h 100 v 150 h 50 l -150 150 l -150 -150 h 50 v -150 h 100 v 40 h -60 v 110 h 120 v -110 h -60 v -40 z
+"/>
+        <!-- endregion -->
+
+        <!-- region Android -->
+        <glyph unicode="&#xE034;" horiz-adv-x="500" glyph-name="Android.OK" d="
+M 175 0 a 150 150 1 1 0 0 300 h 150 a 150 150 1 1 0 0 -300 h -150
+v 10 h 150 a 140 140 0 0 1 0 280 h -150 a 140 140 0 0 1 0 -280 z
+M 230 120 a 50 50 0 0 0 -100 0 v 60 a 50 50 0 0 0 100 0 v -60 h -20 v 55 a 30 30 0 0 1 -60 0 v -55 a 30 30 0 0 1 60 0 h 10 z
+M 280 70 v 160 h 20 v -80 l 70 80 h 20 l -60 -70 l 50 -90 h -25 l -40 75 l -15 -20 v -55 z
+"/>
+        <glyph unicode="&#xE035;" horiz-adv-x="400" glyph-name="Android.Back" d="
+M 50 150 l 100 100 h 40 l -85 -85 h 200 v -30 h -200 l 85 -85 h -40 l -100 100 z
+"/>
+        <glyph unicode="&#xE036;" horiz-adv-x="400" glyph-name="Android.Delete" d="
+M 50 150 l 100 100 h 200 v -200 h -200 l -100 100 h 30 l 80 -80 h 170 v 160 h -170 l -80 -80 h -30 z
+M 220 170 l 40 40 l 20 -20 l -40 -40 l 40 -40 l -20 -20 l -40 40 l -40 -40 l -20 20 l 40 40 l -40 40 l 20 20 l 40 -40 z
+"/>
+        <glyph unicode="&#xE037;" horiz-adv-x="350" glyph-name="Android.Menu" d="
+M 175 200 a 25 25 0 0 1 0 50 a 25 25 0 0 1 0 -50 z
+M 175 125 a 25 25 0 0 1 0 50 a 25 25 0 0 1 0 -50 z
+M 175 45 a 25 25 0 0 1 0 50 a 25 25 0 0 1 0 -50 z
+"/>
+        <glyph unicode="&#xE038;" horiz-adv-x="350" glyph-name="Android.DPadU" d="
+M 175 100 h 140 l -140 140 l -140 -140 h 140 z
+"/>
+        <glyph unicode="&#xE039;" horiz-adv-x="350" glyph-name="Android.DPadD" d="
+M 175 250 h 140 l -140 -140 l -140 140 h 140 z
+"/>
+        <glyph unicode="&#xE03A;" horiz-adv-x="350" glyph-name="Android.DPadL" d="
+M 225 150 v 140 l -140 -140 l 140 -140 v 140 z
+"/>
+        <glyph unicode="&#xE03B;" horiz-adv-x="350" glyph-name="Android.DPadR" d="
+M 125 150 v 140 l 140 -140 l -140 -140 v 140 z
+"/>
+        <glyph unicode="&#xE03C;" horiz-adv-x="500" glyph-name="Android.F1" d="
+M 175 0 a 150 150 1 1 0 0 300 h 150 a 150 150 1 1 0 0 -300 h -150
+v 10 h 150 a 140 140 0 0 1 0 280 h -150 a 140 140 0 0 1 0 -280 z
+M 150 70 h 20 v 80 h 60 v 20 h -60 v 40 h 80 v 20 h -100 v -160 z
+M 300 70 h 30 v 160 h -30 a 20 20 0 0 0 -20 -20 v -20 h 20 z
+"/>
+        <glyph unicode="&#xE03D;" horiz-adv-x="500" glyph-name="Android.F2" d="
+M 175 0 a 150 150 1 1 0 0 300 h 150 a 150 150 1 1 0 0 -300 h -150
+v 10 h 150 a 140 140 0 0 1 0 280 h -150 a 140 140 0 0 1 0 -280 z
+M 150 70 h 20 v 80 h 60 v 20 h -60 v 40 h 80 v 20 h -100 v -160 z
+M 260 70 h 100 v 20 h -80 c 0 30 50 30 70 50 c 20 20 20 50 0 70 c -20 20 -70 20 -90 -10 v -20 h 20 c 0 30 60 30 60 0 c 0 -50 -80 -20 -80 -90 z
+"/>
+        <glyph unicode="&#xE03E;" horiz-adv-x="500" glyph-name="Android.F3" d="
+M 175 0 a 150 150 1 1 0 0 300 h 150 a 150 150 1 1 0 0 -300 h -150
+v 10 h 150 a 140 140 0 0 1 0 280 h -150 a 140 140 0 0 1 0 -280 z
+M 140 70 h 20 v 80 h 60 v 20 h -60 v 40 h 80 v 20 h -100 v -160 z
+M 260 70 h 60 a 40 40 0 0 1 0 80 a 40 40 0 0 1 0 80 h -60 v -20 h 50 a 25 25 0 0 0 0 -50 h -20 v -20 h 20 a 25 25 0 0 0 0 -50 h -50 v -20 z
+"/>
+        <glyph unicode="&#xE03F;" horiz-adv-x="500" glyph-name="Android.F4" d="
+M 175 0 a 150 150 1 1 0 0 300 h 150 a 150 150 1 1 0 0 -300 h -150
+v 10 h 150 a 140 140 0 0 1 0 280 h -150 a 140 140 0 0 1 0 -280 z
+M 140 70 h 20 v 80 h 60 v 20 h -60 v 40 h 80 v 20 h -100 v -160 z
+M 340 70 h 20 v 160 h -20 l -80 -80 v -20 h 80 v 20 h -50 l 50 50 v -130 z
+"/>
+        <glyph unicode="&#xE040;" horiz-adv-x="500" glyph-name="Android.F5" d="
+M 175 0 a 150 150 1 1 0 0 300 h 150 a 150 150 1 1 0 0 -300 h -150
+v 10 h 150 a 140 140 0 0 1 0 280 h -150 a 140 140 0 0 1 0 -280 z
+M 150 70 h 20 v 80 h 60 v 20 h -60 v 40 h 80 v 20 h -100 v -160 z
+M 260 70 h 50 a 50 50 0 0 1 0 100 h -30 v 40 h 80 v 20 h -100 v -80 h 40 a 30 30 0 0 0 0 -60 h -40 v -20 z
+"/>
+        <glyph unicode="&#xE041;" horiz-adv-x="500" glyph-name="Android.F6" d="
+M 175 0 a 150 150 1 1 0 0 300 h 150 a 150 150 1 1 0 0 -300 h -150
+v 10 h 150 a 140 140 0 0 1 0 280 h -150 a 140 140 0 0 1 0 -280 z
+M 140 70 h 20 v 80 h 60 v 20 h -60 v 40 h 80 v 20 h -100 v -160 z
+M 360 230 h -50 a 50 50 0 0 1 -50 -50 v -60 a 50 50 0 0 1 100 0 a 50 50 0 0 1 -50 50 h -30 v -20 h 30 a 30 30 0 0 0 30 -30 a 30 30 0 0 0 -60 0 v 60 a 30 30 0 0 0 30 30 h 50 v 20 z
+"/>
+        <glyph unicode="&#xE042;" horiz-adv-x="500" glyph-name="Android.F11" d="
+M 175 0 a 150 150 1 1 0 0 300 h 150 a 150 150 1 1 0 0 -300 h -150
+v 10 h 150 a 140 140 0 0 1 0 280 h -150 a 140 140 0 0 1 0 -280 z
+M 100 70 h 20 v 80 h 60 v 20 h -60 v 40 h 80 v 20 h -100 v -160 z
+M 250 70 h 30 v 160 h -30 a 20 20 0 0 0 -20 -20 v -20 h 20 z
+M 350 70 h 30 v 160 h -30 a 20 20 0 0 0 -20 -20 v -20 h 20 z
+"/>
+        <glyph unicode="&#xE043;" horiz-adv-x="500" glyph-name="Android.F12" d="
+M 175 0 a 150 150 1 1 0 0 300 h 150 a 150 150 1 1 0 0 -300 h -150
+v 10 h 150 a 140 140 0 0 1 0 280 h -150 a 140 140 0 0 1 0 -280 z
+M 100 70 h 20 v 80 h 60 v 20 h -60 v 40 h 80 v 20 h -100 v -160 z
+M 240 70 h 30 v 160 h -30 a 20 20 0 0 0 -20 -20 v -20 h 20 z
+M 290 75 h 100 v 20 h -80 c 0 30 50 30 70 50 c 20 20 20 50 0 70 c -20 20 -70 20 -90 -10 v -20 h 20 c 0 30 60 30 60 0 c 0 -50 -80 -20 -80 -90 z
+"/>
+        <glyph unicode="&#xE044;" horiz-adv-x="350" glyph-name="Android.Home" d="
+        M 175 0 l 140 0 a 10 10 0 0 1 10 10 v 140 l -150 150 l -150 -150 v -140 a 10 10 0 0 1 10 -10 h 140 v 10 h -140 v 130 l 140 140 l 140 -140 v -130 h -140 v -10 z
+"/>
+        <!-- endregion -->
+    </font>
+    </defs>
+
+    <!-- region Preview -->
+    <!-- SVG is really a convenient format to be honest,with the addition of Android Studio SVG
+    side-by-side preview, Real time feedback! -->
+    <text x="0" y="20" font-family="CrossLauncher Button Icons" font-size="20"> PlayStation 3 Icon </text>
+    <text x="0" y="50" font-family="CrossLauncher Button Icons" font-size="30"> &#xF880;&#xF881;&#xF882;&#xF883;&#xF884;&#xF885;&#xF886;&#xF887;&#xF888;base </text>
+    <text x="0" y="75" font-family="CrossLauncher Button Icons" font-size="30"> &#xF889;&#xF88A;&#xF88B;&#xF88C;&#xF88D;&#xF88E;&#xF88F;&#xF892;base </text>
+    <text x="0" y="100" font-family="CrossLauncher Button Icons" font-size="20"> Xbox One Buttons </text>
+    <text x="0" y="130" font-family="CrossLauncher Button Icons" font-size="30"> &#xE012;&#xE013;&#xE014;&#xE015;&#xE016;&#xE017;&#xE018;&#xE019;&#xE01A;base </text>
+    <text x="0" y="155" font-family="CrossLauncher Button Icons" font-size="30"> &#xE01B;&#xE01C;&#xE01D;&#xE01E;&#xE01F;&#xE020;&#xE021;&#xE022;base </text>
+    <text x="0" y="185" font-family="CrossLauncher Button Icons" font-size="20"> Nintendo Switch Buttons </text>
+    <text x="0" y="215" font-family="CrossLauncher Button Icons" font-size="30"> &#xE023;&#xE024;&#xE025;&#xE026;&#xE027;&#xE028;&#xE029;&#xE02A;&#xE02B;base </text>
+    <text x="0" y="240" font-family="CrossLauncher Button Icons" font-size="30"> &#xE02C;&#xE02D;&#xE02E;&#xE02F;&#xE030;&#xE031;&#xE032;&#xE033;base </text>
+    <text x="0" y="270" font-family="CrossLauncher Button Icons" font-size="20"> Android Buttons </text>
+    <text x="0" y="300" font-family="CrossLauncher Button Icons" font-size="30"> &#xE034;&#xE035;&#xE036;&#xE037;&#xE038;&#xE039;&#xE03A;&#xE03B;&#xE03C;base </text>
+    <text x="0" y="325" font-family="CrossLauncher Button Icons" font-size="30"> &#xE03D;&#xE03E;&#xE03F;&#xE040;&#xE041;&#xE042;&#xE043;&#xE044;base </text>
+    <text x="250" y="460" font-family="CrossLauncher Button Icons" text-anchor="middle" font-size="20"> &#xF880; = EFA280 </text>
+    <text x="250" y="480" font-family="CrossLauncher Button Icons" text-anchor="middle" font-size="20"> Press &#xF88F; to Continue </text>
+    <!-- endregion -->
+</svg>

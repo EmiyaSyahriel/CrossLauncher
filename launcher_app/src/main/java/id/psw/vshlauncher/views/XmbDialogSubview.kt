@@ -14,10 +14,8 @@ open class XmbDialogSubview(private val vsh: VSH) {
     open val title : String = vsh.getString(R.string.default_dialog_title)
     open val negativeButton = vsh.getString(android.R.string.cancel)
     open val positiveButton = vsh.getString(android.R.string.ok)
-    open val neutralButton = vsh.getString(android.R.string.untitled)
     open val hasNegativeButton = false
     open val hasPositiveButton = false
-    open val hasNeutralButton = false
     private var pCloseDialogTo : VshViewPage = VshViewPage.MainMenu
     private var pShouldClose = false
     val closeDialogTo get() = pCloseDialogTo
@@ -36,7 +34,16 @@ open class XmbDialogSubview(private val vsh: VSH) {
 
     }
 
+    open fun onTouch(a:PointF, b:PointF, act:Int){
+
+    }
+
+    open fun onDialogButton(isPositive: Boolean){
+
+    }
+
     open fun onDraw(ctx: Canvas, drawBound: RectF){
+
     }
 
     open fun onClose(){

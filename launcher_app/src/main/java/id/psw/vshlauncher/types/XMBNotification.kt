@@ -7,4 +7,6 @@ data class XMBNotification(
     var icon: Bitmap?,
     var title:String,
     var desc:String,
-    var remainingTime : Float = 3.0f)
+    var remainingTime : Float = 3.0f,
+    val destroy : Boolean = false
+)

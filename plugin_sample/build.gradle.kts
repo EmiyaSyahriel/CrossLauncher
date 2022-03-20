@@ -8,7 +8,7 @@ plugins{
 }
 
 android {
-    compileSdk = 30
+    compileSdk = 31
 
     defaultConfig {
         applicationId = "id.psw.vshlauncher.plugin_example"
@@ -30,15 +30,16 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+
 }
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar") )))
-    implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("androidx.core:core-ktx:1.6.0")
-    testImplementation("junit:junit:4.+")
-    implementation("com.google.android.material:material:1.4.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.20-M1")
+    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation("androidx.core:core-ktx:1.7.0")
+    testImplementation("junit:junit:4.13.2")
+    implementation("com.google.android.material:material:1.5.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 }

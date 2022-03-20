@@ -63,7 +63,7 @@
     <string name="category_settings">Pengaturan</string>
     <string name="videoplayer_pause">Jeda</string>
     <string name="videoplayer_stop">Hentikan</string>
-    <string name="videoplayer_play">Play</string>
+    <string name="videoplayer_play">Putar</string>
     <string name="videoplayer_bwd">Mundur</string>
     <string name="videoplayer_fwd">Maju</string>
     <string name="videoplayer_switchar">Perbesaran</string>
@@ -131,4 +131,79 @@
     <string name="app_create_customization_folder">Buat Dir Kustomisasi</string>
     <string name="app_customization_file_created">Direktori Kustomisasi Dibuat</string>
     <string name="settings_system_show_fps_desc">" Tampilkan performa rendering aplikasi"</string>
+    <string name="app_sorting_name">Dari Nama</string>
+    <string name="app_sorting_updtime">Dari Tanggal Diperbarui</string>
+    <string name="app_sorting_filesize">Dari Ukuran APK</string>
+    <string name="app_sorting_actname">Dari Nama Paket</string>
+    <string name="app_category_switch_sort">Ganti Urutan</string>
+    <string name="screen_portrait_warning_title">Layar dalam mode Tegak</string>
+    <string name="screen_portrait_warning_desc">Layar tegak dapat menyebabkan performa penggambar yang buruk pada perangkat dengan spesifikasi rendah dan penggunaan RAM tinggi karena lebih banyak ikon yang akan tampil di layar pada satu waktu. Jika itu terjadi, anda bisa memaksa orientasi launcher menjadi miring dari pengaturan.</string>
+    <string name="no_hwaccel_warning_title">Tidak ada Akselerasi Perangkat Keras</string>
+    <string name="no_hwaccel_warning_desc">Tampilan tidak di akselerasi lewat perangkat keras, performa penggambar mungkin lambat. Pada beberapa perangkat, anda bisa mengaktifkan akselerasi perangkat keras dari Opsi Pengembang, antara khusus untuk beberapa aplikasi atau untuk seluruh sistem.</string>
+    <string name="locale_lang_display_name">Bahasa Indonesia</string>
+    <string name="settings_system_language">Bahasa Tampilan Peluncur</string>
+    <string name="settings_system_language_description">Bahasa yang di tampilkan pada launcher</string>
+    <string name="photoepilepsy_warning">
+        PERINGATAN EPILEPSI FOTOSENSITIF
+        \nJIKA ANDA MEMILIKI RIWAYAT EPILEPSI ATAU KEJANG, SILAHKAN BERKONSULTASI KE DOKTER SEBELUM PEMAKAIAN. BEBERAPA POLA DAPAT MEMICU GEJALA TANPA RIWAYAT SEBELUMNYA, SEBELUM MEMAKAI PELUNCUR INI, SILAHKAN BACA HALAMAN PANDUAN DI GITHUB DENGAN SEKSAMA.
+        \n
+        \nAPLIKASI INI BUKAN EMULATOR!
+        \nAPLIKASI INI HANYA SEBUAH PELUNCUR YANG MENIRU PENGALAMAN HALAMAN DEPAN PS3/PSP DI ANDROID, BUKAN EMULATOR PS3/PSP. JIKALAU ANDA MEMASANG APLIKASI INI MENGIRA ADALAH SEBUAH EMULATOR, ANDA BEBAS MENCOPOT PEMASANGAN APLIKASI INI.
+        \n
+        \nPERINGATAN INI BISA DI MATIKAN LEWAT PENGATURAN SISTEM
+    </string>
+    <string name="settings_system_hide_boot_warning">Sembunyikan Peringatan Pembukaan</string>
+    <string name="settings_system_asian_console_name">Perilaku Tombol Bulat</string>
+    <string name="settings_system_asian_console_desc">Apa yang akan dilakukan tombol bulat (B di Xbox, A di Nintendo) ke sistem</string>
+    <string name="settings_system_asian_console_true">Setuju</string>
+    <string name="settings_system_asian_console_false">Batal</string>
+    <string name="setting_android_name">Pengaturan Sistem Android</string>
+    <string name="setting_android_desc">Pintasan ke pengaturan sistem Android</string>
+    <string name="android_sys_network_name"><![CDATA[Jaringan & Internet]]></string>
+    <string name="android_sys_network_desc">Wi-Fi, seluler, penggunaan kuota, dan hotspot</string>
+    <string name="android_sys_devices_name">Perangkat tersambung</string>
+    <string name="android_sys_devices_desc">Bluetooth, USB</string>
+    <string name="android_sys_apps_name"><![CDATA[Aplikasi & notifikasi]]></string>
+    <string name="android_sys_apps_desc">Aplikasi baru-baru ini, aplikasi default</string>
+    <string name="android_sys_all_apps_name">Semua aplikasi</string>
+    <string name="android_sys_all_apps_desc">Lihat semua aplikasi</string>
+    <string name="android_sys_notification_name">Akses notifikasi</string>
+    <string name="android_sys_notification_desc">Atur akses notifikasi untuk semua aplikasi</string>
+    <string name="android_sys_default_apps_name">Aplikasi default</string>
+    <string name="android_sys_default_apps_desc">Peramban, Media, Telefon dan Perpesanan</string>
+    <string name="android_sys_setting_homepage_name">Halaman utama pengaturan</string>
+    <string name="android_sys_setting_homepage_desc">Luncurkan halaman utama aplikasi pengaturan</string>
+    <string name="android_sys_nodisturb_name">Jangan ganggu</string>
+    <string name="android_sys_nodisturb_desc">Ganti aplikasi yang bisa memberi notifikasi bahkan ketika mode Jangan ganggu aktif</string>
+    <string name="common_install">Pasang</string>
+    <string name="app_force_kill">Hentikan Paksa</string>
+    <string name="force_kill_sent_desc">Permintaan untuk menghentikan paksa aplikasi terkirim ke sistem Android : %s</string>
+    <string name="force_kill_sent_title">Aplikasi di hentikan paksa</string>
+    <string name="install_shortcut_dialog_title">Pasang Pintasan</string>
+    <string name="android_sys_battery_name">Baterai</string>
+    <string name="android_sys_battery_desc">Penggunaan baterai, pengaturan penghemat baterai</string>
+    <string name="android_sys_display_name">Tampilan</string>
+    <string name="android_sys_display_desc">Wallpaper, tidur, ukuran font</string>
+    <string name="android_sys_sound_name">Suara</string>
+    <string name="android_sys_sound_desc">Volume, getar, Jangan Ganggu</string>
+    <string name="android_sys_storage_name">Penyimpanan</string>
+    <string name="android_sys_storage_desc">Penyimpanan bebas, info perangkat penyimpanan</string>
+    <string name="android_sys_privacy_name">Privasi</string>
+    <string name="android_sys_privacy_desc">Izin, aktifias akun, data pribadi</string>
+    <string name="android_sys_location_name">Lokasi</string>
+    <string name="android_sys_location_desc">Aplikasi yang bisa mengakses lokasi</string>
+    <string name="android_sys_security_name">Keamanan</string>
+    <string name="android_sys_security_desc">Kunci layar, sidik jari</string>
+    <string name="android_sys_accessibility_name">Aksesibiltas</string>
+    <string name="android_sys_accessibility_desc">Pembaca layar, tampilan, kendali interaksi</string>
+    <string name="android_sys_systeminfo_name">Sistem</string>
+    <string name="android_sys_systeminfo_desc">Bahasa, gestur, waktu, backup</string>
+    <string name="android_sys_locale_name"><![CDATA[Bahasa & masukan]]></string>
+    <string name="android_sys_locale_desc">Bahasa tampilan, format angka, sistem masukan</string>
+    <string name="android_sys_datetime_name"><![CDATA[Tanggal & waktu]]></string>
+    <string name="android_sys_datetime_desc">Tanggal, waktu, zona waktu</string>
+    <string name="android_sys_developer_name">Opsi pengembang</string>
+    <string name="android_sys_developer_desc">Pengaturan pengembangan aplikasi, oprekan graifk</string>
+    <string name="android_sys_deviceinfo_name">Tentang perangkat</string>
+    <string name="android_sys_deviceinfo_desc">Versi Android, alamat IP, IMEI</string>
 </resources>

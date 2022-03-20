@@ -1,11 +1,21 @@
 package id.psw.vshlauncher
 
+import android.content.pm.ActivityInfo
 import android.os.Build
+import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.items.XMBAndroidSettingShortcutItem
+import id.psw.vshlauncher.types.items.XMBMenuItem
 import id.psw.vshlauncher.types.items.XMBSettingsCategory
 import id.psw.vshlauncher.types.items.XMBSettingsItem
 import id.psw.vshlauncher.views.XMBLayoutType
+import id.psw.vshlauncher.views.dialogviews.TestDialogView
+import id.psw.vshlauncher.views.showDialog
+import java.util.*
+import kotlin.collections.ArrayList
 
 object SettingsCategoryID {
+    const val CATEGORY_SETTINGS_ANDROID = "settings_category_android"
     const val CATEGORY_SETTINGS_DISPLAY = "settings_category_display"
     const val CATEGORY_SETTINGS_DEBUG = "settings_category_debug"
     const val CATEGORY_SETTINGS_SYSTEMINFO = "settings_category_systeminfo"
@@ -18,6 +28,15 @@ fun VSH.fillSettingsCategory(){
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategorySystem())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryInfo())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryDebug())
+        addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryAndroidSetting())
+    }
+}
+
+private fun VSH.getCurrentLocaleName() : String {
+    return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+        resources.configuration.locales[0].displayName
+    }else{
+        resources.configuration.locale.displayName
     }
 }
 
@@ -38,6 +57,100 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 { showLauncherFPS.select(vsh.getString(R.string.common_yes),vsh.getString(R.string.common_no))  }
             ){ showLauncherFPS = !showLauncherFPS }
         )
+
+        content.add(XMBSettingsItem(vsh, "settings_system_language",
+            R.string.settings_system_language, R.string.settings_system_language_description,
+            R.drawable.icon_language, { getCurrentLocaleName() }
+        ) {
+            vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+        }.apply {
+            hasMenu = true
+            val dMenuItems = arrayListOf<XMBMenuItem>()
+            supportedLocaleList.forEachIndexed { i, it ->
+                val item = XMBMenuItem.XMBMenuItemLambda(
+                    { it?.displayName ?: "System Default" },
+                    { false }, i)
+                {
+                    vsh.setActiveLocale(it)
+                }
+                dMenuItems.add(item)
+            }
+            menuItems = dMenuItems
+        })
+
+        content.add(XMBSettingsItem(vsh, "settings_system_orientation",
+            R.string.item_orientation,
+            R.string.orient_user, R.drawable.icon_orientation, {
+                val xmb = xmbView?.context?.xmb
+                getString(when(xmb?.requestedOrientation){
+                    ActivityInfo.SCREEN_ORIENTATION_USER -> R.string.orient_user
+                    ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> R.string.orient_landscape
+                    ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> R.string.orient_portrait
+                    else -> R.string.orient_unknown
+                })
+            }){
+            val xmb = xmbView?.context?.xmb
+            xmb?.requestedOrientation = when(xmb?.requestedOrientation){
+                ActivityInfo.SCREEN_ORIENTATION_USER -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_USER
+                else -> ActivityInfo.SCREEN_ORIENTATION_USER
+            }
+            pref.edit().putInt(PrefEntry.DISPLAY_ORIENTATION, xmb?.requestedOrientation ?: ActivityInfo.SCREEN_ORIENTATION_SENSOR).apply()
+        }.apply {
+            val xmb = xmbView?.context?.xmb
+            hasMenu = true
+            val dMenuItems = arrayListOf<XMBMenuItem>()
+            arrayOf(
+                ActivityInfo.SCREEN_ORIENTATION_USER,
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT).forEachIndexed { i, it ->
+                val nameStr = getString(when(it){
+                    ActivityInfo.SCREEN_ORIENTATION_USER -> R.string.orient_user
+                    ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> R.string.orient_landscape
+                    ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> R.string.orient_portrait
+                    else -> R.string.orient_unknown
+                })
+                dMenuItems.add(XMBMenuItem.XMBMenuItemLambda({nameStr}, {false}, i){
+                    xmb?.requestedOrientation = it
+                })
+            }
+            menuItems = dMenuItems
+        })
+
+        content.add(XMBSettingsItem(vsh, "settings_system_button",
+        R.string.settings_system_asian_console_name, R.string.settings_system_asian_console_desc,
+        R.drawable.category_games, {
+                getString(
+                    if(GamepadSubmodule.Key.spotMarkedByX)
+                        R.string.settings_system_asian_console_false
+                    else
+                        R.string.settings_system_asian_console_true
+                )
+            }
+        ){
+            GamepadSubmodule.Key.spotMarkedByX = !GamepadSubmodule.Key.spotMarkedByX
+            pref.edit().putInt(PrefEntry.CONFIRM_BUTTON,
+                GamepadSubmodule.Key.spotMarkedByX.select(1,0)).apply()
+        })
+
+        val cal = Calendar.getInstance()
+        val mon = cal.get(Calendar.MONTH)
+        val day = cal.get(Calendar.DAY_OF_MONTH)
+        if(mon == 3 && day == 1){
+            content.add(XMBSettingsItem(vsh, "settings_what_is_it",
+                R.string.settings_system_test_option_name,
+                R.string.settings_system_test_option_desc,
+                R.drawable.icon_developer, {
+                    val i = xmbView?.keygenActive?.select(
+                        R.string.settings_system_test_option_value_on,
+                        R.string.settings_system_test_option_value_off) ?: R.string.empty_string
+                    getString(i)
+                }
+            ){
+                xmbView?.keygenActive = true
+            })
+        }
     }
 }
 
@@ -48,7 +161,12 @@ private fun VSH.createCategoryDebug() : XMBSettingsCategory{
         R.drawable.category_debug,
         R.string.settings_category_debug_name,
         R.string.settings_category_debug_desc
-    )
+    ).apply {
+        content.add(XMBSettingsItem(vsh, "dbg_launch_dialog_test",
+            R.string.dbg_launch_dialog_test, R.string.empty_string, R.drawable.category_debug, {""}){
+            xmbView?.showDialog(TestDialogView(vsh))
+        })
+    }
 }
 
 private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
@@ -84,7 +202,31 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                         XMBLayoutType.PS3 -> XMBLayoutType.PSP
                         else -> XMBLayoutType.PS3
                     }
+                    saveLayoutSetting()
                 }
+            }.apply{
+                hasMenu = true
+                val dMenu = ArrayList<XMBMenuItem>()
+
+                    dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                        {"PlayStation Portable"}, {false}, 1)
+                    {
+                        xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PSP
+                        saveLayoutSetting()
+                    })
+                    dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                        {"PlayStation 3"}, {false}, 0)
+                    {
+                        xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PS3
+                        saveLayoutSetting()
+                    })
+                    dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                        {"Bravia TV"}, {false}, 2)
+                    {
+                        xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.Bravia
+                        saveLayoutSetting()
+                    })
+                menuItems = dMenu
             }
         )
         //endregion
@@ -123,6 +265,20 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
     }
 }
 
+fun VSH.saveLayoutSetting() {
+    val view = xmbView
+    if(view != null) {
+        val srlzLayout = when (view.state.crossMenu.layoutMode) {
+            XMBLayoutType.PS3 -> 0
+            XMBLayoutType.PSP -> 1
+            XMBLayoutType.Bravia -> 2
+            XMBLayoutType.PSX -> 3
+            else -> 0
+        }
+        pref.edit().putInt(PrefEntry.MENU_LAYOUT, srlzLayout).apply()
+    }
+}
+
 private fun VSH.createCategoryInfo() : XMBSettingsCategory{
     val vsh = this
     return XMBSettingsCategory(this,
@@ -143,5 +299,165 @@ private fun VSH.createCategoryInfo() : XMBSettingsCategory{
                 R.string.empty_string,
                 R.drawable.icon_android, { "${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})" }){ }
         )
+    }
+}
+
+private fun VSH.createCategoryAndroidSetting() : XMBSettingsCategory{
+    val vsh = this
+    return XMBSettingsCategory(this,
+        SettingsCategoryID.CATEGORY_SETTINGS_ANDROID,
+        R.drawable.icon_android,
+        R.string.setting_android_name,
+        R.string.setting_android_desc,
+    ).apply {
+
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.category_setting,
+            R.string.android_sys_setting_homepage_name,
+            R.string.android_sys_setting_homepage_desc,
+            android.provider.Settings.ACTION_SETTINGS
+        ))
+
+
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_network,
+            R.string.android_sys_network_name,
+            R.string.android_sys_network_desc,
+            android.provider.Settings.ACTION_WIRELESS_SETTINGS
+        ))
+
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_cda,
+            R.string.android_sys_devices_name,
+            R.string.android_sys_devices_desc,
+            android.provider.Settings.ACTION_BLUETOOTH_SETTINGS
+        ))
+
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.category_apps,
+            R.string.android_sys_apps_name,
+            R.string.android_sys_apps_desc,
+            "id.psw.vshlauncher.settings.category.apps"
+        ).apply {
+            hasContent = true
+            content.add(
+                XMBAndroidSettingShortcutItem(
+                    vsh, R.drawable.category_apps,
+                    R.string.android_sys_all_apps_name,  R.string.android_sys_all_apps_desc,
+                    android.provider.Settings.ACTION_APPLICATION_SETTINGS
+                )
+            )
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                content.add(
+                    XMBAndroidSettingShortcutItem(
+                        vsh, R.drawable.category_notifications,
+                        R.string.android_sys_nodisturb_name, R.string.android_sys_nodisturb_desc,
+                        android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS
+                    )
+                )
+                content.add(
+                    XMBAndroidSettingShortcutItem(
+                        vsh, R.drawable.category_notifications,
+                        R.string.android_sys_notification_name, R.string.android_sys_notification_desc,
+                        android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+                    )
+                )
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                content.add(
+                    XMBAndroidSettingShortcutItem(
+                        vsh, R.drawable.category_apps,
+                        R.string.android_sys_default_apps_name,  R.string.android_sys_default_apps_desc,
+                        android.provider.Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS
+                    )
+                )
+            }
+
+        })
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            content.add(XMBAndroidSettingShortcutItem(
+                vsh, R.drawable.icon_battery,
+                R.string.android_sys_battery_name,
+                R.string.android_sys_battery_desc,
+                android.provider.Settings.ACTION_BATTERY_SAVER_SETTINGS
+            ))
+        }
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_brightness,
+            R.string.android_sys_display_name,
+            R.string.android_sys_display_desc,
+            android.provider.Settings.ACTION_DISPLAY_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_volume,
+            R.string.android_sys_sound_name,
+            R.string.android_sys_sound_desc,
+            android.provider.Settings.ACTION_SOUND_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_storage,
+            R.string.android_sys_storage_name,
+            R.string.android_sys_storage_desc,
+            android.provider.Settings.ACTION_INTERNAL_STORAGE_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_privacy,
+            R.string.android_sys_privacy_name,
+            R.string.android_sys_privacy_desc,
+            android.provider.Settings.ACTION_PRIVACY_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_location,
+            R.string.android_sys_location_name,
+            R.string.android_sys_location_desc,
+            android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_security,
+            R.string.android_sys_security_name,
+            R.string.android_sys_security_desc,
+            android.provider.Settings.ACTION_SECURITY_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_accessibility,
+            R.string.android_sys_accessibility_name,
+            R.string.android_sys_accessibility_desc,
+            android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS
+        ))
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_info,
+            R.string.android_sys_systeminfo_name,
+            R.string.android_sys_systeminfo_desc,
+            "id.psw.vshlauncher.settings.category.system"
+        ).apply {
+            hasContent = true
+            content.add(XMBAndroidSettingShortcutItem(
+                vsh, R.drawable.icon_language,
+                R.string.android_sys_locale_name,
+                R.string.android_sys_locale_desc,
+                android.provider.Settings.ACTION_LOCALE_SETTINGS
+            ))
+
+            content.add(XMBAndroidSettingShortcutItem(
+                vsh, R.drawable.icon_datetime,
+                R.string.android_sys_datetime_name,
+                R.string.android_sys_datetime_desc,
+                android.provider.Settings.ACTION_DATE_SETTINGS
+            ))
+
+            content.add(XMBAndroidSettingShortcutItem(
+                vsh, R.drawable.icon_developer,
+                R.string.android_sys_developer_name,
+                R.string.android_sys_developer_desc,
+                android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS
+            ))
+        })
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_device_info,
+            R.string.android_sys_deviceinfo_name,
+            R.string.android_sys_deviceinfo_desc,
+            android.provider.Settings.ACTION_DEVICE_INFO_SETTINGS
+        ))
     }
 }

@@ -1,7 +1,9 @@
 package id.psw.vshlauncher.activities
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PointF
 import android.net.Uri
@@ -16,6 +18,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbView
 
@@ -25,8 +28,9 @@ class XMB : AppCompatActivity() {
         const val ACT_REQ_UNINSTALL = 0xDACED0
         const val INSTALL_SHORTCUT = "com.android.launcher.action.INSTALL_SHORTCUT"
     }
-    private lateinit var xmbView : XmbView
+    lateinit var xmbView : XmbView
     var skipColdBoot = false
+    private var _lastOrientation : Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         xmbView = XmbView(this)
@@ -34,6 +38,44 @@ class XMB : AppCompatActivity() {
         setContentView(xmbView)
         vsh.xmbView = xmbView
         xmbView.switchPage(skipColdBoot.select(VshViewPage.MainMenu, VshViewPage.ColdBoot))
+
+        readPreferences()
+
+        _lastOrientation = resources.configuration.orientation
+
+        checkCanvasHwAcceleration()
+
+        if(_lastOrientation == Configuration.ORIENTATION_PORTRAIT){
+            postPortraitScreenOrientationWarning()
+        }
+        vsh.doMemoryInfoGrab = true
+        if(isCreateShortcutIntent(intent)){
+            showShortcutCreationDialog(intent)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+
+        if(isCreateShortcutIntent(intent)){
+            showShortcutCreationDialog(intent)
+        }
+        super.onNewIntent(intent)
+    }
+
+    private fun readPreferences() {
+        val pref = vsh.pref
+        requestedOrientation = pref.getInt(PrefEntry.DISPLAY_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_SENSOR)
+        GamepadSubmodule.Key.spotMarkedByX = pref.getInt(PrefEntry.CONFIRM_BUTTON, 0) == 1
+        xmbView.fpsLimit = pref.getInt(PrefEntry.SURFACEVIEW_FPS_LIMIT, 0).toLong()
+
+    }
+
+    private fun checkCanvasHwAcceleration(){
+        if(!xmbView.isHWAccelerated){
+            vsh.postNotification(null, getString(R.string.no_hwaccel_warning_title),
+                getString(R.string.no_hwaccel_warning_desc)
+            )
+        }
     }
 
     private fun sysBarTranslucent(){
@@ -68,11 +110,15 @@ class XMB : AppCompatActivity() {
     override fun onPause() {
         vsh.removeAudioSource()
         vsh.preventPlayMedia = true
+        xmbView.pauseRendering()
+        vsh.doMemoryInfoGrab = false
         super.onPause()
     }
 
     override fun onResume() {
         vsh.xmbView = xmbView
+        xmbView.startDrawThread()
+        vsh.doMemoryInfoGrab = true
         super.onResume()
     }
 
@@ -86,6 +132,33 @@ class XMB : AppCompatActivity() {
 
     val touchStartPointF = PointF()
     val touchCurrentPointF = PointF()
+
+    private var screenOrientationWarningPosted = false
+    private fun postPortraitScreenOrientationWarning() {
+        if(!screenOrientationWarningPosted){
+            vsh.postNotification(null,
+                getString(R.string.screen_portrait_warning_title),
+                getString(R.string.screen_portrait_warning_desc)
+            )
+            screenOrientationWarningPosted = true
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        if(newConfig.orientation != _lastOrientation){
+            when(newConfig.orientation){
+                Configuration.ORIENTATION_PORTRAIT ->
+                {
+                    postPortraitScreenOrientationWarning()
+                }
+                else-> {
+
+                }
+            }
+            _lastOrientation = newConfig.orientation
+        }
+        super.onConfigurationChanged(newConfig)
+    }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         var retval = false

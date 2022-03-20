@@ -1,13 +1,16 @@
 package id.psw.vshlauncher
 
 import android.content.Context
+import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.os.Parcel
 import androidx.core.content.res.ResourcesCompat
 import id.psw.vshlauncher.activities.XMB
+import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.views.XmbView
 import java.io.File
+import java.util.*
 import kotlin.experimental.and
 
 /**
@@ -82,3 +85,44 @@ fun XmbView.getDrawable(id:Int) : Drawable?{
 
 fun Parcel.writeByteBoolean(boolean: Boolean) = this.writeByte(boolean.select(1,0))
 fun Parcel.readByteBoolean() : Boolean = this.readByte() != 0.toByte()
+
+fun <TType, TReturn> TType.callOnCount(countRef: Ref<Int>, lastStateRef: Ref<TReturn>, pollEveryNCall:Int, func: (TType) -> TReturn) : TReturn {
+    if(countRef.p >= pollEveryNCall){
+        countRef.p = 0
+        lastStateRef.p = func(this)
+    }
+    countRef.p++
+    return lastStateRef.p
+}
+
+/** Delay ```File.exists()``` call until the call time count equal or more than ```pollEveryNCall```
+ * The call result then will be cached, then the cache will be returned, Done like this since
+ * File.exists() is an expensive call and calling it on every frame is basically killing the phone or
+ * storage media faster
+ */
+fun File.delayedExistenceCheck(iTrack: Ref<Int>, lastState:Ref<Boolean>, pollEveryNCall:Int = 61) : Boolean =
+    callOnCount(iTrack, lastState, pollEveryNCall) { it.exists() }
+
+fun <K,V> MutableMap<K, V>.getOrMake(k:K, v:() -> V) : V{
+    return if(containsKey(k)){
+        get(k)!!
+    }else{
+        val rv = v()
+        put(k, rv)
+        rv
+    }
+}
+
+fun createSerializedResolution(size: Point) : Int = (((size.x and 0xFFFF) shl 16) or (size.y and 0xFFFF))
+fun readSerializedResolution(srlSize:Int, buffer: Point) = buffer.set((srlSize shr 16) and 0xFFFF, srlSize and 0xFFFF)
+fun createSerializedLocale(locale: Locale?) : String = if(locale == null) "" else "${locale.language}|${locale.country}|${locale.variant}"
+fun readSerializedLocale(srlLocale:String) : Locale {
+    val locData = srlLocale.split('|')
+    return when(locData.size){
+        0 -> Locale.getDefault()
+        1 -> Locale(locData[0])
+        2 -> Locale(locData[0], locData[1])
+        3 -> Locale(locData[0], locData[1], locData[2])
+        else -> Locale.getDefault()
+    }
+}

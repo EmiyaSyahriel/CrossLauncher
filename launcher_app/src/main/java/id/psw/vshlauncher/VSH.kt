@@ -1,27 +1,31 @@
 package id.psw.vshlauncher
 
+import android.app.ActivityManager
 import android.app.Application
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.media.MediaPlayer
+import android.media.SoundPool
 import android.os.*
 import android.util.Log
+import androidx.preference.Preference
 // import com.facebook.drawee.backends.pipeline.Fresco
 import id.psw.vshlauncher.pluginservices.IconPluginServiceHandle
 import id.psw.vshlauncher.submodules.*
 import id.psw.vshlauncher.types.*
+import id.psw.vshlauncher.types.Stack
 import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbView
 import java.io.File
 import java.lang.Exception
+import java.lang.StringBuilder
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
+import kotlin.concurrent.thread
 
 class VSH : Application(), ServiceConnection {
 
@@ -45,6 +49,9 @@ class VSH : Application(), ServiceConnection {
         const val ITEM_CATEGORY_MUSIC = "vsh_music"
         const val ITEM_CATEGORY_SETTINGS = "vsh_settings"
         const val COPY_DATA_SIZE_BUFFER = 10240
+
+        val dbgMemInfo = Debug.MemoryInfo()
+        val actMemInfo = ActivityManager.MemoryInfo()
     }
 
     private var appUserUid = 0
@@ -52,16 +59,6 @@ class VSH : Application(), ServiceConnection {
     val UserUid get() = appUserUid
 
     val selectStack = Stack<String>()
-    /** This will change several behaviour :
-     * - Application icon and decorative assets will be recycled / unloaded upon hidden from screen
-     *
-     * Advantage :
-     * - Smaller RAM usage
-     *
-     * Disadvantage :
-     * - It will cause a lot of loading
-     * - Tend to cause a lot of storage reading access, causing faster medium degradation (usually not a problem)
-     */
     var aggressiveUnloading = true
     var xmbView : XmbView? = null
     var playAnimatedIcon = true
@@ -81,6 +78,11 @@ class VSH : Application(), ServiceConnection {
             root = root.find { it.id == selectStack[i]}?.content
             i++
         }
+        if(root != null){
+            if(root.indexOfFirst { it.id == selectedItemId } < 0 && root.size > 0){
+                selectedItemId = root[0].id
+            }
+        }
         return root
     }
     val hoveredItem : XMBItem? get() = items?.find { it.id == selectedItemId }
@@ -96,6 +98,7 @@ class VSH : Application(), ServiceConnection {
 
     var selectedCategoryId = ITEM_CATEGORY_APPS
     var selectedItemId = ""
+    lateinit var pref : SharedPreferences
 
     val itemCursorX get() = categories.visibleItems.indexOfFirst { it.id == selectedCategoryId }
     val itemCursorY get() = (items?.visibleItems?.indexOfFirst { it.id == selectedItemId } ?: -1).coerceAtLeast(0)
@@ -140,6 +143,8 @@ class VSH : Application(), ServiceConnection {
         systemBgmPlayer.prepareAsync()
     }
 
+
+
     fun setAudioSource(newSrc: File, doNotStart : Boolean = false){
         if(preventPlayMedia) return
         if(newSrc.absolutePath != bgmPlayerActiveSrc.absolutePath){
@@ -168,7 +173,13 @@ class VSH : Application(), ServiceConnection {
         }
     }
 
+    fun reloadPreference() {
+        pref = getSharedPreferences("xRegistry.sys", Context.MODE_PRIVATE)
+        setActiveLocale(readSerializedLocale(pref.getString(PrefEntry.SYSTEM_LANGUAGE, "") ?: ""))
+    }
+
     override fun onCreate() {
+        reloadPreference()
         FontCollections.init(this)
         preparePlaceholderAudio()
         bgmPlayer.setOnPreparedListener {
@@ -190,7 +201,36 @@ class VSH : Application(), ServiceConnection {
         listInstalledWaveRenderPlugins()
         reloadAppList()
         fillSettingsCategory()
+
+        listLogAllSupportedLocale()
+
         super.onCreate()
+        meminfoThread = thread(name = "Memory Info Thread") {
+            memoryInfoReaderFunc()
+        }
+    }
+
+    private var shouldExit = false
+    var doMemoryInfoGrab = false
+    private lateinit var meminfoThread : Thread
+    private fun memoryInfoReaderFunc(){
+        val actman = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        while(!shouldExit){
+            if(doMemoryInfoGrab){
+                Debug.getMemoryInfo(dbgMemInfo)
+                actman.getMemoryInfo(actMemInfo)
+            }
+            Thread.sleep(1000)
+        }
+    }
+
+    private fun listLogAllSupportedLocale() {
+        val sb = StringBuilder()
+        sb.appendLine("Listed supported languages / locales in this app: ")
+        supportedLocaleList.forEach {
+            sb.appendLine("- ${getStringLocale(it, R.string.category_games)}")
+        }
+        Log.d(TAG, sb.toString())
     }
 
     fun moveCursorX(right:Boolean){
@@ -210,6 +250,7 @@ class VSH : Application(), ServiceConnection {
             selectedItemId = items[cIdx].lastSelectedItemId // Load new category item id
             items[cIdx].content?.forEach { it.isHovered = it.id == selectedItemId }
             selectedCategoryId = items[cIdx].id
+            xmbView?.state?.itemMenu?.selectedIndex = 0
         }
     }
 
@@ -240,6 +281,7 @@ class VSH : Application(), ServiceConnection {
                 items.forEach {
                     it.isHovered = it.id == selectedItemId
                 }
+                xmbView?.state?.itemMenu?.selectedIndex = 0
             }
         }catch (e:ArrayIndexOutOfBoundsException){
             //
@@ -381,6 +423,10 @@ class VSH : Application(), ServiceConnection {
     }
 
     fun saveCustomShortcut(intent: Intent) {
+
+    }
+
+    fun installShortcut(intent: Intent) {
 
     }
 

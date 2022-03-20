@@ -16,7 +16,7 @@ import kotlin.math.sin
 
 class ItemMenuState {
     val menuContextMenuTextPaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = 25.0f
+        textSize = 10.0f
         textAlign = Paint.Align.LEFT
         typeface = FontCollections.masterFont
         color = Color.WHITE
@@ -51,7 +51,7 @@ fun XmbView.menuMoveItemMenuCursor(isDown:Boolean){
                         val sortedMenu = menuItems.sortedBy { it.displayOrder }
                         val cIndex = sortedMenu.indexOfFirst { it.displayOrder == selectedIndex }
                         val newIndex = cIndex + isDown.select(1, -1)
-                        if(cIndex >= 0 && newIndex < menuItems.size){
+                        if(cIndex >= 0 && newIndex < menuItems.size && newIndex >= 0){
                             selectedIndex = sortedMenu[newIndex].displayOrder
                         }
                     }
@@ -84,8 +84,7 @@ fun XmbView.menuRenderItemMenu(ctx: Canvas){
         val item = context.vsh.hoveredItem
         if(item != null){
             if(item.hasMenu){
-
-                menuContextMenuTextPaint.textSize = isPSP.select(30.0f, 25.0f)
+                menuContextMenuTextPaint.textSize = isPSP.select(30.0f, 20.0f)
 
                 showMenuDisplayFactor = (time.deltaTime * 10.0f).toLerp(showMenuDisplayFactor, isDisplayed.select(1.0f, 0.0f))
                 val menuLeft = showMenuDisplayFactor.toLerp(scaling.viewport.right + 10.0f, scaling.target.right - 400f)
@@ -120,10 +119,12 @@ fun XmbView.menuRenderItemMenu(ctx: Canvas){
                             val yOff = zeroIdx + (it.displayOrder * textSize)
                             itemMenuRectF.set(textLeft - 5.0f, yOff - textSize,
                                 scaling.viewport.right - 5.0f, yOff)
-                            ctx.drawRoundRect(itemMenuRectF,
-                                5.0f, 5.0f, menuContextMenuFill)
-                            ctx.drawRoundRect(itemMenuRectF,
-                                5.0f, 5.0f, menuContextMenuOutline)
+                            if(showMenuDisplayFactor > 0.1f){
+                                ctx.drawRoundRect(itemMenuRectF,
+                                    5.0f, 5.0f, menuContextMenuFill)
+                                ctx.drawRoundRect(itemMenuRectF,
+                                    5.0f, 5.0f, menuContextMenuOutline)
+                            }
                         }else{
                             if(state.crossMenu.arrowBitmapLoaded){
                                 val bitmap = state.crossMenu.arrowBitmap
@@ -141,6 +142,8 @@ fun XmbView.menuRenderItemMenu(ctx: Canvas){
 
                     ctx.drawText(it.displayName, textLeft, zeroIdx + (it.displayOrder * textSize), menuContextMenuTextPaint, 0.5f, false)
                 }
+            }else{
+                isDisplayed = false
             }
         }
     }

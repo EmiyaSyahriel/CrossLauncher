@@ -8,7 +8,7 @@ plugins{
 }
 
 android {
-    compileSdk = 30
+    compileSdk = 31
 
     // buildToolVersion = "30.0.2"
 
@@ -52,13 +52,13 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar") )))
-    implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("androidx.core:core-ktx:1.6.0")
-    implementation("androidx.media:media:1.4.3")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.1")
-    implementation("androidx.preference:preference:1.1.1")
-    implementation("com.google.android.material:material:1.4.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.20-M1")
+    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation("androidx.core:core-ktx:1.7.0")
+    implementation("androidx.media:media:1.5.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.3")
+    implementation("androidx.preference:preference:1.2.0")
+    implementation("com.google.android.material:material:1.5.0")
     /**
     implementation("com.facebook.fresco:fresco:2.6.0")
     implementation("com.facebook.fresco:webpsupport:2.6.0")

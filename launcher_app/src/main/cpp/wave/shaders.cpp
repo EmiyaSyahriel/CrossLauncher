@@ -5,6 +5,16 @@ namespace R {
 	const char* const blank_frag = R"EMBEDRES(precision lowp float;
 void main(){ gl_FragColor = vec4(0.6, 0.0, 1, 1.0); }
 )EMBEDRES";
+	const char* const blank_vert = R"EMBEDRES(precision highp float;
+attribute vec3 POSITION;
+attribute vec3 TEXCOORD0;
+attribute vec3 NORMAL;
+
+void main(){
+    gl_Position = vec4(POSITION, 1.0);
+}
+
+)EMBEDRES";
 	const char* const ps3_background_frag = R"EMBEDRES(precision lowp float;
 #define lerp(a,b,t) (a + ((b - a) * t))
 #define nrange(a) ((a + 1.0) / 2.0)
@@ -37,51 +47,6 @@ void main(){
     gl_FragColor = vec4(lerp(cA, cB, t), 1.0);
 }
 )EMBEDRES";
-	const char* const ps3_sparkle_frag = R"EMBEDRES(precision lowp float;
-varying vec4 f_vcol;
-
-void main(){
-    gl_FragColor = f_vcol;
-}
-)EMBEDRES";
-	const char* const ps3_wave_frag = R"EMBEDRES(precision lowp float;
-varying float alpha;
-uniform vec4 _ColorA, _ColorB;
-
-float lerp(float a, float b, float t){ return a + ((b - a) * t); }
-vec4 lerp4(vec4 a, vec4 b, float t){ return vec4(lerp(a.x, b.x, t), lerp(a.y, b.y, t), lerp(a.z, b.z, t), lerp(a.w, b.w, t)); }
-
-float irange(float r){ return (min(1.0, max(0.0, r)) * 2.0) - 1.0; }
-vec3 irange(vec3 r){ return vec3(irange(r.x),irange(r.y),irange(r.z)); }
-
-// float ndl(){ return dot(vec3(0,0,1), abs(v2f_normal * v2f_normal));  }
-
-void main(){
-    gl_FragColor = lerp4(_ColorB, _ColorA, alpha);
-    // gl_FragColor = vec4(v2f_normal, 1);
-}
-)EMBEDRES";
-	const char* const psp_wave_frag = R"EMBEDRES(precision mediump float;
-varying float alpha;
-uniform vec4 _ColorA;
-uniform vec4 _ColorB;
-
-#define lerp(a,b,t) (a + ((b - a) * t))
-#define lerp4(a,b,t) vec4(lerp(a.x, b.x, t), lerp(a.y, b.y, t), lerp(a.z, b.z, t), lerp(a.w, b.w, t))
-
-void main(){
-    gl_FragColor = lerp4(_ColorB, _ColorA, alpha);
-})EMBEDRES";
-	const char* const blank_vert = R"EMBEDRES(precision highp float;
-attribute vec3 POSITION;
-attribute vec3 TEXCOORD0;
-attribute vec3 NORMAL;
-
-void main(){
-    gl_Position = vec4(POSITION, 1.0);
-}
-
-)EMBEDRES";
 	const char* const ps3_background_vert = R"EMBEDRES(precision highp float;
 
 attribute vec2 POSITION;
@@ -105,6 +70,13 @@ void main(){
     gl_Position = vec4(POSITION, 0.0, 1.0);
 }
 )EMBEDRES";
+	const char* const ps3_sparkle_frag = R"EMBEDRES(precision lowp float;
+varying vec4 f_vcol;
+
+void main(){
+    gl_FragColor = f_vcol;
+}
+)EMBEDRES";
 	const char* const ps3_sparkle_vert = R"EMBEDRES(precision highp float;
 attribute vec2 POSITION;
 attribute vec4 COLOR;
@@ -116,6 +88,23 @@ varying vec4 f_vcol;
 void main(){
     gl_Position = vec4(POSITION, 0.0, 1.0) * _Ortho;
     f_vcol = COLOR;
+}
+)EMBEDRES";
+	const char* const ps3_wave_frag = R"EMBEDRES(precision lowp float;
+varying float alpha;
+uniform vec4 _ColorA, _ColorB;
+
+float lerp(float a, float b, float t){ return a + ((b - a) * t); }
+vec4 lerp4(vec4 a, vec4 b, float t){ return vec4(lerp(a.x, b.x, t), lerp(a.y, b.y, t), lerp(a.z, b.z, t), lerp(a.w, b.w, t)); }
+
+float irange(float r){ return (min(1.0, max(0.0, r)) * 2.0) - 1.0; }
+vec3 irange(vec3 r){ return vec3(irange(r.x),irange(r.y),irange(r.z)); }
+
+// float ndl(){ return dot(vec3(0,0,1), abs(v2f_normal * v2f_normal));  }
+
+void main(){
+    gl_FragColor = lerp4(_ColorB, _ColorA, alpha);
+    // gl_FragColor = vec4(v2f_normal, 1);
 }
 )EMBEDRES";
 	const char* const ps3_wave_vert = R"EMBEDRES(precision highp float;
@@ -160,6 +149,17 @@ void main() {
     // alpha = 0.5;
 }
 )EMBEDRES";
+	const char* const psp_wave_frag = R"EMBEDRES(precision mediump float;
+varying float alpha;
+uniform vec4 _ColorA;
+uniform vec4 _ColorB;
+
+#define lerp(a,b,t) (a + ((b - a) * t))
+#define lerp4(a,b,t) vec4(lerp(a.x, b.x, t), lerp(a.y, b.y, t), lerp(a.z, b.z, t), lerp(a.w, b.w, t))
+
+void main(){
+    gl_FragColor = lerp4(_ColorB, _ColorA, alpha);
+})EMBEDRES";
 	const char* const psp_wave_vert = R"EMBEDRES(precision highp float;
 attribute vec3 POSITION;
 attribute vec3 TEXCOORD1;
