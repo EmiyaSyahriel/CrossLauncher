@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Typeface
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.SoundPool
 import android.os.*
@@ -15,6 +16,7 @@ import id.psw.vshlauncher.pluginservices.IconPluginServiceHandle
 import id.psw.vshlauncher.submodules.*
 import id.psw.vshlauncher.types.*
 import id.psw.vshlauncher.types.Stack
+import id.psw.vshlauncher.types.items.XMBAppItem
 import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbView
@@ -114,68 +116,17 @@ class VSH : Application(), ServiceConnection {
     val loadingHandles = arrayListOf<XMBLoadingHandle>()
     private val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
 
-    private val bgmPlayer = MediaPlayer()
-    private val systemBgmPlayer = MediaPlayer()
-    private lateinit var bgmPlayerActiveSrc : File
-    private var bgmPlayerDoNotAutoPlay = false
-
-    private fun preparePlaceholderAudio(){
-        assets.open("silent.aac").use { ins ->
-            val bArray = ByteArray(COPY_DATA_SIZE_BUFFER)
-            val file = File.createTempFile("silent",".aac")
-            file.deleteOnExit()
-            file.outputStream().use { outs ->
-                var readSize = ins.read(bArray, 0, COPY_DATA_SIZE_BUFFER)
-                while(readSize > 0){
-                    outs.write(bArray, 0, readSize)
-                    readSize = ins.read(bArray, 0, COPY_DATA_SIZE_BUFFER)
-                }
-            }
-            XMBItem.SILENT_AUDIO = file
-            bgmPlayerActiveSrc = file
-        }
-    }
-
-    fun setSystemAudioSource(newSrc:File){
-        if(systemBgmPlayer.isPlaying) systemBgmPlayer.stop()
-        systemBgmPlayer.reset()
-        systemBgmPlayer.setDataSource(newSrc.absolutePath)
-        systemBgmPlayer.prepareAsync()
-    }
-
-
-
-    fun setAudioSource(newSrc: File, doNotStart : Boolean = false){
-        if(preventPlayMedia) return
-        if(newSrc.absolutePath != bgmPlayerActiveSrc.absolutePath){
-            try{
-                bgmPlayerActiveSrc = newSrc
-                if(bgmPlayer.isPlaying){
-                    bgmPlayer.stop()
-                }
-                bgmPlayer.reset()
-                bgmPlayer.setDataSource(newSrc.absolutePath)
-                bgmPlayer.prepareAsync()
-                bgmPlayerDoNotAutoPlay = doNotStart
-                Log.d(TAG, "Changing BGM Player Source to ${newSrc.absolutePath}")
-            }catch(e:Exception){
-                Log.e(TAG, "BGM Player Failed : ${e.message}")
-                e.printStackTrace()
-            }
-        }
-    }
-
-    fun removeAudioSource(){
-        if(bgmPlayerActiveSrc != XMBItem.SILENT_AUDIO){
-            if(bgmPlayer.isPlaying) bgmPlayer.stop()
-            bgmPlayer.reset()
-            bgmPlayerActiveSrc = XMBItem.SILENT_AUDIO
-        }
-    }
+    val bgmPlayer = MediaPlayer()
+    val systemBgmPlayer = MediaPlayer()
+    lateinit var bgmPlayerActiveSrc : File
+    var bgmPlayerDoNotAutoPlay = false
+    val sfxPlayer = SoundPool(10, AudioManager.STREAM_SYSTEM, 0)
+    val sfxIds = mutableMapOf<SFXType, Int>()
 
     fun reloadPreference() {
         pref = getSharedPreferences("xRegistry.sys", Context.MODE_PRIVATE)
         setActiveLocale(readSerializedLocale(pref.getString(PrefEntry.SYSTEM_LANGUAGE, "") ?: ""))
+        XMBAppItem.disableAnimatedIcon = pref.getInt(PrefEntry.DISPLAY_VIDEO_ICON, 1) == 0
     }
 
     override fun onCreate() {
@@ -201,6 +152,7 @@ class VSH : Application(), ServiceConnection {
         listInstalledWaveRenderPlugins()
         reloadAppList()
         fillSettingsCategory()
+        loadSfxData()
 
         listLogAllSupportedLocale()
 
@@ -214,6 +166,8 @@ class VSH : Application(), ServiceConnection {
     var doMemoryInfoGrab = false
     private lateinit var meminfoThread : Thread
     private fun memoryInfoReaderFunc(){
+        /* Disable memory usage reading :
+        // Most Android phone would spams "memtrack module not found" or something like that
         val actman = getSystemService(ACTIVITY_SERVICE) as ActivityManager
         while(!shouldExit){
             if(doMemoryInfoGrab){
@@ -221,7 +175,7 @@ class VSH : Application(), ServiceConnection {
                 actman.getMemoryInfo(actMemInfo)
             }
             Thread.sleep(1000)
-        }
+        }*/
     }
 
     private fun listLogAllSupportedLocale() {
@@ -251,6 +205,7 @@ class VSH : Application(), ServiceConnection {
             items[cIdx].content?.forEach { it.isHovered = it.id == selectedItemId }
             selectedCategoryId = items[cIdx].id
             xmbView?.state?.itemMenu?.selectedIndex = 0
+            vsh.playSfx(SFXType.Selection)
         }
     }
 
@@ -315,6 +270,7 @@ class VSH : Application(), ServiceConnection {
                 selectedItemId = item.lastSelectedItemId
                 selectStack.push(item.id)
                 itemOffsetX = 1.0f
+                vsh.playSfx(SFXType.Confirm)
             }else{
                 preventPlayMedia = true
                 item.launch()
@@ -330,6 +286,7 @@ class VSH : Application(), ServiceConnection {
             selectedItemId = if(selectStack.size == 0) categories.find {it.id == selectedCategoryId}?.lastSelectedItemId ?: "" else selectStack.peek()
             hoveredItem?.lastSelectedItemId =lastItem
             itemOffsetX = -1.0f
+            vsh.playSfx(SFXType.Cancel)
         }
     }
 

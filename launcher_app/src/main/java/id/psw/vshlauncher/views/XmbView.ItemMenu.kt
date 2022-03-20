@@ -6,11 +6,8 @@ import android.graphics.Paint
 import android.graphics.RectF
 import androidx.core.graphics.withRotation
 import androidx.core.graphics.withTranslation
-import id.psw.vshlauncher.FColor
-import id.psw.vshlauncher.select
-import id.psw.vshlauncher.toLerp
+import id.psw.vshlauncher.*
 import id.psw.vshlauncher.typography.FontCollections
-import id.psw.vshlauncher.vsh
 import kotlin.math.abs
 import kotlin.math.sin
 
@@ -54,6 +51,7 @@ fun XmbView.menuMoveItemMenuCursor(isDown:Boolean){
                         if(cIndex >= 0 && newIndex < menuItems.size && newIndex >= 0){
                             selectedIndex = sortedMenu[newIndex].displayOrder
                         }
+                        context.vsh.playSfx(SFXType.Selection)
                     }
                 }
             }
@@ -70,6 +68,7 @@ fun XmbView.menuStartItemMenu(){
             if(item != null){
                 if(item.hasMenu){
                     item.menuItems?.find {it.displayOrder == selectedIndex}?.onLaunch?.invoke()
+                    context.vsh.playSfx(SFXType.Confirm)
                 }
             }
         }catch(e:ArrayIndexOutOfBoundsException){
