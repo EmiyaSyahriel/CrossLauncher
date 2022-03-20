@@ -82,7 +82,6 @@ fun XmbView.getDrawable(id:Int) : Drawable?{
     return ResourcesCompat.getDrawable(context.resources, id, context.theme)
 }
 
-
 fun Parcel.writeByteBoolean(boolean: Boolean) = this.writeByte(boolean.select(1,0))
 fun Parcel.readByteBoolean() : Boolean = this.readByte() != 0.toByte()
 

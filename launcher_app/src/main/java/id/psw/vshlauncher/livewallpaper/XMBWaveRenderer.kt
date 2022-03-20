@@ -48,6 +48,7 @@ class XMBWaveRenderer() : GLSurfaceView.Renderer {
 
     fun destroy() {
         // Do not kill
+        NativeGL.destroy()
     }
 
     var isPaused : Boolean

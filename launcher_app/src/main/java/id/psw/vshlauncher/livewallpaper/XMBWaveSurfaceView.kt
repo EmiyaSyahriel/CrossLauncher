@@ -6,21 +6,25 @@ import android.graphics.Color
 import android.graphics.PixelFormat
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import android.service.wallpaper.WallpaperService
 import android.util.AttributeSet
 import android.util.Log
 import android.view.SurfaceHolder
 import id.psw.vshlauncher.R
+import id.psw.vshlauncher.select
 import id.psw.vshlauncher.vsh
 import java.io.InputStream
 import java.nio.charset.Charset
+import kotlin.concurrent.thread
 
 
-class XMBWaveSurfaceView : GLSurfaceView {
+open class XMBWaveSurfaceView : GLSurfaceView {
 
     companion object{
         const val PREF_NAME = "libwave_setting"
         const val KEY_STYLE = "wave_style"
         const val KEY_SPEED = "wave_speed"
+        const val KEY_FRAMERATE = "wave_fps"
         const val KEY_COLOR_BACK_A = "wave_cback_a"
         const val KEY_COLOR_BACK_B = "wave_cback_b"
         const val KEY_COLOR_FORE_A = "wave_cfore_a"
@@ -28,6 +32,10 @@ class XMBWaveSurfaceView : GLSurfaceView {
     }
 
     private val TAG = "glsurface.sprx"
+
+    private var isPaused = false
+    private var renderVsync = false
+    private var threadSleepDuration = 0
 
     constructor(context: Context?): super(context){
         init()
@@ -55,6 +63,14 @@ class XMBWaveSurfaceView : GLSurfaceView {
             prefs.getInt(KEY_COLOR_FORE_A, Color.argb(0xFF,0xFF,0xFF,0xFF)),
             prefs.getInt(KEY_COLOR_FORE_B, Color.argb(0x88,0xFF,0xFF,0xFF))
         )
+        val fps = prefs.getInt(KEY_FRAMERATE, 0)
+        renderVsync = fps <= 0
+        threadSleepDuration = 16
+        if(fps > 0){
+            threadSleepDuration = 1000 / fps
+        }
+
+        Log.d(TAG, "${renderVsync.select("VSync","FPS")} - ${threadSleepDuration}ms per frame")
     }
 
     fun init(){
@@ -63,9 +79,30 @@ class XMBWaveSurfaceView : GLSurfaceView {
         renderer = XMBWaveRenderer()
         readPreferences()
         setRenderer(renderer)
-        renderMode = RENDERMODE_CONTINUOUSLY
-        holder?.setFormat(PixelFormat.TRANSLUCENT)
+        renderer.onSurfaceCreated(null, null)
+        renderMode = renderVsync.select(RENDERMODE_CONTINUOUSLY, RENDERMODE_WHEN_DIRTY)
+        if(!renderVsync){
+            thread {
+                // Only render if uses self managed frame rate looper, AKA not the System VSync
+                while(!renderVsync){
+                    postInvalidate()
+                    Thread.sleep(threadSleepDuration.toLong())
+                }
+            }.apply { name = "wave_frame_rate_man" }
+        }
+        holder.setFormat(PixelFormat.TRANSLUCENT)
         Log.d(TAG, "Wave Surface Initialized")
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+        isPaused = true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        isPaused = false
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -73,6 +110,6 @@ class XMBWaveSurfaceView : GLSurfaceView {
             readPreferences()
         }
         super.onDraw(canvas)
-        postInvalidate()
+        renderMode = renderVsync.select(RENDERMODE_CONTINUOUSLY, RENDERMODE_WHEN_DIRTY)
     }
 }
