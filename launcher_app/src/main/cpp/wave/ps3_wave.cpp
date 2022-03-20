@@ -8,42 +8,42 @@
 #include "mathutil.h"
 
 void ps3_compile_shaders(){
-    shader_bg = gltCompileShader(R::ps3_background_vert, R::ps3_background_frag);
-    shader_wave = gltCompileShader(R::ps3_wave_vert, R::ps3_wave_frag);
-    shader_sparkle = gltCompileShader(R::ps3_sparkle_vert, R::ps3_sparkle_frag); 
+    bg.shader = gltCompileShader(R::ps3_background_vert, R::ps3_background_frag);
+    wave.shader = gltCompileShader(R::ps3_wave_vert, R::ps3_wave_frag);
+    sparkle.shader = gltCompileShader(R::ps3_sparkle_vert, R::ps3_sparkle_frag);
 
-    vunif_bg_ColorA       = glGetUniformLocation(shader_bg, shuColorA);
-    vunif_bg_ColorB       = glGetUniformLocation(shader_bg, shuColorB);
-    vunif_bg_ColorC       = glGetUniformLocation(shader_bg, shuColorC);
-    vunif_bg_TimeOfDay    = glGetUniformLocation(shader_bg, shuTimeOfDay);
-    vunif_bg_Month        = glGetUniformLocation(shader_bg, shuMonth);
-    vattr_bg_Position     = glGetAttribLocation(shader_bg, shaPosition);
-    vattr_bg_TexCoord     = glGetAttribLocation(shader_bg, shaTexCoord);
+    bg_unif.colorA       = glGetUniformLocation(bg     .shader, shader_unif_name.colorA);
+    bg_unif.colorB       = glGetUniformLocation(bg     .shader, shader_unif_name.colorB);
+    bg_unif.colorC       = glGetUniformLocation(bg     .shader, shader_unif_name.colorC);
+    bg_unif.timeOfDay    = glGetUniformLocation(bg     .shader, shader_unif_name.timeOfDay);
+    bg_unif.month        = glGetUniformLocation(bg     .shader, shader_unif_name.month);
+    bg_attr.position     =  glGetAttribLocation(bg     .shader, shader_attr_name.position);
+    bg_attr.texCoord     =  glGetAttribLocation(bg     .shader, shader_attr_name.texCoord);
 
-    vunif_wave_Time       = glGetUniformLocation(shader_wave, shuTime);
-    vunif_wave_NormalStep = glGetUniformLocation(shader_wave, shuNormalStep);
-    vunif_wave_Ortho      = glGetUniformLocation(shader_wave, shuOrtho);
-    vunif_wave_ColorA     = glGetUniformLocation(shader_wave, shuColorA);
-    vunif_wave_ColorB     = glGetUniformLocation(shader_wave, shuColorB);
-    vattr_wave_Position   = glGetAttribLocation(shader_wave, shaPosition);
+    wave_unif.time       = glGetUniformLocation(wave   .shader, shader_unif_name.time);
+    wave_unif.normalStep = glGetUniformLocation(wave   .shader, shader_unif_name.normalStep);
+    wave_unif.ortho      = glGetUniformLocation(wave   .shader, shader_unif_name.ortho);
+    wave_unif.colorA     = glGetUniformLocation(wave   .shader, shader_unif_name.colorA);
+    wave_unif.colorB     = glGetUniformLocation(wave   .shader, shader_unif_name.colorB);
+    wave_attr.position   =  glGetAttribLocation(wave   .shader, shader_attr_name.position);
 
-    vunif_spark_Ortho    = glGetUniformLocation(shader_sparkle, shuOrtho);
-    vattr_spark_Position = glGetAttribLocation(shader_sparkle, shaPosition);
-    vattr_spark_TexColor = glGetAttribLocation(shader_sparkle, shaVtxColor);
+    spark_unif.ortho     = glGetUniformLocation(sparkle.shader, shader_unif_name.ortho);
+    spark_attr.position  =  glGetAttribLocation(sparkle.shader, shader_attr_name.position);
+    spark_attr.texColor  =  glGetAttribLocation(sparkle.shader, shader_attr_name.vtxColor);
 }
 
 void ps3_generate_buffers(){
     GLuint tmpBuffer[6];
     glGenBuffers(6, tmpBuffer);
-    vtbuff_bg      = tmpBuffer[0];
-    vtbuff_wave    = tmpBuffer[1];
-    vtbuff_sparkle = tmpBuffer[2];
-    idbuff_bg      = tmpBuffer[3];
-    idbuff_wave    = tmpBuffer[4];
-    idbuff_sparkle = tmpBuffer[5];
+    bg     .vtbuf = tmpBuffer[0];
+    wave   .vtbuf = tmpBuffer[1];
+    sparkle.vtbuf = tmpBuffer[2];
+    bg     .idbuf = tmpBuffer[3];
+    wave   .idbuf = tmpBuffer[4];
+    sparkle.idbuf = tmpBuffer[5];
 
     // fill out background buffer
-    gltWriteBuffer(16, 6, vtbuff_bg, idbuff_bg, vtx_background_vdata, vtx_background_index, GL_STATIC_DRAW);
+    gltWriteBuffer(16, 6, bg.vtbuf, bg.idbuf, vtx_background_vdata, vtx_background_index, GL_STATIC_DRAW);
 
     // fill wave buffer
     std::vector<GLfloat> vtx_wave_vdata;
@@ -77,7 +77,7 @@ void ps3_generate_buffers(){
     wave_vdata_size = vtx_wave_vdata.size();
     wave_index_size = vtx_wave_index.size();
 
-    gltWriteBuffer(wave_vdata_size, wave_index_size, vtbuff_wave, idbuff_wave, vtx_wave_vdata.data(), vtx_wave_index.data(), GL_STATIC_DRAW);
+    gltWriteBuffer(wave_vdata_size, wave_index_size, wave.vtbuf, wave.idbuf, vtx_wave_vdata.data(), vtx_wave_index.data(), GL_STATIC_DRAW);
 }
 
 void ps3_resize(float w, float h){
@@ -116,10 +116,10 @@ void ps3_wave_unsetup_blend(){
 
 void ps3_draw_background(){
     // Log_e("[PS3] Draw Background");
-    glUseProgram(shader_bg);
+    glUseProgram(bg.shader);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vtbuff_bg); CGL();
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idbuff_bg); CGL();
+    glBindBuffer(GL_ARRAY_BUFFER,         bg.vtbuf); CGL();
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bg.idbuf); CGL();
 
     glActiveTexture(GL_TEXTURE0); CGL();
     glBindTexture(GL_TEXTURE_2D, tex_night); CGL();
@@ -133,17 +133,17 @@ void ps3_draw_background(){
     glm::vec4 cB = glm::vec4(0.0f, 0.50f, 1.00f, 1.0f);
     glm::vec4 cC = glm::vec4(0.0f, 0.25f, 0.50f, 1.0f);
 
-    glUniform3f(vunif_bg_ColorA, cA.r, cA.g, cA.b); CGL();
-    glUniform3f(vunif_bg_ColorB, cB.r, cB.g, cB.b); CGL();
-    glUniform3f(vunif_bg_ColorC, cC.r, cC.g, cC.b); CGL();
+    glUniform3f(bg_unif.colorA, cA.r, cA.g, cA.b); CGL();
+    glUniform3f(bg_unif.colorB, cB.r, cB.g, cB.b); CGL();
+    glUniform3f(bg_unif.colorC, cC.r, cC.g, cC.b); CGL();
     float shaderTime = timeofday_shader(timeofday());
-    glUniform1f(vunif_bg_TimeOfDay, shaderTime);
-    glUniform1i(vunif_bg_Month, monthofday());
+    glUniform1f(bg_unif.timeOfDay, shaderTime);
+    glUniform1i(bg_unif.month, monthofday());
 
-    glVertexAttribPointer(vattr_bg_Position, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(0 * sizeof(GLfloat))); CGL();
-    glVertexAttribPointer(vattr_bg_TexCoord, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat))); CGL();
-    glEnableVertexAttribArray(vattr_bg_Position); CGL();
-    glEnableVertexAttribArray(vattr_bg_TexCoord); CGL();
+    glVertexAttribPointer(bg_attr.position, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(0 * sizeof(GLfloat))); CGL();
+    glVertexAttribPointer(bg_attr.texCoord, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat))); CGL();
+    glEnableVertexAttribArray(bg_attr.position); CGL();
+    glEnableVertexAttribArray(bg_attr.texCoord); CGL();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr); CGL();
 }
 
@@ -160,12 +160,12 @@ glm::mat4 ps3_wave_matrix() {
 
 void ps3_draw_wave(){
     // Log_e("[PS3] Draw Wave");
-    glUseProgram(shader_wave);
-    glBindBuffer(GL_ARRAY_BUFFER, vtbuff_wave); CGL();
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idbuff_wave); CGL();
+    glUseProgram(wave.shader);
+    glBindBuffer(GL_ARRAY_BUFFER, wave.vtbuf); CGL();
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, wave.idbuf); CGL();
 
-    glUniform1f(vunif_wave_Time, currentTime * xmb_wave_speed); CGL();
-    glUniform1f(vunif_wave_NormalStep, 0.01f); CGL();
+    glUniform1f(wave_unif.time, currentTime * xmb_wave_speed); CGL();
+    glUniform1f(wave_unif.normalStep, 0.01f); CGL();
 
     //glm::vec4 cA = foreground_color_edge;
     //glm::vec4 cB = foreground_color_center;
@@ -173,14 +173,14 @@ void ps3_draw_wave(){
     glm::vec4 cA = glm::vec4(1.0, 1.0f, 1.0f, 0.75f);
     glm::vec4 cB = glm::vec4(1.0, 1.0f, 1.0f, 0.0f);
 
-    glUniform4f(vunif_wave_ColorA, cA.r, cA.g, cA.b, cA.a); CGL();
-    glUniform4f(vunif_wave_ColorB, cB.r, cB.g, cB.b, cB.a); CGL();
+    glUniform4f(wave_unif.colorA, cA.r, cA.g, cA.b, cA.a); CGL();
+    glUniform4f(wave_unif.colorB, cB.r, cB.g, cB.b, cB.a); CGL();
 
     glm::mat4 matrix = ps3_wave_matrix(); CGL();
-    glUniformMatrix4fv(vunif_wave_Ortho, 1, GL_FALSE, &matrix[0][0]); CGL();
+    glUniformMatrix4fv(wave_unif.ortho, 1, GL_FALSE, &matrix[0][0]); CGL();
 
-    glVertexAttribPointer(vattr_wave_Position, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)(0 * sizeof(GLfloat))); CGL();
-    glEnableVertexAttribArray(vattr_wave_Position); CGL();
+    glVertexAttribPointer(wave_attr.position, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)(0 * sizeof(GLfloat))); CGL();
+    glEnableVertexAttribArray(wave_attr.position); CGL();
     glDrawElements(GL_TRIANGLES, wave_index_size, GL_UNSIGNED_INT, nullptr); CGL();
 
 }
@@ -192,17 +192,17 @@ void ps3_draw_sparkle(float ms){
 
     sparkman_fill(&vdata, &idata, ms);
 
-    gltWriteBuffer(vdata.size(), idata.size(), vtbuff_sparkle, idbuff_sparkle, vdata.data(), idata.data(), GL_DYNAMIC_DRAW); CGL();
-    glUseProgram(shader_sparkle); CGL();
+    gltWriteBuffer(vdata.size(), idata.size(), sparkle.vtbuf, sparkle.idbuf, vdata.data(), idata.data(), GL_DYNAMIC_DRAW); CGL();
+    glUseProgram(sparkle.shader); CGL();
 
     glm::mat4 matrix = ps3_wave_matrix(); CGL();
-    glUniformMatrix4fv(vunif_spark_Ortho, 1, GL_FALSE, &matrix[0][0]); CGL();
-    glBindBuffer(GL_ARRAY_BUFFER, vtbuff_sparkle);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idbuff_sparkle);
-    glEnableVertexAttribArray(vattr_spark_Position); CGL();
-    glEnableVertexAttribArray(vattr_spark_TexColor); CGL();
-    glVertexAttribPointer(vattr_spark_Position, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(0 * sizeof(GLfloat))); CGL();
-    glVertexAttribPointer(vattr_spark_TexColor, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat))); CGL();
+    glUniformMatrix4fv(spark_unif.ortho, 1, GL_FALSE, &matrix[0][0]); CGL();
+    glBindBuffer(GL_ARRAY_BUFFER, sparkle.vtbuf);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sparkle.idbuf);
+    glEnableVertexAttribArray(spark_attr.position); CGL();
+    glEnableVertexAttribArray(spark_attr.texColor); CGL();
+    glVertexAttribPointer(    spark_attr.position, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(0 * sizeof(GLfloat))); CGL();
+    glVertexAttribPointer(    spark_attr.texColor, 4, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat))); CGL();
 
     glDrawElements(GL_TRIANGLES, idata.size(), GL_UNSIGNED_INT, nullptr); CGL();
 }
@@ -227,10 +227,10 @@ void ps3_draw(float ms){
 }
 
 void ps3_destroy(){
-    glDeleteProgram(shader_bg); CGL();
-    glDeleteProgram(shader_wave); CGL();
-    glDeleteProgram(shader_sparkle); CGL();
-    GLuint delBuffer[6] = { vtbuff_bg, vtbuff_wave, vtbuff_sparkle,
-                            idbuff_bg, idbuff_wave, idbuff_sparkle};
+    glDeleteProgram(bg     .shader); CGL();
+    glDeleteProgram(wave   .shader); CGL();
+    glDeleteProgram(sparkle.shader); CGL();
+    GLuint delBuffer[6] = { bg.vtbuf, wave.vtbuf, sparkle.vtbuf,
+                            bg.idbuf, wave.idbuf, sparkle.idbuf};
     glDeleteBuffers(6, delBuffer);
 }
