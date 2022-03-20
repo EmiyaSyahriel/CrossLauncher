@@ -1,5 +1,6 @@
 package id.psw.vshlauncher.activities
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -209,8 +210,10 @@ class XMB : AppCompatActivity() {
     fun appOpenInPlayStore(pkgName:String){
         try{
             startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse("market://details?id=$pkgName")))
-        }catch(e:PackageManager.NameNotFoundException){
+        }catch(e:ActivityNotFoundException){
             vsh.postNotification(null, getString(R.string.error_no_appmarket_title),getString(R.string.error_no_appmarket_description))
+        }catch(e:Exception){
+            vsh.postNotification(null, getString(R.string.error_fail_to_find_at_market_title),getString(R.string.error_fail_to_find_at_market_desc))
         }
     }
 

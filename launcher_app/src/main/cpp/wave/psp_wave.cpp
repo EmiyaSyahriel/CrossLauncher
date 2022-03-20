@@ -103,7 +103,7 @@ void psp_update_buffer_when_mode_changes() {
         wave_vdata_size = vdata.size();
         wave_index_size = idata.size();
 
-        gltWriteBuffer(wave_vdata_size, wave_index_size, vtbuff_wave, idbuff_wave, vdata.data(), idata.data(), GL_STATIC_DRAW);
+        gltWriteBuffer(wave_vdata_size, wave_index_size, wave.vtbuf, wave.idbuf, vdata.data(), idata.data(), GL_STATIC_DRAW);
         last_wave_type = wave_type;
     }
 }
@@ -111,34 +111,34 @@ void psp_update_buffer_when_mode_changes() {
 void psp_generate_buffers(){
     GLuint tmpBuffers[4];
     glGenBuffers(4, tmpBuffers);
-    vtbuff_bg = tmpBuffers[0];
-    vtbuff_wave = tmpBuffers[1];
-    idbuff_bg = tmpBuffers[2];
-    idbuff_wave = tmpBuffers[3];
+    bg  .vtbuf = tmpBuffers[0];
+    wave.vtbuf = tmpBuffers[1];
+    bg  .idbuf = tmpBuffers[2];
+    wave.idbuf = tmpBuffers[3];
 
     // fill out background buffer
-    gltWriteBuffer(16, 6, vtbuff_bg, idbuff_bg, vtx_background_vdata, vtx_background_index, GL_STATIC_DRAW);
+    gltWriteBuffer(16, 6, bg.vtbuf, bg.idbuf, vtx_background_vdata, vtx_background_index, GL_STATIC_DRAW);
     psp_update_buffer_when_mode_changes();
 }
 
 void psp_compile_shader() {
-    shader_bg = gltCompileShader(R::ps3_background_vert, R::ps3_background_frag);
-    shader_wave = gltCompileShader(R::psp_wave_vert, R::psp_wave_frag);
+    bg.shader = gltCompileShader(R::ps3_background_vert, R::ps3_background_frag);
+    wave.shader = gltCompileShader(R::psp_wave_vert, R::psp_wave_frag);
 
-    vunif_bg_ColorA = glGetUniformLocation(shader_bg, shuColorA);
-    vunif_bg_ColorB = glGetUniformLocation(shader_bg, shuColorB);
-    vunif_bg_ColorC = glGetUniformLocation(shader_bg, shuColorC);
-    vunif_bg_TimeOfDay = glGetUniformLocation(shader_bg, shuTimeOfDay);
-    vunif_bg_Month = glGetUniformLocation(shader_bg, shuMonth);
-    vattr_bg_Position = glGetAttribLocation(shader_bg, shaPosition);
-    vattr_bg_TexCoord = glGetAttribLocation(shader_bg, shaTexCoord);
+    bg_unif.colorA    = glGetUniformLocation(bg.shader, shader_unif_name.colorA);
+    bg_unif.colorB    = glGetUniformLocation(bg.shader, shader_unif_name.colorB);
+    bg_unif.colorC    = glGetUniformLocation(bg.shader, shader_unif_name.colorC);
+    bg_unif.timeOfDay = glGetUniformLocation(bg.shader, shader_unif_name.timeOfDay);
+    bg_unif.month     = glGetUniformLocation(bg.shader, shader_unif_name.month);
+    bg_attr.position  = glGetAttribLocation (bg.shader, shader_attr_name.position);
+    bg_attr.texCoord  = glGetAttribLocation (bg.shader, shader_attr_name.texCoord);
 
-    vunif_wave_Time = glGetUniformLocation(shader_wave, shuTime);
-    vunif_wave_Ortho = glGetUniformLocation(shader_wave, shuOrtho);
-    vunif_wave_ColorA = glGetUniformLocation(shader_wave, shuColorA);
-    vunif_wave_ColorB = glGetUniformLocation(shader_wave, shuColorB);
-    vattr_wave_Position = glGetAttribLocation(shader_wave, shaPosition);
-    vattr_wave_VtxTimeA = glGetAttribLocation(shader_wave, shaVtxTimeA);
+    wave_unif.time     = glGetUniformLocation(wave.shader, shader_unif_name.time);
+    wave_unif.ortho    = glGetUniformLocation(wave.shader, shader_unif_name.ortho);
+    wave_unif.colorA   = glGetUniformLocation(wave.shader, shader_unif_name.colorA);
+    wave_unif.colorB   = glGetUniformLocation(wave.shader, shader_unif_name.colorB);
+    wave_attr.position = glGetAttribLocation (wave.shader, shader_attr_name.position);
+    wave_attr.vtxTimeA = glGetAttribLocation (wave.shader, shader_attr_name.vtxTimeA);
 
 
 }
@@ -186,28 +186,28 @@ void psp_draw_background(){
 }
 
 void psp_draw_wave(){
-    glUseProgram(shader_wave);
-    glBindBuffer(GL_ARRAY_BUFFER, vtbuff_wave); CGL();
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idbuff_wave); CGL();
+    glUseProgram(wave.shader);
+    glBindBuffer(GL_ARRAY_BUFFER, wave.vtbuf); CGL();
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, wave.idbuf); CGL();
 
     // glUniform1f(vunif_wave_NormalStep, 0.01f); CGL();
 
     glm::vec4 cA = glm::vec4(1.0, 1.0f, 1.0f, 0.5f);
     glm::vec4 cB = glm::vec4(1.0, 1.0f, 1.0f, 0.0f);
 
-    glUniform4f(vunif_wave_ColorA, cA.r, cA.g, cA.b, cA.a); CGL();
-    glUniform4f(vunif_wave_ColorB, cB.r, cB.g, cB.b, cB.a); CGL();
+    glUniform4f(wave_unif.colorA, cA.r, cA.g, cA.b, cA.a); CGL();
+    glUniform4f(wave_unif.colorB, cB.r, cB.g, cB.b, cB.a); CGL();
 
     glm::mat4 matrix = psp_wave_matrix(); CGL();
-    glUniformMatrix4fv(vunif_wave_Ortho, 1, GL_FALSE, &matrix[0][0]); CGL();
+    glUniformMatrix4fv(wave_unif.ortho, 1, GL_FALSE, &matrix[0][0]); CGL();
 
-    glVertexAttribPointer(vattr_wave_Position, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(0 * sizeof(GLfloat))); CGL();
-    glVertexAttribPointer(vattr_wave_VtxTimeA, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat))); CGL();
-    glEnableVertexAttribArray(vattr_wave_Position); CGL();
-    glEnableVertexAttribArray(vattr_wave_VtxTimeA); CGL();
-    glUniform1f(vunif_wave_Time, currentTime * xmb_wave_speed); CGL();
+    glVertexAttribPointer(    wave_attr.position, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(0 * sizeof(GLfloat))); CGL();
+    glVertexAttribPointer(    wave_attr.vtxTimeA, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat))); CGL();
+    glEnableVertexAttribArray(wave_attr.position); CGL();
+    glEnableVertexAttribArray(wave_attr.vtxTimeA); CGL();
+    glUniform1f(wave_unif.time, currentTime * xmb_wave_speed); CGL();
     glDrawElements(GL_TRIANGLES, wave_index_size, GL_UNSIGNED_INT, nullptr); CGL();
-    glUniform1f(vunif_wave_Time, (currentTime + 7.35f) * 0.95 * xmb_wave_speed); CGL();
+    glUniform1f(wave_unif.time, (currentTime + 7.35f) * 0.95 * xmb_wave_speed); CGL();
     glDrawElements(GL_TRIANGLES, wave_index_size, GL_UNSIGNED_INT, nullptr); CGL();
 }
 
@@ -227,12 +227,12 @@ void psp_draw(float ms){
 }
 
 void psp_destroy(){
-    glDeleteProgram(shader_bg); CGL();
-    glDeleteProgram(shader_wave); CGL();
+    glDeleteProgram(bg.shader); CGL();
+    glDeleteProgram(wave.shader); CGL();
 
     GLuint delBuffer[4] = {
-            vtbuff_bg, vtbuff_wave,
-            idbuff_bg, idbuff_wave
+            bg.vtbuf, wave.vtbuf,
+            bg.idbuf, wave.idbuf
     }; CGL();
     glDeleteBuffers(4, delBuffer); CGL();
 }

@@ -94,7 +94,7 @@ foreach (string src_path in source_files)
 {
     string varname = MakeVarName(src_path);
     string content = File.ReadAllText(src_path);
-    Console.WriteLine($"\t\tGenerating \"{src_path}\" as {Args[0]}::{varname}");
+    Console.WriteLine($"\t\t {Args[0]}::{varname} -> \"{src_path}\"");
     if (use_ns)
     {
         hpp_content.Append('\t');

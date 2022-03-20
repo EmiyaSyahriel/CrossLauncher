@@ -118,7 +118,7 @@ class XmbView @JvmOverloads constructor(
             else -> XMBLayoutType.PS3
         }
 
-        state.coldBoot.hideEpilepsyWarning = pref.getBoolean(PrefEntry.DISABLE_EPILEPSY_WARNING, false)
+        state.coldBoot.hideEpilepsyWarning = pref.getInt(PrefEntry.DISABLE_EPILEPSY_WARNING, 0) == 1
     }
 
     init {
@@ -292,8 +292,10 @@ class XmbView @JvmOverloads constructor(
                     if(!state.itemMenu.isDisplayed){
                         if(context.vsh.isInRoot){
                             context.vsh.moveCursorX(false)
+                            context.vsh.playSfx(SFXType.Selection)
                         }else{
                             context.vsh.backStep()
+                            context.vsh.playSfx(SFXType.Cancel)
                         }
                     }
                 }
@@ -363,6 +365,7 @@ class XmbView @JvmOverloads constructor(
         }else if(currentPage == VshViewPage.GameBoot){
             if(isKeyDownOrRepeat(GamepadSubmodule.Key.Cross)){
                 switchPage(VshViewPage.MainMenu)
+                context.vsh.playSfx(SFXType.Cancel)
             }
         }else if(currentPage == VshViewPage.ColdBoot){
             if(isKeyDownOrRepeat(GamepadSubmodule.Key.Triangle)){
@@ -375,25 +378,19 @@ class XmbView @JvmOverloads constructor(
     private val fpsRectF = RectF()
     private fun drawFPS(ctx:Canvas){
         val fps = (1.0f / time.deltaTime).roundToInt()
-        val fpstxt = "[FPS] $fps FPS | ${(time.deltaTime * 1000).roundToInt()} ms"
-        val memtotald = VSH.dbgMemInfo.totalPrivateDirty + VSH.dbgMemInfo.totalSharedDirty
-        val memtotalc = VSH.dbgMemInfo.totalPrivateClean + VSH.dbgMemInfo.totalSharedClean
-        val memtxt = "[MEMORY] Usage: ${memtotald}kB (${memtotalc}kB Clean) / Total ${VSH.actMemInfo.totalMem/1000}kB "
+        val fpsTxt = "[FPS] $fps FPS | ${(time.deltaTime * 1000).roundToInt()} ms"
         dummyPaint.color = Color.GREEN
         dummyPaint.style = Paint.Style.FILL
         dummyPaint.setShadowLayer(2.0f, 2.0f, 2.0f, Color.BLACK)
 
         arrayOf(
-            fpstxt,
-            memtxt
+            fpsTxt
         ).forEachIndexed { i, it ->
             ctx.drawText(it, 20f, 50f + (i * dummyPaint.textSize), dummyPaint, 1.0f)
         }
 
         dummyPaint.removeShadowLayer()
     }
-
-
 
     fun xmbOnDraw(canvas: Canvas?) {
         adaptScreenSize()

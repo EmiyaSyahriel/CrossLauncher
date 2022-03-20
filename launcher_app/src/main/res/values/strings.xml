@@ -223,4 +223,12 @@
     <string name="settings_system_test_option_value_off">Activate</string>
     <string name="settings_system_test_display_title">Activate Cross Launcher</string>
     <string name="settings_system_test_display_desc">Go to Settings to active Cross Launcher</string>
+    <string name="error_fail_to_find_at_market_title">Failed to launch App Market</string>
+    <string name="error_fail_to_find_at_market_desc" >An error occurred when launching App Market</string>
+    <string name="settings_system_disable_splash_message_title">Disable Boot Message</string>
+    <string name="settings_system_disable_splash_message_desc">That epilepsy and seizure message at cold boot screen</string>
+    <string name="settings_category_audio_name">Audio Settings</string>
+    <string name="settings_category_audio_title">Audio playback and volume</string>
+    <string name="settings_system_disable_video_icon_name">Disable Video Icon</string>
+    <string name="settings_system_disable_video_icon_desc">Disables launcher from loading and playing a video icon</string>
 </resources>

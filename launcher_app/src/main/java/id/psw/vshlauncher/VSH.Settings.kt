@@ -4,19 +4,19 @@ import android.content.pm.ActivityInfo
 import android.os.Build
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.types.XMBItem
-import id.psw.vshlauncher.types.items.XMBAndroidSettingShortcutItem
-import id.psw.vshlauncher.types.items.XMBMenuItem
-import id.psw.vshlauncher.types.items.XMBSettingsCategory
-import id.psw.vshlauncher.types.items.XMBSettingsItem
+import id.psw.vshlauncher.types.items.*
 import id.psw.vshlauncher.views.XMBLayoutType
+import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.dialogviews.TestDialogView
 import id.psw.vshlauncher.views.showDialog
 import java.util.*
 import kotlin.collections.ArrayList
 
 object SettingsCategoryID {
+    const val CATEGORY_SETTINGS_WAVE = "settings_category_wave"
     const val CATEGORY_SETTINGS_ANDROID = "settings_category_android"
     const val CATEGORY_SETTINGS_DISPLAY = "settings_category_display"
+    const val CATEGORY_SETTINGS_AUDIO = "settings_category_audio"
     const val CATEGORY_SETTINGS_DEBUG = "settings_category_debug"
     const val CATEGORY_SETTINGS_SYSTEMINFO = "settings_category_systeminfo"
     const val CATEGORY_SETTINGS_SYSTEM = "settings_category_system"
@@ -25,10 +25,14 @@ object SettingsCategoryID {
 fun VSH.fillSettingsCategory(){
     threadPool.execute {
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryDisplay())
+        addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryAudio())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategorySystem())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryInfo())
-        addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryDebug())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryAndroidSetting())
+
+        if(BuildConfig.DEBUG){
+            addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryDebug())
+        }
     }
 }
 
@@ -37,6 +41,15 @@ private fun VSH.getCurrentLocaleName() : String {
         resources.configuration.locales[0].displayName
     }else{
         resources.configuration.locale.displayName
+    }
+}
+
+private fun VSH.createCategoryAudio(): XMBSettingsCategory{
+    val vsh = this
+    return XMBSettingsCategory(this, SettingsCategoryID.CATEGORY_SETTINGS_AUDIO,
+        R.drawable.icon_volume,
+        R.string.settings_category_audio_name, R.string.settings_category_audio_title).apply {
+
     }
 }
 
@@ -57,26 +70,6 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 { showLauncherFPS.select(vsh.getString(R.string.common_yes),vsh.getString(R.string.common_no))  }
             ){ showLauncherFPS = !showLauncherFPS }
         )
-
-        content.add(XMBSettingsItem(vsh, "settings_system_language",
-            R.string.settings_system_language, R.string.settings_system_language_description,
-            R.drawable.icon_language, { getCurrentLocaleName() }
-        ) {
-            vsh.xmbView?.state?.itemMenu?.isDisplayed = true
-        }.apply {
-            hasMenu = true
-            val dMenuItems = arrayListOf<XMBMenuItem>()
-            supportedLocaleList.forEachIndexed { i, it ->
-                val item = XMBMenuItem.XMBMenuItemLambda(
-                    { it?.displayName ?: "System Default" },
-                    { false }, i)
-                {
-                    vsh.setActiveLocale(it)
-                }
-                dMenuItems.add(item)
-            }
-            menuItems = dMenuItems
-        })
 
         content.add(XMBSettingsItem(vsh, "settings_system_orientation",
             R.string.item_orientation,
@@ -134,6 +127,45 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 GamepadSubmodule.Key.spotMarkedByX.select(1,0)).apply()
         })
 
+        content.add(XMBSettingsItem(vsh, "settings_system_epimsg_disable",
+            R.string.settings_system_disable_splash_message_title,
+            R.string.settings_system_disable_splash_message_desc,
+            R.drawable.icon_info, {
+                getString(xmbView?.state?.coldBoot?.hideEpilepsyWarning?.select(
+                    R.string.common_yes, R.string.common_no
+                ) ?: R.string.unknown)
+            })
+        {
+            val xv = xmbView
+            if(xv != null){
+                xv.state.coldBoot.hideEpilepsyWarning = !xv.state.coldBoot.hideEpilepsyWarning
+                pref.edit()
+                    .putInt(
+                        PrefEntry.DISABLE_EPILEPSY_WARNING,
+                        xv.state.coldBoot.hideEpilepsyWarning.select(1,0)
+                    ).apply()
+            }
+        }
+        )
+
+
+        content.add(
+            XMBSettingsItem(vsh, "settings_system_disable_video_icon",
+                R.string.settings_system_disable_video_icon_name,
+                R.string.settings_system_disable_video_icon_desc,
+                R.drawable.category_video,
+                {
+                    getString(XMBAppItem.disableAnimatedIcon.select(R.string.common_yes, R.string.common_no))
+                }
+            ){
+                XMBAppItem.disableAnimatedIcon = !XMBAppItem.disableAnimatedIcon
+                pref.edit().putInt(
+                    PrefEntry.DISPLAY_VIDEO_ICON,
+                    XMBAppItem.disableAnimatedIcon.select(0,1)
+                ).apply()
+            }
+        )
+
         val cal = Calendar.getInstance()
         val mon = cal.get(Calendar.MONTH)
         val day = cal.get(Calendar.DAY_OF_MONTH)
@@ -162,10 +194,32 @@ private fun VSH.createCategoryDebug() : XMBSettingsCategory{
         R.string.settings_category_debug_name,
         R.string.settings_category_debug_desc
     ).apply {
+
         content.add(XMBSettingsItem(vsh, "dbg_launch_dialog_test",
             R.string.dbg_launch_dialog_test, R.string.empty_string, R.drawable.category_debug, {""}){
             xmbView?.showDialog(TestDialogView(vsh))
         })
+
+        content.add(XMBSettingsItem(vsh, "settings_system_language",
+            R.string.settings_system_language, R.string.settings_system_language_description,
+            R.drawable.icon_language, { getCurrentLocaleName() }
+        ) {
+            vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+        }.apply {
+            hasMenu = true
+            val dMenuItems = arrayListOf<XMBMenuItem>()
+            supportedLocaleList.forEachIndexed { i, it ->
+                val item = XMBMenuItem.XMBMenuItemLambda(
+                    { it?.displayName ?: "System Default" },
+                    { false }, i)
+                {
+                    vsh.setActiveLocale(it)
+                }
+                dMenuItems.add(item)
+            }
+            menuItems = dMenuItems
+        })
+
     }
 }
 
@@ -262,6 +316,19 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
             }
         )
         // endregion
+
+        content.add(createCategoryWaveSetting())
+    }
+}
+
+fun VSH.createCategoryWaveSetting(): XMBSettingsCategory {
+    return XMBSettingsCategory(this,
+        SettingsCategoryID.CATEGORY_SETTINGS_WAVE,
+        R.drawable.category_shortcut,
+        R.string.title_activity_wave_wallpaper_setting,
+        R.string.empty_string
+    ).apply {
+
     }
 }
 
