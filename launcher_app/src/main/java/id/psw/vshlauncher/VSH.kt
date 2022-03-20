@@ -237,6 +237,7 @@ class VSH : Application(), ServiceConnection {
                     it.isHovered = it.id == selectedItemId
                 }
                 xmbView?.state?.itemMenu?.selectedIndex = 0
+                vsh.playSfx(SFXType.Selection)
             }
         }catch (e:ArrayIndexOutOfBoundsException){
             //
