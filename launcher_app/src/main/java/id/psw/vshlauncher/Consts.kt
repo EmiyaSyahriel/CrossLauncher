@@ -12,6 +12,8 @@ object Consts {
 
 @Suppress("SpellCheckingInspection")
 object PrefEntry{
+    /** Boolean, Display Wave Wallpaper as internal layer, for use with  */
+    const val USES_INTERNAL_WAVE_LAYER: String = "/crosslauncher/wave/beat_angel_escalayer"
     /** Int (0 = PS3, 1 = PSP, 2 = Bravia, 3 = PSX) */
     const val MENU_LAYOUT = "/crosslauncher/xmbview/layout"
     /** Boolean */

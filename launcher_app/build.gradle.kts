@@ -70,6 +70,7 @@ dependencies {
     implementation("com.github.penfeizhou.android.animation:awebp:2.17.2")
     implementation("com.github.penfeizhou.android.animation:apng:2.17.2")
     implementation("com.github.penfeizhou.android.animation:gif:2.17.2")
+    implementation("androidx.test:rules:1.4.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")

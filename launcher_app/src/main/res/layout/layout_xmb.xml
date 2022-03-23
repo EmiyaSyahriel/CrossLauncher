@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
+        android:id="@+id/wave"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <id.psw.vshlauncher.views.XmbView
+        android:id="@+id/xmb_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</FrameLayout>
