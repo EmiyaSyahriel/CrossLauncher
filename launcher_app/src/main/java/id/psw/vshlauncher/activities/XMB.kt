@@ -13,15 +13,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.KeyEvent
-import android.view.MotionEvent
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import androidx.core.content.ContextCompat
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbView
+import kotlin.math.abs
 
 class XMB : AppCompatActivity() {
 
@@ -31,16 +29,25 @@ class XMB : AppCompatActivity() {
     }
     lateinit var xmbView : XmbView
     var skipColdBoot = false
+
     private var _lastOrientation : Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        xmbView = XmbView(this)
-        sysBarTranslucent()
-        setContentView(xmbView)
-        vsh.xmbView = xmbView
-        xmbView.switchPage(skipColdBoot.select(VshViewPage.MainMenu, VshViewPage.ColdBoot))
 
         readPreferences()
+        if(vsh.useInternalWave){
+            setContentView(R.layout.layout_xmb)
+            xmbView = findViewById(R.id.xmb_view)
+        }else{
+            xmbView = XmbView(this)
+            setContentView(xmbView)
+        }
+        vsh.xmbView = xmbView
+        readXmbViewPreference()
+
+        sysBarTranslucent()
+
+        xmbView.switchPage(skipColdBoot.select(VshViewPage.MainMenu, VshViewPage.ColdBoot))
 
         _lastOrientation = resources.configuration.orientation
 
@@ -55,6 +62,7 @@ class XMB : AppCompatActivity() {
         }
     }
 
+
     override fun onNewIntent(intent: Intent?) {
 
         if(isCreateShortcutIntent(intent)){
@@ -67,8 +75,11 @@ class XMB : AppCompatActivity() {
         val pref = vsh.pref
         requestedOrientation = pref.getInt(PrefEntry.DISPLAY_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_SENSOR)
         GamepadSubmodule.Key.spotMarkedByX = pref.getInt(PrefEntry.CONFIRM_BUTTON, 0) == 1
-        xmbView.fpsLimit = pref.getInt(PrefEntry.SURFACEVIEW_FPS_LIMIT, 0).toLong()
+        vsh.useInternalWave = pref.getBoolean(PrefEntry.USES_INTERNAL_WAVE_LAYER, false)
+    }
 
+    private fun readXmbViewPreference(){
+        xmbView.fpsLimit = vsh.pref.getInt(PrefEntry.SURFACEVIEW_FPS_LIMIT, 0).toLong()
     }
 
     private fun checkCanvasHwAcceleration(){
@@ -126,7 +137,24 @@ class XMB : AppCompatActivity() {
     override fun onGenericMotionEvent(event: MotionEvent?): Boolean {
         var retval = false
         if(event != null){
-            retval = VSH.Gamepad.motionEventReceiver(event)
+            arrayOf(
+                MotionEvent.AXIS_X,
+                MotionEvent.AXIS_Y,
+                MotionEvent.AXIS_Z,
+                MotionEvent.AXIS_HAT_X,
+                MotionEvent.AXIS_HAT_Y,
+                MotionEvent.AXIS_RX,
+                MotionEvent.AXIS_RY,
+                MotionEvent.AXIS_RZ,
+            ).forEach {
+                val value = event.getAxisValue(it)
+                if(abs(value) > 0.1f){
+                    val k = vsh._gamepad.translateAxis(it, value, event.device.vendorId, event.device.productId)
+                    if(k != GamepadSubmodule.Key.None){
+                        retval = xmbView.onGamepadInput(k, true)
+                    }
+                }
+            }
         }
         return retval || super.onGenericMotionEvent(event)
     }
@@ -182,28 +210,32 @@ class XMB : AppCompatActivity() {
 
         // Do not call super.onBackPressed() which causing the app to close
         // Substitute this with Escape Button
-        VSH.Gamepad.keyEventReceiver(true, KeyEvent.KEYCODE_X, KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_X))
+
+        val k = vsh._gamepad.translate(KeyEvent.KEYCODE_ESCAPE, 0)
+        xmbView.onGamepadInput(k, true)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
         var retval = false
         if(event != null){
-            retval = VSH.Gamepad.keyEventReceiver(false, keyCode, event)
+            val key = vsh._gamepad.translate(keyCode, event.device.vendorId, event.device.productId)
+            if(key != GamepadSubmodule.Key.None){
+                retval = xmbView.onGamepadInput(key, false)
+            }
         }
+
         return retval || super.onKeyUp(keyCode, event)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         var retval = false
         if(event != null){
-            retval = VSH.Gamepad.keyEventReceiver(true, keyCode, event)
+            val key = vsh._gamepad.translate(keyCode, event.device.vendorId, event.device.productId)
+            if(key != GamepadSubmodule.Key.None){
+                retval = xmbView.onGamepadInput(key, true)
+            }
         }
-        if(keyCode == KeyEvent.KEYCODE_SLASH
-        ) swapLayoutType = true
-        if(keyCode == KeyEvent.KEYCODE_C){
-            val handle  = vsh.addLoadHandle()
-            Handler(Looper.getMainLooper()).postDelayed({ vsh.setLoadingFinished(handle) }, 1500L)
-        }
+
         return retval ||  super.onKeyDown(keyCode, event)
     }
 

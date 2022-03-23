@@ -1,27 +1,57 @@
 package id.psw.vshlauncher.submodules
 
-import android.graphics.PointF
-import android.util.SparseArray
-import android.view.InputDevice
-import android.view.KeyEvent
 import android.view.KeyEvent.*
 import android.view.MotionEvent
-import android.view.MotionEvent.*
 import id.psw.vshlauncher.VSH
-import id.psw.vshlauncher.hasFlag
+import id.psw.vshlauncher.VshBaseDirs
+import id.psw.vshlauncher.getAllPathsFor
 import id.psw.vshlauncher.select
-import kotlin.math.abs
+import java.lang.Math.abs
+
+/**
+ * ## Keymapping Format
+ * Format : {android_key_code} = {crosslauncher_ps_keycode}
+ * e.g : 108 = X, 66 = Confirm
+ *
+ * ### Keymap Path Location:
+ * `${DATA_ROOT}/dev_flash/vsh/resource/keymap/{device_id}.txt`
+ * `device_id` matches Device VID and PID in `{VID:xxxx}{PID:xxxx}`
+ * - e.g : `054C0CE6.txt` = 054C = Sony, 0CE6 = Wireless Controller (DualSense)
+ * #### Reserved Device IDs:
+ * - `00000000` - Fallback Keyboard
+ * - `054C0CE6`
+ *
+ * ### android_key_code
+ * see [KeyEvent](https://developer.android.com/reference/android/view/KeyEvent),
+ * the `KEYCODE_` key constants, with Axis access prefixed with `AXIS_` with `+/-` prefix
+ * e.g : `AXIS_HAT_X+` = Axis Hat X (D-Pad) Positive Value, `AXIS_X-` = Axis X (Negative Value)
+ *
+ * ### crosslauncher_ps_keycode:
+ * Implementation is case-insensitive
+ * - `PS, Guide` -> PlayStation Button
+ * - `Sta, Start, Menu` -> Start
+ * - `Sel, Select, Back` -> Select
+ * - `Tri, Triangle, Y` -> Triangle
+ * - `Sqr, Square, X` -> Square
+ * - `Cir, Circle, !O, B` -> Circle
+ * - `Crs, Cross, !X, A` -> Cross
+ * - `Cnf, Confirm` -> Static Confirm (Non-swappable Confirm, e.g Enter Button)
+ * - `Cnc, Cancel` -> Static Cancel (Non-swappable Cancel, e.g Escape Button)
+ * - `PUp, Up, PadU, PadUp` -> D-Pad Up
+ * - `PLf, Left, PadL, PadLeft` -> D-Pad Left
+ * - `PRg, Right, PadR, PadRight` -> D-Pad Right
+ * - `PDn, Down, PadD, PadDown` -> D-Pad Down
+ * - `L1, LB, LBump` -> L1 / Left Bumper /  Upper Left Shoulder Button
+ * - `L2, LT, LTrigger` -> L2 / Left Trigger /  Lower Left Shoulder Button or Trigger
+ * - `L3, LAnalog, LS, LStick` -> L3 / Left Analog Click
+ * - `R1, RB, RBump` -> R1 / Right Bumper / Upper Right Shoulder Button
+ * - `R2, RT, RTrigger` -> R2 / Right Trigger / Lower Right Should Button or Trigger
+ * - `R3, RAnalog, RS, RStick` -> R3 / Right Analog Click
+ * */
 
 class GamepadSubmodule(ctx: VSH) {
     enum class Key (val base:UByte){
         None (0b0u),
-        MaskSystem      (0b00000000u),
-        MaskFace        (0b00010000u),
-        MaskDirPad      (0b00100000u),
-        MaskLShoulder   (0b01000000u),
-        MaskLSAxis      (0b01001000u),
-        MaskRShoulder   (0b10000000u),
-        MaskRSAxis      (0b10001000u),
         PS              (0b00000001u),
         Start           (0b00000010u),
         Select          (0b00000100u),
@@ -36,13 +66,14 @@ class GamepadSubmodule(ctx: VSH) {
         L1              (0b01000001u),
         L2              (0b01000010u),
         L3              (0b01000100u),
-        LSX             (0b01001001u),
-        LSY             (0b01001010u),
         R1              (0b10000001u),
         R2              (0b10000010u),
         R3              (0b10000100u),
-        RSX             (0b10001001u),
-        RSY             (0b10001010u);
+        /** Non-swappable Confirm Button */
+        StaticConfirm   (0b01001000u),
+        /** Non-swappable Cancel Button */
+        StaticCancel    (0b10001000u),
+        ;
 
         companion object {
             /** Let the Asian and Western Console users to have their preference in here. they have their preference and culture
@@ -56,44 +87,33 @@ class GamepadSubmodule(ctx: VSH) {
         }
     }
 
-    enum class KeyState(val base:UByte) {
-        Free (0b0000u),
-        Down (0b0001u),
-        Held (0b0010u),
-        Up   (0b0100u),
-    }
-
-    enum class Remap {
-        Normal,
-        DualSense,
-        DualShock4,
-        DualShock3,
-    }
-
-    class InputState {
-        var state : KeyState = KeyState.Free
-        var axisValue : Float = 0.0f
-        var downSince : Float = 0.0f
-
-        override fun toString(): String = "$state : $axisValue"
-    }
+    data class AxisInfo(
+        val negative:Key,
+        val positive:Key
+    )
 
     companion object {
-        private val remapOfDualSense = mapOf(
-            KEYCODE_BUTTON_L2 to KEYCODE_BUTTON_SELECT,
-            KEYCODE_BUTTON_R2 to KEYCODE_BUTTON_START,
-            KEYCODE_BUTTON_A to KEYCODE_BUTTON_X,
-            KEYCODE_BUTTON_B to KEYCODE_BUTTON_A,
-            KEYCODE_BUTTON_C to KEYCODE_BUTTON_B,
-            KEYCODE_BUTTON_X to KEYCODE_BUTTON_Y,
-            KEYCODE_BUTTON_START to KEYCODE_BUTTON_THUMBR,
-            KEYCODE_BUTTON_SELECT to KEYCODE_BUTTON_THUMBL,
-            KEYCODE_BUTTON_Y to KEYCODE_BUTTON_L1,
-            KEYCODE_BUTTON_L1 to KEYCODE_BUTTON_L2,
-            KEYCODE_BUTTON_Z to KEYCODE_BUTTON_R1,
-            KEYCODE_BUTTON_R1 to KEYCODE_BUTTON_R2,
+        private val defaultPre12DualSenseReMap = mutableMapOf(
+            KEYCODE_BUTTON_MODE to Key.PS,
+            KEYCODE_BUTTON_L2 to Key.Select,
+            KEYCODE_BUTTON_R2 to Key.Start,
+            KEYCODE_BUTTON_A to Key.Square,
+            KEYCODE_BUTTON_B to Key.Cross,
+            KEYCODE_BUTTON_C to Key.Circle,
+            KEYCODE_BUTTON_X to Key.Triangle,
+            KEYCODE_BUTTON_START to Key.R3,
+            KEYCODE_BUTTON_SELECT to Key.L3,
+            KEYCODE_BUTTON_Y to Key.L1,
+            KEYCODE_BUTTON_L1 to Key.L2,
+            KEYCODE_BUTTON_Z to Key.R1,
+            KEYCODE_BUTTON_R1 to Key.R2,
         )
-        private val android2psKey = mapOf(
+        private val defaultAndroidGamepadAxisMap = mutableListOf(
+            MotionEvent.AXIS_HAT_X to AxisInfo(Key.PadL, Key.PadR),
+            MotionEvent.AXIS_HAT_Y to AxisInfo(Key.PadU, Key.PadD),
+        )
+
+        private val defaultAndroidGamepadMap = mutableMapOf(
             KEYCODE_BUTTON_A to Key.Cross,
             KEYCODE_BUTTON_B to Key.Circle,
             KEYCODE_BUTTON_X to Key.Square,
@@ -108,192 +128,90 @@ class GamepadSubmodule(ctx: VSH) {
             KEYCODE_BUTTON_R2 to Key.R2,
             KEYCODE_BUTTON_THUMBR to Key.R3,
         )
-        private val android2psAxis = mapOf(
-            AXIS_Z to Key.RSX,
-            AXIS_RZ to Key.RSY,
-            AXIS_X to Key.LSX,
-            AXIS_Y to Key.LSY,
-            AXIS_HAT_X to Key.PadL,
-            AXIS_HAT_Y to Key.PadR,
-        )
-        private val kbd2psKey = mapOf(
-            KEYCODE_X to Key.Cross,
-            KEYCODE_S to Key.Circle,
-            KEYCODE_Z to Key.Square,
-            KEYCODE_A to Key.Triangle,
-            KEYCODE_SHIFT_RIGHT to Key.Select,
-            KEYCODE_ENTER to Key.Start,
+
+        private val defaultAndroidKeyboardMap = mutableMapOf(
+            KEYCODE_ESCAPE to Key.Cancel,
+            KEYCODE_DEL to Key.Cancel,
+            KEYCODE_ENTER to Key.Confirm,
+            KEYCODE_SPACE to Key.Confirm,
+            KEYCODE_DPAD_CENTER to Key.Confirm,
+            KEYCODE_GRAVE to Key.Square,
+            KEYCODE_MENU to Key.Triangle,
+            KEYCODE_TAB to Key.Triangle,
+            KEYCODE_PAGE_UP to Key.Select,
+            KEYCODE_PAGE_DOWN to Key.Start,
             KEYCODE_BREAK to Key.PS,
-            KEYCODE_1 to Key.L2,
-            KEYCODE_2 to Key.L3,
-            KEYCODE_3 to Key.R2,
-            KEYCODE_Q to Key.L1,
-            KEYCODE_W to Key.R3,
-            KEYCODE_E to Key.R1,
+            KEYCODE_F1 to Key.L1,
+            KEYCODE_F2 to Key.L2,
+            KEYCODE_F3 to Key.L3,
+            KEYCODE_F7 to Key.R1,
+            KEYCODE_F8 to Key.R2,
+            KEYCODE_F9 to Key.R3,
             KEYCODE_DPAD_UP to Key.PadU,
             KEYCODE_DPAD_DOWN to Key.PadD,
             KEYCODE_DPAD_LEFT to Key.PadL,
             KEYCODE_DPAD_RIGHT to Key.PadR,
-            KEYCODE_T to Key.LSY,
-            KEYCODE_F to Key.LSX,
-            KEYCODE_G to Key.LSY,
-            KEYCODE_H to Key.LSX,
-            KEYCODE_I to Key.RSY,
-            KEYCODE_J to Key.RSX,
-            KEYCODE_K to Key.RSY,
-            KEYCODE_L to Key.RSX,
-        )
-        private val kbd2psKeyAxisMul = mapOf(
-            KEYCODE_T to -1.0f,
-            KEYCODE_F to -1.0f,
-            KEYCODE_G to 1.0f,
-            KEYCODE_H to 1.0f,
-            KEYCODE_I to -1.0f,
-            KEYCODE_J to -1.0f,
-            KEYCODE_K to 1.0f,
-            KEYCODE_L to 1.0f
         )
 
+        const val ANDROID_GAMEPAD = 0x00000001
+        const val ANDROID_KEYBOARD = 0x00000000
         const val SONY_DUALSHOCK_3_HID_ID = 0x054C0268
         const val SONY_DUALSHOCK_4_V1_HID_ID = 0x054C05C4
         const val SONY_DUALSHOCK_4_V2_HID_ID = 0x054C09CC
         const val SONY_DUALSENSE_HID_ID = 0x054C0CE6
+        var axisThreshold = 0.5
+
+        fun makePID( vid:Int = 0, pid:Int = 0) = (vid shl 16) or pid
     }
 
-    data class GamePadInfo(
-        val id : Int,
-        val product : Int,
-        val vendor : Int,
-        val name : String){
-        companion object {
-            fun hexform(int:Int): String{
-                return Integer.toHexString(int).padStart(4,'0').uppercase()
-            }
-        }
-        val displayName = "$name (${hexform(vendor)} ${hexform(product)})"
-        val deviceId = (vendor shl 16) or (product)
-    }
+    val keyRemaps = mutableMapOf(
+        ANDROID_GAMEPAD to defaultAndroidGamepadMap,
+        ANDROID_KEYBOARD to defaultAndroidKeyboardMap,
+        SONY_DUALSENSE_HID_ID to defaultPre12DualSenseReMap
+    )
 
-    val gamePads = mutableMapOf<Int, GamePadInfo>()
+    val axisRemaps = mutableMapOf(ANDROID_GAMEPAD to defaultAndroidGamepadAxisMap)
 
-    private val inputPairs = mutableMapOf<Key, InputState>()
-    private val touchPairs = SparseArray<PointF>()
-    var downThreshold : Float = 0.5f
-
-    init{
-        Key.values().forEach {
-            inputPairs[it] = InputState()
-        }
-    }
-
-    fun getAxisValue(k:Key) : Float{
-        if(!inputPairs.containsKey(k)){
-            inputPairs[k] = InputState()
-        }
-        return inputPairs[k]?.axisValue ?: 0.0f;
-    }
-
-    fun getKeyDown(k:Key) : Boolean =
-        inputPairs[k]?.state == KeyState.Down
-    fun getKey(k:Key) : Boolean =
-        inputPairs[k]?.state == KeyState.Held
-    fun getKeyUp(k:Key) : Boolean = inputPairs[k]?.state == KeyState.Up
-    fun getKeyFree(k:Key) : Boolean = inputPairs[k]?.state == KeyState.Free
-    fun getDownTime(k:Key) : Float = inputPairs[k]?.downSince ?: 0.0f
-
-    private val keyReMap = mutableMapOf(SONY_DUALSENSE_HID_ID to remapOfDualSense)
-    private val keyReMapActive = mutableMapOf(SONY_DUALSENSE_HID_ID to true)
-
-    private fun getRemappedKeyCode(keyCode:Int, device:Int) : Int {
-        return if(keyReMapActive[device] == true){
-            keyReMap[device]?.get(keyCode) ?: keyCode
-        }else keyCode
-    }
-
-    private fun androidToPsKey(keyCode: Int, isAxis:Boolean, deviceId : Int) : Key {
-        val remapKeyCode = getRemappedKeyCode(keyCode, deviceId)
-        return (if(isAxis) android2psAxis else android2psKey)[remapKeyCode] ?: Key.None
-    }
-
-    private fun keyboardToPsKey(keyCode:Int) : Key {
-        return kbd2psKey[keyCode] ?: Key.None
-    }
-
-    private fun getKbdAxis(keyCode:Int) : Float {
-        return kbd2psKeyAxisMul[keyCode] ?: 0.0f
-    }
-
-    fun motionEventReceiver(evt:MotionEvent) : Boolean {
-        return if(
-            (evt.source hasFlag InputDevice.SOURCE_JOYSTICK ||
-            evt.source hasFlag InputDevice.SOURCE_DPAD) &&
-            evt.action == ACTION_MOVE){
-                val padId = gamePads[evt.deviceId]?.deviceId ?: -1
-                arrayOf(AXIS_X, AXIS_Y, AXIS_Z, AXIS_RZ, AXIS_HAT_X, AXIS_HAT_Y).forEach { axis ->
-                    val axVal = evt.getAxisValue(axis)
-                    val nVal = if(axVal <= 0.0f) abs(axVal) else 0.0f
-                    val pVal = if(axVal >= 0.0f) abs(axVal) else 0.0f
-                    when (axis) {
-                        AXIS_HAT_X -> {
-                            inputPairs[Key.PadL]?.axisValue = nVal
-                            inputPairs[Key.PadR]?.axisValue = pVal
-                            inputPairs[Key.PadL]?.state = (nVal > downThreshold).select(KeyState.Down, KeyState.Up)
-                            inputPairs[Key.PadR]?.state = (pVal > downThreshold).select(KeyState.Down, KeyState.Up)
-                        }
-                        AXIS_HAT_Y -> {
-                            inputPairs[Key.PadU]?.axisValue = nVal
-                            inputPairs[Key.PadD]?.axisValue = pVal
-                            inputPairs[Key.PadU]?.state = (nVal > downThreshold).select(KeyState.Down, KeyState.Up)
-                            inputPairs[Key.PadD]?.state = (pVal > downThreshold).select(KeyState.Down, KeyState.Up)
-                        }
-                        else -> {
-                            val psKey = androidToPsKey(axis, true, padId)
-                            inputPairs[psKey]?.axisValue = axVal
-                            inputPairs[psKey]?.state = (axVal > downThreshold).select(KeyState.Down, KeyState.Up)
-                        }
+    init {
+        ctx.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "keymap").forEach {
+            if(it.exists()){
+                if(it.isDirectory){
+                    it.list { _, name -> name.endsWith(".txt", ignoreCase = true)}?.forEach {
                     }
-                }
-                true
-        } else false
-    }
-
-    fun keyEventReceiver(isDown: Boolean, keyCode:Int, evt:KeyEvent) : Boolean {
-        if(evt.source hasFlag InputDevice.SOURCE_GAMEPAD){
-            if(evt.repeatCount == 0){
-                val padId = gamePads[evt.deviceId]?.deviceId ?: -1
-                val key = androidToPsKey(keyCode, false, padId)
-                if(key != Key.None){
-                    inputPairs[key]?.apply {
-                        axisValue = isDown.select(1.0f, 0.0f)
-                        state = isDown.select(KeyState.Down, KeyState.Up)
-                    }
-                    return true
-                }
-            }
-        }else if(evt.source hasFlag InputDevice.SOURCE_KEYBOARD){
-            if(evt.repeatCount == 0){
-                val key = keyboardToPsKey(keyCode)
-                if(key != Key.None){
-                    inputPairs[key]?.apply {
-                        axisValue += isDown.select(1.0f, -1.0f) * getKbdAxis(keyCode)
-                        axisValue = axisValue.coerceIn(-1.0f, 1.0f)
-                        state = isDown.select(KeyState.Down, KeyState.Up)
-                    }
-                    return true
                 }
             }
         }
-        return false
     }
 
-    fun update(time:Float){
-        inputPairs.values.forEach{
-            if(it.state == KeyState.Down || it.state == KeyState.Held) it.downSince += time
-            if(it.state == KeyState.Up || it.state == KeyState.Free) it.downSince = 0.0f
-            if(it.state == KeyState.Down){ it.state = KeyState.Held }
-            if(it.state == KeyState.Up){ it.state = KeyState.Free }
-            if(it.axisValue >= downThreshold && it.state == KeyState.Free){ it.state = KeyState.Down }
-            if(it.axisValue <= downThreshold && it.state == KeyState.Held){ it.state = KeyState.Up }
+    fun translate(key: Int, devId:Int) : Key{
+        val remap = keyRemaps[devId] ?: keyRemaps[ANDROID_GAMEPAD]
+        if(remap != null){
+            if(remap.containsKey(key)) {
+                return remap[key]!!
+            }else{
+                val kbdRemap = keyRemaps[ANDROID_KEYBOARD]!!
+                if(kbdRemap.containsKey(key)) return kbdRemap[key] ?: Key.None
+            }
         }
+        return Key.None
+    }
+
+    fun translate(key:Int, vid:Int = 0, pid:Int = 0) : Key {
+        return translate(key, makePID(vid, pid))
+    }
+
+    fun translateAxis(axis:Int, value:Float, devId:Int) : Key {
+        if(abs(value) > axisThreshold){
+            val remap = axisRemaps[devId] ?: axisRemaps[ANDROID_GAMEPAD]
+            val axe = remap?.find { it.first == axis }
+            if(axe != null){
+                return (value > 0.0).select(axe.second.positive, axe.second.negative)
+            }
+        }
+        return Key.None
+    }
+
+    fun translateAxis(axis:Int, value:Float, vid:Int = 0, pid:Int = 0) : Key{
+        return translateAxis(axis, value, makePID(vid, pid))
     }
 }

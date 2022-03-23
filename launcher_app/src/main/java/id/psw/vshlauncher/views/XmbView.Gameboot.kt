@@ -1,11 +1,13 @@
 package id.psw.vshlauncher.views
 
+import android.app.Activity
 import android.graphics.*
 import android.util.Log
 import android.view.MotionEvent
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withScale
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.typography.FontCollections
 import java.io.File
 
@@ -180,4 +182,17 @@ fun XmbView.gbOnTouchScreen(a:PointF, b:PointF, act:Int){
 
 fun XmbView.gbEnd(){
     state.gameBoot.currentTime = 0.0f
+}
+
+fun XmbView.gbOnGamepad(k: GamepadSubmodule.Key, isPress:Boolean) : Boolean {
+    var retval =false
+
+    with(state.gameBoot){
+        if(isPress && (k == GamepadSubmodule.Key.Cancel || k == GamepadSubmodule.Key.StaticCancel)){
+            switchPage(VshViewPage.MainMenu)
+            retval = true
+        }
+    }
+
+    return retval
 }

@@ -6,13 +6,11 @@ import android.text.TextPaint
 import androidx.core.graphics.contains
 import androidx.core.graphics.withClip
 import androidx.core.graphics.withTranslation
-import id.psw.vshlauncher.FittingMode
-import id.psw.vshlauncher.hasConcurrentLoading
-import id.psw.vshlauncher.toLerp
+import id.psw.vshlauncher.*
+import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.typography.MultifontSpan
 import id.psw.vshlauncher.typography.drawText
-import id.psw.vshlauncher.vsh
 import java.util.*
 
 class VshViewDialogState {
@@ -28,6 +26,7 @@ class VshViewDialogState {
         style = Paint.Style.STROKE
         typeface = FontCollections.masterFont
     }
+    var currentTime = 0.0f
     var tmpBound = RectF()
     var dBackgroundAlpha = 0.0f
     var iconTmpBound = RectF()
@@ -48,14 +47,18 @@ fun XmbView.showDialog(dialog:XmbDialogSubview){
 
 fun XmbView.dlgRender(ctx: Canvas){
     val ctxState = ctx.save()
+    val isPSP = state.crossMenu.layoutMode == XMBLayoutType.PSP
     with(state.dialog){
         if(dBackgroundAlpha < 1.0f){
             dBackgroundAlpha += time.deltaTime * 2.0f
         }
-
         ctx.drawARGB((dBackgroundAlpha * 128).toInt(), 0,0,0)
         val dlg = activeDialog
         if(dlg != null){
+            dlg.isPSP = isPSP
+
+            textPaint.textSize = isPSP.select(30.0f, 25.0f)
+
             tmpBound.set(scaling.target.left, scaling.target.top + 100f, scaling.target.right, scaling.target.bottom - 100f)
             ctx.drawLine(scaling.viewport.left - 10.0f, tmpBound.top,scaling.viewport.right-1.0f, tmpBound.top, outlinePaint)
             ctx.drawLine(scaling.viewport.left - 10.0f, tmpBound.bottom,scaling.viewport.right-1.0f, tmpBound.bottom, outlinePaint)
@@ -82,10 +85,13 @@ fun XmbView.dlgRender(ctx: Canvas){
                 }
             }
 
+            val asian = !GamepadSubmodule.Key.spotMarkedByX
+            val lAlign = textPaint.textAlign
+            textPaint.textAlign = Paint.Align.CENTER
             // draw dialog buttons
             if(dlg.hasNegativeButton){
                 ctx.drawText(
-                    MultifontSpan().add(FontCollections.buttonFont, "\uF881")
+                    MultifontSpan().add(FontCollections.buttonFont, asian.select("\uF881", "\uF880"))
                         .add(FontCollections.masterFont, " ${dlg.negativeButton}"),
                     0.5f.toLerp(scaling.target.centerX(), scaling.target.left),
                     scaling.target.bottom - 50.0f, 0.5f,
@@ -95,13 +101,14 @@ fun XmbView.dlgRender(ctx: Canvas){
 
             if(dlg.hasPositiveButton){
                 ctx.drawText(
-                    MultifontSpan().add(FontCollections.buttonFont, "\uF880")
+                    MultifontSpan().add(FontCollections.buttonFont, asian.select("\uF880", "\uF881"))
                         .add(FontCollections.masterFont, " ${dlg.positiveButton}"),
                     0.5f.toLerp(scaling.target.centerX(), scaling.target.right),
                     scaling.target.bottom - 50.0f, 0.5f,
                     textPaint
                 )
             }
+            textPaint.textAlign = lAlign
         }else{
             switchPage(VshViewPage.MainMenu)
         }
@@ -142,4 +149,25 @@ fun XmbView.dlgEnd(){
         activeDialog?.onClose()
         activeDialog = null
     }
+}
+
+fun XmbView.dlgOnGamepad(k:GamepadSubmodule.Key, isPress: Boolean) : Boolean {
+    var retval = false
+    with(state.dialog){
+        val dlg = activeDialog
+        if(dlg != null){
+            when(k){
+                GamepadSubmodule.Key.Confirm, GamepadSubmodule.Key.StaticConfirm -> if(isPress) {
+                    dlg.onDialogButton(true)
+                    retval = true
+                }
+                GamepadSubmodule.Key.Cancel, GamepadSubmodule.Key.StaticCancel -> if(isPress) {
+                    dlg.onDialogButton(false)
+                    retval = true
+                }
+                else -> retval = dlg.onGamepad(k, isPress)
+            }
+        }
+    }
+    return retval
 }

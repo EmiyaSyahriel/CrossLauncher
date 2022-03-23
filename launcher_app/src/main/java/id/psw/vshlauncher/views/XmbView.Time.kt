@@ -26,5 +26,7 @@ fun XmbView.tickTime(){
         VshViewPage.GameBoot -> state.gameBoot.currentTime += time.deltaTime
         VshViewPage.ColdBoot -> state.coldBoot.currentTime += time.deltaTime
         VshViewPage.MainMenu -> state.crossMenu.currentTime += time.deltaTime
+        VshViewPage.MainMenu -> state.dialog.currentTime += time.deltaTime
+        else -> {} //
     }
 }

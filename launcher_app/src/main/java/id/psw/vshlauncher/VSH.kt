@@ -10,7 +10,6 @@ import android.media.MediaPlayer
 import android.media.SoundPool
 import android.os.*
 import android.util.Log
-import androidx.preference.Preference
 // import com.facebook.drawee.backends.pipeline.Fresco
 import id.psw.vshlauncher.pluginservices.IconPluginServiceHandle
 import id.psw.vshlauncher.submodules.*
@@ -23,22 +22,15 @@ import id.psw.vshlauncher.views.XmbView
 import java.io.File
 import java.lang.Exception
 import java.lang.StringBuilder
-import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
-import kotlin.concurrent.thread
+import kotlin.system.exitProcess
 
 class VSH : Application(), ServiceConnection {
 
     companion object {
-        private lateinit var _gamepad : GamepadSubmodule
-        private lateinit var _adaptIcon : XMBAdaptiveIconRenderer
-        private lateinit var _network : NetworkSubmodule
         private lateinit var _appFont : Typeface
-        val Gamepad get() = _gamepad
-        val IconAdapter get() = _adaptIcon
-        val Network get() = _network
         val AppFont get() = _appFont
         const val ACTION_PICK_PLUGIN = "id.psw.vshlauncher.action.PICK_PLUGIN"
         const val CATEGORY_PLUGIN_ICON = "id.psw.vshlauncher.category.PLUGIN_ICON"
@@ -55,6 +47,10 @@ class VSH : Application(), ServiceConnection {
         val dbgMemInfo = Debug.MemoryInfo()
         val actMemInfo = ActivityManager.MemoryInfo()
     }
+
+    lateinit var _gamepad : GamepadSubmodule
+    lateinit var iconAdapter : XMBAdaptiveIconRenderer
+    lateinit var network : NetworkSubmodule
 
     private var appUserUid = 0
     /** Used as user's identifier when using an external storage */
@@ -123,6 +119,8 @@ class VSH : Application(), ServiceConnection {
     val sfxPlayer = SoundPool(10, AudioManager.STREAM_SYSTEM, 0)
     val sfxIds = mutableMapOf<SFXType, Int>()
 
+    var useInternalWave = true
+
     fun reloadPreference() {
         pref = getSharedPreferences("xRegistry.sys", Context.MODE_PRIVATE)
         setActiveLocale(readSerializedLocale(pref.getString(PrefEntry.SYSTEM_LANGUAGE, "") ?: ""))
@@ -145,8 +143,8 @@ class VSH : Application(), ServiceConnection {
         // Fresco.initialize(this)
         notificationLastCheckTime = SystemClock.uptimeMillis()
         _gamepad = GamepadSubmodule(this)
-        _adaptIcon = XMBAdaptiveIconRenderer(this)
-        _network = NetworkSubmodule(this)
+        iconAdapter = XMBAdaptiveIconRenderer(this)
+        network = NetworkSubmodule(this)
         registerInternalCategory()
         listInstalledIconPlugins()
         listInstalledWaveRenderPlugins()
@@ -157,9 +155,6 @@ class VSH : Application(), ServiceConnection {
         listLogAllSupportedLocale()
 
         super.onCreate()
-        meminfoThread = thread(name = "Memory Info Thread") {
-            memoryInfoReaderFunc()
-        }
     }
 
     private var shouldExit = false
@@ -386,6 +381,17 @@ class VSH : Application(), ServiceConnection {
 
     fun installShortcut(intent: Intent) {
 
+    }
+
+    fun restart() {
+        val pm = vsh.packageManager
+        val sndi = pm.getLaunchIntentForPackage(vsh.packageName)
+        val cmpn = sndi?.component
+        if(cmpn!= null){
+            val rsti = Intent.makeRestartActivityTask(cmpn)
+            vsh.startActivity(rsti)
+        }
+        exitProcess(0)
     }
 
 }

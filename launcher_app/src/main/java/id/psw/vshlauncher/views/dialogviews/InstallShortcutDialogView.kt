@@ -124,11 +124,5 @@ class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent
             textTop + textPaint.textSize,
             textPaint,
             0.5f)
-
-        if(VSH.Gamepad.getKeyDown(Key.Confirm)){
-            onDialogButton(true)
-        }else if(VSH.Gamepad.getKeyDown(Key.Cancel)){
-            onDialogButton(false)
-        }
     }
 }

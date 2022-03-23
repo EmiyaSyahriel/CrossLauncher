@@ -3,6 +3,9 @@ package id.psw.vshlauncher
 import android.graphics.Bitmap
 import android.os.SystemClock
 import android.util.Log
+import androidx.annotation.DrawableRes
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.VSH.Companion.TAG
 import id.psw.vshlauncher.types.XMBNotification
 
@@ -16,6 +19,12 @@ fun VSH.postNotification(icon: Bitmap?, title:String, description:String, time:F
         notifications.add(notif)
         return hwnd
     }
+}
+
+fun VSH.postNotification(@DrawableRes drawableId:Int, title:String, description:String, time:Float = 3.0f) : Long {
+    val drw = ResourcesCompat.getDrawable(resources, drawableId, null)
+    val bmp = drw?.toBitmap(50,50)
+    return postNotification(bmp, title, description, time, true)
 }
 
 fun VSH.setNotificationTitle(hwnd:Long, title:String) =      synchronized(notifications) { notifications.filter{it.handle == hwnd}.forEach { it.title = title }}

@@ -12,6 +12,7 @@ import androidx.core.graphics.withRotation
 import androidx.core.graphics.withScale
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
@@ -205,7 +206,7 @@ fun XmbView.menu3StatusBar(ctx:Canvas){
         val status = StringBuilder()
 
         if(statusBar.showMobileOperator){
-            status.append(VSH.Network.operatorName).append("  ")
+            status.append(context.vsh.network.operatorName).append("  ")
         }
 
         status.append(SimpleDateFormat(dateTimeFormat, Locale.getDefault()).format(calendar.time))
@@ -679,7 +680,10 @@ fun XmbView.menuOnTouchScreen(a:PointF, b:PointF, act:Int){
                     run{
                         if(isMenu){
                             if(b.x <  scaling.target.right - 400.0f){
-                                state.itemMenu.isDisplayed = true
+                                val item = context.vsh.hoveredItem
+                                if(item?.hasMenu == true){
+                                    state.itemMenu.isDisplayed = true
+                                }
                             }
                         }
                     }
@@ -771,4 +775,90 @@ fun XmbView.menuRender(ctx: Canvas){
 
 fun XmbView.menuEnd(){
 
+}
+
+fun XmbView.menuOnGamepad(key: GamepadSubmodule.Key, isPressing: Boolean) : Boolean {
+    var retval = false
+    val vsh = context.vsh
+    val inMenu = state.itemMenu.isDisplayed
+
+    if(isPressing){
+        when(key){
+            GamepadSubmodule.Key.PadL -> {
+                if(!inMenu){
+                    if(vsh.isInRoot){
+                        vsh.moveCursorX(false)
+                        vsh.playSfx(SFXType.Selection)
+                    }else{
+                        vsh.backStep()
+                        vsh.playSfx(SFXType.Cancel)
+                    }
+                    retval = true
+                }
+            }
+            GamepadSubmodule.Key.PadR -> {
+                if(vsh.isInRoot){
+                    if(!inMenu){
+                        context.vsh.moveCursorX(true)
+                    }
+                    retval = true
+                }
+            }
+            GamepadSubmodule.Key.PadU -> {
+                if(inMenu){
+                    menuMoveItemMenuCursor(false)
+                }else{
+                    context.vsh.moveCursorY(false)
+                }
+                retval = true
+            }
+            GamepadSubmodule.Key.PadD -> {
+                if(inMenu){
+                    menuMoveItemMenuCursor(true)
+                }else{
+                    context.vsh.moveCursorY(true)
+                }
+                retval = true
+            }
+            GamepadSubmodule.Key.Triangle -> {
+                val item = vsh.hoveredItem
+                if(inMenu){
+                    state.itemMenu.isDisplayed = false
+                }else{
+                    if(item != null){
+                        if(item.hasMenu){
+                            state.itemMenu.isDisplayed = true
+                        }
+                    }
+                }
+                retval = true
+            }
+            GamepadSubmodule.Key.Square -> {
+                if(vsh.isInRoot){
+                    vsh.doCategorySorting()
+                    state.crossMenu.sortHeaderDisplay = 5.0f
+                    retval = true
+                }
+            }
+            GamepadSubmodule.Key.Confirm, GamepadSubmodule.Key.StaticConfirm -> {
+                if(inMenu) {
+                    menuStartItemMenu()
+                    state.itemMenu.isDisplayed = false
+                }else{
+                    vsh.launchActiveItem()
+                }
+                retval = true
+            }
+            GamepadSubmodule.Key.Cancel, GamepadSubmodule.Key.StaticCancel -> {
+                if(inMenu){
+                    state.itemMenu.isDisplayed = false
+                }else{
+                    vsh.backStep()
+                }
+                retval = true
+            }
+            else -> {  }
+        }
+    }
+    return retval
 }

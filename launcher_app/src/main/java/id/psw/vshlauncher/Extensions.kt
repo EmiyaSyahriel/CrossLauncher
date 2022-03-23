@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package id.psw.vshlauncher
 
 import android.content.Context
@@ -57,6 +59,8 @@ fun File.combine(vararg paths : String) : File {
 fun fit(sx:Float,dx:Float,sy:Float,dy:Float,w:Float,h:Float) : Float {
     return (w / sx).coerceAtMost(h / sy)
 }
+
+
 fun fill(sx:Float,dx:Float,sy:Float,dy:Float,w:Float,h:Float) : Float {
     return (w / sx).coerceAtLeast(h / sy)
 }

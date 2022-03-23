@@ -19,22 +19,23 @@ class MultifontSpan : ArrayList<MultifontText>() {
 
 fun Canvas.drawText(span: MultifontSpan, x:Float, y:Float, baseline:Float, paint: Paint){
     val tempPaint = TextPaint(paint)
-    var yOffset = y
-    var xOffset = x
-    val tempRect = Rect(0,0,0,0)
+    var totalWidth = 0.0f
+    span.forEach {
+        tempPaint.typeface = it.font
+        totalWidth += tempPaint.measureText(it.text)
+    }
+
+    var xOffset = when(paint.textAlign){
+        Paint.Align.LEFT -> x
+        Paint.Align.RIGHT -> x - totalWidth
+        Paint.Align.CENTER -> x - (totalWidth/2.0f)
+        else -> x
+    }
+    tempPaint.textAlign = Paint.Align.LEFT
     span.forEach { richText ->
         tempPaint.typeface = richText.font
-        tempPaint.getTextBounds(richText.text,0, richText.text.length, tempRect)
-        if(richText.text.contains("\n")){
-            richText.text.split('\n').forEach { lines ->
-                drawText(lines, xOffset, yOffset, tempPaint, baseline)
-                yOffset += tempRect.height()
-                xOffset = x
-            }
-        }else{
-            drawText(richText.text, xOffset, yOffset, tempPaint, baseline)
-            xOffset += tempRect.width()
-        }
+        drawText(richText.text, xOffset, y, tempPaint, baseline)
+        xOffset += tempPaint.measureText(richText.text)
     }
 }
 

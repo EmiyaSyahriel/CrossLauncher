@@ -10,6 +10,7 @@ import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.types.XMBItem
 
 open class XmbDialogSubview(private val vsh: VSH) {
+    var isPSP: Boolean = false
     open val icon : Bitmap = XMBItem.TRANSPARENT_BITMAP
     open val title : String = vsh.getString(R.string.default_dialog_title)
     open val negativeButton = vsh.getString(android.R.string.cancel)
@@ -21,7 +22,7 @@ open class XmbDialogSubview(private val vsh: VSH) {
     val closeDialogTo get() = pCloseDialogTo
     val shouldClose get() = pShouldClose
 
-    protected fun finish(dialogTo:VshViewPage){
+    fun finish(dialogTo:VshViewPage){
         pCloseDialogTo = dialogTo
         pShouldClose = true
     }
@@ -40,6 +41,14 @@ open class XmbDialogSubview(private val vsh: VSH) {
 
     open fun onDialogButton(isPositive: Boolean){
 
+    }
+
+    open fun onGamepad(key:GamepadSubmodule.Key, isPress:Boolean) : Boolean {
+        return false
+    }
+
+    open fun onCharInput(char:Char) : Boolean {
+        return false
     }
 
     open fun onDraw(ctx: Canvas, drawBound: RectF){

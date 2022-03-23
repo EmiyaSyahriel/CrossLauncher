@@ -7,6 +7,7 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 import android.opengl.GLES20
+import android.opengl.GLException
 import android.util.Log
 import java.io.InputStream
 import java.nio.IntBuffer
@@ -25,6 +26,10 @@ class XMBWaveRenderer() : GLSurfaceView.Renderer {
     }
 
     private var lastTime = 0L
+    var doReadPixel = false
+    var glBitmap : Bitmap? = null
+    private var width = 1
+    private var height = 1
 
     override fun onSurfaceCreated(_gl: GL10?, config: EGLConfig?) {
         NativeGL.create()
@@ -32,6 +37,8 @@ class XMBWaveRenderer() : GLSurfaceView.Renderer {
 
     override fun onSurfaceChanged(_gl: GL10?, width: Int, height: Int) {
         NativeGL.setup(width, height)
+        this.width = width
+        this.height = height
     }
 
     private var _hasStringChecked = false
@@ -44,6 +51,28 @@ class XMBWaveRenderer() : GLSurfaceView.Renderer {
         lastTime = cTime
 
         NativeGL.draw(dTime)
+
+        if(doReadPixel){
+            // TODO : Move allocation outside of draw routine
+            val bmpBuf = IntArray(width * height)
+            val bmpSrc = IntArray(width * height)
+            val intBuf = IntBuffer.wrap(bmpBuf).apply { position(0) }
+            try{
+                GLES20.glReadPixels(0,0,width,height,GLES20.GL_RGBA,GLES20.GL_UNSIGNED_BYTE, intBuf)
+                /**
+                for(y in 0 until height){
+                    val o1 = y * width
+                    val o2 = (height - y - 1) * width
+                    for(x in 0 until width){
+                        val glPx = bmpBuf[o1 + x]
+
+                    }
+                }*/
+                bmpBuf.copyInto(bmpSrc)
+            }catch(gle:GLException){ }
+            glBitmap?.recycle()
+            glBitmap = Bitmap.createBitmap(bmpSrc, width, height, Bitmap.Config.ARGB_8888)
+        }
     }
 
     fun destroy() {

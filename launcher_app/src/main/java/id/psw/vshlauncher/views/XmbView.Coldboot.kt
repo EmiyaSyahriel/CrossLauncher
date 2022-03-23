@@ -1,11 +1,14 @@
 package id.psw.vshlauncher.views
 
+import android.app.Activity
 import android.graphics.*
 import android.view.MotionEvent
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.typography.FontCollections
 import java.io.File
+import kotlin.system.exitProcess
 
 class VshViewColdBootState(
 ){
@@ -14,6 +17,7 @@ class VshViewColdBootState(
     val imagePaint : Paint = Paint().apply{
         alpha = 0
     }
+    var isL1Down = false
     val epiwarnPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         alpha = 255
         textSize = 20f
@@ -116,4 +120,32 @@ fun XmbView.cbOnTouchScreen(a: PointF, b:PointF, act:Int){
 
 fun XmbView.cbEnd(){
 
+}
+
+fun XmbView.cbOnGamepad(k:GamepadSubmodule.Key, isPress:Boolean) : Boolean {
+    var retval =false
+
+    with(state.coldBoot){
+        if(isPress){
+            when(k){
+                GamepadSubmodule.Key.Confirm, GamepadSubmodule.Key.StaticConfirm -> {
+                    if(currentTime <= 5.0f) currentTime = 5.0f
+                    else if(currentTime <= 10.0f) currentTime = 10.0f
+                    retval = true
+                }
+                GamepadSubmodule.Key.Cross -> {
+                    if(isL1Down){
+                        (context as Activity).finish() // L1 + Cross = Finish Activity
+                    }
+                }
+                else -> {}
+            }
+        }
+
+        if(k == GamepadSubmodule.Key.L1){
+            isL1Down = isPress
+        }
+    }
+
+    return retval
 }

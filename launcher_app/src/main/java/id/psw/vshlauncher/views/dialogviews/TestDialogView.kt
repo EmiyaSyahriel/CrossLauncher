@@ -35,11 +35,6 @@ class TestDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
     override fun onDraw(ctx: Canvas, drawBound: RectF) {
         ctx.drawARGB(0x66, 0x00,0x99,0xFF)
         ctx.drawText("Test Dialog", drawBound.centerX(), drawBound.centerY(),tPaint )
-        if(VSH.Gamepad.getKeyDown(GamepadSubmodule.Key.Confirm)){
-            onDialogButton(true)
-        }else if(VSH.Gamepad.getKeyDown(GamepadSubmodule.Key.Cancel)){
-            onDialogButton(false)
-        }
     }
 
     override fun onClose() {
@@ -48,14 +43,7 @@ class TestDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
 
     override fun onDialogButton(isPositive: Boolean) {
         if(isPositive){
-            val pm = vsh.packageManager
-            val sndi = pm.getLaunchIntentForPackage(vsh.packageName)
-            val cmpn = sndi?.component
-            if(cmpn!= null){
-                val rsti = Intent.makeRestartActivityTask(cmpn)
-                vsh.startActivity(rsti)
-            }
-            exitProcess(0)
+            vsh.restart()
         }else{
             finish(VshViewPage.MainMenu)
         }

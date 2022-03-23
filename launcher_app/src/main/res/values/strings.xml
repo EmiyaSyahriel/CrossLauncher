@@ -231,4 +231,8 @@
     <string name="settings_category_audio_title">Audio playback and volume</string>
     <string name="settings_system_disable_video_icon_name">Disable Video Icon</string>
     <string name="settings_system_disable_video_icon_desc">Disables launcher from loading and playing a video icon</string>
+    <string name="settings_wave_set_name" >Set as Wallpaper</string>
+    <string name="settings_wave_set_desc">Open settings to set the Wave Wallpaper as the current wallpaper</string>
+    <string name="settings_wave_make_internal_name">Use as Internal Layer</string>
+    <string name="setting_wave_make_internal_desc">Use the wave in the launcher itself, for devices without direct Live Wallpaper support.</string>
 </resources>

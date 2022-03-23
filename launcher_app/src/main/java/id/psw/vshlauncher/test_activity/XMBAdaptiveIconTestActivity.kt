@@ -7,9 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
-import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.toLerp
 import id.psw.vshlauncher.submodules.XMBAdaptiveIconRenderer
+import id.psw.vshlauncher.vsh
 import kotlin.concurrent.thread
 
 class XMBAdaptiveIconTestActivity : AppCompatActivity() {
@@ -37,7 +37,7 @@ class XMBAdaptiveIconTestActivity : AppCompatActivity() {
                         val pkg = it.activityInfo.packageName
                         if(pkg != null){
                             val appName = "${it.activityInfo.loadLabel(app.packageManager)} [${it.activityInfo.packageName}]"
-                            appList[appName] = VSH.IconAdapter.create(it.activityInfo)
+                            appList[appName] = vsh.iconAdapter.create(it.activityInfo)
                             loadProgress = i / apps.size.toFloat()
                         }
                     }
