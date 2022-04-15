@@ -1,10 +1,14 @@
 package id.psw.vshlauncher.views
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.*
 import android.view.MotionEvent
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.livewallpaper.NativeGL
+import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
+import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.typography.FontCollections
 import java.io.File
@@ -24,6 +28,7 @@ class VshViewColdBootState(
         color = Color.WHITE
         typeface = FontCollections.masterFont
     }
+    var waveSpeed = 1.0f
     var hideEpilepsyWarning = false
 }
 
@@ -47,6 +52,10 @@ fun XmbView.cbStart(){
     state.coldBoot.currentTime = 0.0f
     cbEnsureImageLoaded()
     playColdBootSound()
+    val pref = context.vsh.getSharedPreferences(XMBWaveSurfaceView.PREF_NAME, Context.MODE_PRIVATE)
+
+    state.coldBoot.waveSpeed = pref.getFloat(XMBWaveSurfaceView.KEY_SPEED, 1.0f)
+    // NativeGL.setSpeed(0.1f);
 }
 
 fun XmbView.cbEnsureImageLoaded(){
@@ -84,6 +93,10 @@ fun XmbView.cbRender(ctx: Canvas){
                 else -> 255
             }
 
+            // if(cTime > 5.0f && cTime < 10.0f){
+            //     NativeGL.setSpeed(state.coldBoot.waveSpeed * cTime.lerpFactor(5.0f, 10.0f).toLerp(10.0f, -10.0f).coerceIn(1.0f, 10.0f));
+            // }
+
             ctx.drawARGB((epiwarnPaint.alpha * 0.75f).toInt(), 0, 0, 0)
             val lines =
                 epiwarnPaint.wrapText(context.getString(R.string.photoepilepsy_warning), scaling.target.width() - 300.0f).lines()
@@ -119,7 +132,7 @@ fun XmbView.cbOnTouchScreen(a: PointF, b:PointF, act:Int){
 }
 
 fun XmbView.cbEnd(){
-
+    // NativeGL.setSpeed(state.coldBoot.waveSpeed)
 }
 
 fun XmbView.cbOnGamepad(k:GamepadSubmodule.Key, isPress:Boolean) : Boolean {

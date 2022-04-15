@@ -23,6 +23,15 @@ class XMBWaveRenderer() : GLSurfaceView.Renderer {
         const val WAVE_TYPE_PS3_BLINKS : Byte = 0b0010
         const val WAVE_TYPE_PSP_CENTER : Byte = 0b0100
         const val WAVE_TYPE_PSP_BOTTOM : Byte = 0b0110
+
+        /** Fully Use Custom Color */
+        const val WAVE_BG_MODE_CUSTOM : Byte = 0b00
+        /** The top color will be adjusted to day-night cycle of device local clock */
+        const val WAVE_BG_MODE_DAYNIGHT : Byte = 0b10
+        /** The color will be adjusted to the color of the month */
+        const val WAVE_BG_MODE_MONTHS : Byte = 0b01
+        /** Includes Day-night and Month color  */
+        const val WAVE_BG_MODE_FULL : Byte = 0b11
     }
 
     private var lastTime = 0L
@@ -30,6 +39,7 @@ class XMBWaveRenderer() : GLSurfaceView.Renderer {
     var glBitmap : Bitmap? = null
     private var width = 1
     private var height = 1
+    var surfaceView : XMBWaveSurfaceView? = null
 
     override fun onSurfaceCreated(_gl: GL10?, config: EGLConfig?) {
         NativeGL.create()
@@ -45,6 +55,7 @@ class XMBWaveRenderer() : GLSurfaceView.Renderer {
 
     override fun onDrawFrame(_gl: GL10?) {
         if(lastTime == 0L) lastTime = System.currentTimeMillis()
+        surfaceView?.checkPreferenceReRead()
 
         val cTime = System.currentTimeMillis()
         val dTime = (cTime - lastTime) / 1000f;

@@ -66,13 +66,21 @@ fun VSH.appCategorySortingName(it : XMBItemCategory) : String{
 fun VSH.reloadAppList(){
     threadPool.execute {
         val gameCat = categories.find {it.id == VSH.ITEM_CATEGORY_GAME }
-        gameCat?.onSetSortFunc = { it, sort ->  appCategorySetSorting(it, sort) }
-        gameCat?.onSwitchSortFunc = { appCategorySorting(it) }
-        gameCat?.getSortModeNameFunc = { appCategorySortingName(it) }
+        if(gameCat != null){
+            synchronized(gameCat){
+                gameCat.onSetSortFunc = { it, sort ->  appCategorySetSorting(it, sort) }
+                gameCat.onSwitchSortFunc = { appCategorySorting(it) }
+                gameCat.getSortModeNameFunc = { appCategorySortingName(it) }
+            }
+        }
         val appCat = categories.find{ it.id == VSH.ITEM_CATEGORY_APPS }
-        appCat?.onSetSortFunc = { it, sort -> appCategorySetSorting(it, sort) }
-        appCat?.onSwitchSortFunc = { appCategorySorting(it) }
-        appCat?.getSortModeNameFunc = { appCategorySortingName(it) }
+        if(appCat != null){
+            synchronized(appCat){
+                appCat.onSetSortFunc = { it, sort -> appCategorySetSorting(it, sort) }
+                appCat.onSwitchSortFunc = { appCategorySorting(it) }
+                appCat.getSortModeNameFunc = { appCategorySortingName(it) }
+            }
+        }
 
         val intent = Intent(Intent.ACTION_MAIN, null);
         intent.addCategory(Intent.CATEGORY_LAUNCHER)

@@ -1,6 +1,7 @@
 package id.psw.vshlauncher.activities
 
 import android.content.ActivityNotFoundException
+import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -57,17 +58,31 @@ class XMB : AppCompatActivity() {
             postPortraitScreenOrientationWarning()
         }
         vsh.doMemoryInfoGrab = true
-        if(isCreateShortcutIntent(intent)){
-            showShortcutCreationDialog(intent)
-        }
+        handleAdditionalIntent(intent)
     }
 
+    private fun handleAdditionalIntent(intent: Intent){
+        when {
+            isCreateShortcutIntent(intent) -> {
+                showShortcutCreationDialog(intent)
+            }
+            isShareIntent(intent) -> {
+                showShareIntentDialog(intent)
+            }
+            intent.action == Consts.ACTION_WAVE_SETTINGS_WIZARD -> {
+                vsh.showXMBLiveWallpaperWizard()
+            }
+        }
+
+        checkIsDefaultHomeIntent(intent)
+    }
+
+    private fun checkIsDefaultHomeIntent(intent: Intent) {
+        vsh.shouldShowExitOption = !intent.hasCategory(Intent.CATEGORY_DEFAULT) && intent.hasCategory(Intent.CATEGORY_HOME)
+    }
 
     override fun onNewIntent(intent: Intent?) {
-
-        if(isCreateShortcutIntent(intent)){
-            showShortcutCreationDialog(intent)
-        }
+        if(intent != null) handleAdditionalIntent(intent)
         super.onNewIntent(intent)
     }
 

@@ -3,6 +3,7 @@ package id.psw.vshlauncher.views
 import android.app.Dialog
 import android.graphics.*
 import android.text.TextPaint
+import android.view.MotionEvent
 import androidx.core.graphics.contains
 import androidx.core.graphics.withClip
 import androidx.core.graphics.withTranslation
@@ -81,7 +82,7 @@ fun XmbView.dlgRender(ctx: Canvas){
                 ctx.withTranslation(tmpBound.left, tmpBound.top){
                     tmpBound.bottom -= tmpBound.top
                     tmpBound.top = 0.0f
-                    dlg.onDraw(ctx, tmpBound)
+                    dlg.onDraw(ctx, tmpBound, time.deltaTime)
                 }
             }
 
@@ -91,7 +92,8 @@ fun XmbView.dlgRender(ctx: Canvas){
             // draw dialog buttons
             if(dlg.hasNegativeButton){
                 ctx.drawText(
-                    MultifontSpan().add(FontCollections.buttonFont, asian.select("\uF881", "\uF880"))
+                    MultifontSpan()
+                        .add(context.vsh, GamepadSubmodule.Key.Cancel)
                         .add(FontCollections.masterFont, " ${dlg.negativeButton}"),
                     0.5f.toLerp(scaling.target.centerX(), scaling.target.left),
                     scaling.target.bottom - 50.0f, 0.5f,
@@ -101,7 +103,8 @@ fun XmbView.dlgRender(ctx: Canvas){
 
             if(dlg.hasPositiveButton){
                 ctx.drawText(
-                    MultifontSpan().add(FontCollections.buttonFont, asian.select("\uF880", "\uF881"))
+                    MultifontSpan()
+                        .add(context.vsh, GamepadSubmodule.Key.Confirm)
                         .add(FontCollections.masterFont, " ${dlg.positiveButton}"),
                     0.5f.toLerp(scaling.target.centerX(), scaling.target.right),
                     scaling.target.bottom - 50.0f, 0.5f,
@@ -134,7 +137,7 @@ fun XmbView.dlgOnTouchScreen(a: PointF, b: PointF, act:Int){
                 offB.set(b.x - dTmpBound.left, b.y - dTmpBound.top)
                 dlg.onTouch(offA,offB,act)
             }else{
-                if(scaling.target.contains(a) && a.y > dTmpBound.bottom){
+                if(scaling.target.contains(a) && a.y > dTmpBound.bottom && act == MotionEvent.ACTION_UP){
                     if(dlg.hasPositiveButton || dlg.hasNegativeButton){
                         dlg.onDialogButton(a.x > scaling.target.centerX())
                     }

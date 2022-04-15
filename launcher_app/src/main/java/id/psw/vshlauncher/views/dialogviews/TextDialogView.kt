@@ -31,7 +31,7 @@ class TextDialogView(vsh: VSH) : XmbDialogSubview(vsh) {
     override var negativeButton: String = ""
     override var positiveButton: String = ""
 
-    override fun onDraw(ctx: Canvas, drawBound: RectF) {
+    override fun onDraw(ctx: Canvas, drawBound: RectF, deltaTime:Float) {
         textPaint.textSize = isPSP.select(30.0f, 25.0f)
         val lines = content.lines()
         var y = -(lines.size * 0.5f) * (textPaint.textSize * textSpacing)

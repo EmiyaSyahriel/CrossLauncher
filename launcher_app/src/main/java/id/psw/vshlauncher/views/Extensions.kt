@@ -40,13 +40,12 @@ fun Paint.removeShadowLayer() = setShadowLayer(0.0f, 0.0f, 0.0f, Color.TRANSPARE
 private var extCanvasDrawTextRectFBuffer = RectF()
 private var extCanvasDrawTextRectBuffer = Rect()
 
-fun Canvas.drawText(text:String, x:Float, y:Float, paint: Paint, yOffset:Float, useTextBound : Boolean = true){
-    if(useTextBound){
+fun Canvas.drawText(text:String, x:Float, y:Float, paint: Paint, yOffset:Float, useTextBound : Boolean = false){
+    val h = if(useTextBound) {
         paint.getTextBounds(text, 0, text.length, extCanvasDrawTextRectBuffer)
-        drawText(text, x, y + (yOffset * extCanvasDrawTextRectBuffer.height()), paint)
-    }else{
-        drawText(text, x, y - (yOffset * paint.textSize), paint)
-    }
+        extCanvasDrawTextRectBuffer.height().toFloat()
+    }else paint.textSize
+    drawText(text, x, y + (yOffset * h), paint)
 }
 
 fun Canvas.drawRoundRect(base:RectF, r:Float, paint:Paint){
@@ -97,5 +96,5 @@ fun Paint.wrapText(source:String, maxWidth:Float) : String {
         }
     }
     msb.appendLine(line.toString())
-    return msb.toString()
+    return msb.toString().trimEnd('\n')
 }

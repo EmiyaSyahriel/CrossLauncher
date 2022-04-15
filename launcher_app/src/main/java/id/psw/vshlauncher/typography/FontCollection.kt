@@ -45,7 +45,8 @@ object FontCollections {
         var isCustomFontFound = false
         fontLocations.forEach { dir ->
             if(!isCustomFontFound){
-                dir.listFiles()?.forEach {
+                val files = dir.listFiles()
+                files?.forEach {
                     if(it.name.lowercase().contentEquals(FONT_NAME.lowercase()) && !isCustomFontFound){
                         try{
                             masterFont = Typeface.createFromFile(it)

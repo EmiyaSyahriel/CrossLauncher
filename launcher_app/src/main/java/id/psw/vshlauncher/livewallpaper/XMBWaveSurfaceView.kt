@@ -53,7 +53,7 @@ open class XMBWaveSurfaceView : GLSurfaceView {
     private fun readPreferences(){
         Log.d(TAG, "Re-reading preferences...")
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        NativeGL.setWaveStyle(prefs.getInt(KEY_STYLE, XMBWaveRenderer.WAVE_TYPE_PS3_NORMAL.toInt()).toByte())
+        NativeGL.setWaveStyle(prefs.getInt(KEY_STYLE, XMBWaveRenderer.WAVE_TYPE_PS3_BLINKS.toInt()).toByte())
         NativeGL.setSpeed(prefs.getFloat(KEY_SPEED, 1.0f))
         NativeGL.setBackgroundColor(
             prefs.getInt(KEY_COLOR_BACK_A, Color.argb(0xFF,0x99,0x00,0xFF)),
@@ -69,7 +69,6 @@ open class XMBWaveSurfaceView : GLSurfaceView {
         if(fps > 0){
             threadSleepDuration = 1000 / fps
         }
-
         Log.d(TAG, "${renderVsync.select("VSync","FPS")} - ${threadSleepDuration}ms per frame")
     }
 
@@ -77,6 +76,7 @@ open class XMBWaveSurfaceView : GLSurfaceView {
         setEGLConfigChooser(8,8,8,0,8,8)
         setEGLContextClientVersion(2)
         renderer = XMBWaveRenderer()
+        renderer.surfaceView = this
         readPreferences()
         setRenderer(renderer)
         renderer.onSurfaceCreated(null, null)
@@ -94,6 +94,13 @@ open class XMBWaveSurfaceView : GLSurfaceView {
         Log.d(TAG, "Wave Surface Initialized")
     }
 
+    fun checkPreferenceReRead(){
+        if(context.vsh.waveShouldReReadPreferences){
+            readPreferences()
+            context.vsh.waveShouldReReadPreferences = false
+            renderMode = renderVsync.select(RENDERMODE_CONTINUOUSLY, RENDERMODE_WHEN_DIRTY)
+        }
+    }
 
     override fun onPause() {
         super.onPause()
@@ -106,10 +113,6 @@ open class XMBWaveSurfaceView : GLSurfaceView {
     }
 
     override fun onDraw(canvas: Canvas?) {
-        if(context.vsh.waveShouldReReadPreferences){
-            readPreferences()
-        }
         super.onDraw(canvas)
-        renderMode = renderVsync.select(RENDERMODE_CONTINUOUSLY, RENDERMODE_WHEN_DIRTY)
     }
 }

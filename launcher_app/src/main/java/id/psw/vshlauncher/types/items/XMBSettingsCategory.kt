@@ -31,5 +31,7 @@ class XMBSettingsCategory(
     override val hasBackdrop: Boolean = false
     override val hasPortraitBackdrop: Boolean = false
     override val hasPortraitBackdropOverlay: Boolean = false
+    var isSettingHidden : () -> Boolean = { false }
+    override val isHidden: Boolean get() = isSettingHidden()
 
 }

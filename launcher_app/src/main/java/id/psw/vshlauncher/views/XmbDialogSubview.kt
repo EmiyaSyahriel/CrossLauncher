@@ -9,7 +9,7 @@ import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.types.XMBItem
 
-open class XmbDialogSubview(private val vsh: VSH) {
+open class XmbDialogSubview(vsh: VSH) {
     var isPSP: Boolean = false
     open val icon : Bitmap = XMBItem.TRANSPARENT_BITMAP
     open val title : String = vsh.getString(R.string.default_dialog_title)
@@ -25,10 +25,6 @@ open class XmbDialogSubview(private val vsh: VSH) {
     fun finish(dialogTo:VshViewPage){
         pCloseDialogTo = dialogTo
         pShouldClose = true
-    }
-
-    open fun onCreate(){
-
     }
 
     open fun onStart(){
@@ -51,7 +47,7 @@ open class XmbDialogSubview(private val vsh: VSH) {
         return false
     }
 
-    open fun onDraw(ctx: Canvas, drawBound: RectF){
+    open fun onDraw(ctx: Canvas, drawBound: RectF, deltaTime:Float){
 
     }
 

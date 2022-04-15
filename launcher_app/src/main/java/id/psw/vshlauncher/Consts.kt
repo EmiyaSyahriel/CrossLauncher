@@ -7,6 +7,7 @@ object Consts {
     const val XMB_DEFAULT_ITEM_VALUE : String = "No Value"
     const val XMB_KEY_APP_SORT_MODE = "sort_mode"
     const val XMB_DEFAULT_RESOLUTION = 0x050002D0
+    const val ACTION_WAVE_SETTINGS_WIZARD = "id.psw.vshlauncher.ACTION_WAVE_SETTINGS_WIZARD"
 }
 
 

@@ -15,8 +15,11 @@ import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.typography.FontCollections
+import id.psw.vshlauncher.views.dialogviews.SubDialogUI
 import id.psw.vshlauncher.views.dialogviews.TestDialogView
 import java.util.*
+import kotlin.ConcurrentModificationException
 import kotlin.concurrent.thread
 import kotlin.math.roundToInt
 
@@ -132,6 +135,7 @@ class XmbView @JvmOverloads constructor(
         setZOrderOnTop(true)
         holder.setFormat(PixelFormat.TRANSPARENT)
         loadPreferences()
+        SubDialogUI.init(context.vsh)
     }
 
 
@@ -161,6 +165,7 @@ class XmbView @JvmOverloads constructor(
     }
 
     fun switchPage(view:VshViewPage){
+        System.gc() // Garbage Collect Every Page Change
         //if(currentPage != view){
             when(currentPage){
                 VshViewPage.ColdBoot -> cbEnd()
@@ -176,6 +181,7 @@ class XmbView @JvmOverloads constructor(
                 VshViewPage.Dialog -> dlgStart()
             }
         //}
+        System.gc() // Garbage Collect Every Page Change
     }
 
     private val notificationBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -186,6 +192,7 @@ class XmbView @JvmOverloads constructor(
         textSize = 15.0f
         color = Color.WHITE
         textAlign = Paint.Align.LEFT
+        typeface = FontCollections.masterFont
     }
 
     private val notificationTitleTextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -193,47 +200,50 @@ class XmbView @JvmOverloads constructor(
         textSize = 20.0f
         // typeface = Typeface.create(typeface, Typeface.BOLD)
         textAlign = Paint.Align.LEFT
+        typeface = FontCollections.masterFont
     }
 
     private val notificationRectBuffer = RectF()
 
     fun drawNotifications(ctx:Canvas){
         var top = 20.0f
-        context.vsh.getUpdatedNotification().forEach {
-            val textLeft = (it.icon != null).select(120.0f, 10.0f)
+        try{
+            context.vsh.getUpdatedNotification().forEach {
+                val textLeft = (it.icon != null).select(120.0f, 10.0f)
 
-            val descText = notificationTextPaint.wrapText(it.desc, 530f - textLeft)
-            val notifHeight = kotlin.math.max((it.icon == null).select(10f,  120f), 10f + ((descText.lines().size + 1) * notificationTextPaint.textSize) + 10f)
-            val notifWidth = 530f
-            val notifLeft = (1.0f - kotlin.math.min(it.remainingTime / 0.15f, 1.0f))
-                .toLerp(scaling.target.right - 540f, scaling.viewport.right)
+                val descText = notificationTextPaint.wrapText(it.desc, 530f - textLeft)
+                val notifHeight = kotlin.math.max((it.icon == null).select(10f,  120f), 10f + ((descText.lines().size + 3) * notificationTextPaint.textSize) + 10f)
+                val notifWidth = 530f
+                val notifLeft = (1.0f - kotlin.math.min(it.remainingTime / 0.15f, 1.0f))
+                    .toLerp(scaling.target.right - 540f, scaling.viewport.right)
 
-            notificationRectBuffer.set(notifLeft, top, notifLeft + notifWidth, top + notifHeight)
-            ctx.drawRoundRect(notificationRectBuffer, 10.0f, notificationBgPaint)
-            val tLeft = notificationRectBuffer.left + textLeft
-            ctx.drawText(it.title, tLeft, notificationRectBuffer.top + 10.0f, notificationTitleTextPaint, 1.0f)
+                notificationRectBuffer.set(notifLeft, top, notifLeft + notifWidth, top + notifHeight)
+                ctx.drawRoundRect(notificationRectBuffer, 10.0f, notificationBgPaint)
+                val tLeft = notificationRectBuffer.left + textLeft
+                ctx.drawText(it.title, tLeft, notificationRectBuffer.top + 10.0f, notificationTitleTextPaint, 1.0f)
 
-            descText.lines().forEachIndexed { i, s ->
-                val tTop = notificationRectBuffer.top + notificationTitleTextPaint.textSize + 15.0f +
-                        (notificationTextPaint.textSize * i)
-                ctx.drawText(s, tLeft, tTop, notificationTextPaint, 1.0f)
+                descText.lines().forEachIndexed { i, s ->
+                    val tTop = notificationRectBuffer.top + notificationTitleTextPaint.textSize + 15.0f +
+                            (notificationTextPaint.textSize * i)
+                    ctx.drawText(s, tLeft, tTop, notificationTextPaint, 1.0f)
+                }
+
+                val cIcon = it.icon
+                if(cIcon != null){
+                    val cX = notificationRectBuffer.left + 60f
+                    val cY = notificationRectBuffer.centerY()
+                    notificationRectBuffer.set(
+                        cX - 40f,
+                        cY - 40f,
+                        cX + 40f,
+                        cY + 40f
+                    )
+                    ctx.drawBitmap(cIcon, null, notificationRectBuffer, null)
+                }
+
+                top += notifHeight + 5.0f
             }
-
-            val cIcon = it.icon
-            if(cIcon != null){
-                val cX = notificationRectBuffer.left + 60f
-                val cY = notificationRectBuffer.centerY()
-                notificationRectBuffer.set(
-                    cX - 40f,
-                    cY - 40f,
-                    cX + 40f,
-                    cY + 40f
-                )
-                ctx.drawBitmap(cIcon, null, notificationRectBuffer, null)
-            }
-
-            top += notifHeight + 5.0f
-        }
+        }catch(e:ConcurrentModificationException){}
     }
 
     private val touchStartPointF = PointF()
@@ -249,17 +259,19 @@ class XmbView @JvmOverloads constructor(
             VshViewPage.Dialog -> ::dlgOnTouchScreen
             VshViewPage.GameBoot -> ::cbOnTouchScreen
             VshViewPage.ColdBoot -> ::gbOnTouchScreen
+            VshViewPage.HomeScreen -> ::homeOnTouchScreen
         }
         call(start, current, action)
     }
 
     fun onGamepadInput(key:GamepadSubmodule.Key, isDown:Boolean) : Boolean{
         return when(currentPage){
-            VshViewPage.MainMenu -> menuOnGamepad(key, isDown)
-            VshViewPage.Dialog -> dlgOnGamepad(key, isDown)
-            VshViewPage.ColdBoot -> cbOnGamepad(key, isDown)
-            VshViewPage.GameBoot -> gbOnGamepad(key, isDown)
-        }
+            VshViewPage.MainMenu -> ::menuOnGamepad
+            VshViewPage.Dialog -> ::dlgOnGamepad
+            VshViewPage.ColdBoot -> ::cbOnGamepad
+            VshViewPage.GameBoot -> ::gbOnGamepad
+            VshViewPage.HomeScreen -> ::homeOnGamepad
+        }(key, isDown)
     }
 
     fun onCharacterInput(ch:Char){
@@ -308,11 +320,12 @@ class XmbView @JvmOverloads constructor(
             canvas.withScale(scaling.fitScale, scaling.fitScale, 0.0f, 0.0f) {
                 canvas.withTranslation(-scaling.viewport.left, -scaling.viewport.top){
                     when(currentPage){
-                        VshViewPage.ColdBoot -> cbRender(canvas)
-                        VshViewPage.MainMenu -> menuRender(canvas)
-                        VshViewPage.GameBoot -> gbRender(canvas)
-                        VshViewPage.Dialog -> dlgRender(canvas)
-                    }
+                        VshViewPage.ColdBoot -> ::cbRender
+                        VshViewPage.MainMenu -> ::menuRender
+                        VshViewPage.GameBoot -> ::gbRender
+                        VshViewPage.Dialog -> ::dlgRender
+                        VshViewPage.HomeScreen -> ::homeRender
+                    }(canvas)
 
                     drawDebugLocation(canvas, context.xmb)
                     drawKeygen(canvas)

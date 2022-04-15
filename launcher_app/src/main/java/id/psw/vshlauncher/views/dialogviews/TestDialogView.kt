@@ -32,7 +32,7 @@ class TestDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
     override val positiveButton: String
         get() = "Reboot"
 
-    override fun onDraw(ctx: Canvas, drawBound: RectF) {
+    override fun onDraw(ctx: Canvas, drawBound: RectF, deltaTime:Float) {
         ctx.drawARGB(0x66, 0x00,0x99,0xFF)
         ctx.drawText("Test Dialog", drawBound.centerX(), drawBound.centerY(),tPaint )
     }

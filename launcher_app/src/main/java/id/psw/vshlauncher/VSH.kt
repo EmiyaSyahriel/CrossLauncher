@@ -4,12 +4,16 @@ import android.app.ActivityManager
 import android.app.Application
 import android.content.*
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Typeface
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.SoundPool
 import android.os.*
 import android.util.Log
+import androidx.annotation.DrawableRes
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 // import com.facebook.drawee.backends.pipeline.Fresco
 import id.psw.vshlauncher.pluginservices.IconPluginServiceHandle
 import id.psw.vshlauncher.submodules.*
@@ -49,6 +53,8 @@ class VSH : Application(), ServiceConnection {
     }
 
     lateinit var _gamepad : GamepadSubmodule
+    var showDebuggerCount = 0
+    var _gamepadUi : GamepadUISubmodule = GamepadUISubmodule()
     lateinit var iconAdapter : XMBAdaptiveIconRenderer
     lateinit var network : NetworkSubmodule
 
@@ -118,6 +124,7 @@ class VSH : Application(), ServiceConnection {
     var bgmPlayerDoNotAutoPlay = false
     val sfxPlayer = SoundPool(10, AudioManager.STREAM_SYSTEM, 0)
     val sfxIds = mutableMapOf<SFXType, Int>()
+    var shouldShowExitOption = false
 
     var useInternalWave = true
 
@@ -151,10 +158,25 @@ class VSH : Application(), ServiceConnection {
         reloadAppList()
         fillSettingsCategory()
         loadSfxData()
-
-        listLogAllSupportedLocale()
+        addHomeScreen()
+        installBroadcastReceivers()
 
         super.onCreate()
+    }
+
+    private fun installBroadcastReceivers() {
+        // Package Install / uninstall
+        registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                postNotification(null, "Updating database...","Device package list has been changed, updating list...")
+                reloadAppList()
+            }
+        }, IntentFilter().apply {
+            addAction(Intent.ACTION_PACKAGE_ADDED)
+            addAction(Intent.ACTION_PACKAGE_REMOVED)
+            addAction(Intent.ACTION_PACKAGE_CHANGED)
+            addDataScheme("package")
+        })
     }
 
     private var shouldExit = false
@@ -202,6 +224,14 @@ class VSH : Application(), ServiceConnection {
             xmbView?.state?.itemMenu?.selectedIndex = 0
             vsh.playSfx(SFXType.Selection)
         }
+    }
+
+    fun loadTexture(@DrawableRes d : Int, w:Int, h:Int, whiteFallback:Boolean = false ) : Bitmap {
+        return ResourcesCompat.getDrawable(resources, d, null)?.toBitmap(w, h) ?: whiteFallback.select(XMBItem.WHITE_BITMAP, XMBItem.TRANSPARENT_BITMAP)
+    }
+    fun loadTexture(@DrawableRes d : Int, whiteFallback:Boolean = false ) : Bitmap {
+        val dwb =ResourcesCompat.getDrawable(resources, d, null)
+        return dwb?.toBitmap(dwb.intrinsicWidth ?: 1, dwb.intrinsicHeight?: 1) ?: whiteFallback.select(XMBItem.WHITE_BITMAP, XMBItem.TRANSPARENT_BITMAP)
     }
 
     fun moveCursorY(bottom:Boolean){

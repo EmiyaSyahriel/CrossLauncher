@@ -139,7 +139,7 @@ fun XmbView.menuRenderItemMenu(ctx: Canvas){
                         }
                     }
 
-                    ctx.drawText(it.displayName, textLeft, zeroIdx + (it.displayOrder * textSize), menuContextMenuTextPaint, 0.5f, false)
+                    ctx.drawText(it.displayName, textLeft, zeroIdx + (it.displayOrder * textSize), menuContextMenuTextPaint, -0.5f, false)
                 }
             }else{
                 isDisplayed = false

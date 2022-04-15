@@ -84,6 +84,9 @@ class GamepadSubmodule(ctx: VSH) {
             val Confirm get() = spotMarkedByX.select(Cross, Circle)
             /** Standard Cancel Button */
             val Cancel get() = spotMarkedByX.select(Circle, Cross)
+
+            fun isCancel(k:Key) = k == Cancel || k == StaticCancel
+            fun isConfirm(k:Key) = k == Confirm || k == StaticConfirm
         }
     }
 
@@ -130,11 +133,11 @@ class GamepadSubmodule(ctx: VSH) {
         )
 
         private val defaultAndroidKeyboardMap = mutableMapOf(
-            KEYCODE_ESCAPE to Key.Cancel,
-            KEYCODE_DEL to Key.Cancel,
-            KEYCODE_ENTER to Key.Confirm,
-            KEYCODE_SPACE to Key.Confirm,
-            KEYCODE_DPAD_CENTER to Key.Confirm,
+            KEYCODE_ESCAPE to Key.StaticCancel,
+            KEYCODE_DEL to Key.StaticCancel,
+            KEYCODE_ENTER to Key.StaticConfirm,
+            KEYCODE_SPACE to Key.StaticConfirm,
+            KEYCODE_DPAD_CENTER to Key.StaticConfirm,
             KEYCODE_GRAVE to Key.Square,
             KEYCODE_MENU to Key.Triangle,
             KEYCODE_TAB to Key.Triangle,

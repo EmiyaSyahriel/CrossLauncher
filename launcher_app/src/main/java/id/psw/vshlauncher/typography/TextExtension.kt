@@ -5,6 +5,8 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.text.TextPaint
+import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.views.drawText
 import kotlin.collections.ArrayList
 
@@ -13,6 +15,10 @@ data class MultifontText(val font:Typeface, val text:String)
 class MultifontSpan : ArrayList<MultifontText>() {
     fun add(font: Typeface, text:String) : MultifontSpan{
         this.add(MultifontText(font, text))
+        return this
+    }
+    fun add(vsh: VSH, k:GamepadSubmodule.Key) : MultifontSpan{
+        this.add(MultifontText(FontCollections.buttonFont, vsh._gamepadUi.getGamepadChar(k).toString()))
         return this
     }
 }

@@ -25,6 +25,10 @@ class XMBSettingsItem(
     override val hasIcon: Boolean = true
     override val isIconLoaded: Boolean = true
     override val icon = ResourcesCompat.getDrawable(vsh.resources, r_icon, null)?.toBitmap(256,256) ?: TRANSPARENT_BITMAP
+    override val isHidden: Boolean get() = checkIsHidden()
+    var checkIsHidden : () -> Boolean = {
+        false
+    }
 
     private fun callLaunch(x:XMBItem){
         on_launch()

@@ -3,6 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/category_apps.xml" value="0.233" />
+        <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/category_debug.xml" value="0.233" />
+        <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/icon_volume.xml" value="0.233" />
+        <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/icon_wave_style.xml" value="0.233" />
+        <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/mp_xmb_progressbar.xml" value="0.233" />
+        <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/settings_category_display.xml" value="0.233" />
+        <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/layout/layout_xmb.xml" value="0.2520833333333333" />
+        <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/layout/layout_xmbwave.xml" value="0.12259371833839919" />
         <entry key="..\:/Works/Android/VSH/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.19907407407407407" />
         <entry key="..\:/Works/Android/VSH/app/src/main/res/drawable/ic_launcher_background.xml" value="0.19907407407407407" />
         <entry key="..\:/Works/Android/VSH/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.19907407407407407" />
@@ -16,6 +24,7 @@
       </map>
     </option>
   </component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

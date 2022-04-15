@@ -73,7 +73,11 @@ class XMBItemCategory(
     var getSortModeNameFunc : (XMBItemCategory) -> String = { "" }
 
     fun onSwitchSort() = onSwitchSortFunc(this)
-    fun <T> setSort(sort:T) = onSetSortFunc(this, sort as Any)
+    fun <T> setSort(sort:T) {
+        synchronized(this){
+            onSetSortFunc(this, sort as Any)
+        }
+    }
     val sortModeName : String get() = getSortModeNameFunc(this)
 
     override val onLaunch: (XMBItem) -> Unit get() = ::_postNoLaunchNotification

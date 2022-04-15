@@ -91,7 +91,7 @@ class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent
     }
 
     private val tmpRectF = RectF()
-    override fun onDraw(ctx: Canvas, drawBound: RectF) {
+    override fun onDraw(ctx: Canvas, drawBound: RectF, deltaTime:Float) {
         val bTop = drawBound.top + 100.0f
         tmpRectF.set(
             drawBound.centerX() - 50.0f,

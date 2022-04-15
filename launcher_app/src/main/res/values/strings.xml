@@ -235,4 +235,19 @@
     <string name="settings_wave_set_desc">Open settings to set the Wave Wallpaper as the current wallpaper</string>
     <string name="settings_wave_make_internal_name">Use as Internal Layer</string>
     <string name="setting_wave_make_internal_desc">Use the wave in the launcher itself, for devices without direct Live Wallpaper support.</string>
+    <string name="waveset_behavior_style_ps3_classic">PS3 Classic</string>
+    <string name="waveset_behavior_style_ps3_dynamic" >PS3 Dynamic</string>
+    <string name="waveset_behavior_style_psp_centered">PSP Centered</string>
+    <string name="waveset_behavior_style_psp_classic">PSP Classic</string>
+    <string name="dlg_set_wallpaper_title">Set Wallpaper</string>
+    <string name="dbg_launch_dialog_ui_test">Launch UI Test Dialog</string>
+    <string name="common_next">Next</string>
+    <string name="common_finish">Finish</string>
+    <string name="settings_wave_theme_name">Wave Theme</string>
+    <string name="settings_wave_theme_desc">Adjust style, speed and color of the wave</string>
+    <string name="home_screen_exit_name">Exit</string>
+    <string name="home_screen_exit_desc">Exit to default launcher</string>
+    <string name="waveset_color_foreground">Foreground Color</string>
+    <string name="waveset_color_background">Background Color</string>
+    <string name="string_systeminfo_launcher_ver">CrossLauncher Version</string>
 </resources>
