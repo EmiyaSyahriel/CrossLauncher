@@ -1,4 +1,4 @@
-#include "shaders.h"
+#include "SHADERS.HPP"
 //// AUTO-GENERATED RESOURCE FILE ////
 //// File auto-generated using C# Script at "app/csx/embed_res.csx" ////
 namespace R {
@@ -16,7 +16,6 @@ void main(){
 
 )EMBEDRES";
 	const char* const ps3_background_frag = R"EMBEDRES(precision lowp float;
-#define lerp(a,b,t) (a + ((b - a) * t))
 #define nrange(a) ((a + 1.0) / 2.0)
 #define clamp(t,a,b) (min(max(t,a),b))
 
@@ -75,7 +74,6 @@ attribute vec2 TEXCOORD0;
 varying vec2 screenPos;
 uniform int _Month;
 
-#define lerp(a,b,t) (a + ((b - a) * t))
 #define nrange(a) ((a + 1.0) / 2.0)
 
 vec2 uv_data(){
@@ -130,31 +128,51 @@ void main(){
 )EMBEDRES";
 	const char* const ps3_wave_vert = R"EMBEDRES(precision highp float;
 attribute vec3 POSITION;
-#define lerp(a,b,t) (a + ((b - a) * t))
-#define sRange(x) ((x + 1.0) / 2.0)
-#define rRange(x) ((x * 2.0) - 1.0)
+
+float sRange(float x) { return (((x) + 1.0) / 2.0); }
+float rRange(float x) { return (((x) * 2.0) - 1.0); }
 
 uniform float _Time;
 uniform float _NormalStep;
 uniform mat4 _Ortho;
+uniform float _RngTrans, _RngDataA[5], _RngDataB[5];
 
 varying float alpha;
 
-vec3 calcWave(float x, float z){
-    float bigwave = sin((x * 1.5) + (z * 0.90) + (_Time * 0.25));
-    float med = sin((x * 3.0) + z + (_Time * 0.75));
-    float xmed = sin((z * 10.5) + cos(_Time * 0.5)) * lerp(0.5, 1.0, cos(x + (_Time * 0.25)));
+float rngi(int index){
+    return mix(_RngDataA[index], _RngDataB[index], _RngTrans);
+}
+float mxrngi(float a, float b, int index){
+    return mix(a,b,rngi(index));
+}
 
-    med = rRange(med);
-    xmed = rRange(xmed);
+float avg(float a, float b, float z){
+    return (a + b) / z;
+}
+
+vec3 calcWave(float x, float z){
+    float wave_1 = sin((x * mxrngi( 1.5, 1.0,0)) + (z * mxrngi(1.10,0.90,1)) + (_Time * 0.25));
+    float wave_2 = sin((x * mxrngi( 2.3, 1.9,3)) + (z * mxrngi(2.50,0.75,4)) + (_Time * 0.43));
+    float wave_3 = sin((z * mxrngi( 9.5,15.9,2)) + (_Time * 2.34));
+    float wave_4 = sin((x * mxrngi( 2.3, 0.9,1)) + (z * mxrngi(1.20,1.00,2)) + (_Time * 0.73));
+    float wave_5 = sin((z * mxrngi(12.5,15.5,4)) + (_Time * 1.64)) ;
+    float wave_6 = sin((x * mxrngi( 2.9, 1.0,2)) + (z * mxrngi(2.80,3.25,3)) + (_Time * 0.64));
+
+    wave_2 = rRange(avg(wave_2, wave_6, 1.65));
+    wave_3 = rRange(avg(wave_3, wave_5, 2.0) * mix(0.5, 1.0, cos(x + (_Time * 0.35))));
     // xmed = max(xmed, 0.0);
 
-    float smallwave = (med * xmed) * 0.05;
-    float retval = (bigwave + smallwave) / 2.0;
-    retval *= lerp(0.5, 1.5, sRange(cos(2.0 * x)) );
+    wave_1 = avg(wave_1, wave_2, 1.25);
+
+    float retval = (
+        (wave_1 * mxrngi(0.650, 0.873, 0)) + 
+        (wave_2 * mxrngi(0.140, 0.112, 2)) +
+        (wave_3 * mxrngi(0.539, 0.301, 4))
+        ) * mxrngi(0.15, 0.25, 2);
+    retval *= mix(0.5, 1.5, sRange(cos(2.0 * x)));
     retval = rRange(retval);
-    float y = (retval * 0.3) + 0.2;
-    return vec3(x,y * 0.5,z);
+    float y = 0.25 + (retval * 0.15);
+    return vec3(x, y, z);
 }
 
 void main() {
@@ -175,33 +193,46 @@ varying float alpha;
 uniform vec4 _ColorA;
 uniform vec4 _ColorB;
 
-#define lerp(a,b,t) (a + ((b - a) * t))
-#define lerp4(a,b,t) vec4(lerp(a.x, b.x, t), lerp(a.y, b.y, t), lerp(a.z, b.z, t), lerp(a.w, b.w, t))
-
 void main(){
-    gl_FragColor = lerp4(_ColorB, _ColorA, alpha);
+    gl_FragColor = mix(_ColorB, _ColorA, alpha);
 })EMBEDRES";
 	const char* const psp_wave_vert = R"EMBEDRES(precision highp float;
 attribute vec3 POSITION;
 attribute vec3 TEXCOORD1;
-#define lerp(a,b,t) (a + ((b - a) * t))
 
 uniform float _Time;
 uniform mat4 _Ortho;
+uniform float _RngTrans, _RngDataA[6], _RngDataB[6];
 
 varying float alpha;
 
+float rngi(int index) {
+    return mix(_RngDataA[index], _RngDataB[index], _RngTrans);
+}
+
+float rngi3(int i1, int i2, int i3) {
+    return mix(rngi(i1), rngi(i2), rngi(i3));
+}
+
+float mxrngi3(float a, float b, int i1, int i2, int i3) {
+    return mix(a,b,rngi3(i1,i2,i3));
+}
+
 float calc_wave(float x, float t){
-    float wave_a = sin((x * 1.0) + (_Time * 0.50) + t);
-    float wave_b = cos((x * 2.7) + (_Time * 0.25) + t);
-    float wave_c = cos((x * 4.3) + (_Time * 1.00) + t);
-    return ((wave_a * 0.5) + (wave_b * 0.25) + (wave_c * 0.125)) * 0.125;
+    float wave_a = sin((x * mxrngi3(0.5,1.5,0,4,3)) + (_Time * 0.50) + t);
+    float wave_b = cos((x * mxrngi3(2.0,3.0,1,5,2)) + (_Time * 0.25) + t);
+    float wave_c = cos((x * mxrngi3(4.0,5.0,2,3,1)) + (_Time * 1.00) + t);
+    return (
+        (wave_a * mxrngi3(0.400, 0.600, 1,0,3)) +
+        (wave_b * mxrngi3(0.200, 0.300, 3,2,5)) +
+        (wave_c * mxrngi3(0.150, 0.100, 2,1,4))
+    ) * 0.125;
 }
 
 void main(){
     vec4 cvpos = vec4(
         POSITION.x,
-        POSITION.y + lerp(0.0, calc_wave(POSITION.x, TEXCOORD1.y), TEXCOORD1.z),
+        POSITION.y + mix(0.0, calc_wave(POSITION.x, TEXCOORD1.y), TEXCOORD1.z),
         POSITION.z,
         1.0);
     gl_Position= cvpos * _Ortho;

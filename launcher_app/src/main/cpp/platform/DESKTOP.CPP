@@ -1,14 +1,9 @@
-#define GLEW_STATIC
-#include <Windows.h>
 #include <cstdlib>
 #include <cstdio>
 #include <string>
 #include "GL/glew.h"
-#include "wave/wave.h"
-#include "wave/Logger.h"
+#include "../wave/WAVE.HPP"
 #include <glfw/glfw3.h>
-#include "wave/states.h"
-#include "wave/mathutil.h"
 
 bool w32_hasInit = false;
 
@@ -32,11 +27,14 @@ const char* getarg_alias(int argc, const char** argv, int rargc, const char** ra
 }
 
 static void w32_init() {
-	wave_start();
+	cxl_wave_start();
 	glEnable(GL_MULTISAMPLE);
 }
 
+float w32_cTime = 0.0f;
+
 void w32_render(GLFWwindow* window) {
+	float s = (float)glfwGetTime();
 
 	glfwMakeContextCurrent(window);
 
@@ -45,15 +43,15 @@ void w32_render(GLFWwindow* window) {
 		w32_init();
 		w32_hasInit = true;
 	}
-	wave_draw(0.16f);
+	cxl_wave_draw(s - w32_cTime);
+	w32_cTime = s;
 	glfwSwapBuffers(window);
 }
 
 static void w32_resize(GLFWwindow* window, int width, int height) {
-	wave_resize((float)width, (float)height);
+	cxl_wave_resize((float)width, (float)height);
 	w32_render(window);
 }
-
 
 void pause() {
 	char pause = getchar();
@@ -64,7 +62,7 @@ static void parse_data(const char* str, const char* format, T* data, const char*
 	str = str == nullptr ? defval : str;
 	if (str != nullptr) {
 		if (sscanf(str, format, data)){
-			Log_d("Unable to parse argument");
+			Log_d("Unable to parse argument\n");
 		}
 	}
 }
@@ -87,9 +85,7 @@ static void w32_readargs(int argc, const char** argv) {
 	int backa, backb, forea, foreb;
 
 	// put all the data
-	parse_data(speed, "%f", &xmb_wave_speed, "1.0");
-
-	
+	parse_data(speed, "%f", &wave_state.speed, "1.0");
 
 	parse_data(backcolor_a, "%x", &backa, "FF9900FF");
 	parse_data(backcolor_b, "%x", &backb, "FF0099FF");
@@ -98,21 +94,42 @@ static void w32_readargs(int argc, const char** argv) {
 
 	if (style == nullptr) style = "DEFAULT";
 
-	if (strcmpi(style, "DEFAULT") == 0) wave_type = WAVE_TYPE::DEFAULT;
-	if (strcmpi(style, "PS3_NORMAL") == 0) wave_type = WAVE_TYPE::PS3_NORMAL;
-	if (strcmpi(style, "PS3_BLINKS") == 0) wave_type = WAVE_TYPE::PS3_BLINKS;
-	if (strcmpi(style, "PSP_CENTER") == 0) wave_type = WAVE_TYPE::PSP_CENTER;
-	if (strcmpi(style, "PSP_BOTTOM") == 0) wave_type = WAVE_TYPE::PSP_BOTTOM;
+	if (strcmpi(style, "DEFAULT") == 0)    wave_state.style = WAVE_STYLE::DEFAULT;
+	if (strcmpi(style, "PS3_NORMAL") == 0) wave_state.style = WAVE_STYLE::PS3_NORMAL;
+	if (strcmpi(style, "PS3_BLINKS") == 0) wave_state.style = WAVE_STYLE::PS3_BLINKS;
+	if (strcmpi(style, "PSP_CENTER") == 0) wave_state.style = WAVE_STYLE::PSP_CENTER;
+	if (strcmpi(style, "PSP_BOTTOM") == 0) wave_state.style = WAVE_STYLE::PSP_BOTTOM;
 
-	background_color_top = int2color(backa);
-	background_color_bottom = int2color(backb);
-	foreground_color_edge = int2color(forea);
-	foreground_color_center = int2color(foreb);
+	wave_state.colors.bg_a = cxl_i2v4(backa);
+	wave_state.colors.bg_b = cxl_i2v4(backb);
+	wave_state.colors.fg_a = cxl_i2v4(forea);
+	wave_state.colors.fg_b = cxl_i2v4(foreb);
+}
+
+void w32_key(GLFWwindow* win, int key, int scn, int act, int mod) {
+	if (act == GLFW_PRESS) {
+		if (key == GLFW_KEY_BACKSLASH) {
+			switch (wave_state.style) {
+			case WAVE_STYLE::PS3_BLINKS: wave_state.style = WAVE_STYLE::PS3_NORMAL; break;
+			case WAVE_STYLE::PS3_NORMAL: wave_state.style = WAVE_STYLE::PSP_CENTER; break;
+			case WAVE_STYLE::PSP_CENTER: wave_state.style = WAVE_STYLE::PSP_BOTTOM; break;
+			case WAVE_STYLE::PSP_BOTTOM: wave_state.style = WAVE_STYLE::PS3_BLINKS; break;
+			}
+		}
+		if (key == GLFW_KEY_PAGE_UP) {
+			wave_state.speed += 0.15f;
+			printf("Wave Speed : %f\n", wave_state.speed);
+		}
+		if (key == GLFW_KEY_PAGE_DOWN) {
+			wave_state.speed -= 0.15f;
+			printf("Wave Speed : %f\n", wave_state.speed);
+		}
+	}
 }
 
 int main(int argc, const char** argv) {
 	if (!glfwInit()) {
-		printf("Unable to initialize GLFW"); 
+		printf("Unable to initialize GLFW\n"); 
 		pause();
 		return -1; 
 	}
@@ -124,12 +141,13 @@ int main(int argc, const char** argv) {
 	GLFWwindow* window = glfwCreateWindow(1280, 720, "libwave", NULL, NULL);
 	if (!window) {
 		glfwTerminate();
-		printf("Cannot create a window, terminating...");
+		printf("Cannot create a window, terminating...\n");
 		pause();
 		return -1;
 	}
-
+	cxl_wave_resize((float)1280, (float)720);
 	glfwSetWindowSizeCallback(window, w32_resize);
+	glfwSetKeyCallback(window, w32_key);
 
 	while (!glfwWindowShouldClose(window)) {
 		w32_render(window);

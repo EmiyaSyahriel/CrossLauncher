@@ -1,55 +1,49 @@
-//
-// Created by EmiyaSyahriel on 20/05/2021.
-//
+/**
+ * Created by EmiyaSyahriel, 20/05/2021.
+ * JNI Exports for use in Android and possibly LWJGL-based Java applications
+ */
 #include <jni.h>
-#include "wave/typedefs.h"
-#include "wave/states.h"
-#include "wave/mathutil.h"
-#include "wave/wave.h"
+#include "../wave/WAVE.HPP"
 
-#ifdef __cplusplus
 #define EXTC extern "C"
-#else
-#define EXTC
-#endif
 
 EXTC JNIEXPORT void JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL_create(JNIEnv *env, jobject obj){
-        wave_start();
+        cxl_wave_start();
     }
 
 EXTC JNIEXPORT void JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL_destroy(JNIEnv *env, jobject obj){
-        wave_destroy();
+        cxl_wave_destroy();
     }
 
 EXTC JNIEXPORT void JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL_draw(JNIEnv *env, jobject obj, jfloat deltaTime){
-        wave_draw(deltaTime);
+        cxl_wave_draw(deltaTime);
     }
 
 EXTC JNIEXPORT void JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL_setup(JNIEnv *env, jobject obj, jint w, jint h){
-        wave_resize(w,h);
+        cxl_wave_resize(w,h);
     }
 
 EXTC JNIEXPORT void JNICALL
     Java_id_psw_vshlauncher_livewallpaper_NativeGL_setPaused(JNIEnv *env, jobject thiz, jboolean paused) {
-        wave_paused = paused;
+        wave_state.paused = paused;
     }
 
-EXTC JNIEXPORT jboolean JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL_getPaused(JNIEnv *env, jobject thiz) { return wave_paused; }
+EXTC JNIEXPORT jboolean JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL_getPaused(JNIEnv *env, jobject thiz) { return wave_state.paused; }
 
 EXTC JNIEXPORT void JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL_setWaveStyle(JNIEnv *env, jobject obj, jbyte mode){
-    wave_type = static_cast<WAVE_TYPE>(mode);
+    wave_state.style = static_cast<WAVE_STYLE>(mode);
 }
 
 EXTC JNIEXPORT void JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL_setSpeed(JNIEnv *env, jobject obj, jfloat speed){
-    xmb_wave_speed = speed;
+    wave_state.speed = speed;
 }
 
 EXTC JNIEXPORT void JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL_setBackgroundColor(JNIEnv *env, jobject obj, jint top, jint bottom){
-    background_color_top = int2color(top);
-    background_color_bottom = int2color(bottom);
+    wave_state.colors.bg_a = cxl_i2v4(top);
+    wave_state.colors.bg_b = cxl_i2v4(bottom);
 }
 
 EXTC JNIEXPORT void JNICALL Java_id_psw_vshlauncher_livewallpaper_NativeGL_setForegroundColor(JNIEnv *env, jobject obj, jint edge, jint center){
-    foreground_color_edge = int2color(edge);
-    foreground_color_center = int2color(center);
+    wave_state.colors.fg_a = cxl_i2v4(edge);
+    wave_state.colors.fg_b = cxl_i2v4(center);
 }

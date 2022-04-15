@@ -1,9 +1,9 @@
-
-#include "Logger.h"
+#ifndef ANDROID
+#include "WAVE.HPP"
 #include <cstdarg>
 #include <stdio.h>
 
-void W32_PRINT(char stype, char* tag, char* format, ...)
+void W32_PRINT(char stype, string_t tag, string_t format, ...)
 {
 	va_list args;
 
@@ -16,3 +16,4 @@ void W32_PRINT(char stype, char* tag, char* format, ...)
 
 	printf("%c/%s %s\n", stype, tag, buffer);
 }
+#endif
