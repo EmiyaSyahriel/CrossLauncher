@@ -5,7 +5,6 @@ attribute vec2 TEXCOORD0;
 varying vec2 screenPos;
 uniform int _Month;
 
-#define lerp(a,b,t) (a + ((b - a) * t))
 #define nrange(a) ((a + 1.0) / 2.0)
 
 vec2 uv_data(){

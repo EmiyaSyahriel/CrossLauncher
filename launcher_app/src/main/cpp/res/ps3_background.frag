@@ -1,5 +1,4 @@
 precision lowp float;
-#define lerp(a,b,t) (a + ((b - a) * t))
 #define nrange(a) ((a + 1.0) / 2.0)
 #define clamp(t,a,b) (min(max(t,a),b))
 
