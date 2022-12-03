@@ -3,14 +3,19 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../../layout/custom_preview.xml" value="0.3854166666666667" />
         <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/category_apps.xml" value="0.233" />
         <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/category_debug.xml" value="0.233" />
+        <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/ic_short_line.xml" value="0.233" />
+        <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/icon_brightness.xml" value="0.2095" />
+        <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/icon_button_display.xml" value="0.233" />
         <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/icon_volume.xml" value="0.233" />
         <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/icon_wave_style.xml" value="0.233" />
         <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/mp_xmb_progressbar.xml" value="0.233" />
         <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/drawable/settings_category_display.xml" value="0.233" />
         <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/layout/layout_xmb.xml" value="0.2520833333333333" />
         <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/layout/layout_xmbwave.xml" value="0.12259371833839919" />
+        <entry key="..\:/Works/Android/CrossLauncher/launcher_app/src/main/res/xml/root_preferences.xml" value="0.20208333333333334" />
         <entry key="..\:/Works/Android/VSH/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.19907407407407407" />
         <entry key="..\:/Works/Android/VSH/app/src/main/res/drawable/ic_launcher_background.xml" value="0.19907407407407407" />
         <entry key="..\:/Works/Android/VSH/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.19907407407407407" />

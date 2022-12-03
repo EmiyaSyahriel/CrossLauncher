@@ -22,4 +22,10 @@
         <item>4</item>
         <item>6</item>
     </string-array>
+    <string-array name="xmb_wave_color_field_names" >
+        <item>Top R</item> <item>Top G</item> <item>Top B</item>
+        <item>Bottom R</item> <item>Bottom G</item> <item>Bottom B</item>
+        <item>Edge R</item> <item>Edge G</item> <item>Edge B</item><item>Edge A</item>
+        <item>Center R</item> <item>Center G</item> <item>Center B</item><item>Center A</item>
+    </string-array>
 </resources>

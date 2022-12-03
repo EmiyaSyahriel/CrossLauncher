@@ -2,7 +2,7 @@ precision highp float;
 attribute vec3 POSITION;
 attribute vec3 TEXCOORD1;
 
-uniform float _Time;
+uniform float _Time, _YScale;
 uniform mat4 _Ortho;
 uniform float _RngTrans, _RngDataA[6], _RngDataB[6];
 
@@ -34,7 +34,7 @@ float calc_wave(float x, float t){
 void main(){
     vec4 cvpos = vec4(
         POSITION.x,
-        POSITION.y + mix(0.0, calc_wave(POSITION.x, TEXCOORD1.y), TEXCOORD1.z),
+        (POSITION.y + mix(0.0, calc_wave(POSITION.x, TEXCOORD1.y), TEXCOORD1.z)) * _YScale,
         POSITION.z,
         1.0);
     gl_Position= cvpos * _Ortho;

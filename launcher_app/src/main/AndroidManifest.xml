@@ -33,7 +33,6 @@
     <queries>
         <intent>
             <category android:name="android.intent.category.LAUNCHER" />
-
             <action android:name="android.intent.action.MAIN" />
         </intent>
     </queries>
@@ -48,6 +47,7 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:description="@string/app_desc"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
         <service

@@ -1,25 +1,13 @@
 package id.psw.vshlauncher
 
-import android.annotation.SuppressLint
-import android.app.WallpaperManager
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Build
-import androidx.core.content.edit
-import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
-import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
-import id.psw.vshlauncher.livewallpaper.XMBWaveWallpaperService
 import id.psw.vshlauncher.submodules.GamepadSubmodule
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.submodules.GamepadUISubmodule
 import id.psw.vshlauncher.types.items.*
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XMBLayoutType
-import id.psw.vshlauncher.views.XmbView
-import id.psw.vshlauncher.views.dialogviews.TestDialogView
-import id.psw.vshlauncher.views.dialogviews.TextDialogView
-import id.psw.vshlauncher.views.dialogviews.UITestDialogView
+import id.psw.vshlauncher.views.dialogviews.*
+import id.psw.vshlauncher.views.formatStatusBar
 import id.psw.vshlauncher.views.showDialog
 import java.util.*
 import kotlin.collections.ArrayList
@@ -39,7 +27,6 @@ fun VSH.fillSettingsCategory(){
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryDisplay())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryAudio())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategorySystem())
-        addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryInfo())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryAndroidSetting())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryDebug())
     }
@@ -57,7 +44,20 @@ private fun VSH.createCategoryAudio(): XMBSettingsCategory{
     val vsh = this
     return XMBSettingsCategory(this, SettingsCategoryID.CATEGORY_SETTINGS_AUDIO,
         R.drawable.icon_volume,
-        R.string.settings_category_audio_name, R.string.settings_category_audio_title).apply {
+        R.string.settings_category_audio_name, R.string.settings_category_audio_title
+    ).apply {
+        content.add(XMBSettingsItem(vsh, "audio_master_volume",
+            R.string.settings_audio_master_volume_name,
+            R.string.settings_audio_master_volume_desc,
+            R.drawable.icon_volume, {
+                "WIP"
+            }
+        ){
+
+        }).apply {
+
+        }
+
 
     }
 }
@@ -76,8 +76,13 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 R.string.settings_system_show_fps_name,
                 R.string.settings_system_show_fps_desc,
                 R.drawable.category_setting,
-                { showLauncherFPS.select(vsh.getString(R.string.common_yes),vsh.getString(R.string.common_no))  }
-            ){ showLauncherFPS = !showLauncherFPS }
+                {
+                    showLauncherFPS.select(vsh.getString(R.string.common_yes),vsh.getString(R.string.common_no))
+                }
+            ){
+                showLauncherFPS = !showLauncherFPS
+                pref.edit().putInt(PrefEntry.SHOW_LAUNCHER_FPS, showLauncherFPS.select(0,1)).apply()
+            }
         )
 
         content.add(XMBSettingsItem(vsh, "settings_system_orientation",
@@ -157,7 +162,6 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
         }
         )
 
-
         content.add(
             XMBSettingsItem(vsh, "settings_system_disable_video_icon",
                 R.string.settings_system_disable_video_icon_name,
@@ -172,6 +176,35 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                     PrefEntry.DISPLAY_VIDEO_ICON,
                     XMBAppItem.disableAnimatedIcon.select(0,1)
                 ).apply()
+            }
+        )
+
+        content.add(
+            XMBSettingsItem(vsh, "settings_systemsetsys_skip_gameboot",
+                R.string.setting_show_gameboot_name,
+                R.string.setting_show_gameboot_desc,
+                R.drawable.icon_dynamic_theme_effect, {
+                    val i = xmbView?.state?.gameBoot?.defaultSkip?.select(
+                        R.string.common_no,
+                        R.string.common_yes
+                    ) ?: R.string.empty_string
+                    getString(i)
+                }
+            ){
+                xmbView?.state?.gameBoot?.defaultSkip = !(xmbView?.state?.gameBoot?.defaultSkip ?: true)
+                pref.edit().putInt(PrefEntry.SKIP_GAMEBOOT,
+                    xmbView?.state?.gameBoot?.defaultSkip?.select(0, 1) ?: 0
+                ).apply()
+            }
+        )
+
+        content.add(
+            XMBSettingsItem(vsh, "settings_system_info_dialog_open",
+                R.string.setting_systeminfo_name,
+                R.string.setting_systeminfo_desc,
+                R.drawable.icon_info, { "" }
+            ){
+                vsh.xmbView?.showDialog(AboutDeviceDialogView(vsh))
             }
         )
 
@@ -192,6 +225,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 xmbView?.keygenActive = true
             })
         }
+
     }
 }
 
@@ -214,6 +248,16 @@ private fun VSH.createCategoryDebug() : XMBSettingsCategory{
             R.string.dbg_launch_dialog_ui_test, R.string.empty_string, R.drawable.category_debug, {""}){
             xmbView?.showDialog(UITestDialogView(vsh))
         })
+
+        content.add(
+            XMBSettingsItem(vsh, "dbg_custom_file_list",
+                R.string.dbg_custom_file_list,
+                R.string.empty_string,
+                R.drawable.ic_short_line, { "" }
+            ){
+                vsh.xmbView?.showDialog(CustomResourceListDialogView(vsh))
+            }
+        )
 
         content.add(XMBSettingsItem(vsh, "settings_system_language",
             R.string.settings_system_language, R.string.settings_system_language_description,
@@ -299,7 +343,66 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
             }
         )
         //endregion
+        // region Console Button Display
+        content.add(
+            XMBSettingsItem(vsh, "settings_display_button_type",
+                R.string.setting_display_button_type_name,
+                R.string.setting_display_button_type_desc,
+                R.drawable.icon_button_display,
+                {
+                    when(vsh._gamepadUi.activeGamepad){
+                        GamepadUISubmodule.PadType.Unknown -> vsh.getString(R.string.common_default)
+                        GamepadUISubmodule.PadType.PlayStation -> "PlayStation"
+                        GamepadUISubmodule.PadType.Android -> "Android"
+                        GamepadUISubmodule.PadType.Xbox -> "Xbox"
+                        GamepadUISubmodule.PadType.Nintendo -> "Nintendo Switch"
+                        else -> vsh.getString(R.string.unknown)
+                    }
+                }
+            ){
+//                vsh._gamepadUi.activeGamepad = when(vsh._gamepadUi.activeGamepad){
+//                    GamepadUISubmodule.PadType.Unknown -> GamepadUISubmodule.PadType.PlayStation
+//                    GamepadUISubmodule.PadType.PlayStation -> GamepadUISubmodule.PadType.Xbox
+//                    GamepadUISubmodule.PadType.Xbox -> GamepadUISubmodule.PadType.Nintendo
+//                    GamepadUISubmodule.PadType.Nintendo -> GamepadUISubmodule.PadType.Android
+//                    GamepadUISubmodule.PadType.Android -> GamepadUISubmodule.PadType.PlayStation
+//                    else -> GamepadUISubmodule.PadType.PlayStation
+//                }
+//                saveButtonDisplaySetting()
+                vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+            }.apply {
 
+                hasMenu = true
+                val dMenu = ArrayList<XMBMenuItem>()
+
+                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                    {"PlayStation"}, {false}, 0)
+                {
+                    vsh._gamepadUi.activeGamepad = GamepadUISubmodule.PadType.PlayStation
+                    saveButtonDisplaySetting()
+                })
+                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                    {"Xbox"}, {false}, 1)
+                {
+                    vsh._gamepadUi.activeGamepad = GamepadUISubmodule.PadType.Xbox
+                    saveLayoutSetting()
+                })
+                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                    {"Nintendo Switch"}, {false}, 2)
+                {
+                    vsh._gamepadUi.activeGamepad = GamepadUISubmodule.PadType.Nintendo
+                    saveLayoutSetting()
+                })
+                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                    {"Android"}, {false}, -1)
+                {
+                    vsh._gamepadUi.activeGamepad = GamepadUISubmodule.PadType.Android
+                    saveLayoutSetting()
+                })
+                menuItems= dMenu
+            }
+        )
+        // endregion
         // region Analog Clock Second Settings
         content.add(
             XMBSettingsItem(vsh, "settings_display_analog_second",
@@ -315,7 +418,21 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
             }
         )
         // endregion
-
+        // region Status Bar Text Format
+        content.add(
+            XMBSettingsItem(vsh, "settings_display_statusbar_fmt",
+                R.string.settings_display_statusbar_fmt_name,
+                R.string.settings_display_statusbar_fmt_desc,
+            R.drawable.icon_clock,
+                {
+                    val xmb = vsh.xmbView
+                    xmb?.formatStatusBar(xmb.state.crossMenu.dateTimeFormat) ?: ""
+                }
+        ){
+                vsh.xmbView?.showDialog(StatusBarFormatDialogView(vsh))
+            }
+        )
+        // endregion
         // region Show Operator Name Settings
         content.add(
             XMBSettingsItem(vsh, "settings_display_operator",
@@ -331,7 +448,32 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
             }
         )
         // endregion
-
+        // region Background Dim
+        content.add(XMBSettingsItem(vsh, "settings_display_bg_dim",
+        R.string.settings_display_background_dim_name,
+        R.string.settings_display_background_dim_desc,
+            R.drawable.icon_brightness,{
+                (xmbView?.state?.crossMenu?.dimOpacity?: 0).toString()
+            }
+        ){
+            xmbView?.state?.itemMenu?.isDisplayed = true
+        }.apply {
+            hasMenu = true
+            val dMenu = arrayListOf<XMBMenuItem>()
+            for(i in 0 .. 10){
+                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                    { i.toString() }, {false}, i)
+                {
+                    xmbView?.state?.crossMenu?.dimOpacity = i
+                    pref.edit()
+                        .putInt(PrefEntry.BACKGROUND_DIM_OPACITY, xmbView?.state?.crossMenu?.dimOpacity?: 0)
+                        .apply()
+                })
+            }
+            menuItems = dMenu
+        }
+        )
+        // endregion
         content.add(createCategoryWaveSetting())
     }
 }
@@ -349,42 +491,17 @@ fun VSH.saveLayoutSetting() {
         pref.edit().putInt(PrefEntry.MENU_LAYOUT, srlzLayout).apply()
     }
 }
-
-private fun VSH.createCategoryInfo() : XMBSettingsCategory{
-    val vsh = this
-    return XMBSettingsCategory(this,
-        SettingsCategoryID.CATEGORY_SETTINGS_SYSTEMINFO,
-        R.drawable.icon_info,
-        R.string.setting_systeminfo_name,
-        R.string.setting_systeminfo_desc,
-    ).apply {
-        content.add(
-            XMBSettingsItem(vsh, "systeminfo_android_version",
-                R.string.string_systeminfo_androidver_name,
-                R.string.empty_string,
-                R.drawable.icon_android, { Build.VERSION.RELEASE }){ }
-        )
-        content.add(
-            XMBSettingsItem(vsh, "systeminfo_android_model",
-                R.string.string_systeminfo_androidmdl_name,
-                R.string.empty_string,
-                R.drawable.icon_android, { "${Build.MANUFACTURER} ${Build.MODEL} (${Build.DEVICE})" }){ }
-        )
-        content.add(
-            XMBSettingsItem(vsh, "systeminfo_cl_version",
-                R.string.string_systeminfo_launcher_ver,
-                R.string.empty_string,
-                R.drawable.ic_launcher_foreground, { "${BuildConfig.BUILD_TYPE} / ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})" }){
-                    showDebuggerCount = (showDebuggerCount + 1).coerceIn(0, 9)
-                    if(showDebuggerCount in 4..7){
-                        postNotification(null,"Debug Settings","Tap for ${(8 - showDebuggerCount)} times to activate Debug Settings")
-                    }else if(showDebuggerCount == 8){
-                        postNotification(null,"Debug Settings","Congratulations! Debug Settings has been activated until next launcher restart.")
-                    }else if(showDebuggerCount > 8){
-                        postNotification(null,"Debug Settings","No need, The setting item is already available in the root Settings menu.")
-                    }
-                }
-        )
+fun VSH.saveButtonDisplaySetting() {
+    val view = xmbView
+    if(view != null) {
+        val srlzButton = when (vsh._gamepadUi.activeGamepad) {
+            GamepadUISubmodule.PadType.PlayStation -> 0
+            GamepadUISubmodule.PadType.Xbox -> 1
+            GamepadUISubmodule.PadType.Nintendo -> 2
+            GamepadUISubmodule.PadType.Android -> 3
+            else -> 0
+        }
+        pref.edit().putInt(PrefEntry.BUTTON_DISPLAY_TYPE, srlzButton).apply()
     }
 }
 

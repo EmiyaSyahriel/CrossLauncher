@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.text.TextPaint
+import androidx.annotation.StringRes
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.views.drawText
@@ -12,7 +13,109 @@ import kotlin.collections.ArrayList
 
 data class MultifontText(val font:Typeface, val text:String)
 
+fun String.parseEncapsulatedBracket() : ArrayList<String>{
+    val retval = arrayListOf<String>()
+    val src = this
+    var nowStart = 0
+    var nowEnd = 0
+    while(nowStart < src.length && nowEnd < src.length){
+        nowStart = src.indexOf("{", nowEnd)
+
+        try{
+            if(nowStart == -1){ // Last Item
+                retval.add(src.substring(nowEnd))
+                break
+            }else{
+                retval.add(src.substring(nowEnd, nowStart))
+                if (src[nowStart + 1] != '{') {
+                    nowEnd = src.indexOf("}", nowStart)
+                    if (nowEnd == -1) nowEnd = src.length - 1
+                    val codeName = src.substring(nowStart + 1, nowEnd)
+                    retval.add(codeName)
+                    nowEnd += 1
+                } else {
+                    retval.add("{")
+                    nowEnd += 2;
+                }
+            }
+        }catch (e:StringIndexOutOfBoundsException){
+            e.printStackTrace()
+            break
+        }
+    }
+
+    return retval
+}
+
+
 class MultifontSpan : ArrayList<MultifontText>() {
+    companion object {
+        /**
+         * Substituting names into console buttons
+         * Names were encapsulated in braces (`{` & `}`), case and space-sensitive, `{{` will yield
+         * single open brace and wouldn't need close bracket, and will change based on user's
+         * selected console button display
+         *
+         * Codes :
+         * (Format: `code` = PS / Xbox / NSw )
+         * - `cross` = Cross / A / B
+         * - `circle` = Circle / B / A
+         * - `square` = Square / Y / X
+         * - `triangle` = Triangle / X / Y
+         * - `confirm` = Confirm Button (User-defined)
+         * - `cancel` = Cancel Button (User-defined)
+         * - `up`, `u` = D-Pad Up
+         * - `left`, `d` = D-Pad Left
+         * - `right`, `l` = D-Pad Right
+         * - `down`, `r` = D-Pad Down
+         * - `start` = Start / Menu / Plus
+         * - `select` = Select / Select / Minus
+         * - `l1` = L1 / LB / L
+         * - `l2` = L2 / LT / ZL
+         * - `l3` = L3 / LS-Click / LS-Click
+         * - `r1` = R1 / RB / R
+         * - `r2` = R2 / RT / ZR
+         * - `r3` = R3 / RS-Click / RS-Click
+         * - `ps` = PS Button / Xbox Button / Home Button
+         * - **OTHER** = Skipped
+        */
+        fun createButtonMixedSpan(vsh:VSH, src:String) : MultifontSpan {
+            val retval = MultifontSpan()
+            src.parseEncapsulatedBracket().forEachIndexed { i, s ->
+                if(i % 2 == 0){
+                    retval.add(FontCollections.masterFont, s)
+                }else{
+                    val keyCode = when(s){
+                        "cross" -> GamepadSubmodule.Key.Cross
+                        "circle" -> GamepadSubmodule.Key.Circle
+                        "square" -> GamepadSubmodule.Key.Square
+                        "triangle" -> GamepadSubmodule.Key.Triangle
+                        "cancel" -> GamepadSubmodule.Key.Cancel
+                        "confirm" -> GamepadSubmodule.Key.Confirm
+                        "u", "up" -> GamepadSubmodule.Key.PadU
+                        "d", "down" -> GamepadSubmodule.Key.PadD
+                        "l", "left" -> GamepadSubmodule.Key.PadL
+                        "r", "right" -> GamepadSubmodule.Key.PadR
+                        "start" -> GamepadSubmodule.Key.Start
+                        "select" -> GamepadSubmodule.Key.Select
+                        "ps" -> GamepadSubmodule.Key.PS
+                        "l1" -> GamepadSubmodule.Key.L1
+                        "l2" -> GamepadSubmodule.Key.L2
+                        "l3" -> GamepadSubmodule.Key.L3
+                        "r1" -> GamepadSubmodule.Key.R1
+                        "r2" -> GamepadSubmodule.Key.R2
+                        "r3" -> GamepadSubmodule.Key.R3
+                        else -> GamepadSubmodule.Key.None
+                    }
+                    if(keyCode != GamepadSubmodule.Key.None){
+                        retval.add(vsh, keyCode)
+                    }
+                }
+            }
+            return retval
+        }
+    }
+
     fun add(font: Typeface, text:String) : MultifontSpan{
         this.add(MultifontText(font, text))
         return this
@@ -22,6 +125,20 @@ class MultifontSpan : ArrayList<MultifontText>() {
         return this
     }
 }
+
+fun String.toButtonSpan(vsh:VSH) : MultifontSpan {
+    return MultifontSpan.createButtonMixedSpan(vsh, this)
+}
+
+fun VSH.getButtonedString(@StringRes strId : Int) : MultifontSpan {
+    return MultifontSpan.createButtonMixedSpan(this, this.getString(strId))
+}
+
+fun VSH.getButtonedString(@StringRes strId : Int, vararg fmt:Any) : MultifontSpan {
+    return MultifontSpan.createButtonMixedSpan(this, this.getString(strId, *fmt))
+}
+
+
 
 fun Canvas.drawText(span: MultifontSpan, x:Float, y:Float, baseline:Float, paint: Paint){
     val tempPaint = TextPaint(paint)

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Cross Launcher</string>
-    <string name="app_desc">A launcher simulating Sony XrossMediaBar Experiences</string>
+    <string name="app_desc">A launcher simulating Sony XrossMediaBar Experiences in PlayStation 3 and PlayStation Portable on Android</string>
     <string name="locale_lang_display_name">English (Default)</string>
     <string name="orient_unknown">Unknown Orientation</string>
     <string name="orient_landscape">Landscape</string>
@@ -45,7 +45,7 @@
     \n will use Cross / A Button to as confirm, otherwise it will use Circle / B Button
   </string>
     <string name="storage_permission_not_granted">Storage permission is not granted, players may not usable</string>
-    <string name="setting_show_gameboot">Show Brand Logo on App Launch</string>
+    <string name="setting_show_gameboot_name">Enable Gameboot</string>
     <string name="setting_mimic_dynamic_theme">Show Dynamic Theme Twinkles</string>
     <string name="setting_gameboot_custom_guide">Brand Logo customization guide</string>
     <string name="setting_coldboot_custom_guide">Launcher Startup Logo customization guide</string>
@@ -125,7 +125,7 @@
     <string name="settings_category_debug_name" translatable="false">★ Debug Settings</string>
     <string name="setting_systeminfo_name">Information</string>
     <string name="setting_systeminfo_desc">"Show additional informations "</string>
-    <string name="settings_category_debug_desc">" "</string>
+    <string name="settings_category_debug_desc" translatable="false">" "</string>
     <string name="string_systeminfo_androidver_name">Android Version</string>
     <string name="empty_string" translatable="false">" "</string>
     <string name="settings_category_system_name">System Settings</string>
@@ -164,7 +164,7 @@
     <string name="settings_system_asian_console_false">Cancel</string>
     <string name="font_load_failed">An error occurred during custom font loading : %s</string>
     <string name="settings_category_display_name">Display Settings</string>
-    <string name="perm_install_shortcut_desc">Install static shortcuts to XMB Launcher</string>
+    <string name="perm_install_shortcut_desc">Install static shortcuts to Cross Launcher</string>
     <string name="screen_portrait_warning_title">Screen is in Portrait Orientation</string>
     <string name="no_hwaccel_warning_desc">View is not hardware accelerated, rendering performance might be slower. On some device, you can enforce HW acceleration via Developer Option, either for a specific app or system-wide.</string>
     <string name="setting_android_name">Android System Settings</string>
@@ -240,14 +240,72 @@
     <string name="waveset_behavior_style_psp_centered">PSP Centered</string>
     <string name="waveset_behavior_style_psp_classic">PSP Classic</string>
     <string name="dlg_set_wallpaper_title">Set Wallpaper</string>
-    <string name="dbg_launch_dialog_ui_test">Launch UI Test Dialog</string>
+    <string name="dbg_launch_dialog_ui_test" translatable="false">Launch UI Test Dialog</string>
     <string name="common_next">Next</string>
     <string name="common_finish">Finish</string>
     <string name="settings_wave_theme_name">Wave Theme</string>
     <string name="settings_wave_theme_desc">Adjust style, speed and color of the wave</string>
     <string name="home_screen_exit_name">Exit</string>
     <string name="home_screen_exit_desc">Exit to default launcher</string>
-    <string name="waveset_color_foreground">Foreground Color</string>
-    <string name="waveset_color_background">Background Color</string>
+    <string name="waveset_color_foreground">Custom Wave Color</string>
+    <string name="waveset_color_background">Custom Background Color</string>
     <string name="string_systeminfo_launcher_ver">CrossLauncher Version</string>
+    <string name="settings_wave_apply_as_layer_dlg_text_main">Changing the usage of Internal Wave Layer requires the launcher to be rebooted. Would you like to change the value and reboot launcher?</string>
+  <string name="common_reboot">Reboot</string>
+  <string name="settings_common_settings_unavailable">Setting unavailable</string>
+  <string name="settings_wave_live_wallpaper_unsupported">This device probably didn\'t support live wallpaper</string>
+  <string name="common_reboot_required">Reboot Required</string>
+    <string name="waveset_daynight_cycle">Day/Night Cycle</string>
+  <string name="waveset_bg_month_number">Background Color</string>
+  <string name="waveset_bg_month_custom">Custom</string>
+  <string name="waveset_bg_month_current">Current Month</string>
+    <string name="waveset_bg_is_not_custom">Bg Not Custom!</string>
+    <string name="waveset_test_press_right">Press {right}</string>
+    <string name="waveset_test_swipe_right">Swipe Right</string>
+  <string name="waveset_wave_not_active">Wave Wallpaper is not currently active, Preview will not available.</string>
+  <string name="waveset_dlg_touchscreen_usage">Touch screen : Use Swipe to change values, items and pages</string>
+    <string name="waveset_dlg_page_number">Page %d/%d</string>
+  <string name="waveset_dlg_test_to_wave">Test to Wave</string>
+    <string name="home_screen_reboot_desc">Restart launcher app entirely</string>
+    <string name="reboot_dlg_confirm_content">Reboot the launcher?</string>
+  <string name="reboot_dlg_confirm_title">Reboot</string>
+    <string name="common_not_supported">Not Supported</string>
+    <string name="string_systeminfo_hardware">Device Hardware</string>
+  <string name="string_systeminfo_board">Device Board</string>
+    <string name="string_systeminfo_android_security_patch">Security Patch</string>
+  <string name="settings_systeminfo_opengles_ver">OpenGL ES Version</string>
+  <string name="settings_systeminfo_vulkan_ver">Vulkan Version</string>
+  <string name="settings_systeminfo_bootloader">Bootloader</string>
+  <string name="settings_systeminfo_storage_usage">Free Space</string>
+  <string name="settings_systeminfo_ram_usage">Free Memory</string>
+    <string name="setting_display_button_type_name">Display Button Type</string>
+  <string name="setting_display_button_type_desc">Which console button to display on-screen</string>
+    <string name="common_default">Default</string>
+    <string name="settings_display_background_dim_name">Background Dim</string>
+  <string name="settings_display_background_dim_desc">Dimming level of the menu underlay</string>
+    <string name="statusbarfmt_dlg_help">:: Formatting Guide ::\n
+      Every text inside of bracket will be substituted with corresponding text\n
+      For example, \"-( {operator} {sdf:dd/MM hh:mm:ss a} )-\" will be formatted as \"-( HardBanks 28/2 10:54:39 AM )-\"\n \n
+      :: Supported Substituted Keys ::\n
+      &#8226; {operator} -> Show currently active network name (Data Operator, Wi-Fi, Ethernet)\n
+      &#8226; {sdf:[format]} -> Java Simple Date Format\n
+      &#8212; This key need to have the actual SimpleDateFormat source format, e.g : \"{sdf:dd/MM/yyyy}\"\n
+      &#8212; this will be formatted and printed like for example \"28/2/2022\", for possible combinations\n
+      &#8212; please visit : https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html\n
+      &#8226; {charging} -> If is plugged in, will be substituted with lightning emoji\n
+      &#8226; {battery} -> Battery Percentage (0-100), percent sign not included\n
+      &#8226; {battery_f(:[decimal])} -> Battery Percentage in float (0.0-100.0), percent sign not included\n
+      &#8212; The decimal part is optional, it expects number that sets how many digits behind comma\n
+    </string>
+    <string name="settings_display_statusbar_fmt_name">Status Bar Text Format</string>
+  <string name="settings_display_statusbar_fmt_desc">Format of text displayed on status bar (if visible)</string>
+  <string name="common_save">Save</string>
+  <string name="dlg_edit_status_bar_format">Edit Status Bar Format</string>
+  <string name="common_edit">Edit</string>
+  <string name="setting_show_gameboot_desc">Play gameboot animation when launching application</string>
+    <string name="settings_audio_master_volume_name">Master Volume</string>
+  <string name="settings_audio_master_volume_desc">Main volume multiplier</string>
+    <string name="debug_custom_resource_dialog_title">Custom Resource List</string>
+    <string name="common_not_found">Not Found</string>
+    <string name="dbg_custom_file_list">Customized files</string>
 </resources>

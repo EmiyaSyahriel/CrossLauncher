@@ -20,6 +20,8 @@ import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbView
+import id.psw.vshlauncher.views.dialogviews.UITestDialogView
+import id.psw.vshlauncher.views.showDialog
 import kotlin.math.abs
 
 class XMB : AppCompatActivity() {
@@ -71,6 +73,9 @@ class XMB : AppCompatActivity() {
             }
             intent.action == Consts.ACTION_WAVE_SETTINGS_WIZARD -> {
                 vsh.showXMBLiveWallpaperWizard()
+            }
+            intent.action == Consts.ACTION_UI_TEST_DIALOG -> {
+                xmbView.showDialog(UITestDialogView(vsh))
             }
         }
 

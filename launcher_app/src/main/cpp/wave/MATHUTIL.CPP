@@ -9,9 +9,9 @@
  */
 #pragma ide diagnostic ignored "cert-msc51-cpp"
 #pragma ide diagnostic ignored "cert-msc50-cpp"
-#include "WAVE.HPP"
 #include <chrono>
 #include <cstdlib>
+#include "WAVE.HPP"
 
 float cxl_time_of_day() {
 	time_t now = time(nullptr);
@@ -20,12 +20,12 @@ float cxl_time_of_day() {
 }
 
 float cxl_time_of_day_shader(float clock) {
-	float w = clock / 1440.0f;
-	float retval;
-	if (w >= 0.16f && w < 0.33f) retval = 1.0f - unrange(cos(arclerp(0.16f, 0.33f, w)));
-	else if (w >= 0.33f && w < 0.66f) retval = 1.0f;
-	else if (w >= 0.66f && w < 0.82f) retval = unrange(cos(arclerp(0.66f, 0.82f, w)));
-	else retval = 0.0f;
+	float x = clock / 1440.0f;
+	float retval = (2 * M_PIf * x);
+	retval = M_PIf - retval;
+	retval = 2.0f * cosf(retval);
+	retval = unrange(retval);
+	retval = clamp(retval, 0.0f, 1.0f);
 	return retval;
 }
 
@@ -53,4 +53,10 @@ float cxl_get_rng(){
 	}
 
 	return cxl_get_rng_buffer[cxl_get_rng_buffi];
+}
+
+int cxl_get_month(){
+	time_t now = time(nullptr);
+	tm* today = localtime(&now);
+	return today->tm_mon;
 }

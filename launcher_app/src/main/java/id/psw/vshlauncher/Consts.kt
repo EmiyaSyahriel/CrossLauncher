@@ -8,15 +8,26 @@ object Consts {
     const val XMB_KEY_APP_SORT_MODE = "sort_mode"
     const val XMB_DEFAULT_RESOLUTION = 0x050002D0
     const val ACTION_WAVE_SETTINGS_WIZARD = "id.psw.vshlauncher.ACTION_WAVE_SETTINGS_WIZARD"
+    const val ACTION_UI_TEST_DIALOG = "id.psw.vshlauncher.ACTION_UI_TEST_DIALOG"
+    const val INTENT_ACT_PLUGIN_STATUS_BAR = "id.psw.vshlauncher.plugin.action.STATUS_BAR"
+    const val INTENT_CAT_PLUGIN_STATUS_BAR = "id.psw.vshlauncher.plugin.category.STATUS_BAR"
+    const val INTENT_ACT_PLUGIN_ICON_PROVIDER = "id.psw.vshlauncher.plugin.action.ICON_PROVIDER"
+    const val INTENT_CAT_PLUGIN_ICON_PROVIDER = "id.psw.vshlauncher.plugin.category.ICON_PROVIDER"
+    const val INTENT_ACT_PLUGIN_VISUALIZER = "id.psw.vshlauncher.plugin.action.VISUALIZER_PROVIDER"
+    const val INTENT_CAT_PLUGIN_VISUALIZER = "id.psw.vshlauncher.plugin.category.VISUALIZER_PROVIDER"
+
 }
 
 
 @Suppress("SpellCheckingInspection")
 object PrefEntry{
+
     /** Boolean, Display Wave Wallpaper as internal layer, for use with  */
     const val USES_INTERNAL_WAVE_LAYER: String = "/crosslauncher/wave/beat_angel_escalayer"
     /** Int (0 = PS3, 1 = PSP, 2 = Bravia, 3 = PSX) */
     const val MENU_LAYOUT = "/crosslauncher/xmbview/layout"
+    /** Int (0 = PlayStation, 1 = Xbox, 2 = Nintendo, 3 = Android) */
+    const val BUTTON_DISPLAY_TYPE = "/crosslauncher/button"
     /** Boolean */
     const val DISABLE_EPILEPSY_WARNING = "/crosslauncher/coldboot/skipEpilepsyWarning"
     /** String, Format : "lang|country|variant", Empty = System */
@@ -30,7 +41,13 @@ object PrefEntry{
     /** Boolean */
     const val DISPLAY_VIDEO_ICON = "/crosslauncher/menu/playVideoIcon"
     /** Boolean */
+    const val SKIP_GAMEBOOT = "/crosslauncher/system/skipGameboot"
+    /** Boolean */
+    const val SHOW_LAUNCHER_FPS: String = "/crosslauncher/display/showFps"
+    /** Boolean */
     const val DISPLAY_BACKDROP = "/crosslauncher/menu/showBackdrop"
+    /** Boolean */
+    const val BACKGROUND_DIM_OPACITY = "/crosslauncher/xmbview/brightness"
     /** Boolean */
     const val PLAY_BACK_SOUND = "/crosslauncher/menu/playBgSound"
     /** Boolean */

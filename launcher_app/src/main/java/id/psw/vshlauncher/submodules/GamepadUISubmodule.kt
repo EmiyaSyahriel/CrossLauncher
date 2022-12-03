@@ -4,7 +4,7 @@ import id.psw.vshlauncher.select
 
 class GamepadUISubmodule {
     enum class PadType {
-        Default,
+        Unknown,
         PlayStation,
         Xbox,
         Nintendo,
@@ -13,7 +13,7 @@ class GamepadUISubmodule {
 
     var activeGamepad : PadType = PadType.PlayStation
 
-    val gamepadIcons = mapOf(
+    private val gamepadIcons = mapOf(
         PadType.PlayStation to mapOf(
             GamepadSubmodule.Key.Circle to   '\uF880',
             GamepadSubmodule.Key.Cross to    '\uF881',
@@ -92,8 +92,8 @@ class GamepadUISubmodule {
         ),
     )
 
-    fun getGamepadChar(k:GamepadSubmodule.Key, pad:PadType = PadType.Default): Char {
-        val selPad = (pad == PadType.Default).select(activeGamepad, pad)
+    fun getGamepadChar(k:GamepadSubmodule.Key, pad:PadType = PadType.Unknown): Char {
+        val selPad = (pad == PadType.Unknown).select(activeGamepad, pad)
         return gamepadIcons[selPad]?.get(k) ?: '\u0000'
     }
 }

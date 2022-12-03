@@ -4,7 +4,7 @@
  */
 
 #include "WAVE.HPP"
-#include <string>
+#include <cstring>
 
 #define SET_BUFFER(what, start) \
 wave_state. what .id = wave_state.used_buffers[(start * 2) + 0];\
@@ -50,7 +50,7 @@ void cxl_wave_draw(float ms){
         wave_state.rng_data.t = 0.0f;
     }
 
-    wave_state.current_time += ms;
+    wave_state.current_time += ms * wave_state.speed;
     if (wave_state.current_time >= 100000.0f) wave_state.current_time = 0.0f;
 
     bool isPSP = HAS_FLAG(wave_state.style, WAVE_STYLE::PSP, int8_t);

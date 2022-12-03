@@ -12,10 +12,14 @@ import androidx.core.graphics.withRotation
 import androidx.core.graphics.withScale
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.livewallpaper.NativeGL
+import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
+import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
+import id.psw.vshlauncher.typography.parseEncapsulatedBracket
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.ConcurrentModificationException
@@ -42,6 +46,8 @@ class VshViewMainMenuState {
     var menuScaleTime : Float = 0.0f
     var loadingIconBitmap : Bitmap? = null
     var playVideoIcon = true
+    var coldBootTransition = 0.0f
+    var dimOpacity = 0
 
     data class StatusBarSetting(
         var disabled : Boolean = false,
@@ -59,7 +65,16 @@ class VshViewMainMenuState {
         var showBackdrop : Boolean = true
     )
 
-    val dateTimeFormat = "dd/M HH:mm a"
+    class Formatter{
+        var shortMonthName : SimpleDateFormat = SimpleDateFormat("MMM", Locale.getDefault())
+        var fullMonthName : SimpleDateFormat = SimpleDateFormat("MMMM", Locale.getDefault())
+        var shortDayName : SimpleDateFormat = SimpleDateFormat("EEE", Locale.getDefault())
+        var fullDayName : SimpleDateFormat = SimpleDateFormat("EEEE", Locale.getDefault())
+    }
+
+    // val dateTimeFormat = "dd/M HH:mm a"
+    var dateTimeFormat = "{operator} {sdf:dd/M HH:mm a}"
+    var formatter = Formatter()
     val statusBar = StatusBarSetting()
     val verticalMenu = VerticalMenu()
     var directionLock : DirectionLock = DirectionLock.None
@@ -182,6 +197,54 @@ fun XmbView.drawClock(ctx:Canvas, calendar:Calendar, top:Float){
     }
 }
 
+private fun Int.leadZero(count:Int = 2) : String{
+    return this.toString().padStart(count, '0')
+}
+
+/**
+ * Encapsulated text format
+ * Values:
+ * - `operator` - Network Name
+ * - `sdf:(sdf_format)` - Simple Date Format, for reference see [SimpleDateFormat](https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html)
+ */
+fun XmbView.formatStatusBar(src:String) : String {
+    val sb = StringBuilder()
+    val cl = Calendar.getInstance()
+    src.parseEncapsulatedBracket().forEachIndexed { i, s ->
+        if(i % 2 == 0){
+            sb.append(s)
+        }else{
+            sb.append(when(s){
+                // Operator
+                "operator" -> context.vsh.network.operatorName
+                "battery" -> {
+                    (context.vsh.getBatteryLevel() * 100).toInt().toString()
+                }
+                "charging" -> {
+                    context.vsh.isBatteryCharging().select("⚡","")
+                }
+                else -> {
+                    when {
+                        s.startsWith("sdf:") -> {
+                            SimpleDateFormat(s.substring(4), Locale.getDefault()).format(cl.time)
+                        }
+                        s.startsWith("battery_f:") -> {
+                            "%.${s.substring(10)}f".format(context.vsh.getBatteryLevel() * 100)
+                        }
+                        s =="battery_f" -> {
+                            "%f".format(context.vsh.getBatteryLevel() * 100)
+                        }
+                        else -> {
+                            "{$s}"
+                        }
+                    }
+                }
+            })
+        }
+    }
+    return sb.toString()
+}
+
 fun XmbView.menu3StatusBar(ctx:Canvas){
     with(state.crossMenu){
         val top = scaling.target.top + (scaling.target.height() * 0.1f)
@@ -205,11 +268,7 @@ fun XmbView.menu3StatusBar(ctx:Canvas){
 
         val status = StringBuilder()
 
-        if(statusBar.showMobileOperator){
-            status.append(context.vsh.network.operatorName).append("  ")
-        }
-
-        status.append(SimpleDateFormat(dateTimeFormat, Locale.getDefault()).format(calendar.time))
+        status.append(formatStatusBar(dateTimeFormat))
 
         ctx.drawText(
             status.toString()
@@ -225,34 +284,20 @@ private val tmpPath = Path()
 
 fun XmbView.menuPStatusBar(ctx:Canvas){
     with(state.crossMenu){
-        val calendar = Calendar.getInstance()
-
         val topBar = statusBar.padPSPStatusBar.select(48f, 10f)
 
-        // TODO : Old API, change to Listener one
-        val intentFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
-        val bStat = context.vsh.registerReceiver(null, intentFilter)
-        val level = bStat?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: 0
-        val scale = bStat?.getIntExtra(BatteryManager.EXTRA_SCALE, -1) ?: 100
-        val chargeState = bStat?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
-        val charging = chargeState == BatteryManager.BATTERY_STATUS_CHARGING || chargeState == BatteryManager.BATTERY_STATUS_FULL
-        val battery = ((level.toFloat() / scale.toFloat()) * 100).toInt()
         statusTextPaint.setShadowLayer(10.0f, 2.0f, 2.0f, Color.BLACK)
         statusTextPaint.setColorAndSize(Color.WHITE, 40.0f, Paint.Align.RIGHT)
         val statusText = StringBuilder()
-
-        statusText.append(SimpleDateFormat(dateTimeFormat, Locale.getDefault()).format(calendar.time))
-
-        if(statusBar.showBatteryPercentage){
-            statusText.append(" $battery%")
-        }
+        statusText.append(formatStatusBar(dateTimeFormat))
 
         ctx.drawText(statusText.toString(), scaling.target.right - 90f,  topBar, statusTextPaint, 1.0f)
 
         // region Battery Icon
+        // Draw Battery Rect
         if(statusBar.showBattery){
-            // Draw Battery Rect
-
+            val charging = context.vsh.isBatteryCharging()
+            val battery = context.vsh.getBatteryLevel()
             statusFillPaint.color = charging.select(Color.YELLOW,  Color.WHITE)
             statusOutlinePaint.color = charging.select(Color.YELLOW,  Color.WHITE)
             statusOutlinePaint.strokeWidth = 3.0f
@@ -273,7 +318,7 @@ fun XmbView.menuPStatusBar(ctx:Canvas){
                 statusOutlinePaint
             )
 
-            val batteryBlocks = kotlin.math.floor ((battery / 100.0f) * 4).toInt()
+            val batteryBlocks = kotlin.math.floor (battery * 4).toInt()
             tmpPath.reset()
             val sWidth = 16.0f
             for(i in 0 .. min(batteryBlocks - 1, 2)){
@@ -304,14 +349,15 @@ fun XmbView.menuRenderStatusBar(ctx:Canvas){
 
 fun XmbView.menuDrawBackground(ctx:Canvas) {
     with(state.crossMenu){
-        statusFillPaint.color = FColor.setAlpha(Color.BLACK, 0.25f)
-        ctx.drawRect(scaling.target, statusFillPaint)
+        // statusFillPaint.color = FColor.setAlpha(Color.BLACK, 0.25f)
+        // ctx.drawRect(scaling.target, statusFillPaint)
         if(verticalMenu.showBackdrop){
             try{
                 val activeItem = context.vsh.items?.visibleItems?.find{it.id == context.vsh.selectedItemId}
                 if(activeItem != null){
                     context.vsh.itemBackdropAlphaTime =context.vsh.itemBackdropAlphaTime.coerceIn(0f, 1f)
                     backgroundPaint.alpha = (context.vsh.itemBackdropAlphaTime * 255).roundToInt().coerceIn(0, 255)
+                    val opa = dimOpacity / 10.0f
                     if((scaling.screen.height() > scaling.screen.width()) && activeItem.hasPortraitBackdrop){
                         if(activeItem.isPortraitBackdropLoaded){
                             ctx.drawBitmap(
@@ -320,6 +366,7 @@ fun XmbView.menuDrawBackground(ctx:Canvas) {
                                 scaling.viewport,
                                 backgroundPaint,
                                 FittingMode.FILL, 0.5f, 0.5f)
+                            ctx.drawARGB((context.vsh.itemBackdropAlphaTime * opa * 255).toInt(), 0,0,0)
                             if(context.vsh.itemBackdropAlphaTime < 1.0f) context.vsh.itemBackdropAlphaTime += (time.deltaTime) * 2.0f
                         }
                     }else if(activeItem.hasBackdrop){
@@ -330,6 +377,7 @@ fun XmbView.menuDrawBackground(ctx:Canvas) {
                                 scaling.viewport,
                                 backgroundPaint,
                                 FittingMode.FILL, 0.5f, 0.5f)
+                            ctx.drawARGB((context.vsh.itemBackdropAlphaTime * opa * 255).toInt(), 0,0,0)
                             if(context.vsh.itemBackdropAlphaTime < 1.0f) context.vsh.itemBackdropAlphaTime += (time.deltaTime) * 2.0f
                         }
                     }
@@ -341,6 +389,7 @@ fun XmbView.menuDrawBackground(ctx:Canvas) {
 
         val focusAlpha = state.itemMenu.showMenuDisplayFactor.toLerp(0f, 128f).toInt()
         ctx.drawARGB(focusAlpha, 0,0,0)
+
     }
 }
 
@@ -396,7 +445,7 @@ fun XmbView.menu3HorizontalMenu(ctx:Canvas){
                 tmpPointFA.y = sizeTransition.toLerp(targetSize.y, previousSize.y)
                 size = tmpPointFA
 
-                val radius = kotlin.math.abs((kotlin.math.sin(currentTime / 3.0f)) * 10f)
+                val radius = abs((kotlin.math.sin(currentTime / 3.0f)) * 10f)
                 menuHorizontalNamePaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
                 menuHorizontalIconPaint.setShadowLayer(radius, 0f, 0f, Color.BLACK)
             }else{
@@ -436,6 +485,7 @@ fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
     val loadIcon = state.crossMenu.loadingIconBitmap
     val isPSP = state.crossMenu.layoutMode == XMBLayoutType.PSP
     val menuDispT = state.itemMenu.showMenuDisplayFactor
+    val isLand = width > height
     with(state.crossMenu){
 
         val hSeparation = (isPSP).select(pspIconSeparation, ps3IconSeparation).x
@@ -467,18 +517,27 @@ fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
 
             iconPaint.alpha = 192
 
-            if(i < vsh.selectStack.size){
-                var sItem = rootItem?.content?.find {it.id == vsh.selectStack[i] }
-                while(sItem != null && i < vsh.selectStack.size){
-                    val dxOff = xPos - ((ps3IconSeparation.x * 1.25f) * (i + 1))
-                    tmpRectF.set(dxOff - hSizeX, yPos - hSizeY, dxOff + hSizeY, yPos + hSizeY )
-                    if(sItem.hasIcon){
-                        ctx.drawBitmap(sItem.icon, null, tmpRectF, iconPaint, FittingMode.FIT, 0.5f )
+            try {
+                if (i < vsh.selectStack.size) {
+                    var sItem = rootItem?.content?.find { it.id == vsh.selectStack[i] }
+                    while (sItem != null && i < vsh.selectStack.size) {
+                        val dxOff = xPos - ((ps3IconSeparation.x * 1.25f) * (i + 1))
+                        tmpRectF.set(dxOff - hSizeX, yPos - hSizeY, dxOff + hSizeY, yPos + hSizeY)
+                        if (sItem.hasIcon) {
+                            ctx.drawBitmap(
+                                sItem.icon,
+                                null,
+                                tmpRectF,
+                                iconPaint,
+                                FittingMode.FIT,
+                                0.5f
+                            )
+                        }
+                        sItem = sItem.content?.find { it.id == vsh.selectStack[i] }
+                        i++
                     }
-                    sItem = sItem.content?.find { it.id == vsh.selectStack[i] }
-                    i++
                 }
-            }
+            }catch(e:IndexOutOfBoundsException){}
         }
 
         if(items != null){
@@ -573,34 +632,47 @@ fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
 
                         val textLeft = verticalRectF.centerX() + (iconCenterToText)
 
-                        if (item.hasDescription) {
-                            if (isPSP) {
-                                menuVerticalNamePaint.textSize = 35.0f
-                                menuVerticalDescPaint.textSize = 25.0f
-                            } else {
-                                menuVerticalNamePaint.textSize = 25.0f
-                                menuVerticalDescPaint.textSize = 15.0f
-                            }
-                            ctx.drawText(item.displayName, textLeft, centerY, menuVerticalNamePaint, -0.25f
-                            )
-                            if (item.hasValue && !state.itemMenu.isDisplayed) {
-                                ctx.drawText(item.value, (scaling.target.right - 400f), centerY, menuVerticalDescPaint, -0.25f)
-                            }
-                            ctx.drawText(item.description, textLeft, centerY, menuVerticalDescPaint, 1.1f
-                            )
-                            if (isPSP) {
-                                statusOutlinePaint.strokeWidth = 2.0f
-                                statusOutlinePaint.color = Color.WHITE
-                                statusOutlinePaint.alpha = selected.select(255, menuDispT.toLerp(255f,0f).toInt())
-                                ctx.drawLine(textLeft, centerY,(scaling.viewport.right - 20.0f), centerY, statusOutlinePaint)
-                            }
+                        if (isPSP) {
+                            menuVerticalNamePaint.textSize = 35.0f
+                            menuVerticalDescPaint.textSize = 25.0f
                         } else {
-                            ctx.drawText(item.displayName, textLeft, centerY, menuVerticalNamePaint, 0.5f)
-                            if (item.hasValue) {
-                                menuVerticalDescPaint.textAlign = Paint.Align.RIGHT
-                                ctx.drawText(item.value, (scaling.target.right - 30f), centerY, menuVerticalDescPaint, 0.5f)
-                                menuVerticalDescPaint.textAlign = Paint.Align.LEFT
+                            menuVerticalNamePaint.textSize = 25.0f
+                            menuVerticalDescPaint.textSize = 15.0f
+                        }
+
+                        var dispNameYOffset = 0.5f
+
+                        if(isLand){
+                            if(item.hasDescription){
+                                ctx.drawText(item.description, textLeft, centerY, menuVerticalDescPaint, 1.1f)
+                                dispNameYOffset= -0.25f
                             }
+                            if(item.hasValue && !state.itemMenu.isDisplayed){
+                                ctx.drawText(item.value, scaling.viewport.right - 400.0f, centerY, menuVerticalDescPaint, -0.25f)
+                            }
+                        }else{
+                            var itemDesc = ""
+                            var hasBottomText = false
+                            if(item.hasValue){
+                                itemDesc = item.value
+                                hasBottomText = itemDesc.isNotBlank()
+                            }else if(item.hasDescription){
+                                itemDesc = item.description
+                                hasBottomText = itemDesc.isNotBlank()
+                            }
+
+                            if(hasBottomText){
+                                dispNameYOffset= -0.25f
+                                ctx.drawText(itemDesc, textLeft, centerY, menuVerticalDescPaint, 1.1f)
+                            }
+                        }
+                        ctx.drawText(item.displayName, textLeft, centerY, menuVerticalNamePaint, dispNameYOffset)
+
+                        if (isPSP && item.hasDescription) {
+                            statusOutlinePaint.strokeWidth = 2.0f
+                            statusOutlinePaint.color = Color.WHITE
+                            statusOutlinePaint.alpha = selected.select(255, menuDispT.toLerp(255f,0f).toInt())
+                            ctx.drawLine(textLeft, centerY,(scaling.viewport.right - 20.0f), centerY, statusOutlinePaint)
                         }
                     }
                 }
@@ -757,10 +829,28 @@ fun XmbView.menuRenderSortHeaderDisplay(ctx: Canvas) {
     }
 }
 
+fun XmbView.updateColdBootWaveAnimation(){
+    val speed = context.vsh.pref.getFloat(XMBWaveSurfaceView.KEY_SPEED, 1.0f)
+    NativeGL.setSpeed( state.crossMenu.coldBootTransition.toLerp(speed, 25.0f) )
+    NativeGL.setVerticalScale( state.crossMenu.coldBootTransition.toLerp(1.0f, 1.25f) )
+
+    state.crossMenu.coldBootTransition -= time.deltaTime * 2.0f
+    if(state.crossMenu.coldBootTransition < 0.0f){
+        context.vsh.waveShouldReReadPreferences = true
+        NativeGL.setVerticalScale( 1.0f )
+        NativeGL.setSpeed( 1.0f )
+    }
+}
+
 fun XmbView.menuRender(ctx: Canvas){
     state.crossMenu.currentTime += time.deltaTime
     state.crossMenu.menuScaleTime = (time.deltaTime * 10.0f).toLerp(state.crossMenu.menuScaleTime, 0.0f).coerceIn(0f,1f)
     val menuScale = state.crossMenu.menuScaleTime.toLerp(1.0f, 2.0f).coerceIn(1.0f, 2.0f)
+
+    if(state.crossMenu.coldBootTransition > 0.0f){
+        updateColdBootWaveAnimation()
+    }
+
     menuDrawBackground(ctx)
     ctx.withScale(menuScale, menuScale, scaling.target.centerX(), scaling.target.centerY()){
         try{

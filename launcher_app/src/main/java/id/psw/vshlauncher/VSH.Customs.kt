@@ -33,6 +33,7 @@ object VshResName {
  */
 fun VSH.getAllPathsFor(base:String, vararg args:String, createParentDir:Boolean = false, isUserSpecific:Boolean = false, isCache:Boolean = false) : ArrayList<File> {
     val retval = ArrayList<File>()
+
     isCache.select(allCacheDirs, getExternalFilesDirs("")).forEach {
         val baseFile = if(isUserSpecific && !it.isOnInternalStorage){
             it.combine(base, getUserIdPath(), *args)

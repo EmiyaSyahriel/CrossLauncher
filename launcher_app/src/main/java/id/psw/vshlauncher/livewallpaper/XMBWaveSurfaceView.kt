@@ -24,6 +24,8 @@ open class XMBWaveSurfaceView : GLSurfaceView {
         const val PREF_NAME = "libwave_setting"
         const val KEY_STYLE = "wave_style"
         const val KEY_SPEED = "wave_speed"
+        const val KEY_DTIME = "wave_bg_daytime"
+        const val KEY_MONTH = "wave_bg_month"
         const val KEY_FRAMERATE = "wave_fps"
         const val KEY_COLOR_BACK_A = "wave_cback_a"
         const val KEY_COLOR_BACK_B = "wave_cback_b"
@@ -63,6 +65,8 @@ open class XMBWaveSurfaceView : GLSurfaceView {
             prefs.getInt(KEY_COLOR_FORE_A, Color.argb(0xFF,0xFF,0xFF,0xFF)),
             prefs.getInt(KEY_COLOR_FORE_B, Color.argb(0x88,0xFF,0xFF,0xFF))
         )
+        NativeGL.setBgDayNightMode(prefs.getBoolean(KEY_DTIME, true))
+        NativeGL.setBackgroundMonth(prefs.getInt(KEY_MONTH, 0).toByte())
         val fps = prefs.getInt(KEY_FRAMERATE, 0)
         renderVsync = fps <= 0
         threadSleepDuration = 16
@@ -76,6 +80,7 @@ open class XMBWaveSurfaceView : GLSurfaceView {
         setEGLConfigChooser(8,8,8,0,8,8)
         setEGLContextClientVersion(2)
         renderer = XMBWaveRenderer()
+        context.vsh.waveShouldReReadPreferences = true
         renderer.surfaceView = this
         readPreferences()
         setRenderer(renderer)

@@ -14,13 +14,14 @@ void cxl_ps3_wave_query_shader_interfaces(){
     wave_state.ps3_wave._Ortho      = glGetUniformLocation(wave_state.ps3_wave.program, wave_consts.unif_names._Ortho);
     wave_state.ps3_wave._ColorA     = glGetUniformLocation(wave_state.ps3_wave.program, wave_consts.unif_names._ColorA);
     wave_state.ps3_wave._ColorB     = glGetUniformLocation(wave_state.ps3_wave.program, wave_consts.unif_names._ColorB);
+    wave_state.ps3_wave._YScale     = glGetUniformLocation(wave_state.ps3_wave.program, wave_consts.unif_names._YScale);
     wave_state.ps3_wave._RngDataA = glGetUniformLocation(wave_state.ps3_wave.program, wave_consts.unif_names._RngDataA);
     wave_state.ps3_wave._RngDataB = glGetUniformLocation(wave_state.ps3_wave.program, wave_consts.unif_names._RngDataB);
     wave_state.ps3_wave._RngTrans = glGetUniformLocation(wave_state.ps3_wave.program, wave_consts.unif_names._RngTrans);
     wave_state.ps3_wave.POSITION   =  glGetAttribLocation(wave_state.ps3_wave.program, wave_consts.attr_names.POSITION);
 }
 
-#define POS_NORMALIZE(i) (snrange((i * 1.1f) / (float)wave_consts.detail_size))
+#define POS_NORMALIZE(i) (snrange(((i) * 1.1f) / (float)wave_consts.detail_size))
 
 void cxl_ps3_wave_generate_vertex(){
     // fill out background buffer
@@ -70,21 +71,19 @@ void cxl_ps3_wave_draw(float ms){
     glBindBuffer(GL_ARRAY_BUFFER, wave_state.ps3_wave.vt); CGL();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, wave_state.ps3_wave.id); CGL();
 
-    glUniform1f(wave_state.ps3_wave._Time, wave_state.current_time * wave_state.speed); CGL();
+    glUniform1f(wave_state.ps3_wave._Time, wave_state.current_time); CGL();
     glUniform1f(wave_state.ps3_wave._NormalStep, 0.01f); CGL();
 
-    //glm::vec4 cA = foreground_color_edge;
-    //glm::vec4 cB = foreground_color_center;
-
-    glm::vec4 cA = glm::vec4(1.0, 1.0f, 1.0f, 0.75f);
-    glm::vec4 cB = glm::vec4(1.0, 1.0f, 1.0f, 0.0f);
+    glm::vec4 cA = wave_state.colors.fg_a;
+    glm::vec4 cB = wave_state.colors.fg_b;
 
     glUniform4f(wave_state.ps3_wave._ColorA, cA.r, cA.g, cA.b, cA.a); CGL();
     glUniform4f(wave_state.ps3_wave._ColorB, cB.r, cB.g, cB.b, cB.a); CGL();
 
-    glUniform1fv(wave_state.ps3_wave._RngDataA, 5, wave_state.rng_data.A); CGL();
-    glUniform1fv(wave_state.ps3_wave._RngDataB, 5, wave_state.rng_data.B); CGL();
+    glUniform1fv(wave_state.ps3_wave._RngDataA, 16, wave_state.rng_data.A); CGL();
+    glUniform1fv(wave_state.ps3_wave._RngDataB, 16, wave_state.rng_data.B); CGL();
     glUniform1f (wave_state.ps3_wave._RngTrans, wave_state.rng_data.t); CGL();
+    glUniform1f (wave_state.ps3_wave._YScale, wave_state.vert_scale); CGL();
 
     glm::mat4 matrix = cxl_wave_matrix(); CGL();
     glUniformMatrix4fv(wave_state.ps3_wave._Ortho, 1, GL_FALSE, &matrix[0][0]); CGL();

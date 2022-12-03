@@ -6,11 +6,11 @@ import android.widget.EditText
 import id.psw.vshlauncher.VSH
 
 class NativeEditTextDialog(val vsh: VSH) {
-    private val internalDlgBld = AlertDialog.Builder(vsh)
+    private val internalDlgBld = AlertDialog.Builder(vsh.xmbView?.context)
 
     private var onFinishCallback : (String) -> Unit = { }
     private var onCancelCallback : () -> Unit = { }
-    private val editText = EditText(vsh)
+    private val editText = EditText(vsh.xmbView?.context)
 
     init {
         internalDlgBld
@@ -49,6 +49,8 @@ class NativeEditTextDialog(val vsh: VSH) {
     }
 
     fun show() : AlertDialog {
-        return internalDlgBld.show()
+        val adl = internalDlgBld.show()
+        editText.requestFocus()
+        return adl
     }
 }

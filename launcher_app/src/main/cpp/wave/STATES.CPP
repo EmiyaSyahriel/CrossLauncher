@@ -21,6 +21,14 @@
 
 struct cxl_wave_state_t wave_state;
 
+#ifdef EXTERN_PI
+const double M_PI = 3.14159265358979323846;
+#endif
+
+#ifdef EXTERN_PIf
+const float M_PIf = 3.141592f;
+#endif
+
 const struct cxl_wave_const_t wave_consts = { // NOLINT(cert-err58-cpp)
         64,
         256,
@@ -41,37 +49,50 @@ const struct cxl_wave_const_t wave_consts = { // NOLINT(cert-err58-cpp)
         {
             "_Time","_TimeOfDay","_NormalStep",
             "_ColorA","_ColorB","_Ortho",
-            "_RngDataA", "_RngDataB", "_RngTrans"
+            "_RngDataA", "_RngDataB", "_RngTrans","_YScale"
         },{
                 {
-                        cxl_i2v4(0xFFB0B0B0),
-                        cxl_i2v4(0xFFCA9E0A),
-                        cxl_i2v4(0xFF7DA91E),
-                        cxl_i2v4(0xFFE84A7B),
-                        cxl_i2v4(0xFF137015),
-                        cxl_i2v4(0xFF6855A4),
-                        cxl_i2v4(0xFF137015),
-                        cxl_i2v4(0xFF00074F),
-                        cxl_i2v4(0xFFAB42C3),
-                        cxl_i2v4(0xFFE49807),
-                        cxl_i2v4(0xFF774917),
-                        cxl_i2v4(0xFFD33C29)
+                        cxl_i2v4(0xB0B0B0FF),
+                        cxl_i2v4(0xCA9E0AFF),
+                        cxl_i2v4(0x7DA91EFF),
+                        cxl_i2v4(0xE84A7BFF),
+                        cxl_i2v4(0x137015FF),
+                        cxl_i2v4(0x6855A4FF),
+                        cxl_i2v4(0x137015FF),
+                        cxl_i2v4(0x00074FFF),
+                        cxl_i2v4(0xAB42C3FF),
+                        cxl_i2v4(0xE49807FF),
+                        cxl_i2v4(0x774917FF),
+                        cxl_i2v4(0xD33C29FF)
                 },
                 {
-                        cxl_i2v4(0xFFCCCCCC),
-                        cxl_i2v4(0xFFD5DD32),
-                        cxl_i2v4(0xFFA8B821),
-                        cxl_i2v4(0xFFDC9CAC),
-                        cxl_i2v4(0xFF179A18),
-                        cxl_i2v4(0xFFC282D9),
-                        cxl_i2v4(0xFF0DE8E4),
-                        cxl_i2v4(0xFF0AB0E0),
-                        cxl_i2v4(0xFFCA5DDC),
-                        cxl_i2v4(0xFFD7C501),
-                        cxl_i2v4(0xFF98732D),
-                        cxl_i2v4(0xFFE5432C)
+                        cxl_i2v4(0xCCCCCCFF),
+                        cxl_i2v4(0xD5DD32FF),
+                        cxl_i2v4(0xA8B821FF),
+                        cxl_i2v4(0xDC9CACFF),
+                        cxl_i2v4(0x179A18FF),
+                        cxl_i2v4(0xC282D9FF),
+                        cxl_i2v4(0x0DE8E4FF),
+                        cxl_i2v4(0x0AB0E0FF),
+                        cxl_i2v4(0xCA5DDCFF),
+                        cxl_i2v4(0xD7C501FF),
+                        cxl_i2v4(0x98732DFF),
+                        cxl_i2v4(0xE5432CFF)
                 }
         },
         "cxl_wave.so",
-    true
+    true,
+        {
+                {
+                        "","Compilation","Linking"
+                },
+                {
+                        "Invalid Enum", "Invalid Value", "Invalid Operation",
+                        "Invalid Framebuffer Operation", "Video RAM Allocation Failed",
+                        "OpenGL Unknown Error"
+                },
+                {
+                        "GL_ERROR[%i] (%s) %s:%i ", "Shader %s error : %s"
+                }
+        }
 };

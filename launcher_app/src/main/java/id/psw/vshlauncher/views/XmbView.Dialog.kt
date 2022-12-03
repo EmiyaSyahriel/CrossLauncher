@@ -12,6 +12,7 @@ import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.typography.MultifontSpan
 import id.psw.vshlauncher.typography.drawText
+import id.psw.vshlauncher.typography.toButtonSpan
 import java.util.*
 
 class VshViewDialogState {
@@ -29,14 +30,12 @@ class VshViewDialogState {
     }
     var currentTime = 0.0f
     var tmpBound = RectF()
-    var dBackgroundAlpha = 0.0f
     var iconTmpBound = RectF()
 }
 
 fun XmbView.dlgStart(){
     with(state.dialog){
         activeDialog?.onStart()
-        dBackgroundAlpha = 0.0f
     }
 }
 
@@ -50,10 +49,6 @@ fun XmbView.dlgRender(ctx: Canvas){
     val ctxState = ctx.save()
     val isPSP = state.crossMenu.layoutMode == XMBLayoutType.PSP
     with(state.dialog){
-        if(dBackgroundAlpha < 1.0f){
-            dBackgroundAlpha += time.deltaTime * 2.0f
-        }
-        ctx.drawARGB((dBackgroundAlpha * 128).toInt(), 0,0,0)
         val dlg = activeDialog
         if(dlg != null){
             dlg.isPSP = isPSP
@@ -92,20 +87,15 @@ fun XmbView.dlgRender(ctx: Canvas){
             // draw dialog buttons
             if(dlg.hasNegativeButton){
                 ctx.drawText(
-                    MultifontSpan()
-                        .add(context.vsh, GamepadSubmodule.Key.Cancel)
-                        .add(FontCollections.masterFont, " ${dlg.negativeButton}"),
+                    " {cancel} ${dlg.negativeButton} ".toButtonSpan(context.vsh),
                     0.5f.toLerp(scaling.target.centerX(), scaling.target.left),
                     scaling.target.bottom - 50.0f, 0.5f,
-                    textPaint
-                )
+                    textPaint)
             }
 
             if(dlg.hasPositiveButton){
                 ctx.drawText(
-                    MultifontSpan()
-                        .add(context.vsh, GamepadSubmodule.Key.Confirm)
-                        .add(FontCollections.masterFont, " ${dlg.positiveButton}"),
+                    " {confirm} ${dlg.positiveButton} ".toButtonSpan(context.vsh),
                     0.5f.toLerp(scaling.target.centerX(), scaling.target.right),
                     scaling.target.bottom - 50.0f, 0.5f,
                     textPaint

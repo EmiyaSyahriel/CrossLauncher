@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Cross Launcher</string>
+    <string name="app_name">Peluncur Cross</string>
     <string name="orient_unknown">Tidak diketahui</string>
     <string name="orient_landscape">Miring</string>
     <string name="orient_portrait">Tegak</string>
@@ -45,7 +45,7 @@
     \n Jika tidak, maka ia akan memakai tombol Bulat atau B
   </string>
     <string name="storage_permission_not_granted">Izin akses penyimpanan ditolak, pemain musik tidak akan bisa dipakai</string>
-    <string name="setting_show_gameboot">Tampilkan logo brand saat meluncurkan aplikasi</string>
+    <string name="setting_show_gameboot_name">Mainkan Gameboot</string>
     <string name="setting_mimic_dynamic_theme">Tampilkan kemerlap saat meluncurkan aplikasi</string>
     <string name="setting_gameboot_custom_guide">Cara memodifikasi logo brand</string>
     <string name="setting_coldboot_custom_guide">Cara memodifikasi logo awal</string>
@@ -96,7 +96,7 @@
     <string name="app_open_obb_dir">Buka Direktori OBB</string>
     <string name="app_uninstall">Copot Pemasangan</string>
     <string name="app_info_system_activity">Buka Pengaturan</string>
-    <string name="title_activity_wave_wallpaper_setting">Pengaturan Aplikasi XMB Wave</string>
+    <string name="title_activity_wave_wallpaper_setting">Pengaturan Latar Belakang XMB Wave</string>
     <string name="error_common_header">Galat</string>
     <string name="error_category_launch">Nggak ... Ini seharusnya gak di luncurkan ...</string>
     <string name="nettype_ethernet">Kabel LAN</string>
@@ -116,7 +116,6 @@
     <string name="default_dialog_title">Dialog</string>
     <string name="setting_display_layout_type">Tata Letak XMB</string>
     <string name="setting_display_layout_type_desc">Konsol yang mana untuk ditiru oleh peluncur</string>
-    <string name="settings_category_debug_desc">"  "</string>
     <string name="setting_systeminfo_name">Informasi</string>
     <string name="setting_systeminfo_desc">Tampilkan informasi tambahan</string>
     <string name="string_systeminfo_androidver_name">Versi Android</string>
@@ -206,4 +205,67 @@
     <string name="android_sys_developer_desc">Pengaturan pengembangan aplikasi, oprekan graifk</string>
     <string name="android_sys_deviceinfo_name">Tentang perangkat</string>
     <string name="android_sys_deviceinfo_desc">Versi Android, alamat IP, IMEI</string>
+    <string name="settings_system_test_option_desc">Aktifkan Peluncur Cross hingga muat ulang selanjutnya</string>
+    <string name="settings_system_test_option_value_on">Diaktifkan</string>
+    <string name="settings_system_test_option_value_off">Aktifkan</string>
+    <string name="settings_system_test_display_title">Cross Launcher tidak asli</string>
+    <string name="settings_system_test_display_desc">Salinan Cross Launcher katanya tidak asli</string>
+    <string name="error_fail_to_find_at_market_title">Gagal meluncurkan Toko Apl</string>
+    <string name="error_fail_to_find_at_market_desc">Terjadi kesalahan ketika mencoba meluncurkan Toko Apl</string>
+    <string name="settings_system_disable_splash_message_title">Non-aktifkan Pesan Boot</string>
+    <string name="settings_system_disable_splash_message_desc">Pesan epilepsi dan kejang-kejang di layar cold boot</string>
+    <string name="settings_category_audio_name">Pengaturan Audio</string>
+    <string name="settings_category_audio_title">Volume dan main balik audio</string>
+    <string name="settings_system_disable_video_icon_name">Non-aktifkan Ikon Video</string>
+    <string name="settings_system_disable_video_icon_desc">Jangan muat atau mainkan ikon video</string>
+    <string name="settings_wave_set_name">Jadikan sebagai Wallpaper</string>
+    <string name="settings_wave_set_desc">Buka pengaturan untuk menjadikan XMB Wave sebagai latar belakang</string>
+    <string name="settings_wave_make_internal_name">Jadikan sebagai Lapisan Internal</string>
+    <string name="waveset_behavior_style_ps3_classic">PS3 Klasik</string>
+    <string name="waveset_behavior_style_ps3_dynamic">PS3 Dinamis</string>
+    <string name="waveset_behavior_style_psp_centered">PSP Tengah</string>
+    <string name="waveset_behavior_style_psp_classic">PSP Klasik</string>
+    <string name="setting_wave_make_internal_desc">Gunakan latar belakang Wave dalam peluncur sendiri, untuk perangkat yang tidak mendukung latar belakang hidup</string>
+    <string name="dlg_set_wallpaper_title">Jadikan Latar Belakang</string>
+    <string name="common_next">Selanjutnya</string>
+    <string name="common_finish">Selesai</string>
+    <string name="settings_wave_theme_name">Tema Wave</string>
+    <string name="settings_wave_theme_desc">Ubah gaya, kecepatan dan warna dari latar belakang wave</string>
+    <string name="home_screen_exit_name">Tutup</string>
+    <string name="home_screen_exit_desc">Tutup ke Peluncur Bawaan</string>
+    <string name="waveset_color_foreground">Warna Gelombang Kustom</string>
+    <string name="waveset_color_background">Warna Latar Kustom</string>
+    <string name="string_systeminfo_launcher_ver">Versi Cross Launcher</string>
+    <string name="settings_wave_apply_as_layer_dlg_text_main">Mengganti cara penggunaan Lapisan Wave memerlukan peluncur untuk di mulai ulang. Lanjutkan mengubah nilai dan mulai ulang peluncur?</string>
+    <string name="common_reboot">Mulai Ulang</string>
+    <string name="settings_common_settings_unavailable">Pengaturan tidak tersedia</string>
+    <string name="settings_wave_live_wallpaper_unsupported">Perangkat mungkin tidak mendukung latar belakang hidup</string>
+    <string name="common_reboot_required">Perlu Mulai Ulang</string>
+    <string name="app_desc">Peluncur yang mensimulasikan pengalaman Sony XrossMediaBar yang ada di PlayStation 3 dan PlayStation Portable di Android</string>
+    <string name="waveset_daynight_cycle">Siang/Malam</string>
+    <string name="waveset_bg_month_number">Warna Ltr Blkg</string>
+    <string name="waveset_bg_month_custom">Disesuaikan</string>
+    <string name="waveset_bg_month_current">Bulan Ini</string>
+    <string name="waveset_bg_is_not_custom">Tidak Dikustom</string>
+    <string name="waveset_test_press_right">Tekan {right}</string>
+    <string name="waveset_test_swipe_right">Geser ke Kanan</string>
+    <string name="waveset_wave_not_active">Latar Belakang Wave tidak sedang aktif, Pratinjau tidak akan disediakan.</string>
+    <string name="waveset_dlg_touchscreen_usage">Layar Sentuh : Swipe untuk mengganti nilai, item dan halaman</string>
+    <string name="waveset_dlg_test_to_wave">Tes ke Wallpaper</string>
+    <string name="waveset_dlg_page_number">Halaman %d/%d</string>
+    <string name="settings_system_test_option_name">Aktifkan Cross Launcher</string>
+  <string name="reboot_dlg_confirm_content">Mulai ulang peluncur?</string>
+  <string name="home_screen_reboot_desc">Mulai Ulang apl peluncur sepenuhnya.</string>
+  <string name="reboot_dlg_confirm_title">Mulai Ulang</string>
+  <string name="common_not_supported">Tidak mendukung</string>
+  <string name="string_systeminfo_hardware">Prgkt. Keras Peranti</string>
+  <string name="string_systeminfo_board">Papan Sirkuit Peranti</string>
+  <string name="string_systeminfo_android_security_patch">Patch Keamanan</string>
+    <string name="waveset_category_behavior">Perilaku Wave</string>
+  <string name="settings_systeminfo_opengles_ver">Versi OpenGL ES</string>
+  <string name="settings_systeminfo_vulkan_ver">Versi Vulkan</string>
+  <string name="settings_systeminfo_bootloader">BIOS / Pemuat Boot</string>
+    <string name="settings_systeminfo_storage_usage">Penyimpanan Bebas</string>
+  <string name="settings_systeminfo_ram_usage">RAM Bebas</string>
+  <string name="setting_show_gameboot_desc">Play gameboot animation when launching application</string>
 </resources>

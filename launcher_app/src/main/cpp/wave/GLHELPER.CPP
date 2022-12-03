@@ -11,16 +11,16 @@ void cxl_gl_check_error(int const line, const char* const file) {
     GLenum err = glGetError();
 
     if(err != GL_NO_ERROR){
-        const char* err_str = "";
+        const char* err_str;
         switch(err){
-            case GL_INVALID_ENUM: err_str = "INVALID_ENUM"; break;
-            case GL_INVALID_VALUE: err_str = "INVALID_VALUE"; break;
-            case GL_INVALID_OPERATION: err_str = "INVALID_OPERATION"; break;
-            case GL_INVALID_FRAMEBUFFER_OPERATION: err_str = "INVALID_FRAMEBUFFER_OPERATION"; break;
-            case GL_OUT_OF_MEMORY: err_str = "OUT_OF_MEMORY"; break;
-            default: err_str = "UNKNOWN_GL_ERROR"; break;
+            case GL_INVALID_ENUM: err_str = wave_consts.str.gl_err.INV_ENUM; break;
+            case GL_INVALID_VALUE: err_str = wave_consts.str.gl_err.INV_VALUE; break;
+            case GL_INVALID_OPERATION: err_str = wave_consts.str.gl_err.INV_OP; break;
+            case GL_INVALID_FRAMEBUFFER_OPERATION: err_str = wave_consts.str.gl_err.INV_FB_OP; break;
+            case GL_OUT_OF_MEMORY: err_str = wave_consts.str.gl_err.OUT_VRAM; break;
+            default: err_str = wave_consts.str.gl_err.ERR_UNKN; break;
         }
-        Log_e("GL_ERROR[%i] (%s) %s:%i ", err, err_str, file, line);
+        Log_e(wave_consts.str.fmt.GL_ERROR, err, err_str, file, line);
     }
 }
 
@@ -44,7 +44,9 @@ bool validate_shader(GLuint p, bool is_shader){
         char* cpbuffer =(char*) malloc(sizeof(char) * SHADERCHECK_BUFSZ);
         int cpbufsz = SHADERCHECK_BUFSZ;
         (is_shader ? glGetShaderInfoLog : glGetProgramInfoLog)(p, SHADERCHECK_BUFSZ, &cpbufsz, cpbuffer);
-        Log_e("Shader %s error : %s", is_shader ? "Compilation" : "Linking", cpbuffer);
+        Log_e(wave_consts.str.fmt.GL_SHADER_CC_ERR,
+              is_shader ? wave_consts.str.items.SHADER_CC_COMPILE : wave_consts.str.items.SHADER_CC_LINK,
+              cpbuffer);
         free(cpbuffer);
         valid = false;
     }

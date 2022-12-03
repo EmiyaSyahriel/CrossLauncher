@@ -8,10 +8,12 @@ import androidx.core.graphics.toRectF
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.views.drawText
+import kotlin.math.sin
 
 object SubDialogUI {
     private var hasInit = false
     private lateinit var texProgressBar : Bitmap
+    private lateinit var texGlowEdge : Bitmap
     private var checkBoxTextures : Array<Bitmap> = arrayOf()
 
     private val texProgressBarUVRectBuffer = Rect()
@@ -63,6 +65,7 @@ object SubDialogUI {
     fun init(vsh: VSH){
         texProgressBar = vsh.loadTexture(R.drawable.miptex_progressbar, false)
 
+        texGlowEdge = vsh.loadTexture(R.drawable.miptex_gradient_border_128, 120, 120, false)
         checkBoxTextures = arrayOf(
             vsh.loadTexture(R.drawable.ic_checkbox_blank, false),
             vsh.loadTexture(R.drawable.ic_checkbox_filled, true),
@@ -81,6 +84,9 @@ object SubDialogUI {
     }
 
     private val encpPaint = Paint()
+    private val scrollBarPaint = Paint().apply {
+        color = Color.WHITE
+    }
     private val arrows = arrayOf('\u25BA','\u25C4')
     private val arrowPath = Path()
     fun arrowCapsule(ctx:Canvas, x:Float, y:Float, w:Float, paint:Paint, cTime:Float, yOffset:Float = 0.0f, isLeft:Boolean = true, isRight: Boolean = true){
@@ -127,10 +133,92 @@ object SubDialogUI {
         ctx.drawBitmap(texProgressBar, texProgressBarUv(1,false), x3Patch(valRect, 1), null)
         ctx.drawBitmap(texProgressBar, texProgressBarUv(2,false), x3Patch(valRect, 2), null)
     }
+
     fun numericValue(ctx: Canvas, rect: RectF, min:Int, max:Int, value:Int, paint:Paint){
 
     }
+
     fun checkBox(ctx:Canvas, at: PointF, value:Boolean){
-        ctx.drawBitmap(checkBoxTextures[value.select(1,0)], null, RectF(), null)
+        checkBox(ctx, at.x, at.y, value)
+    }
+
+    fun checkBox(ctx:Canvas, x: Float, y: Float, value:Boolean){
+        val sz = checkBoxTextures[value.select(1,0)]
+        val w = 16.0f
+        val h = 16.0f
+        ctx.drawBitmap(sz, null, RectF(x-w, y-h ,x+w, y+h), null)
+    }
+
+    private val scrollBarRectFTmp = RectF()
+    private val scrollBarPathTmp = Path()
+
+    fun scrollBar(ctx:Canvas, rect:RectF, percentage:Float, size:Float){
+        scrollBarPathTmp.reset()
+        val isVertical = rect.width() < rect.height()
+        val sqr = isVertical.select(rect.width(), rect.height())
+        if(isVertical){
+            val h = rect.height() - (sqr * 2)
+            val sz = size.coerceIn(0.1f, 1.0f) * h
+            // Top
+
+            // Bottom
+            // Body
+            val bodyTop = percentage.toLerp(rect.top + sqr, rect.bottom - sz - sqr)
+            scrollBarPathTmp.addRect(
+                rect.left, bodyTop, rect.right,bodyTop + sz,
+                Path.Direction.CW
+            )
+        }else{
+            val w = rect.width() - (sqr * 2)
+            val sz = size.coerceIn(0.1f, 1.0f) * w
+            // Left
+            // Right
+            // Body
+            val bodyLf = percentage.toLerp(rect.left + sqr, rect.right - sz - sqr)
+            scrollBarPathTmp.addRect(
+                bodyLf, rect.top, bodyLf + sz,rect.bottom,
+                Path.Direction.CW
+            )
+        }
+        ctx.drawPath(scrollBarPathTmp, scrollBarPaint)
+    }
+
+    private val glowOverlayRectTmp = Rect()
+    private val glowOverlayRectFTmp = RectF()
+    private val glowOverlayPaint = Paint()
+
+    private fun glowOverlayDrawPatches(
+        ctx:Canvas, il :Int, it : Int, ir :Int, ib:Int,
+        fl:Float, ft:Float, fr:Float, fb:Float
+    ) {
+        glowOverlayRectTmp.set(il,it,ir,ib)
+        glowOverlayRectFTmp.set(fl,ft,fr,fb)
+        ctx.drawBitmap(texGlowEdge, glowOverlayRectTmp, glowOverlayRectFTmp, glowOverlayPaint)
+    }
+
+    fun glowOverlay(ctx:Canvas, rect:RectF, edge:Int, paint:Paint?, isActive : Boolean, time:Float = 0.0f){
+        if(paint != null){
+            glowOverlayPaint.set(paint)
+        }
+        if(isActive){
+            val s = sin(time)
+            val t = (s * 5.0f)
+            glowOverlayPaint.setShadowLayer(t, 0.0f, 0.0f, Color.WHITE)
+        }else{
+            glowOverlayPaint.setShadowLayer(0.0f, 0.0f,0.0f, Color.TRANSPARENT)
+        }
+
+        // Top
+        glowOverlayDrawPatches(ctx, 0,0,40,40, rect.left, rect.top , rect.left + edge, rect.top + edge)
+        glowOverlayDrawPatches(ctx, 40,0,80,40, rect.left + edge, rect.top , rect.right - edge, rect.top + edge)
+        glowOverlayDrawPatches(ctx, 80,0,120,40, rect.right - edge, rect.top , rect.right, rect.top + edge)
+        // Center
+        glowOverlayDrawPatches(ctx, 0,40,40,80, rect.left, rect.top +edge, rect.left + edge, rect.bottom - edge)
+        glowOverlayDrawPatches(ctx, 40,40,80,80, rect.left + edge, rect.top +edge, rect.right - edge, rect.bottom - edge)
+        glowOverlayDrawPatches(ctx, 80,40,120,80, rect.right - edge, rect.top +edge, rect.right, rect.bottom - edge)
+        // Bottom
+        glowOverlayDrawPatches(ctx, 0,80,40,120, rect.left, rect.bottom - edge, rect.left + edge, rect.bottom)
+        glowOverlayDrawPatches(ctx, 40,80,80,120, rect.left + edge, rect.bottom - edge, rect.right - edge, rect.bottom)
+        glowOverlayDrawPatches(ctx, 80,80,120,120, rect.right - edge, rect.bottom - edge, rect.right, rect.bottom)
     }
 }

@@ -233,7 +233,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     private fun pIconLoad(){
         synchronized(_iconSync){
             if(!hasIconLoaded){
-                _icon = vsh.iconAdapter.create(resInfo.activityInfo)
+                _icon = vsh.iconAdapter.create(resInfo.activityInfo, vsh)
                 hasIconLoaded = true
             }
         }

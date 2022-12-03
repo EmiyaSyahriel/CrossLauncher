@@ -116,6 +116,7 @@ void psp_query_shader_interfaces() {
     wave_state.psp_wave._ColorA =   glGetUniformLocation(wave_state.psp_wave.program, wave_consts.unif_names._ColorA); CGL();
     wave_state.psp_wave._ColorB =   glGetUniformLocation(wave_state.psp_wave.program, wave_consts.unif_names._ColorB); CGL();
     wave_state.psp_wave._RngTrans = glGetUniformLocation(wave_state.psp_wave.program, wave_consts.unif_names._RngTrans); CGL();
+    wave_state.psp_wave._YScale = glGetUniformLocation(wave_state.psp_wave.program, wave_consts.unif_names._YScale); CGL();
 }
 
 void cxl_psp_wave_start(){
@@ -145,10 +146,8 @@ void psp_draw_wave(){
     glBindBuffer(GL_ARRAY_BUFFER, wave_state.psp_wave.vt); CGL();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, wave_state.psp_wave.id); CGL();
 
-    // glUniform1f(vunif_wave_NormalStep, 0.01f); CGL();
-
-    glm::vec4 cA = glm::vec4(1.0, 1.0f, 1.0f, 0.5f);
-    glm::vec4 cB = glm::vec4(1.0, 1.0f, 1.0f, 0.0f);
+    glm::vec4 cA = wave_state.colors.fg_a;
+    glm::vec4 cB = wave_state.colors.fg_b;
 
     glUniform4f(wave_state.psp_wave._ColorA, cA.r, cA.g, cA.b, cA.a); CGL();
     glUniform4f(wave_state.psp_wave._ColorB, cB.r, cB.g, cB.b, cB.a); CGL();
@@ -158,14 +157,15 @@ void psp_draw_wave(){
     glUniform1fv(wave_state.psp_wave._RngDataA, 6, wave_state.rng_data.A);
     glUniform1fv(wave_state.psp_wave._RngDataB, 6, wave_state.rng_data.B);
     glUniform1f(wave_state.psp_wave._RngTrans, wave_state.rng_data.t);
+    glUniform1f(wave_state.psp_wave._YScale, wave_state.vert_scale); CGL();
 
     glVertexAttribPointer(    wave_state.psp_wave.POSITION, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(0 * sizeof(GLfloat))); CGL();
     glVertexAttribPointer(    wave_state.psp_wave.TEXCOORD1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat))); CGL();
     glEnableVertexAttribArray(wave_state.psp_wave.POSITION); CGL();
     glEnableVertexAttribArray(wave_state.psp_wave.TEXCOORD1); CGL();
-    glUniform1f(wave_state.psp_wave._Time, wave_state.current_time * wave_state.speed); CGL();
+    glUniform1f(wave_state.psp_wave._Time, wave_state.current_time); CGL();
     glDrawElements(GL_TRIANGLES, wave_state.psp_wave.idata_sz, GL_UNSIGNED_INT, nullptr); CGL();
-    glUniform1f(wave_state.psp_wave._Time, ((float)wave_state.current_time + 7.35f) * 0.95f * wave_state.speed); CGL();
+    glUniform1f(wave_state.psp_wave._Time, ((float)wave_state.current_time + 7.35f) * 0.95f); CGL();
     glDrawElements(GL_TRIANGLES, wave_state.psp_wave.idata_sz, GL_UNSIGNED_INT, nullptr); CGL();
 }
 

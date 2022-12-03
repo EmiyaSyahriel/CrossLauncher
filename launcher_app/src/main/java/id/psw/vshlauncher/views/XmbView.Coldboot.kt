@@ -52,10 +52,12 @@ fun XmbView.cbStart(){
     state.coldBoot.currentTime = 0.0f
     cbEnsureImageLoaded()
     playColdBootSound()
+    state.crossMenu.coldBootTransition = 1.0f
     val pref = context.vsh.getSharedPreferences(XMBWaveSurfaceView.PREF_NAME, Context.MODE_PRIVATE)
 
     state.coldBoot.waveSpeed = pref.getFloat(XMBWaveSurfaceView.KEY_SPEED, 1.0f)
-    // NativeGL.setSpeed(0.1f);
+    NativeGL.setSpeed(0.0f)
+    NativeGL.setVerticalScale(0.0f)
 }
 
 fun XmbView.cbEnsureImageLoaded(){
@@ -67,6 +69,10 @@ fun XmbView.cbEnsureImageLoaded(){
 fun XmbView.cbRender(ctx: Canvas){
     cbEnsureImageLoaded()
     with(state.coldBoot) {
+
+        NativeGL.setSpeed(0.0f)
+        NativeGL.setVerticalScale(0.0f)
+
         val img = image
         val cTime = currentTime
         if (cTime < 5.0f && img != null) {

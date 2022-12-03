@@ -98,7 +98,7 @@
     <string name="app_open_data_dir">Buka Direktori Data</string>
     <string name="app_open_mod_dir">Buka Direktori Kustomisasi</string>
     <string name="app_open_obb_dir">Buka Direktori OBB</string>
-    <string name="setting_show_gameboot">Dudohna logo brand pas mbukak paluncur pas lekasan</string>
+    <string name="setting_show_gameboot_name">Nggawe Gameboot</string>
     <string name="setting_mimic_dynamic_theme">Dudohna kemerlap pas mbukak aplikasi</string>
     <string name="setting_gameboot_custom_guide">Cara nge-kustomisasi logo brand</string>
     <string name="setting_coldboot_custom_guide">Cara nge-kustomisasi logo awal</string>
@@ -151,4 +151,23 @@
     <string name="android_sys_sound_desc">Volume, geter, Ojo Ganggu</string>
     <string name="android_sys_storage_name">Penyimpanan</string>
     <string name="android_sys_storage_desc">Penyimpanan sing kosong, info piranti penyimpanan</string>
+    <string name="android_sys_datetime_name"><![CDATA[Tanggal & wayah]]></string>
+    <string name="android_sys_privacy_name">Privasi</string>
+    <string name="android_sys_privacy_desc">Izin, aktifitas akun, data dedewen</string>
+    <string name="android_sys_location_name">Panggonan</string>
+    <string name="android_sys_location_desc">Dudohne aplikasi seng iso nge-akses aplikasi</string>
+    <string name="android_sys_security_name">Keamanan</string>
+    <string name="android_sys_security_desc">Kunci layar, cap deriji</string>
+    <string name="android_sys_accessibility_name">Tetulungan Akses</string>
+    <string name="android_sys_accessibility_desc">Wewacan layar, rupane tampilan, interaksi</string>
+    <string name="android_sys_systeminfo_name">Sistem</string>
+    <string name="android_sys_systeminfo_desc">Basa, obah-obahan, wayah, cadangan</string>
+    <string name="android_sys_locale_name"><![CDATA[Basa & tulisan]]></string>
+    <string name="android_sys_locale_desc">Basa sistem, cara nulis angka, sistem nulis</string>
+    <string name="android_sys_datetime_desc">Tanggal, wayah, wayah panggonan</string>
+    <string name="android_sys_developer_name">Opsi Gegawean</string>
+    <string name="android_sys_developer_desc">Setelan gegawean, oprekan dedudohan</string>
+    <string name="android_sys_deviceinfo_name">Miturut piranti</string>
+    <string name="android_sys_deviceinfo_desc">Versi Android, alamat IP, IMEI</string>
+    <string name="setting_show_gameboot_desc">Play gameboot animation when launching application</string>
 </resources>

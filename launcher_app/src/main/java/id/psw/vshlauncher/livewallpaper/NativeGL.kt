@@ -14,4 +14,7 @@ object NativeGL {
     external fun setBackgroundColor(top:Int, bottom:Int)
     external fun setForegroundColor(edge:Int, center:Int)
     external fun setSpeed(speed:Float)
+    external fun setVerticalScale(scale:Float)
+    external fun setBackgroundMonth(mode:Byte)
+    external fun setBgDayNightMode(dayNight: Boolean)
 }

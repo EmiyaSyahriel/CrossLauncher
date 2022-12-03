@@ -7,8 +7,10 @@ import androidx.annotation.StringRes
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.drawText
+import id.psw.vshlauncher.views.wrapText
 
 class TextDialogView(vsh: VSH) : XmbDialogSubview(vsh) {
     override var hasNegativeButton: Boolean = true
@@ -17,6 +19,7 @@ class TextDialogView(vsh: VSH) : XmbDialogSubview(vsh) {
         textSize = 25.0f
         color = Color.WHITE
         textAlign = Paint.Align.CENTER
+        typeface = FontCollections.masterFont
     }
 
     var onPositiveButton : ((TextDialogView) -> Unit)? = null
@@ -33,7 +36,7 @@ class TextDialogView(vsh: VSH) : XmbDialogSubview(vsh) {
 
     override fun onDraw(ctx: Canvas, drawBound: RectF, deltaTime:Float) {
         textPaint.textSize = isPSP.select(30.0f, 25.0f)
-        val lines = content.lines()
+        val lines = textPaint.wrapText(content, drawBound.width() - 25.0f).lines()
         var y = -(lines.size * 0.5f) * (textPaint.textSize * textSpacing)
         lines.forEach {
             ctx.drawText(it, drawBound.centerX(), drawBound.centerY() + y, textPaint, 0.5f)

@@ -64,7 +64,10 @@ fun VSH.createCategoryWaveSetting(): XMBSettingsCategory {
                 vsh.startActivity(i)
             }catch (e:Exception){
                 e.printStackTrace()
-                vsh.postNotification(R.drawable.category_setting, "Setting unavailable","This device probably didn't support live wallpaper")
+                vsh.postNotification(R.drawable.category_setting,
+                    getString(R.string.settings_common_settings_unavailable),
+                    getString(R.string.settings_wave_live_wallpaper_unsupported)
+                )
             }
         })
 
@@ -75,15 +78,14 @@ fun VSH.createCategoryWaveSetting(): XMBSettingsCategory {
             }
         ){
             xmbView?.showDialog(
-                TextDialogView(vsh).setData(null, "Reboot Required",
-                    "Changing the usage of Internal Wave Layer requires the launcher to be rebooted.\n"+
-                            "Would you like to change the value and reboot?")
-                    .setPositive("Reboot"){_ ->
+                TextDialogView(vsh).setData(null, getString(R.string.common_reboot_required),
+                    getString(R.string.settings_wave_apply_as_layer_dlg_text_main))
+                    .setPositive(getString(R.string.common_reboot)){_ ->
                         // Commit instead of apply, allow the app to save the preference before restarting
                         pref.edit().putBoolean(PrefEntry.USES_INTERNAL_WAVE_LAYER, !vsh.useInternalWave).commit()
                         vsh.restart()
                     }
-                    .setNegative("Cancel"){dlg -> dlg.finish(VshViewPage.MainMenu) }
+                    .setNegative(getString(android.R.string.cancel)){dlg -> dlg.finish(VshViewPage.MainMenu) }
             )
         })
 

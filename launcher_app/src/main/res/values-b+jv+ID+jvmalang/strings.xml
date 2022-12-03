@@ -98,7 +98,7 @@
     <string name="app_open_data_dir">Buka Direktori Data</string>
     <string name="app_open_mod_dir">Buka Direktori Kustomisasi</string>
     <string name="app_open_obb_dir">Buka Direktori OBB</string>
-    <string name="setting_show_gameboot">Dudohna logo brand pas mbukak paluncur pas lekasan</string>
+    <string name="setting_show_gameboot_name">Nganggo Gameboot</string>
     <string name="setting_mimic_dynamic_theme">Dudohna kemerlap pas mbukak aplikasi</string>
     <string name="setting_gameboot_custom_guide">Cara nge-kustomisasi logo brand</string>
     <string name="setting_coldboot_custom_guide">Cara nge-kustomisasi logo awal</string>
@@ -151,4 +151,7 @@
     <string name="android_sys_sound_desc">Volume, geter, Ojo Ganggu</string>
     <string name="android_sys_storage_name">Penyimpanan</string>
     <string name="android_sys_storage_desc">Penyimpanan sing kosong, info piranti penyimpanan</string>
+    <string name="android_sys_datetime_name"><![CDATA[Tanggal & wayah]]></string>
+    <string name="android_sys_privacy_name">Privasi</string>
+    <string name="setting_show_gameboot_desc">Play gameboot animation when launching application</string>
 </resources>

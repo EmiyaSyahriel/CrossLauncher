@@ -1,0 +1,8 @@
+<resources>
+    <string-array name="xmb_wave_color_field_names" >
+           <item>Atas M</item>    <item>Atas H</item>    <item>Atas B</item>
+          <item>Bawah M</item>   <item>Bawah H</item>   <item>Bawah B</item>
+        <item>Pinggir M</item> <item>Pinggir H</item> <item>Pinggir B</item><item>Pinggir A</item>
+         <item>Tengah M</item>  <item>Tengah H</item>  <item>Tengah B</item> <item>Tengah A</item>
+    </string-array>
+</resources>

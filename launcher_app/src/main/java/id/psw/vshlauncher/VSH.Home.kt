@@ -4,6 +4,8 @@ import android.content.Intent
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBSettingsItem
 import id.psw.vshlauncher.views.VshViewPage
+import id.psw.vshlauncher.views.dialogviews.TextDialogView
+import id.psw.vshlauncher.views.showDialog
 import kotlin.system.exitProcess
 
 fun VSH.addHomeScreen(){
@@ -21,5 +23,16 @@ fun VSH.addHomeScreen(){
         exitProcess(0)
     }.apply {
         checkIsHidden = { !shouldShowExitOption }
+    })
+
+    addToCategory(VSH.ITEM_CATEGORY_HOME, XMBSettingsItem(this, "home_screen_restart_app",
+        R.string.common_reboot,
+        R.string.home_screen_reboot_desc,
+        R.drawable.icon_refresh, { "" }
+    ){
+        xmbView?.showDialog(TextDialogView(vsh)
+            .setData(null, vsh.getString(R.string.reboot_dlg_confirm_title), vsh.getString(R.string.reboot_dlg_confirm_content))
+            .setNegative(vsh.getString(android.R.string.cancel)){ it.finish(VshViewPage.MainMenu) }
+            .setPositive(vsh.getString(R.string.common_reboot)){ vsh.restart() })
     })
 }

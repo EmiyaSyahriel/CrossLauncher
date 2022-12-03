@@ -1,11 +1,22 @@
 #include <cstdlib>
 #include <cstdio>
-#include <string>
+#ifdef __GNUC__
+#include <strings.h>
+#else
+#include <string.h>
+#endif
 #include "GL/glew.h"
 #include "../wave/WAVE.HPP"
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 
 bool w32_hasInit = false;
+
+/* Unix doesn't have strcmpi, substitute it with strcasecmp  */
+#ifdef __GNUC__
+inline int strcmpi(const char* a, const char* b){
+	return strcasecmp(a, b);
+}
+#endif
 
 const char* getarg(int argc, const char** argv, const char* arg) {
 	if (arg == nullptr) return nullptr;
@@ -17,6 +28,16 @@ const char* getarg(int argc, const char** argv, const char* arg) {
 	}
 	return nullptr;
 }
+bool hasarg(int argc, const char** argv, const char* arg) {
+	if (arg == nullptr) return false;
+	for (int i = 0; i < argc; i++) {
+		const char* argn = argv[i];
+		if (strcmpi(argn, arg) == 0) {
+			return true;
+		}
+	}
+	return false;
+}
 
 const char* getarg_alias(int argc, const char** argv, int rargc, const char** rargv) {
 	for (int i = 0; i < rargc; i++) {
@@ -24,6 +45,12 @@ const char* getarg_alias(int argc, const char** argv, int rargc, const char** ra
 		if (value != nullptr) return value;
 	}
 	return nullptr;
+}
+bool hasarg_alias(int argc, const char** argv, int rargc, const char** rargv) {
+	for (int i = 0; i < rargc; i++) {
+		if (hasarg(argc, argv, rargv[i])) return true;
+	}
+	return false;
 }
 
 static void w32_init() {
@@ -61,14 +88,16 @@ template <typename T>
 static void parse_data(const char* str, const char* format, T* data, const char* defval) {
 	str = str == nullptr ? defval : str;
 	if (str != nullptr) {
-		if (sscanf(str, format, data)){
-			Log_d("Unable to parse argument\n");
+		if (sscanf(str, format, data) == 0){
+			Log_d("Unable to parse argument");
 		}
 	}
 }
 
 static const char* speed_arg[] = { "-s","--speed" };
 static const char* style_arg[] = { "-x","--style" };
+static const char* day_night_arg[] = { "-dn","--daynight" };
+static const char* monthly_arg[] = { "-mn","--monthly" };
 static const char* backa_arg[] = { "-ba","--backcolor_a" };
 static const char* backb_arg[] = { "-bb","--backcolor_b" };
 static const char* forea_arg[] = { "-fa","--forecolor_a" };
@@ -81,6 +110,9 @@ static void w32_readargs(int argc, const char** argv) {
 	const char* backcolor_b = getarg_alias(argc, argv, 2, backb_arg);
 	const char* forecolor_a = getarg_alias(argc, argv, 2, forea_arg);
 	const char* forecolor_b = getarg_alias(argc, argv, 2, foreb_arg);
+
+	bool day_night = hasarg_alias(argc, argv, 2, day_night_arg);
+	bool monthly =   hasarg_alias(argc, argv, 2, monthly_arg);
 
 	int backa, backb, forea, foreb;
 
@@ -104,6 +136,10 @@ static void w32_readargs(int argc, const char** argv) {
 	wave_state.colors.bg_b = cxl_i2v4(backb);
 	wave_state.colors.fg_a = cxl_i2v4(forea);
 	wave_state.colors.fg_b = cxl_i2v4(foreb);
+	
+	wave_state.bg_month = MONTH_COLOR_INDEX::MONTH_CUSTOM;
+	if(day_night) wave_state.day_night = true;
+	if(monthly) wave_state.bg_month = MONTH_COLOR_INDEX::MONTH_CURRENT;
 }
 
 void w32_key(GLFWwindow* win, int key, int scn, int act, int mod) {

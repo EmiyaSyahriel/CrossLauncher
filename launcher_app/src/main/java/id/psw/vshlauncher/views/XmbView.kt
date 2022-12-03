@@ -48,6 +48,7 @@ class XmbView @JvmOverloads constructor(
         val target : RectF get() = (screen.width() > screen.height()).select(landTarget, portTarget)
     }
 
+    var gamebootActive: Boolean = true
     var time = VshViewTimeData()
     var currentPage = VshViewPage.ColdBoot
     var state = VshViewStates()
@@ -127,6 +128,12 @@ class XmbView @JvmOverloads constructor(
         }
 
         state.coldBoot.hideEpilepsyWarning = pref.getInt(PrefEntry.DISABLE_EPILEPSY_WARNING, 0) == 1
+        state.crossMenu.dimOpacity = pref.getInt(PrefEntry.BACKGROUND_DIM_OPACITY, 0)
+        state.crossMenu.dateTimeFormat =
+            pref.getString(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, state.crossMenu.dateTimeFormat)
+                ?: state.crossMenu.dateTimeFormat
+        state.gameBoot.defaultSkip = pref.getInt(PrefEntry.SKIP_GAMEBOOT, 0) != 0
+        vsh.showLauncherFPS = pref.getInt(PrefEntry.SHOW_LAUNCHER_FPS, 0) != 0
     }
 
     init {
@@ -137,7 +144,6 @@ class XmbView @JvmOverloads constructor(
         loadPreferences()
         SubDialogUI.init(context.vsh)
     }
-
 
     private fun adaptScreenSize(){
         if(!fitsSystemWindows){  fitsSystemWindows = true }
@@ -281,6 +287,7 @@ class XmbView @JvmOverloads constructor(
     fun onUpdate(){
         context.vsh.itemOffsetX = (time.deltaTime * 10.0f).coerceIn(0.0f, 1.0f).toLerp(context.vsh.itemOffsetX, 0.0f)
         context.vsh.itemOffsetY = (time.deltaTime * 10.0f).coerceIn(0.0f, 1.0f).toLerp(context.vsh.itemOffsetY, 0.0f)
+        context.vsh.updateBatteryInfo()
     }
 
     private val fpsRect = Rect()
@@ -317,6 +324,12 @@ class XmbView @JvmOverloads constructor(
             if(useInternalWallpaper){
 
             }
+
+            if(currentPage != VshViewPage.HomeScreen){
+                val dimAlpha = ((state.crossMenu.dimOpacity / 10.0f) * 255).toInt()
+                canvas.drawARGB(dimAlpha, 0,0,0)
+            }
+
             canvas.withScale(scaling.fitScale, scaling.fitScale, 0.0f, 0.0f) {
                 canvas.withTranslation(-scaling.viewport.left, -scaling.viewport.top){
                     when(currentPage){

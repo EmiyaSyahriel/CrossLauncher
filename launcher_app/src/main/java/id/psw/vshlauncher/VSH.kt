@@ -14,6 +14,7 @@ import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import id.psw.vshlauncher.livewallpaper.NativeGL
 // import com.facebook.drawee.backends.pipeline.Fresco
 import id.psw.vshlauncher.pluginservices.IconPluginServiceHandle
 import id.psw.vshlauncher.submodules.*
@@ -424,4 +425,9 @@ class VSH : Application(), ServiceConnection {
         exitProcess(0)
     }
 
+    override fun onTerminate() {
+        VulkanisirSubmodule.close()
+        NativeGL.destroy()
+        super.onTerminate()
+    }
 }

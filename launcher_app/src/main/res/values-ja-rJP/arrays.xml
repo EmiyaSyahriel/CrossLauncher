@@ -1,0 +1,8 @@
+<resources>
+    <string-array name="xmb_wave_color_field_names" >
+        <item>上の赤</item> <item>上の緑</item> <item>上の青</item>
+        <item>下の赤</item> <item>下の緑</item> <item>下の青</item>
+        <item>角の赤</item> <item>角の緑</item> <item>角の青</item><item>角の不透明度</item>
+        <item>中の赤</item> <item>中の緑</item> <item>中の青</item><item>中の不透明度</item>
+    </string-array>
+</resources>

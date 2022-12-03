@@ -15,6 +15,7 @@ val VSH.supportedLocaleList: ArrayList<Locale?>
         Locale("en"),
         Locale("in","ID"),
         Locale("ms","MY"),
+        Locale("ja","JP"),
         /* Ngoko (to lower age) Tulungagung Javanese at Indonesia */
         Locale("jv","ID","ltlagung"),
         /* Malang (to lower age) Javanese at Indonesia */

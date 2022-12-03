@@ -8,7 +8,7 @@ plugins{
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 32
 
     // buildToolVersion = "30.0.2"
 
@@ -20,6 +20,7 @@ android {
         versionName = "0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         versionNameSuffix = "0.1"
+        multiDexEnabled = true
 
         ndk {
             abiFilters.clear()
@@ -52,26 +53,26 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar") )))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.20-M1")
-    implementation("androidx.appcompat:appcompat:1.4.1")
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.media:media:1.5.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.3")
-    implementation("androidx.preference:preference:1.2.0")
-    implementation("com.google.android.material:material:1.5.0")
-    /**
-    implementation("com.facebook.fresco:fresco:2.6.0")
-    implementation("com.facebook.fresco:webpsupport:2.6.0")
-    implementation("com.facebook.fresco:animated-base:2.6.0")
-    implementation("com.facebook.fresco:animated-webp:2.6.0")
-    implementation("com.facebook.fresco:animated-gif:2.6.0")
-    implementation("com.linecorp:apng:1.11.0")
-     **/
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.10")
+    implementation("androidx.appcompat:appcompat:1.5.0")
+    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.media:media:1.6.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.preference:preference-ktx:1.2.0")
+    implementation("com.google.android.material:material:1.6.1")
     implementation("com.github.penfeizhou.android.animation:awebp:2.17.2")
     implementation("com.github.penfeizhou.android.animation:apng:2.17.2")
     implementation("com.github.penfeizhou.android.animation:gif:2.17.2")
     implementation("androidx.test:rules:1.4.0")
+    implementation("com.android.support:multidex:1.0.3")
+    implementation(project(mapOf("path" to ":launcher_xlib")))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+}
+
+configurations {
+    all {
+        exclude(group = "androidx.lifecycle", module = "lifecycle-viewmodel-ktx")
+    }
 }

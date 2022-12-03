@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Cross Launcher</string>
+    <string name="app_name">Pelancar Cross</string>
     <string name="locale_lang_display_name">Bahasa Melayu</string>
     <string name="orient_unknown">Tak dikenal</string>
     <string name="orient_landscape">Landskap</string>
@@ -9,7 +9,7 @@
     <string name="item_orientation">Orientasi Skrin</string>
     <string name="first_run_instruction_title">Larian Pertama</string>
     <string name="storage_permission_not_granted">Kebenaran perangkat penyimpan tidak diberikan, pemain media mungkin tidak boleh digunakan</string>
-    <string name="setting_show_gameboot">Logo pelancaran Apl</string>
+    <string name="setting_show_gameboot_name">Gunakan Gameboot</string>
     <string name="setting_mimic_dynamic_theme">Tampilkan kelipan pada tema dinamik</string>
     <string name="click_here">Tekan di sini</string>
     <string name="app_not_installed">Apl tidak dipasang</string>
@@ -164,4 +164,43 @@
     <string name="android_sys_developer_desc">Tetapan pembangun, tweak grafik</string>
     <string name="android_sys_deviceinfo_name">Mengenai peranti</string>
     <string name="android_sys_deviceinfo_desc">Versi Android, alamat IP, IMEI</string>
+    <string name="settings_system_test_option_name">Aktifkan Pelancar Cross</string>
+    <string name="settings_system_test_option_desc">Aktifkan Pelancar Cross sehingga dimulakan ulang</string>
+    <string name="settings_system_test_option_value_on">Diaktifkan</string>
+    <string name="settings_system_test_option_value_off">Aktifkan</string>
+    <string name="settings_system_test_display_title">Pelancar Cross tidak tulen</string>
+    <string name="settings_system_test_display_desc">Salinan Pelancar Cross ini dikhabarkan tidak tulen</string>
+    <string name="error_fail_to_find_at_market_title">Gagal melancarkan Pasar Apl</string>
+    <string name="error_fail_to_find_at_market_desc">Terjadi kelalaian ketika mencuba melancarkan Pasar Apl</string>
+    <string name="settings_system_disable_splash_message_title">Jangan Tunjukkan Mesej But</string>
+    <string name="settings_system_disable_splash_message_desc">Mesej epilepsi dan sawan pada skrin permulaan</string>
+    <string name="settings_category_audio_name">Tetapan Audio</string>
+    <string name="settings_category_audio_title">Main balik dan kelantangan audio</string>
+    <string name="settings_system_disable_video_icon_name">Lumpuhkan Ikon Video</string>
+    <string name="settings_system_disable_video_icon_desc">Cegah pelancar daripada memuatkan dan memainkan ikon video</string>
+    <string name="settings_wave_set_name">Tetapkan sebagai Kertas Dinding</string>
+    <string name="settings_wave_set_desc">Buka tetapan untuk menetapkan Kertas Dinding Gelombang sebagai kertas dinding semasa</string>
+    <string name="settings_wave_make_internal_name">Gunakan sebagai Lapisan Dalaman</string>
+    <string name="setting_wave_make_internal_desc">Gunakan latar gelombang dalam pelancar, untuk peranti tanpa sokongan Kertas Dinding Langsung langsung.</string>
+    <string name="waveset_behavior_style_ps3_classic">PS3 Klasik</string>
+    <string name="waveset_behavior_style_ps3_dynamic">PS3 Dinamik</string>
+    <string name="waveset_behavior_style_psp_centered">PSP Ditengahkan</string>
+    <string name="waveset_behavior_style_psp_classic">PSP Klasik</string>
+    <string name="dlg_set_wallpaper_title">Tetapkan Kertas Dinding</string>
+    <string name="common_next">Seterusnya</string>
+    <string name="common_finish">Selesai</string>
+    <string name="settings_wave_theme_name">Tema Gelombang</string>
+    <string name="settings_wave_theme_desc">Laraskan gaya, kelajuan dan warna gelombang</string>
+    <string name="home_screen_exit_name">Keluar</string>
+    <string name="home_screen_exit_desc">Keluar ke pelancar lalai</string>
+    <string name="waveset_color_foreground">Penyesuaian Warna Gelombang</string>
+    <string name="waveset_color_background">Penyesuaian Warna Latar</string>
+    <string name="string_systeminfo_launcher_ver">Versi Pelancar Cross</string>
+    <string name="settings_wave_apply_as_layer_dlg_text_main">Menukar penggunaan Lapisan Gelombang Dalaman memerlukan pelancar dibut semula. Adakah anda ingin menukar nilai dan but semula pelancar?</string>
+    <string name="common_reboot">But Ulang</string>
+    <string name="settings_common_settings_unavailable">Tetapan tidak tersedia</string>
+    <string name="settings_wave_live_wallpaper_unsupported">Peranti ini mungkin tidak menyokong kertas dinding langsung</string>
+    <string name="common_reboot_required">But Semula Diperlukan</string>
+    <string name="unknown"><![CDATA[<Tak dikenal>]]></string>
+    <string name="setting_show_gameboot_desc">Play gameboot animation when launching application</string>
 </resources>

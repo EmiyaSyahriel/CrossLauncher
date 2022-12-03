@@ -2,6 +2,7 @@ package id.psw.vshlauncher.submodules
 
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -10,8 +11,10 @@ import android.graphics.drawable.*
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.types.Ref
 import java.io.File
 import java.io.FileDescriptor
 import java.lang.Exception
@@ -144,23 +147,26 @@ class XMBAdaptiveIconRenderer(ctx: VSH) {
         return null
     }
 
-    fun create(act:ActivityInfo) : Bitmap {
+    fun create(act:ActivityInfo, vsh:VSH) : Bitmap {
         val bitmap = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.ARGB_8888);
         val canvas = Canvas(bitmap)
         val custom = loadCustomIcon(act)
 
         if(custom != null){
+            bitmap.recycle()
             return custom
         }else{
-            val d = act.loadIcon(pm)
+            var d = act.loadIcon(pm)
+            val spResRef = Ref<Resources>(vsh.resources)
+            val spResIdRef = Ref(0)
+            val apkHasSpecialRes = hasSpecialRes(act, vsh, spResRef, spResIdRef)
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            if(apkHasSpecialRes){
+                d = ResourcesCompat.getDrawable(spResRef.p, spResIdRef.p, null)
+            }
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !apkHasSpecialRes){
                 val b = act.loadBanner(pm)
-
-                if(act.packageName.contains("bandai")){
-                    print("Debug Breakpoint here")
-                }
-
                 drawAdaptive(canvas, d, b)
             }else{
                 drawLegacy(canvas, d)
@@ -168,5 +174,20 @@ class XMBAdaptiveIconRenderer(ctx: VSH) {
         }
 
         return bitmap
+    }
+
+    /**
+     * Check if app package contains Cross Launcher-specific icon
+     *
+     * Developer may add one by putting a drawable with name of "psw_crosslauncher_banner" (R.drawable.psw_crosslauncher_banner)
+     * in their app package.
+     */
+    private fun hasSpecialRes(act: ActivityInfo, vsh: VSH, spResRef: Ref<Resources>, spResIdRef : Ref<Int>): Boolean {
+        try{
+            spResRef.p = vsh.packageManager.getResourcesForApplication(act.applicationInfo)
+            spResIdRef.p = spResRef.p.getIdentifier("psw_crosslauncher_banner", "drawable", act.packageName)
+            return spResIdRef.p != 0
+        }catch(e:Exception){ }
+        return false
     }
 }

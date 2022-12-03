@@ -2,6 +2,7 @@
  * Created by EmiyaSyahriel, 02:34 AM 15/04/2022
  * A one-for-all header file
  */
+ #pragma once
 #ifndef XMBWAVE_H
 #define XMBWAVE_H
 // region Definitions
@@ -34,7 +35,7 @@
 
 #if ANDROID
 #include <GLES2/gl2.h> // Android OpenGL
-#elif WIN32
+#else
 #include "GL/glew.h" // OpenGL Wrangler for Desktop Platforms
 #endif
 
@@ -46,11 +47,20 @@
 
 #define lerp(a,b,t) ((a) + (((b) - (a)) * (t)))
 #define arclerp(a,b,v) (((v) - (a)) / ((b) - (a)))
+// (0.0, 1.0) -> (-1.0, 1.0)
 #define snrange(x) (((x) * 2) - 1)
+// (-1.0, 1.0) -> (0.0, 1.0)
 #define unrange(x) (((x) + 1) / 2)
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#define EXTERN_PI
+// #define M_PI 3.14159265358979323846
+extern const double M_PI;
+#endif
+
+#ifndef M_PIf
+#define EXTERN_PIf
+extern const float M_PIf;
 #endif
 
 #ifndef max
@@ -61,12 +71,17 @@
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #endif
 
+#ifndef clamp
+#define clamp(v, mn, mx) (min((mn), max((mx), (v))))
+#endif
+
 /* Shift by Hex then divide it by 255 while also implicitly cast as float */
 #define cxl_hexshift_f(c, shift) ((((c) >> ((shift) * 8)) & 0xFF) / 255.0f)
 /* Converts color integer to glm::vec3 */
 #define cxl_i2v3(c) glm::vec3(cxl_hexshift_f(c, 2), cxl_hexshift_f(c, 1),cxl_hexshift_f(c, 0))
 /* Converts color integer to glm::vec4 (rgba) */
 #define cxl_i2v4(c) glm::vec4(cxl_hexshift_f(c, 3), cxl_hexshift_f(c, 2), cxl_hexshift_f(c, 1),cxl_hexshift_f(c, 0))
+#define cxl_i2v4a(c) glm::vec4(cxl_hexshift_f(c, 2), cxl_hexshift_f(c, 1), cxl_hexshift_f(c, 0),cxl_hexshift_f(c, 3))
 
 #define HAS_FLAG(var, flag, t) (((t)(var) & (t)(flag)) == (t)(flag))
 
@@ -92,6 +107,18 @@ enum class WAVE_STYLE : int8_t {
     PSP_BOTTOM = 0b0100,
     PSP_CENTER = 0b0110,
 };
+
+enum MONTH_COLOR_INDEX : int8_t {
+    // Use Custom Color
+    MONTH_CUSTOM = -1,
+    // Use Current Month Color
+    MONTH_CURRENT = 0,
+    MONTH_JAN = 1, MONTH_PEB = 2, MONTH_MAR = 3,
+    MONTH_APR = 4, MONTH_MEI = 5, MONTH_JUN = 6,
+    MONTH_JUL = 7, MONTH_AGU = 8, MONTH_SEP = 9,
+    MONTH_OKT = 10, MONTH_NOP = 11, MONTH_DES = 12,
+};
+
 typedef struct {
     glm::vec2 pos_from, pos_to;
     float size_from, size_to;
@@ -103,8 +130,10 @@ typedef struct {
 // region Static Structs
 extern struct cxl_wave_state_t {
     WAVE_STYLE style, last_style;
+    bool day_night;
+    MONTH_COLOR_INDEX bg_month;
     bool paused;
-    float speed;
+    float speed, vert_scale;
     int width, height;
     float current_time;
     struct cxl_colors_t{
@@ -121,7 +150,7 @@ extern struct cxl_wave_state_t {
         GLuint program, id, vt;
         size_t idata_sz, vdata_sz;
         GLint _Time, _NormalStep, _Ortho, _ColorA,_ColorB;
-        GLint _RngDataA, _RngDataB, _RngTrans;
+        GLint _RngDataA, _RngDataB, _RngTrans, _YScale;
         GLint POSITION;
     } ps3_wave;
 
@@ -129,7 +158,7 @@ extern struct cxl_wave_state_t {
         GLuint program, id, vt;
         size_t idata_sz, vdata_sz;
         GLint _Time, _Ortho, _ColorA, _ColorB;
-        GLint _RngDataA, _RngDataB, _RngTrans;
+        GLint _RngDataA, _RngDataB, _RngTrans, _YScale;
         GLint POSITION, TEXCOORD1;
     } psp_wave;
 
@@ -139,7 +168,7 @@ extern struct cxl_wave_state_t {
         GLint _Ortho;
     } spark;
     struct cxl_rng_data_t{
-        float A[16], B[16], t;
+        float A[RNG_BUFSZ], B[RNG_BUFSZ], t;
     } rng_data;
 } wave_state;
 
@@ -154,13 +183,24 @@ extern const struct cxl_wave_const_t {
     } attr_names ;
     struct cxl_unif_name_t {
         string_t _Time, _TimeOfDay, _NormalStep, _ColorA, _ColorB, _Ortho;
-        string_t _RngDataA, _RngDataB, _RngTrans;
-    } unif_names ;
+        string_t _RngDataA, _RngDataB, _RngTrans, _YScale;
+    } unif_names;
     struct cxl_month_color_t {
         glm::vec3 top[12], bottom[12];
     } month_color;
     string_t tag;
     bool disable_glerr;
+    struct string_list_t{
+        struct str_items_t{
+            string_t EMPTY, SHADER_CC_COMPILE, SHADER_CC_LINK;
+        } items;
+        struct str_gl_error_t{
+            string_t INV_ENUM, INV_VALUE, INV_OP, INV_FB_OP, OUT_VRAM, ERR_UNKN;
+        } gl_err;
+        struct str_formats_t{
+            string_t GL_ERROR, GL_SHADER_CC_ERR;
+        } fmt;
+    } str ;
 } wave_consts;
 
 // endregion
@@ -210,6 +250,7 @@ void INTERN_API cxl_gl_disable_blend();
 // region Time and RNG Helper
 /** Get Time of Day */
 float INTERN_API cxl_time_of_day();
+int INTERN_API cxl_get_month();
 float INTERN_API cxl_time_of_day_shader(float clock);
 void INTERN_API cxl_buffered_rng(float* buffer, int count, int division = 1024, int maxSize = 1);
 float INTERN_API cxl_get_rng();
