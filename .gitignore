@@ -89,3 +89,5 @@ lint/tmp/
 /*/build/
 /*/src/main/cpp/.vs/
 /references/
+launcher_app/release/libwave.so
+launcher_app/release/output-metadata.json
