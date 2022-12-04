@@ -308,4 +308,5 @@
     <string name="debug_custom_resource_dialog_title">Custom Resource List</string>
     <string name="common_not_found">Not Found</string>
     <string name="dbg_custom_file_list">Customized files</string>
+    <string name="dlg_set_search_query">Find in this Category (clear to cancel search)</string>
 </resources>

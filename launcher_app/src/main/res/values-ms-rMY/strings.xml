@@ -203,4 +203,5 @@
     <string name="common_reboot_required">But Semula Diperlukan</string>
     <string name="unknown"><![CDATA[<Tak dikenal>]]></string>
     <string name="setting_show_gameboot_desc">Play gameboot animation when launching application</string>
+    <string name="dlg_set_search_query">Cari dalam Kategori ini (kosongkan utk. batalkn carian)</string>
 </resources>

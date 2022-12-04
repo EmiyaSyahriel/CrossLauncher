@@ -36,20 +36,6 @@ class XMBItemCategory(
     override val icon: Bitmap get() = _icon
     override val id: String get() = cateId
 
-    private val propertyData = mutableMapOf<String, Any>()
-
-    fun <T> getProperty(name:String, defVal : T) : T{
-        if(propertyData.containsKey(name)){
-            val casted = propertyData[name]!! as T
-            return casted ?: defVal
-        }
-        return defVal
-    }
-
-    fun <T> setProperty(name:String, value:T){
-        propertyData[name] = value as Any
-    }
-
     init {
         vsh.threadPool.execute {
             _isLoadingIcon = true

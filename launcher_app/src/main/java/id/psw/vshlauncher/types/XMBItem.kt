@@ -101,5 +101,20 @@ open class XMBItem(private val vsh: VSH) {
         }
     }
 
+    protected val propertyData = mutableMapOf<String, Any>()
+
+    fun <T> getProperty(name:String, defVal : T) : T{
+        if(propertyData.containsKey(name)){
+            val casted = propertyData[name]!! as T
+            return casted ?: defVal
+        }
+        return defVal
+    }
+
+    fun <T> setProperty(name:String, value:T){
+        propertyData[name] = value as Any
+    }
+
+
     override fun toString(): String = "$displayName - [${id}]"
 }

@@ -24,6 +24,8 @@ import id.psw.vshlauncher.types.items.XMBAppItem
 import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbView
+import id.psw.vshlauncher.views.filterBySearch
+import junit.runner.Version.id
 import java.io.File
 import java.lang.Exception
 import java.lang.StringBuilder
@@ -90,6 +92,17 @@ class VSH : Application(), ServiceConnection {
         }
         return root
     }
+
+    val activeParent : XMBItem? get(){
+        var root = categories.visibleItems.find { it.id == selectedCategoryId }
+        var i = 0
+        while(root != null && i < selectStack.size){
+            root = root.content?.find { it.id == selectStack[i]}
+            i++
+        }
+        return root
+    }
+
     val hoveredItem : XMBItem? get() = items?.find { it.id == selectedItemId }
     private var _waveShouldRefresh = false
     var showLauncherFPS = true
@@ -106,7 +119,7 @@ class VSH : Application(), ServiceConnection {
     lateinit var pref : SharedPreferences
 
     val itemCursorX get() = categories.visibleItems.indexOfFirst { it.id == selectedCategoryId }
-    val itemCursorY get() = (items?.visibleItems?.indexOfFirst { it.id == selectedItemId } ?: -1).coerceAtLeast(0)
+    val itemCursorY get() = (items?.visibleItems?.filterBySearch(this)?.indexOfFirst { it.id == selectedItemId } ?: -1).coerceAtLeast(0)
     var itemOffsetX = 0.0f
     var itemOffsetY = 0.0f
     var itemBackdropAlphaTime = 0.0f
@@ -237,7 +250,7 @@ class VSH : Application(), ServiceConnection {
 
     fun moveCursorY(bottom:Boolean){
         try{
-            val items = items?.visibleItems
+            val items = items?.visibleItems?.filterBySearch(this)
             if(items != null){
                 preventPlayMedia = false
                 if(items.isNotEmpty()){

@@ -12,6 +12,7 @@ import androidx.core.graphics.withRotation
 import androidx.core.graphics.withScale
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.livewallpaper.NativeGL
 import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
 import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
@@ -20,6 +21,8 @@ import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.typography.parseEncapsulatedBracket
+import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
+import junit.runner.Version.id
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.ConcurrentModificationException
@@ -32,6 +35,8 @@ enum class DirectionLock {
     Vertical,
     Horizontal
 }
+
+
 
 class VshViewMainMenuState {
     var sortHeaderDisplay: Float = 0.0f
@@ -72,11 +77,16 @@ class VshViewMainMenuState {
         var fullDayName : SimpleDateFormat = SimpleDateFormat("EEEE", Locale.getDefault())
     }
 
+    data class SearchQuery(
+        var searchIcon : Bitmap? = null
+    )
+
     // val dateTimeFormat = "dd/M HH:mm a"
     var dateTimeFormat = "{operator} {sdf:dd/M HH:mm a}"
     var formatter = Formatter()
     val statusBar = StatusBarSetting()
     val verticalMenu = VerticalMenu()
+    val searchQuery = SearchQuery()
     var directionLock : DirectionLock = DirectionLock.None
     val backgroundPaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val statusOutlinePaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -332,6 +342,75 @@ fun XmbView.menuPStatusBar(ctx:Canvas){
     }
 }
 
+fun XmbView.menuRenderSearchQuery(ctx:Canvas){
+    with(state.crossMenu){
+        if(statusBar.disabled) return
+        when(layoutMode){
+            XMBLayoutType.PS3 -> menu3SearchQuery(ctx)
+            XMBLayoutType.PSP -> menuPSearchQuery(ctx)
+            else -> menuPSearchQuery(ctx)
+        }
+    }
+}
+
+fun XmbView.menu3SearchQuery(ctx:Canvas){
+    val vsh = this.context.vsh
+    with(state.crossMenu){
+        val cat = vsh.activeParent
+        if(cat != null){
+            val y = scaling.target.top + (scaling.target.height() * 0.1f)
+            val x = scaling.target.left + 50.0f
+            val q = cat.getProperty(Consts.XMB_ACTIVE_SEARCH_QUERY, "")
+            if(q.isNotEmpty()){
+                if(searchQuery.searchIcon == null){
+                    searchQuery.searchIcon = vsh.loadTexture(R.drawable.ic_search, 32, 32, true)
+                }
+                val icon = searchQuery.searchIcon ?: XMBItem.WHITE_BITMAP
+                val hSize = 40.0f / 2.0f
+
+                ctx.drawBitmap(icon,
+                    null,
+                    RectF(x, y - hSize, x + 40.0f, y + hSize),
+                    iconPaint
+                )
+                val align = statusTextPaint.textAlign
+                statusTextPaint.textAlign = Paint.Align.LEFT
+                ctx.drawText(q, x + 50.0f, y, statusTextPaint, 0.5f)
+                statusTextPaint.textAlign = align
+            }
+        }
+    }
+}
+
+fun XmbView.menuPSearchQuery(ctx:Canvas){
+    val vsh = this.context.vsh
+    with(state.crossMenu){
+        val cat = vsh.activeParent
+        if(cat != null){
+            val y = scaling.target.top + statusBar.padPSPStatusBar.select(48.0f, 10.0f)
+            val x = scaling.target.left + 10.0f
+            val q = cat.getProperty(Consts.XMB_ACTIVE_SEARCH_QUERY, "")
+            if(q.isNotEmpty()){
+                if(searchQuery.searchIcon == null){
+                    searchQuery.searchIcon = vsh.loadTexture(R.drawable.ic_search, 32, 32, true)
+                }
+                val icon = searchQuery.searchIcon ?: XMBItem.WHITE_BITMAP
+
+                ctx.drawBitmap(icon,
+                    null,
+                    RectF(x, y, x + 30.0f, y + 30.0f),
+                    iconPaint
+                )
+                val align = statusTextPaint.textAlign
+                statusTextPaint.textAlign = Paint.Align.LEFT
+                ctx.drawText(q, x + 35.0f, top + 15.0f, statusTextPaint, 0.5f)
+                statusTextPaint.textAlign = align
+            }
+        }
+    }
+}
+
+
 fun XmbView.menuXStatusBar(ctx:Canvas){
 
 }
@@ -481,7 +560,8 @@ fun XmbView.menu3HorizontalMenu(ctx:Canvas){
 private val verticalRectF = RectF()
 
 fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
-    val items = context.vsh.items?.visibleItems
+    val items = context.vsh.items?.visibleItems?.filterBySearch(context.vsh)
+
     val loadIcon = state.crossMenu.loadingIconBitmap
     val isPSP = state.crossMenu.layoutMode == XMBLayoutType.PSP
     val menuDispT = state.itemMenu.showMenuDisplayFactor
@@ -687,11 +767,17 @@ fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
     }
 }
 
+fun List<XMBItem>.filterBySearch(vsh: VSH): List<XMBItem> {
+    val q = vsh.activeParent?.getProperty(Consts.XMB_ACTIVE_SEARCH_QUERY, "") ?: ""
+    return this.filter { it.displayName.contains(q, true) }
+}
+
 fun XmbView.menuRenderHorizontalMenu(ctx:Canvas){
     menu3HorizontalMenu(ctx)
 }
 
 private val touchTestRectF = RectF()
+private val touchTestSearchRectF = RectF()
 
 fun XmbView.menuOnTouchScreen(a:PointF, b:PointF, act:Int){
     with(state.crossMenu){
@@ -737,9 +823,30 @@ fun XmbView.menuOnTouchScreen(a:PointF, b:PointF, act:Int){
                                 xPos + hSizeX,
                                 yPos + hSizeY
                             )
+
+                            if(context.vsh.isInRoot){
+                                touchTestSearchRectF.set(
+                                    xPos - hSizeX,
+                                    yPos - hSizeY - iconSize.y,
+                                    xPos + hSizeX,
+                                    yPos - hSizeY,
+                                )
+                            }else{
+                                touchTestSearchRectF.set(
+                                    xPos - hSizeX - iconSize.x,
+                                    yPos - hSizeY - iconSize.y,
+                                    xPos - hSizeX,
+                                    yPos - hSizeY,
+                                )
+
+                            }
+
                             if (touchTestRectF.contains(a)) {
                                 context.vsh.launchActiveItem()
-                            }else if(b.x < 200.0f){
+                            }else if(touchTestSearchRectF.contains(a)){
+                                menuOpenSearchQuery()
+                            }
+                            else if(b.x < 200.0f){
                                 context.vsh.backStep()
                             }
                         }
@@ -856,6 +963,7 @@ fun XmbView.menuRender(ctx: Canvas){
         try{
             menuRenderVerticalMenu(ctx)
             menuRenderHorizontalMenu(ctx)
+            menuRenderSearchQuery(ctx)
             menuRenderStatusBar(ctx)
             menuRenderItemMenu(ctx)
             menuRenderSortHeaderDisplay(ctx)
@@ -865,6 +973,18 @@ fun XmbView.menuRender(ctx: Canvas){
 
 fun XmbView.menuEnd(){
 
+}
+
+fun XmbView.menuOpenSearchQuery(){
+    val item = context.vsh.activeParent
+    if(item != null){
+        val q = item.getProperty(Consts.XMB_ACTIVE_SEARCH_QUERY, "")
+        NativeEditTextDialog(context.vsh)
+            .setOnFinish {  item.setProperty(Consts.XMB_ACTIVE_SEARCH_QUERY, it) }
+            .setTitle(context.getString(R.string.dlg_set_search_query))
+            .setValue(q)
+            .show()
+    }
 }
 
 fun XmbView.menuOnGamepad(key: GamepadSubmodule.Key, isPressing: Boolean) : Boolean {
@@ -922,6 +1042,9 @@ fun XmbView.menuOnGamepad(key: GamepadSubmodule.Key, isPressing: Boolean) : Bool
                     }
                 }
                 retval = true
+            }
+            GamepadSubmodule.Key.Select -> {
+                menuOpenSearchQuery()
             }
             GamepadSubmodule.Key.Square -> {
                 if(vsh.isInRoot){
