@@ -1,5 +1,6 @@
 package id.psw.vshlauncher.submodules
 
+import android.os.Build
 import android.view.KeyEvent.*
 import android.view.MotionEvent
 import id.psw.vshlauncher.VSH
@@ -95,6 +96,12 @@ class GamepadSubmodule(ctx: VSH) {
         val positive:Key
     )
 
+    data class KeyRemap (
+        val hidId : Int,
+        val map :  MutableMap<Int, GamepadSubmodule.Key>,
+        val shouldUse : (() -> Boolean)? = null)
+
+
     companion object {
         private val defaultPre12DualSenseReMap = mutableMapOf(
             KEYCODE_BUTTON_MODE to Key.PS,
@@ -167,13 +174,14 @@ class GamepadSubmodule(ctx: VSH) {
         fun makePID( vid:Int = 0, pid:Int = 0) = (vid shl 16) or pid
     }
 
-    val keyRemaps = mutableMapOf(
-        ANDROID_GAMEPAD to defaultAndroidGamepadMap,
-        ANDROID_KEYBOARD to defaultAndroidKeyboardMap,
-        SONY_DUALSENSE_HID_ID to defaultPre12DualSenseReMap
+    private val keyRemaps = listOf(
+        KeyRemap(SONY_DUALSENSE_HID_ID, defaultPre12DualSenseReMap) // only for Android < 12
+            { Build.VERSION.SDK_INT < Build.VERSION_CODES.R },
+        KeyRemap(ANDROID_GAMEPAD, defaultAndroidGamepadMap), // DualSense is fine on Android > 12
+        KeyRemap(ANDROID_KEYBOARD, defaultAndroidKeyboardMap)
     )
 
-    val axisRemaps = mutableMapOf(ANDROID_GAMEPAD to defaultAndroidGamepadAxisMap)
+    private val axisRemaps = mutableMapOf(ANDROID_GAMEPAD to defaultAndroidGamepadAxisMap)
 
     init {
         ctx.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "keymap").forEach {
@@ -187,13 +195,15 @@ class GamepadSubmodule(ctx: VSH) {
     }
 
     fun translate(key: Int, devId:Int) : Key{
-        val remap = keyRemaps[devId] ?: keyRemaps[ANDROID_GAMEPAD]
+        val remap = keyRemaps.firstOrNull {
+            (it.hidId == devId && (it.shouldUse?.invoke()) ?: true) || it.hidId == ANDROID_GAMEPAD
+        }
         if(remap != null){
-            if(remap.containsKey(key)) {
-                return remap[key]!!
+            if(remap.map.containsKey(key)) {
+                return remap.map[key]!!
             }else{
-                val kbdRemap = keyRemaps[ANDROID_KEYBOARD]!!
-                if(kbdRemap.containsKey(key)) return kbdRemap[key] ?: Key.None
+                val kbdRemap = keyRemaps[ANDROID_KEYBOARD]
+                if(kbdRemap.map.containsKey(key)) return kbdRemap.map[key] ?: Key.None
             }
         }
         return Key.None
