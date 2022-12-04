@@ -62,6 +62,9 @@ fun XmbView.cbStart(){
 
 fun XmbView.cbEnsureImageLoaded(){
     if(state.coldBoot.image == null){
+        val i = context.vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "COLDBOOT.PNG", createParentDir = false).find { it.exists() }
+        if(i != null) { state.coldBoot.image = BitmapFactory.decodeFile(i.absolutePath) }
+
         state.coldBoot.image = getDrawable(R.drawable.coldboot_internal)?.toBitmap(1280, 720)
     }
 }

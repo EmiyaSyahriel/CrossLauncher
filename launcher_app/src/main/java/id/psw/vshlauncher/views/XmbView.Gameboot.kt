@@ -75,6 +75,8 @@ fun XmbView.gbStart(){
 
 private fun XmbView.gbEnsureImageLoaded(){
     if(state.gameBoot.image == null){
+        val i = context.vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "GAMEBOOT.PNG", createParentDir = false).find { it.exists() }
+        if(i != null) { state.gameBoot.image = BitmapFactory.decodeFile(i.absolutePath) }
         state.gameBoot.image = getDrawable(R.drawable.gameboot_internal)?.toBitmap(1280, 720)
     }
 
