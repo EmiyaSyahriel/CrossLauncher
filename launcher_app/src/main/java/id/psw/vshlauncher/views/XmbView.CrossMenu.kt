@@ -858,7 +858,8 @@ fun XmbView.menuOnTouchScreen(a:PointF, b:PointF, act:Int){
                     val isMenu = a.x > scaling.target.right - 200.0f
                     run{
                         if(isMenu){
-                            if(b.x <  scaling.target.right - 400.0f){
+                            val menuTol = (width > height).select(400.0f, 100.0f)
+                            if(b.x <  scaling.target.right - menuTol){
                                 val item = context.vsh.hoveredItem
                                 if(item?.hasMenu == true){
                                     state.itemMenu.isDisplayed = true
