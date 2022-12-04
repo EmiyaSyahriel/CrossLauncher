@@ -2,16 +2,19 @@ package id.psw.vshlauncher.views.dialogviews
 
 import android.app.ActivityManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.*
 import android.os.Build
 import android.os.Environment
 import android.os.StatFs
 import android.text.format.Formatter
+import androidx.core.app.ActivityManagerCompat.isLowRamDevice
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.BuildConfig
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.select
 import id.psw.vshlauncher.submodules.VulkanisirSubmodule
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.typography.FontCollections
@@ -32,7 +35,10 @@ class AboutDeviceDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
     }
 
     override fun onStart() {
-        strData[vsh.getString(R.string.string_systeminfo_androidver_name)] = "${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})"
+        val actSvc = vsh.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val isGo = actSvc.isLowRamDevice.select(" (Go Edition)","")
+
+        strData[vsh.getString(R.string.string_systeminfo_androidver_name)] = "${Build.VERSION.RELEASE}$isGo (API ${Build.VERSION.SDK_INT})"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             strData[vsh.getString(R.string.string_systeminfo_android_security_patch)] = Build.VERSION.SECURITY_PATCH
         }
@@ -40,7 +46,6 @@ class AboutDeviceDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
         strData[vsh.getString(R.string.string_systeminfo_androidmdl_name)] = "${Build.MANUFACTURER} ${Build.MODEL}"
         strData[vsh.getString(R.string.string_systeminfo_board)] = Build.BOARD
         strData[vsh.getString(R.string.string_systeminfo_hardware)] = Build.HARDWARE
-        val actSvc = vsh.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val configInfo = actSvc.deviceConfigurationInfo
         val memInfo = ActivityManager.MemoryInfo()
         actSvc.getMemoryInfo(memInfo)
