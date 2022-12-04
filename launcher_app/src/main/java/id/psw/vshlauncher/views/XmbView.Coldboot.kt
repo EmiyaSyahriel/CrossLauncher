@@ -12,6 +12,7 @@ import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.typography.FontCollections
 import java.io.File
+import java.nio.file.Files.exists
 import kotlin.system.exitProcess
 
 class VshViewColdBootState(
@@ -62,10 +63,15 @@ fun XmbView.cbStart(){
 
 fun XmbView.cbEnsureImageLoaded(){
     if(state.coldBoot.image == null){
-        val i = context.vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "COLDBOOT.PNG", createParentDir = false).find { it.exists() }
+
+        // Load custom coldboot if exists
+        val i = context.vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "COLDBOOT.PNG", createParentDir = true).firstOrNull { it.exists() }
         if(i != null) { state.coldBoot.image = BitmapFactory.decodeFile(i.absolutePath) }
 
-        state.coldBoot.image = getDrawable(R.drawable.coldboot_internal)?.toBitmap(1280, 720)
+        // Load default if no custom coldboot can be loaded
+        if(state.coldBoot.image == null) {
+            state.coldBoot.image = getDrawable(R.drawable.coldboot_internal)?.toBitmap(1280, 720)
+        }
     }
 }
 
@@ -141,7 +147,9 @@ fun XmbView.cbOnTouchScreen(a: PointF, b:PointF, act:Int){
 }
 
 fun XmbView.cbEnd(){
-    // NativeGL.setSpeed(state.coldBoot.waveSpeed)
+    // Unload coldboot image
+    state.coldBoot.image?.recycle()
+    state.coldBoot.image = null
 }
 
 fun XmbView.cbOnGamepad(k:GamepadSubmodule.Key, isPress:Boolean) : Boolean {

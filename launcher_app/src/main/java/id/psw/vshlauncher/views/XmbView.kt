@@ -6,7 +6,6 @@ import android.graphics.*
 import android.os.Build
 import android.text.TextPaint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -17,7 +16,6 @@ import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.dialogviews.SubDialogUI
-import id.psw.vshlauncher.views.dialogviews.TestDialogView
 import java.util.*
 import kotlin.ConcurrentModificationException
 import kotlin.concurrent.thread

@@ -75,9 +75,15 @@ fun XmbView.gbStart(){
 
 private fun XmbView.gbEnsureImageLoaded(){
     if(state.gameBoot.image == null){
-        val i = context.vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "GAMEBOOT.PNG", createParentDir = false).find { it.exists() }
+
+        // Load custom gameboot if exists
+        val i = context.vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "GAMEBOOT.PNG", createParentDir = true).firstOrNull { it.exists() }
         if(i != null) { state.gameBoot.image = BitmapFactory.decodeFile(i.absolutePath) }
-        state.gameBoot.image = getDrawable(R.drawable.gameboot_internal)?.toBitmap(1280, 720)
+
+        // Load default if no custom gameboot can be loaded
+        if(state.gameBoot.image == null){
+            state.gameBoot.image = getDrawable(R.drawable.gameboot_internal)?.toBitmap(1280, 720)
+        }
     }
 
     if(state.gameBoot.pParticleTexture == null){
@@ -184,6 +190,10 @@ fun XmbView.gbOnTouchScreen(a:PointF, b:PointF, act:Int){
 
 fun XmbView.gbEnd(){
     state.gameBoot.currentTime = 0.0f
+
+    // Unload gameboot image
+    state.gameBoot.image?.recycle()
+    state.gameBoot.image = null
 }
 
 fun XmbView.gbOnGamepad(k: GamepadSubmodule.Key, isPress:Boolean) : Boolean {
