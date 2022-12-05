@@ -26,6 +26,8 @@ class AboutDeviceDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
     override val hasPositiveButton: Boolean = false
     override val negativeButton: String = vsh.getString(R.string.common_back)
     override val icon: Bitmap = ResourcesCompat.getDrawable(vsh.resources, R.drawable.icon_info, null)?.toBitmap(64,64) ?: XMBItem.TRANSPARENT_BITMAP
+    override val title: String
+        get() = vsh.getString(R.string.setting_systeminfo_name)
 
     private val strData = mutableMapOf<String, String>()
     private val strPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
