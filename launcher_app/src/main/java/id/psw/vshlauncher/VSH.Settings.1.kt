@@ -84,6 +84,15 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 pref.edit().putInt(PrefEntry.SHOW_LAUNCHER_FPS, showLauncherFPS.select(0,1)).apply()
             }
         )
+        content.add(
+            XMBSettingsItem(vsh, "settings_system_rearrange",
+                R.string.settings_system_rearrange_category_name,
+                R.string.settings_system_rearrange_category_desc,
+                R.drawable.category_setting, { "" }
+            ){
+                vsh.xmbView?.showDialog(ArrangeCategoryDialogView(vsh))
+            }
+        )
 
         content.add(XMBSettingsItem(vsh, "settings_system_orientation",
             R.string.item_orientation,

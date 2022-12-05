@@ -309,4 +309,9 @@
     <string name="common_not_found">Not Found</string>
     <string name="dbg_custom_file_list">Customized files</string>
     <string name="dlg_set_search_query">Find in this Category (clear to cancel search)</string>
+    <string name="dlg_rearrange_categories">Rearrange Categories</string>
+    <string name="settings_system_rearrange_category_name">Rearrange Category</string>
+  <string name="settings_system_rearrange_category_desc">Rearrange horizontal items in CrossLauncher main menu</string>
+    <string name="rearrange_start">Move</string>
+  <string name="rearrange_end">Move Here</string>
 </resources>

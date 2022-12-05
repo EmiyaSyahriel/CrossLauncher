@@ -1,17 +1,11 @@
 package id.psw.vshlauncher.typography
 
-import android.content.Context
 import android.graphics.Typeface
-import android.graphics.fonts.Font
-import android.os.Build
-import android.util.Log
-import android.widget.Toast
 import id.psw.vshlauncher.*
-import java.lang.Exception
 
 object FontCollections {
     /**
-     * This app will try load font at path `"Internal Storage/Android/data/id.psw.vshlauncher/vsh/resource/font.ttf"`
+     * This app will try load font at path `"Internal Storage/Android/data/id.psw.vshlauncher/dev_flash/data/font/VSH-CustomFont.ttf"`
      *
      * Fonts can be dumped from either a CFW/HFW-ed PS3, a Firmware Update (PUP) Extractor or a PS3 Emulator.
      * Located at `"dev_flash/data/font/"`
@@ -41,23 +35,11 @@ object FontCollections {
 
     fun init(ctx: VSH){
         buttonFont = Typeface.createFromAsset(ctx.assets, "vshbtn.ttf")
-        val fontLocations = ctx.getAllPathsFor(VshBaseDirs.FLASH_DATA_DIR, "font")
-        var isCustomFontFound = false
-        fontLocations.forEach { dir ->
-            if(!isCustomFontFound){
-                val files = dir.listFiles()
-                files?.forEach {
-                    if(it.name.lowercase().contentEquals(FONT_NAME.lowercase()) && !isCustomFontFound){
-                        try{
-                            masterFont = Typeface.createFromFile(it)
-                            isCustomFontFound = true
-                        }catch(e:Exception){
-                            ctx.postNotification(null, "Font Manager", ctx.getString(R.string.font_load_failed, e.message))
-                        }
-                    }
-                }
-            }
-        }
+        val ttf = ctx.getAllPathsFor(VshBaseDirs.FLASH_DATA_DIR, "font", FONT_NAME, createParentDir = true).firstOrNull { it.exists() }
+        val isCustomFontFound = if(ttf != null){
+            masterFont = Typeface.createFromFile(ttf)
+            true
+        } else false
 
         if(!isCustomFontFound){
             masterFont = Typeface.SANS_SERIF

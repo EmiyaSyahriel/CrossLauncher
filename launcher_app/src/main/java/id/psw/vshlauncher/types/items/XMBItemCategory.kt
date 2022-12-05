@@ -3,6 +3,7 @@ package id.psw.vshlauncher.types.items
 import android.graphics.Bitmap
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import id.psw.vshlauncher.Consts
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.activities.XMB
@@ -12,7 +13,7 @@ import id.psw.vshlauncher.types.XMBItem
 class XMBItemCategory(
     private val vsh: VSH, private val cateId:String,
     private val strId : Int, private val iconId: Int,
-    val sortable: Boolean = false
+    val sortable: Boolean = false, defaultSortIndex : Int
     ) : XMBItem(vsh) {
     private val _content = ArrayList<XMBItem>()
     private fun _postNoLaunchNotification(xmb: XMBItem){
@@ -35,8 +36,19 @@ class XMBItemCategory(
     override val displayName: String get() = vsh.getString(strId)
     override val icon: Bitmap get() = _icon
     override val id: String get() = cateId
+    private var _sortIndex = 0
+
+    private val pkSortIndex : String get() ="${Consts.CATEGORY_SORT_INDEX_PREFIX}_${cateId}"
+
+    var sortIndex : Int
+        get() = _sortIndex
+        set(value) {
+            _sortIndex = value
+            vsh.pref.edit().putInt(pkSortIndex, _sortIndex).apply()
+        }
 
     init {
+        _sortIndex = vsh.pref.getInt(pkSortIndex, defaultSortIndex)
         vsh.threadPool.execute {
             _isLoadingIcon = true
             _icon =
