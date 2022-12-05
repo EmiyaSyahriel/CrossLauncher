@@ -270,4 +270,11 @@
   <string name="setting_show_gameboot_desc">Play gameboot animation when launching application</string>
     <string name="dlg_set_search_query">Cari di Kategori ini (kosongkn utk. batalkn pcarian)</string>
   <string name="dlg_rearrange_categories">Urutkan Kategori</string>
+    <string name="rearrange_start">Pindah</string>
+  <string name="rearrange_end">Pindah Kesini</string>
+  <string name="settings_display_refsize_name">Resolusi Panutan</string>
+  <string name="settings_display_refsize_desc">Atur resolusi gambaran lalu diskalakan ke layar perangkat</string>
+  <string name="settings_system_rearrange_category_name">Urutkan Kategori</string>
+  <string name="settings_system_rearrange_category_desc">Atur Urutan menu menyamping di menu CrossLauncher</string>
+  <string name="common_not_found">Tidak Ditemukan</string>
 </resources>

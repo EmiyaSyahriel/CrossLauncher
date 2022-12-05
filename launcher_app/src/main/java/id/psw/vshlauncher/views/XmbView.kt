@@ -113,6 +113,16 @@ class XmbView @JvmOverloads constructor(
         drawThread = thread(start=true, isDaemon = true){ drawThreadFunc() }.apply { name = "XMB Render Thread" }
     }
 
+    fun setReferenceScreenSize(width: Int, height: Int, writePref:Boolean){
+        scaling.landTarget.set(0.0f, 0.0f, width * 1.0f, height * 1.0f)
+        scaling.portTarget.set(0.0f, 0.0f, height * 1.0f, width * 1.0f)
+
+        if(writePref){
+            val dSize = (width shl 16) or height
+            context.vsh.pref.edit().putInt(PrefEntry.REFERENCE_RESOLUTION, dSize).apply()
+        }
+    }
+
     private fun loadPreferences(){
         val vsh = context.vsh
         val pref = vsh.pref
@@ -124,6 +134,10 @@ class XmbView @JvmOverloads constructor(
             3 -> XMBLayoutType.PSX
             else -> XMBLayoutType.PS3
         }
+
+        val defSize = (1280 shl 16) or 720
+        val refSize = pref.getInt(PrefEntry.REFERENCE_RESOLUTION, defSize)
+        setReferenceScreenSize(refSize shr 16, refSize and 0xFFFF, false)
 
         state.coldBoot.hideEpilepsyWarning = pref.getInt(PrefEntry.DISABLE_EPILEPSY_WARNING, 0) == 1
         state.crossMenu.dimOpacity = pref.getInt(PrefEntry.BACKGROUND_DIM_OPACITY, 0)

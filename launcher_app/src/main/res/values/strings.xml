@@ -314,4 +314,6 @@
   <string name="settings_system_rearrange_category_desc">Rearrange horizontal items in CrossLauncher main menu</string>
     <string name="rearrange_start">Move</string>
   <string name="rearrange_end">Move Here</string>
+    <string name="settings_display_refsize_name">Reference Resolution</string>
+  <string name="settings_display_refsize_desc">Set resolution for drawing and then scaled to device screen</string>
 </resources>
