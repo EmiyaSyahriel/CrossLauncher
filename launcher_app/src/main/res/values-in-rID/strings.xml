@@ -277,4 +277,6 @@
   <string name="settings_system_rearrange_category_name">Urutkan Kategori</string>
   <string name="settings_system_rearrange_category_desc">Atur Urutan menu menyamping di menu CrossLauncher</string>
   <string name="common_not_found">Tidak Ditemukan</string>
+    <string name="settings_display_hide_statusbar_name">Sembunyikan Bilah Status</string>
+  <string name="settings_display_hide_statusbar_desc">Jangan tampilkan bilah status di kanan-atas layar</string>
 </resources>

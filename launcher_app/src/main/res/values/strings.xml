@@ -316,4 +316,6 @@
   <string name="rearrange_end">Move Here</string>
     <string name="settings_display_refsize_name">Reference Resolution</string>
   <string name="settings_display_refsize_desc">Set resolution for drawing and then scaled to device screen</string>
+    <string name="settings_display_hide_statusbar_name">Hide Status Bar</string>
+  <string name="settings_display_hide_statusbar_desc">Do not show status bar at top-right portion of screen</string>
 </resources>

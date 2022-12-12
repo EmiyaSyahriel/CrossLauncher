@@ -149,6 +149,9 @@ fun XmbView.menuStart(){
     if(state.crossMenu.loadingIconBitmap == null){
         state.crossMenu.loadingIconBitmap = ResourcesCompat.getDrawable(context.resources,R.drawable.ic_sync_loading,null)?.toBitmap(256,256)
     }
+
+    state.crossMenu.statusBar.disabled = context.vsh.pref.getInt(PrefEntry.DISPLAY_DISABLE_STATUS_BAR, 0) == 1
+    state.crossMenu.statusBar.secondOnAnalog = context.vsh.pref.getInt(PrefEntry.DISPLAY_SHOW_CLOCK_SECOND, 0) == 1
 }
 
 private var baseDefRect = RectF()
@@ -226,7 +229,12 @@ fun XmbView.formatStatusBar(src:String) : String {
         }else{
             sb.append(when(s){
                 // Operator
-                "operator" -> context.vsh.network.operatorName
+                "operator" -> {
+                    if(state.crossMenu.statusBar.showMobileOperator)
+                    context.vsh.network.operatorName
+                    else ""
+                }
+
                 "battery" -> {
                     (context.vsh.getBatteryLevel() * 100).toInt().toString()
                 }
@@ -354,8 +362,10 @@ fun XmbView.menuRenderSearchQuery(ctx:Canvas){
 }
 
 fun XmbView.menu3SearchQuery(ctx:Canvas){
+
     val vsh = this.context.vsh
     with(state.crossMenu){
+
         val cat = vsh.activeParent
         if(cat != null){
             val y = scaling.target.top + (scaling.target.height() * 0.1f)

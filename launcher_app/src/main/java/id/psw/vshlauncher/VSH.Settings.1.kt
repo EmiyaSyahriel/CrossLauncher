@@ -1,7 +1,10 @@
 package id.psw.vshlauncher
 
+import android.app.Activity
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.os.Build
+import androidx.core.app.ActivityCompat
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.GamepadUISubmodule
 import id.psw.vshlauncher.types.items.*
@@ -319,8 +322,7 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 val view = xmbView
                 if(view != null){
                     view.state.crossMenu.layoutMode = when(view.state.crossMenu.layoutMode){
-                        XMBLayoutType.PSP -> XMBLayoutType.Bravia
-                        XMBLayoutType.Bravia -> XMBLayoutType.PS3
+                        XMBLayoutType.PSP -> XMBLayoutType.PS3
                         XMBLayoutType.PS3 -> XMBLayoutType.PSP
                         else -> XMBLayoutType.PS3
                     }
@@ -342,16 +344,27 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                         xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PS3
                         saveLayoutSetting()
                     })
-                    dMenu.add(XMBMenuItem.XMBMenuItemLambda(
-                        {"Bravia TV"}, {false}, 2)
-                    {
-                        xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.Bravia
-                        saveLayoutSetting()
-                    })
                 menuItems = dMenu
             }
         )
         //endregion
+
+
+        content.add(XMBSettingsItem(vsh, "settings_display_hide_bar",
+            R.string.settings_display_hide_statusbar_name,
+            R.string.settings_display_hide_statusbar_desc,
+            R.drawable.icon_hidden, {
+                val id = (xmbView?.state?.crossMenu?.statusBar?.disabled == true).select(R.string.common_yes, R.string.common_no)
+                vsh.getString(id)
+            }){
+            val x = xmbView
+            if(x != null){
+                x.state.crossMenu.statusBar.disabled = !x.state.crossMenu.statusBar.disabled
+                pref.edit().putInt(PrefEntry.DISPLAY_DISABLE_STATUS_BAR, x.state.crossMenu.statusBar.disabled.select(1, 0)).apply()
+            }
+        })
+
+
         // region Console Button Display
         content.add(
             XMBSettingsItem(vsh, "settings_display_button_type",
@@ -423,6 +436,8 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 val x = xmbView
                 if(x != null){
                     x.state.crossMenu.statusBar.secondOnAnalog = !x.state.crossMenu.statusBar.secondOnAnalog
+                    pref.edit().putInt(PrefEntry.DISPLAY_SHOW_CLOCK_SECOND, x.state.crossMenu.statusBar.secondOnAnalog.select(0, 1)).apply()
+
                 }
             }
         )
@@ -452,7 +467,29 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
             ){
                 val x = xmbView
                 if(x != null){
-                    x.state.crossMenu.statusBar.showMobileOperator = !x.state.crossMenu.statusBar.showMobileOperator
+                    val v = x.state.crossMenu.statusBar.showMobileOperator
+
+                    if(!v){
+                        if(Build.VERSION.SDK_INT >= 23){
+                            if(
+                                vsh.checkSelfPermission(android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED ||
+                                vsh.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                            ){
+                                x.state.crossMenu.statusBar.showMobileOperator = true
+                            }else{
+                                ActivityCompat.requestPermissions(x.context as Activity, arrayOf(
+                                    android.Manifest.permission.READ_PHONE_STATE,
+                                    android.Manifest.permission.ACCESS_FINE_LOCATION
+                                ), 1999)
+                            }
+                        }else{
+                            x.state.crossMenu.statusBar.showMobileOperator = true
+                        }
+
+                    }else{
+                        x.state.crossMenu.statusBar.showMobileOperator = false
+                    }
+
                 }
             }
         )
