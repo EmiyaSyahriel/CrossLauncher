@@ -83,7 +83,10 @@ class XMB : AppCompatActivity() {
     }
 
     private fun checkIsDefaultHomeIntent(intent: Intent) {
-        vsh.shouldShowExitOption = !(!intent.hasCategory(Intent.CATEGORY_DEFAULT) && intent.hasCategory(Intent.CATEGORY_HOME))
+        val i = Intent(Intent.ACTION_MAIN)
+        i.addCategory(Intent.CATEGORY_HOME)
+        val ri = packageManager.resolveActivity(i, 0)
+        vsh.shouldShowExitOption = ri?.activityInfo?.packageName != packageName
     }
 
     override fun onNewIntent(intent: Intent?) {
