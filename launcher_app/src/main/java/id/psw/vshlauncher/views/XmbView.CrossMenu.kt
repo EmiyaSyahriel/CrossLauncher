@@ -67,7 +67,9 @@ class VshViewMainMenuState {
     data class VerticalMenu(
         var playAnimatedIcon : Boolean = true,
         var playBackSound : Boolean = true,
-        var showBackdrop : Boolean = true
+        var showBackdrop : Boolean = true,
+        var nameTextXOffset : Float = 0.0f,
+        var descTextXOffset : Float = 0.0f
     )
 
     class Formatter{
@@ -568,6 +570,7 @@ fun XmbView.menu3HorizontalMenu(ctx:Canvas){
 }
 
 private val verticalRectF = RectF()
+private val textNameRectF = RectF()
 
 fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
     val items = context.vsh.items?.visibleItems?.filterBySearch(context.vsh)

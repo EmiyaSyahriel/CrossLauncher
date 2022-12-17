@@ -318,4 +318,20 @@
   <string name="settings_display_refsize_desc">Set resolution for drawing and then scaled to device screen</string>
     <string name="settings_display_hide_statusbar_name">Hide Status Bar</string>
   <string name="settings_display_hide_statusbar_desc">Do not show status bar at top-right portion of screen</string>
+    <string name="menu_app_info">App Info</string>
+    <string name="dlg_info_name">Title</string>
+    <string name="dlg_info_desc">Description</string>
+  <string name="dlg_info_album">Album</string>
+  <string name="dlg_info_hidden">Is Hidden</string>
+  <string name="dlg_info_category">Category</string>
+  <string name="dlg_info_apk_size">Package Size</string>
+  <string name="dlg_info_update">Updated</string>
+  <string name="dlg_info_version">Version</string>
+    <string name="dlg_info_pkg_name">Package Name</string>
+    <string name="dlg_info_rename">Set app custom label</string>
+    <string name="settings_system_show_hidden_app_desc">Show hidden apps,disabled on next restart</string>
+  <string name="settings_system_show_hidden_app_name">Show hidden apps</string>
+    <string name="category_shortcut">Shortcuts</string>
+    <string name="dlg_info_redesc">Set app custom description</string>
+    <string name="app_info_by_system">This app\'s info in System Settings</string>
 </resources>

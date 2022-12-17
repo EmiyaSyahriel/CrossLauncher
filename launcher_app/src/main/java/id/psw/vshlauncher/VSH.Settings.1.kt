@@ -153,6 +153,8 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 GamepadSubmodule.Key.spotMarkedByX.select(1,0)).apply()
         })
 
+
+
         content.add(XMBSettingsItem(vsh, "settings_system_epimsg_disable",
             R.string.settings_system_disable_splash_message_title,
             R.string.settings_system_disable_splash_message_desc,
@@ -192,7 +194,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
         )
 
         content.add(
-            XMBSettingsItem(vsh, "settings_systemsetsys_skip_gameboot",
+            XMBSettingsItem(vsh, "settings_system_skip_gameboot",
                 R.string.setting_show_gameboot_name,
                 R.string.setting_show_gameboot_desc,
                 R.drawable.icon_dynamic_theme_effect, {
@@ -207,6 +209,21 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 pref.edit().putInt(PrefEntry.SKIP_GAMEBOOT,
                     xmbView?.state?.gameBoot?.defaultSkip?.select(0, 1) ?: 0
                 ).apply()
+            }
+        )
+
+        content.add(
+            XMBSettingsItem(vsh, "settings_system_show_hidden_app",
+                R.string.settings_system_show_hidden_app_name,
+                R.string.settings_system_show_hidden_app_desc,
+                R.drawable.icon_hidden, {
+                    getString(XMBAppItem.showHiddenByConfig.select(
+                        R.string.common_yes,
+                        R.string.common_no
+                    ))
+                }
+            ){
+                XMBAppItem.showHiddenByConfig = !XMBAppItem.showHiddenByConfig
             }
         )
 

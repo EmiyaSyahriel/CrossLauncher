@@ -65,6 +65,7 @@ fun VSH.appCategorySortingName(it : XMBItemCategory) : String{
 
 fun VSH.reloadAppList(){
     threadPool.execute {
+        XMBAppItem.showHiddenByConfig = false
         val gameCat = categories.find {it.id == VSH.ITEM_CATEGORY_GAME }
         if(gameCat != null){
             synchronized(gameCat){

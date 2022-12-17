@@ -9,7 +9,9 @@ import android.graphics.Typeface
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.SoundPool
+import android.net.Uri
 import android.os.*
+import android.provider.Settings
 import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
@@ -47,6 +49,7 @@ class VSH : Application(), ServiceConnection {
         const val ITEM_CATEGORY_APPS = "vsh_apps"
         const val ITEM_CATEGORY_GAME = "vsh_game"
         const val ITEM_CATEGORY_VIDEO = "vsh_video"
+        const val ITEM_CATEGORY_SHORTCUT = "vsh_shortcut"
         const val ITEM_CATEGORY_MUSIC = "vsh_music"
         const val ITEM_CATEGORY_SETTINGS = "vsh_settings"
         const val COPY_DATA_SIZE_BUFFER = 10240
@@ -130,7 +133,7 @@ class VSH : Application(), ServiceConnection {
     val notifications = arrayListOf<XMBNotification>()
     val threadPool: ExecutorService = Executors.newFixedThreadPool(8)
     val loadingHandles = arrayListOf<XMBLoadingHandle>()
-    private val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
+    val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
 
     val bgmPlayer = MediaPlayer()
     val systemBgmPlayer = MediaPlayer()
@@ -170,6 +173,7 @@ class VSH : Application(), ServiceConnection {
         listInstalledIconPlugins()
         listInstalledWaveRenderPlugins()
         reloadAppList()
+        reloadShortcutList()
         fillSettingsCategory()
         loadSfxData()
         addHomeScreen()
@@ -237,6 +241,9 @@ class VSH : Application(), ServiceConnection {
             selectedCategoryId = items[cIdx].id
             xmbView?.state?.itemMenu?.selectedIndex = 0
             vsh.playSfx(SFXType.Selection)
+
+            xmbView?.state?.crossMenu?.verticalMenu?.nameTextXOffset = 0.0f
+            xmbView?.state?.crossMenu?.verticalMenu?.descTextXOffset = 0.0f
         }
     }
 
@@ -270,6 +277,9 @@ class VSH : Application(), ServiceConnection {
                     }
                     selectedItemId = items[cIdx].id
                 }
+
+                xmbView?.state?.crossMenu?.verticalMenu?.nameTextXOffset = 0.0f
+                xmbView?.state?.crossMenu?.verticalMenu?.descTextXOffset = 0.0f
 
                 // Update hovering
                 items.forEach {
@@ -342,6 +352,7 @@ class VSH : Application(), ServiceConnection {
             categories.add(XMBItemCategory(this, ITEM_CATEGORY_HOME, R.string.category_home, R.drawable.category_home, defaultSortIndex = 0))
             categories.add(XMBItemCategory(this, ITEM_CATEGORY_SETTINGS, R.string.category_settings, R.drawable.category_setting, defaultSortIndex = 1))
             categories.add(XMBItemCategory(this, ITEM_CATEGORY_VIDEO, R.string.category_videos, R.drawable.category_video, true, defaultSortIndex = 2))
+            categories.add(XMBItemCategory(this, ITEM_CATEGORY_SHORTCUT, R.string.category_shortcut, R.drawable.category_shortcut, true, defaultSortIndex = 2))
             categories.add(XMBItemCategory(this, ITEM_CATEGORY_MUSIC, R.string.category_music, R.drawable.category_music, true, defaultSortIndex = 3))
             categories.add(XMBItemCategory(this, ITEM_CATEGORY_GAME, R.string.category_games, R.drawable.category_games, true, defaultSortIndex = 4))
             categories.add(XMBItemCategory(this, ITEM_CATEGORY_APPS, R.string.category_apps, R.drawable.category_apps, true, defaultSortIndex = 5))
@@ -420,14 +431,6 @@ class VSH : Application(), ServiceConnection {
         }
     }
 
-    fun saveCustomShortcut(intent: Intent) {
-
-    }
-
-    fun installShortcut(intent: Intent) {
-
-    }
-
     fun restart() {
         val pm = vsh.packageManager
         val sndi = pm.getLaunchIntentForPackage(vsh.packageName)
@@ -443,5 +446,13 @@ class VSH : Application(), ServiceConnection {
         VulkanisirSubmodule.close()
         NativeGL.destroy()
         super.onTerminate()
+    }
+
+    fun showAppInfo(app: XMBAppItem) {
+        val i = Intent()
+        i.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+        i.data = Uri.fromParts("package", app.resInfo.activityInfo.applicationInfo.packageName, null)
+        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(i)
     }
 }

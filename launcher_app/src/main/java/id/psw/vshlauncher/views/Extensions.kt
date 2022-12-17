@@ -5,6 +5,7 @@ import android.os.Build
 import id.psw.vshlauncher.FittingMode
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.toLerp
+import kotlin.math.floor
 
 private val drawBitmapFitRectFBuffer = RectF()
 fun Canvas.drawBitmap(bm:Bitmap, src: Rect?, dst: RectF, paint: Paint?, fitMode:FittingMode, anchorX:Float = 0.5f, anchorY:Float = 0.5f){
@@ -97,4 +98,37 @@ fun Paint.wrapText(source:String, maxWidth:Float) : String {
     }
     msb.appendLine(line.toString())
     return msb.toString().trimEnd('\n')
+}
+
+val byteSuffix = arrayOf("B","KB","MB","GB","TB","PB","EB","ZB","YB")
+val biByteSuffix = arrayOf("B","KiB","MiB","GiB","TiB","PiB","EiB","ZiB","YiB")
+
+fun Long.asBytes(useBi:Boolean = false): String {
+    val suf = useBi.select(biByteSuffix, byteSuffix)
+    val dif = useBi.select( 1024.0, 1000.0)
+    var i = 0
+    var d = this * 1.0
+    while(d > dif && i < suf.size){
+        i++
+        d /= dif
+    }
+    d = floor(d * 100.0) / 100.0
+    return "$d ${suf[i]}"
+}
+
+fun Long.asMBytes(useBi:Boolean = false) : String {
+    val suf = useBi.select(biByteSuffix, byteSuffix)
+    val dif = useBi.select( 1024.0, 1000.0)
+    var i = 0
+    var d = this * 1.0
+    while(d > dif && i < 3){
+        i++
+        d /= dif
+    }
+    d = floor(d * 100.0) / 100.0
+    return "$d ${suf[i]}"
+}
+
+fun String.substituteIfEmpty(substitute:String) : String{
+    return ifEmpty { substitute }
 }

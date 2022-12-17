@@ -40,14 +40,14 @@ class ExternalXMBItemMenu() : Parcelable {
 
     override fun describeContents(): Int = 0
 
-    override fun writeToParcel(parcel: Parcel?, flags: Int) {
-        parcel?.writeString(XMB_MENU_HEADER)
-        parcel?.writeInt(baseId)
-        parcel?.writeInt(menuId)
-        parcel?.writeString(packageId)
-        parcel?.writeString(XMB_MENU_METADATA_SEPARATOR)
-        parcel?.writeString(displayName)
-        parcel?.writeByteBoolean(isDisabled)
-        parcel?.writeByteBoolean(isSeparator)
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(XMB_MENU_HEADER)
+        parcel.writeInt(baseId)
+        parcel.writeInt(menuId)
+        parcel.writeString(packageId)
+        parcel.writeString(XMB_MENU_METADATA_SEPARATOR)
+        parcel.writeString(displayName)
+        parcel.writeByteBoolean(isDisabled)
+        parcel.writeByteBoolean(isSeparator)
     }
 }

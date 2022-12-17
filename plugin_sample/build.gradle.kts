@@ -8,7 +8,7 @@ plugins{
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "id.psw.vshlauncher.plugin_example"

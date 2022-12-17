@@ -202,8 +202,8 @@ class GamepadSubmodule(ctx: VSH) {
             if(remap.map.containsKey(key)) {
                 return remap.map[key]!!
             }else{
-                val kbdRemap = keyRemaps[ANDROID_KEYBOARD]
-                if(kbdRemap.map.containsKey(key)) return kbdRemap.map[key] ?: Key.None
+                val kbdRemap = defaultAndroidKeyboardMap
+                if(kbdRemap.containsKey(key)) return kbdRemap[key] ?: Key.None
             }
         }
         return Key.None

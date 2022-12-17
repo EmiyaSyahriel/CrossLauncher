@@ -1,0 +1,40 @@
+[PKG_METADATA]
+; Title of this package file
+TITLE=CrossLauncher custom package
+
+; Author of the customization content
+; The one (or the corporation / company) who made the content, e.g Icons, Animated Icons, Backdrop, Background Sound
+AUTHOR=Icons by EmiyaSyahriel, Background Sound by PSW Software
+
+; Author of the package
+PACKAGER=EmiyaSyahriel
+
+; If present, Only installable if any of these apps is installed, separated by semicolon (';')
+CHECK_INSTALL=id.psw.crosslauncher;id.psw.xl
+
+; Main icon of this package file
+ICON=pkg/pkg_icon.png
+
+; Folder name, case sensitive
+[P01]
+
+; Type of the customization, it can be SYSTEM, PLUGIN, GAME or APPS
+; SYSTEM : launcher's built-in icons
+; PLUGIN : Plugins
+; GAME or APPS : Android Game or Application (they behave the same)
+TYPE=GAME
+
+; ID of the customized item icon
+; for Android apps / games, it's usually "app.packageName_activityName"
+; The activity name will have it's prefix removed in case the prefix is equals to app packageName
+; e.g "id.psw.vshlauncher_activities.XMB" (This app), "jp.co.bandainamcoent.BNEI0242_stage.StageUnityPlayerActivity" (iMAS CGSS)
+; for plugins, check the plugin icon customization guide, or find their icon ID
+TITLE_ID=id.psw.vshlauncher_activities.XMB
+
+; Where to unpack this folder's files, depending on specified type:
+; SYSTEM : relative to CrossLauncher's Virtual PS3 File System
+; PLUGIN : (fsroot)/home/00000000/plugins/(TITLE_ID)
+; GAME/APPS : (fsroot)/games/(TITLE_ID)
+;   (fsroot) = CrossLauncher
+ROOT=/
+
