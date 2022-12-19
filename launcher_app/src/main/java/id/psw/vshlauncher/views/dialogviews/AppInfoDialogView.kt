@@ -4,8 +4,10 @@ import android.app.ProgressDialog.show
 import android.graphics.*
 import android.os.Build
 import android.text.TextPaint
+import android.view.MotionEvent
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.minus
 import androidx.core.graphics.withRotation
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.GamepadSubmodule
@@ -15,6 +17,7 @@ import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.drawBitmap
 import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
+import kotlin.math.abs
 
 class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : XmbDialogSubview(vsh) {
     companion object {
@@ -66,7 +69,11 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
         get() = vsh.getString(R.string.common_back)
 
     override val positiveButton: String
-        get() = vsh.getString(R.string.common_edit)
+        get() = when(cursorPos) {
+            3 -> vsh.getString(R.string.common_toggle)
+            5 -> vsh.getString(R.string.category_settings)
+            else -> vsh.getString(R.string.common_edit)
+        }
 
     override fun onStart() {
         loadIcon = ResourcesCompat.getDrawable(vsh.resources,R.drawable.ic_sync_loading,null)?.toBitmap(256,256) ?: XMBItem.WHITE_BITMAP
@@ -82,7 +89,11 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
 
     }
 
+    private val drawBound = RectF()
+
     override fun onDraw(ctx: Canvas, drawBound: RectF, deltaTime: Float) {
+        this.drawBound.set(drawBound)
+
         if(transiteTime < TRANSITE_TIME){
             transiteTime += vsh.xmbView?.time?.deltaTime ?: 0.015f
         }
@@ -195,7 +206,36 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
         return super.onGamepad(key, isPress)
     }
 
+    private var touchHasMove = false
+
     override fun onTouch(a: PointF, b: PointF, act: Int) {
+        if(act == MotionEvent.ACTION_MOVE){
+            val diff = a.y - b.y
+            if(abs(diff) > 50.0f){
+                if(diff > 0.0f){
+                    cursorPos--
+                }else{
+                    cursorPos++
+                }
+
+                b.y += 100.0f
+                touchHasMove = true
+                vsh.xmbView!!.context.xmb.touchStartPointF.set(b)
+                cursorPos = cursorPos.coerceIn(0, validSelections.size - 1)
+            }
+        }else if(act == MotionEvent.ACTION_UP){
+            if(!touchHasMove){
+                if(a.y > drawBound.height() * 0.6f){
+                    cursorPos++
+                }else if(a.y < drawBound.height() * 0.3f){
+                    cursorPos--
+                }
+                cursorPos = cursorPos.coerceIn(0, validSelections.size - 1)
+            }
+            touchHasMove = false
+        }else if(act == MotionEvent.ACTION_DOWN){
+            touchHasMove = false
+        }
         super.onTouch(a, b, act)
     }
 
