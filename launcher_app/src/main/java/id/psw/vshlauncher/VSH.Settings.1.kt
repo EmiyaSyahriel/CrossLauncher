@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.GamepadUISubmodule
+import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.*
 import id.psw.vshlauncher.views.XMBLayoutType
 import id.psw.vshlauncher.views.dialogviews.*
@@ -32,6 +33,7 @@ fun VSH.fillSettingsCategory(){
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategorySystem())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryAndroidSetting())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryDebug())
+        addToCategory(VSH.ITEM_CATEGORY_SETTINGS, settingsAddInstallPackage())
     }
 }
 

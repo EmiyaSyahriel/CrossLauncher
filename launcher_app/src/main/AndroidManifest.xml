@@ -105,7 +105,7 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data android:host="*"/>
-                <data android:mimeType="application/psw.crosslauncher-package"/>
+                <data android:mimeType="*/*/"/>
                 <data android:pathPattern=".*\\.xpkg"/>
                 <data android:scheme="*"/>
             </intent-filter>

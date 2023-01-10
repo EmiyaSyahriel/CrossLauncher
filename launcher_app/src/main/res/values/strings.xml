@@ -334,4 +334,7 @@
     <string name="category_shortcut">Shortcuts</string>
     <string name="dlg_info_redesc">Set app custom description</string>
     <string name="app_info_by_system">This app\'s info in System Settings</string>
+    <string name="settings_install_package">★ Install Package Files</string>
+    <string name="custom_package_error_no_intent">No file intent is returned</string>
+    <string name="common_toggle">Toggle</string>
 </resources>

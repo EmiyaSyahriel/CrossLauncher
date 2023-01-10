@@ -53,6 +53,7 @@ class VSH : Application(), ServiceConnection {
         const val ITEM_CATEGORY_MUSIC = "vsh_music"
         const val ITEM_CATEGORY_SETTINGS = "vsh_settings"
         const val COPY_DATA_SIZE_BUFFER = 10240
+        const val ACT_REQ_INSTALL_PACKAGE = 4496
 
         val dbgMemInfo = Debug.MemoryInfo()
         val actMemInfo = ActivityManager.MemoryInfo()

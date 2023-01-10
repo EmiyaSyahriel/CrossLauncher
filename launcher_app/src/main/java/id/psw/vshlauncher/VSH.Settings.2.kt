@@ -1,19 +1,24 @@
 package id.psw.vshlauncher
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.WallpaperManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.edit
 import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
 import id.psw.vshlauncher.livewallpaper.XMBWaveSettingSubDialog
 import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
 import id.psw.vshlauncher.livewallpaper.XMBWaveWallpaperService
+import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBMenuItem
 import id.psw.vshlauncher.types.items.XMBSettingsCategory
 import id.psw.vshlauncher.types.items.XMBSettingsItem
 import id.psw.vshlauncher.views.VshViewPage
+import id.psw.vshlauncher.views.dialogviews.InstallPackageDialogView
 import id.psw.vshlauncher.views.dialogviews.TextDialogView
 import id.psw.vshlauncher.views.showDialog
 
@@ -100,4 +105,18 @@ fun VSH.createCategoryWaveSetting(): XMBSettingsCategory {
         )
 
     }
+}
+
+fun VSH.settingsAddInstallPackage(): XMBItem {
+    val xi = XMBSettingsItem(this, "settings_install_package", R.string.settings_install_package, R.string.empty_string, R.drawable.ic_folder,{
+        ""
+    }){
+        val i = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        i.type = "*/*"
+        try{
+            xmbView?.context?.xmb?.startActivityForResult(Intent.createChooser(i, getString(R.string.settings_install_package)), VSH.ACT_REQ_INSTALL_PACKAGE)
+        }catch(e:Exception){}
+
+    }
+    return xi
 }

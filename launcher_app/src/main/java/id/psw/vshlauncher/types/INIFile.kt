@@ -85,6 +85,15 @@ class INIFile() {
     fun count(section: String) : Int = sections[section]?.size ?: -1
     fun count() : Int = sections.size
 
+    val sectionNames : Array<String> get() {
+        val lst = Array<String>(sections.size) { "" }
+        var i = 0
+        for(s in sections){
+            lst[i] = s.key
+            i++
+        }
+        return lst
+    }
 
     operator fun get(sect:String, key:String): String? {
         return sections[sect]?.get(key)

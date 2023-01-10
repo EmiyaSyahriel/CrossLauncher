@@ -23,6 +23,7 @@ import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.types.items.XMBAppItem
 import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbView
+import id.psw.vshlauncher.views.dialogviews.InstallPackageDialogView
 import id.psw.vshlauncher.views.dialogviews.UITestDialogView
 import id.psw.vshlauncher.views.showDialog
 import kotlin.math.abs
@@ -146,6 +147,20 @@ class XMB : AppCompatActivity() {
                     vsh.reloadAppList()
                 }
             }
+            VSH.ACT_REQ_INSTALL_PACKAGE -> {
+                if(resultCode == RESULT_OK){
+                    if(data != null){
+                        xmbView.showDialog(InstallPackageDialogView(vsh, data))
+                    }else{
+                        vsh.postNotification(
+                            R.drawable.ic_folder,
+                            getString(R.string.error_common_header),
+                            getString(R.string.custom_package_error_no_intent),
+                            3.0f)
+                    }
+                }
+            }
+
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
