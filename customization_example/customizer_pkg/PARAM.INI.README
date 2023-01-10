@@ -1,15 +1,20 @@
+; This file must preset in the xpkg file (which is just an ordinary ZIP file), otherwise will be deemed as invalid xpkg file
+
 [PKG_METADATA]
 ; Title of this package file
 TITLE=CrossLauncher custom package
 
 ; Author of the customization content
 ; The one (or the corporation / company) who made the content, e.g Icons, Animated Icons, Backdrop, Background Sound
-AUTHOR=Icons by EmiyaSyahriel, Background Sound by PSW Software
+AUTHOR=EmiyaSyahriel, PSW Software
+
+; Description of this package, Only one line
+DESCRIPTION=CrossLauncher Custom Package
 
 ; Author of the package
 PACKAGER=EmiyaSyahriel
 
-; If present, Only installable if any of these apps is installed, separated by semicolon (';')
+; If present and not empty, Only installable if any of these apps is installed, separated by semicolon (';')
 CHECK_INSTALL=id.psw.crosslauncher;id.psw.xl
 
 ; Main icon of this package file
@@ -31,10 +36,6 @@ TYPE=GAME
 ; for plugins, check the plugin icon customization guide, or find their icon ID
 TITLE_ID=id.psw.vshlauncher_activities.XMB
 
-; Where to unpack this folder's files, depending on specified type:
-; SYSTEM : relative to CrossLauncher's Virtual PS3 File System
-; PLUGIN : (fsroot)/home/00000000/plugins/(TITLE_ID)
-; GAME/APPS : (fsroot)/games/(TITLE_ID)
-;   (fsroot) = CrossLauncher
+; Where to unpack this folder's files, only for System
 ROOT=/
 
