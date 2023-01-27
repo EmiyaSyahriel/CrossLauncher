@@ -151,6 +151,7 @@ class XmbView @JvmOverloads constructor(
         val gpIconDr = ResourcesCompat.getDrawable(context.resources, R.drawable.category_games, null)
         gamepadNotifIcon = gpIconDr!!.toBitmap(50,50)
         setZOrderOnTop(true)
+        contentDescription = context.getString(R.string.xmb_view_content_description)
         holder.setFormat(PixelFormat.TRANSPARENT)
         loadPreferences()
         DrawExtension.init(context.vsh)

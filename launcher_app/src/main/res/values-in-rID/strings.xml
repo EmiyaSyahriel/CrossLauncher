@@ -279,4 +279,62 @@
   <string name="common_not_found">Tidak Ditemukan</string>
     <string name="settings_display_hide_statusbar_name">Sembunyikan Bilah Status</string>
   <string name="settings_display_hide_statusbar_desc">Jangan tampilkan bilah status di kanan-atas layar</string>
+    <string name="xmb_view_content_description">Aplikasi ini ditujukan untuk pengguna yang memiliki pandangan sempurna dan tunanetra sebagian, kami tidak memberikan fitur aksesibilitas tambahan untuk pengguna tunanetra, Silahkan tutup aplikasi ini segera dan copot pemasangan aplikasi ini jika merasa tidak dengan sengaja memasang aplikasi ini.</string>
+  <string name="menu_app_info">Info Apl</string>
+  <string name="dlg_info_name">Judul</string>
+  <string name="dlg_info_desc">Deskripsi</string>
+  <string name="dlg_info_album">Album</string>
+  <string name="dlg_info_hidden">Tersembunyi</string>
+  <string name="dlg_info_category">Kategori</string>
+  <string name="dlg_info_apk_size">Ukuran Paket</string>
+  <string name="dlg_info_update">Diperbarui</string>
+  <string name="dlg_info_version">Versi</string>
+  <string name="dlg_info_pkg_name">Nama Paket</string>
+  <string name="dlg_info_rename">Ganti nama apl</string>
+  <string name="settings_system_show_hidden_app_desc">Tampilkan apl yang disembunyikan, dimatikan otomatis setelah peluncur dimulai ulang</string>
+  <string name="settings_system_show_hidden_app_name">Tampilkan Apl Tersembunyi</string>
+  <string name="category_shortcut">Pintasan</string>
+  <string name="dlg_info_redesc">Ganti deskripsi apl</string>
+  <string name="app_info_by_system">Info Apl dalam Pengaturan Sistem</string>
+  <string name="custom_package_error_no_intent">Tidak ada intent yang dikembalikan</string>
+  <string name="common_toggle">Tukar</string>
+  <string name="package_import_unknown_error">Terjadi kesalahan yang tidak diketahui</string>
+  <string name="package_import_error_corrupt">Paket rusak</string>
+  <string name="package_import_error_type_mismatch">Jenis berkas salah, bukan berkas XPKG</string>
+  <string name="package_import_status_loading">Memuat berkas paket</string>
+  <string name="waveset_category_color">Warna Gelombang</string>
+  <string name="waveset_behavior_style">Gaya Gelombang</string>
+  <string name="waveset_behavior_speed">Kcepatn. Gelombang</string>
+  <string name="waveset_color_back_top">Ltr Blkg Atas</string>
+  <string name="waveset_color_back_bottom">Ltr Blkg Bawah</string>
+  <string name="waveset_color_fore_top">Pinggir Gelombang</string>
+  <string name="waveset_color_fore_bottom">Tengah Gelombang</string>
+  <string name="setting_display_button_type_name">Gaya Tombol</string>
+  <string name="setting_display_button_type_desc">Tombol konsol mana yang ditampilkan di layar</string>
+  <string name="common_default">Bawaan</string>
+  <string name="settings_display_background_dim_name">Kegelapan Latar Belakang</string>
+  <string name="settings_display_background_dim_desc">Tingkat penggelapan pada lapisan bawah menu</string>
+  <string name="settings_display_statusbar_fmt_name">Format Teks Bilah Status</string>
+  <string name="settings_display_statusbar_fmt_desc">Format teks yang ditampilkan di bilah status (jika terlihat)</string>
+  <string name="common_save">Simpan</string>
+  <string name="dlg_edit_status_bar_format">Ubah Format Bilah Status</string>
+  <string name="common_edit">Ubah</string>
+  <string name="settings_audio_master_volume_name">Volume Utama</string>
+  <string name="settings_audio_master_volume_desc">Pengali volume utama</string>
+  <string name="debug_custom_resource_dialog_title">Daftar sumber daya kustomisasi</string>
+  <string name="dbg_custom_file_list">Berkas terkustomisasi</string>
+  <string name="statusbarfmt_dlg_help">:: Arahan Pemformatan ::\n
+      Tiap teks yang ada di dalam kurung kurawal akan diganti dengan teks yang sesuai. Contoh nya\n
+      \"-( {operator} {sdf:dd/MM hh:mm:ss a} )-\" akan diformat menjadd \"-( HardBanks 28/2 10:54:39 AM )-\"\n \n
+      :: Teks Kunci Yang Didukung ::\n
+      &#8226; {operator} -> Menampilkan penyedia internet yang aktif (Paket Data, Wi-Fi, Ethernet)\n
+      &#8226; {sdf:[format]} -> Format Sederhana Tanggalan Java, \'format\' harus berisi format\n
+      &#8212; SimpleDateFormat yang valid, cth. : \"{sdf:dd/MM/yyyy}\" akan diformat menjadi \"28/2/2022\"\n
+      &#8212; Untuk setiap kombinasi yang sah, silahkan kunjungi\n
+      &#8212; https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html\n
+      &#8226; {charging} -> Jika sedang mengisi daya, akan diganti dengan emoji petir\n
+      &#8226; {battery} -> Persen Baterai (0-100), tidak termasuk simbol persen\n
+      &#8226; {battery_f(:[decimal])} -> Persen Baterai dalam desimal (0.0-100.0), tidak termasuk simbol persen\n
+      &#8212; Bagian \'decimal\' adalah opsional, diisi dengan berapa banyak angka dibelakang koma\n
+    </string>
 </resources>

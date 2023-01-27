@@ -329,16 +329,17 @@
   <string name="dlg_info_version">Version</string>
     <string name="dlg_info_pkg_name">Package Name</string>
     <string name="dlg_info_rename">Set app custom label</string>
-    <string name="settings_system_show_hidden_app_desc">Show hidden apps,disabled on next restart</string>
+    <string name="settings_system_show_hidden_app_desc">Show hidden apps, disabled on next restart</string>
   <string name="settings_system_show_hidden_app_name">Show hidden apps</string>
     <string name="category_shortcut">Shortcuts</string>
     <string name="dlg_info_redesc">Set app custom description</string>
     <string name="app_info_by_system">This app\'s info in System Settings</string>
-    <string name="settings_install_package">★ Install Package Files</string>
+    <string name="settings_install_package" translatable="false">★ Install Package Files</string>
     <string name="custom_package_error_no_intent">No file intent is returned</string>
     <string name="common_toggle">Toggle</string>
     <string name="package_import_unknown_error">Unknown error occurred</string>
   <string name="package_import_error_corrupt">Package Corrupted</string>
   <string name="package_import_error_type_mismatch">File type mismatch, not XPKG file</string>
   <string name="package_import_status_loading">Loading package file...</string>
+    <string name="xmb_view_content_description">This app is targeted to users who have perfect and partial vision. we do not provide any additional accessibility feature for visually impaired user, So please exit the app immediately and uninstall this app if you think it is unnecessarily installed.</string>
 </resources>
