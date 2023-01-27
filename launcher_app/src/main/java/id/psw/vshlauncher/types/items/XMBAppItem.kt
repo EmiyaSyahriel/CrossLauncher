@@ -122,6 +122,12 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
             addAll(requestCustomizationFiles("ICON1.GIF")) // GIF (Facebook Fresco), low quality, small file, Renderer Bad
         }
     }
+    private var iconFiles = ArrayList<File>().apply{
+        if(!disableAnimatedIcon) {
+            addAll(requestCustomizationFiles("ICON0.PNG"))
+            addAll(requestCustomizationFiles("ICON0.JPG"))
+        }
+    }
     private var backSoundFiles = ArrayList<File>().apply {
         if(!disableBackSound) {
             addAll(requestCustomizationFiles("SND0.MP3"))
@@ -479,7 +485,22 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     private fun pIconLoad(){
         synchronized(_iconSync){
             if(!hasIconLoaded){
-                _icon = vsh.iconAdapter.create(resInfo.activityInfo, vsh)
+                var isCust = false
+                iconFiles.find {it.exists()}?.apply {
+                    try{
+                        _icon = BitmapFactory.decodeFile(path)
+                        isCust = true
+                    }catch(e:Exception){
+                        vsh.postNotification(
+                            null,
+                            vsh.getString(R.string.error_common_header),
+                            "Icon file for package $packageName is corrupted : $path :\n${e.message}"
+                        )
+                    }
+                }
+                if(!isCust){
+                    _icon = vsh.iconAdapter.create(resInfo.activityInfo, vsh)
+                }
                 hasIconLoaded = true
             }
         }

@@ -735,15 +735,40 @@ fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
 
                         var dispNameYOffset = 0.5f
 
+                        var dNameEnd = scaling.viewport.right - 20.0f
+
                         if(isLand){
                             if(item.hasDescription){
-                                ctx.drawText(item.description, textLeft, centerY, menuVerticalDescPaint, 1.1f)
+                                //ctx.drawText(item.description, textLeft, centerY, menuVerticalDescPaint, 1.1f)
+                                DrawExtension.scrollText(
+                                    ctx,
+                                    item.description,
+                                    textLeft,
+                                    scaling.viewport.right - 20.0f,
+                                    centerY, menuVerticalDescPaint,
+                                    1.1f,
+                                    time.currentTime,
+                                    24.0f
+                                )
                                 dispNameYOffset= -0.25f
                             }
                             if(item.hasValue && !state.itemMenu.isDisplayed){
-                                ctx.drawText(item.value, scaling.viewport.right - 400.0f, centerY, menuVerticalDescPaint, -0.25f)
+                                DrawExtension.scrollText(
+                                    ctx,
+                                    item.value,
+                                    scaling.viewport.right - 400.0f,
+                                    scaling.viewport.right - 20.0f,
+                                    centerY, menuVerticalDescPaint,
+                                    -0.25f,
+                                    time.currentTime,
+                                    24.0f
+                                )
+                                dNameEnd = scaling.viewport.right - 450.0f
+                                //ctx.drawText(item.value, scaling.viewport.right - 400.0f, centerY, menuVerticalDescPaint, -0.25f)
                             }
                         }else{
+
+                            dNameEnd = scaling.viewport.right - 20.0f
                             var itemDesc = ""
                             var hasBottomText = false
                             if(item.hasValue){
@@ -756,10 +781,30 @@ fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
 
                             if(hasBottomText){
                                 dispNameYOffset= -0.25f
-                                ctx.drawText(itemDesc, textLeft, centerY, menuVerticalDescPaint, 1.1f)
+                                DrawExtension.scrollText(
+                                    ctx,
+                                    itemDesc,
+                                    textLeft,
+                                    scaling.viewport.right - 20.0f,
+                                    centerY, menuVerticalDescPaint,
+                                    1.1f,
+                                    time.currentTime,
+                                    5.0f
+                                )
+                                //ctx.drawText(itemDesc, textLeft, centerY, menuVerticalDescPaint, 1.1f)
                             }
                         }
-                        ctx.drawText(item.displayName, textLeft, centerY, menuVerticalNamePaint, dispNameYOffset)
+                        DrawExtension.scrollText(
+                            ctx,
+                            item.displayName,
+                            textLeft,
+                            dNameEnd,
+                            centerY, menuVerticalNamePaint,
+                            dispNameYOffset,
+                            time.currentTime,
+                            5.0f
+                        )
+                        //ctx.drawText(item.displayName, textLeft, centerY, menuVerticalNamePaint, dispNameYOffset)
 
                         if (isPSP && item.hasDescription) {
                             statusOutlinePaint.strokeWidth = 2.0f

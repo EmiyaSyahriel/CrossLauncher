@@ -19,7 +19,7 @@ import id.psw.vshlauncher.typography.drawText
 import id.psw.vshlauncher.typography.getButtonedString
 import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
-import id.psw.vshlauncher.views.dialogviews.SubDialogUI
+import id.psw.vshlauncher.views.DrawExtension
 import id.psw.vshlauncher.views.drawText
 import id.psw.vshlauncher.views.wrapText
 import java.text.SimpleDateFormat
@@ -205,7 +205,7 @@ class XMBWaveSettingSubDialog(private val vsh: VSH) : XmbDialogSubview(vsh) {
 
         if(canChangePage){
             textAlign(Paint.Align.CENTER)
-            SubDialogUI.arrowCapsule(ctx, drawBound.centerX(), drawBound.centerY(), drawBound.width() - 100.0f, textPaint, currentTime, 0.5f,
+            DrawExtension.arrowCapsule(ctx, drawBound.centerX(), drawBound.centerY(), drawBound.width() - 100.0f, textPaint, currentTime, 0.5f,
             pageNumber > 0, pageNumber < 2)
         }
     }
@@ -259,13 +259,13 @@ class XMBWaveSettingSubDialog(private val vsh: VSH) : XmbDialogSubview(vsh) {
             val lr = it.second.invoke(kvpValueBuffer)
             if(isSelected(page, i)){
                 textAlign(Paint.Align.CENTER)
-                SubDialogUI.arrowCapsule(ctx, kvpValueBuffer.centerX(), textLine(top, iif), 250.0f, textPaint, currentTime, 1.0f, isLeft = lr.first, isRight = lr.second)
+                DrawExtension.arrowCapsule(ctx, kvpValueBuffer.centerX(), textLine(top, iif), 250.0f, textPaint, currentTime, 1.0f, isLeft = lr.first, isRight = lr.second)
             }
         }
     }
 
     private fun drawGaugeWithValue(ctx:Canvas, min:Float, max:Float, value:Float, formater : (Float) -> String, it:RectF){
-        SubDialogUI.progressBar(ctx, min, max, value, it.left, it.centerY() - 6f, it.width() - 50.0f, align = Paint.Align.LEFT)
+        DrawExtension.progressBar(ctx, min, max, value, it.left, it.centerY() - 6f, it.width() - 50.0f, align = Paint.Align.LEFT)
         textAlign(Paint.Align.LEFT)
         ctx.drawText(formater(value), it.right - 40.0f, it.top, textPaint, 1.0f)
     }
@@ -284,7 +284,7 @@ class XMBWaveSettingSubDialog(private val vsh: VSH) : XmbDialogSubview(vsh) {
                 drawGaugeWithValue(ctx, 0.0f, 5.0f, state.speed, { f -> "%.1f".format(f) }, it)
                 ((state.speed > 0.11) to (state.speed < 4.99))
             }, vsh.getString(R.string.waveset_daynight_cycle) to {
-                SubDialogUI.checkBox(ctx, it.centerX(), it.centerY(), state.isDayNight)
+                DrawExtension.checkBox(ctx, it.centerX(), it.centerY(), state.isDayNight)
                 (true to true)
             }, vsh.getString(R.string.waveset_bg_month_number) to {
                 val name = when(state.month){

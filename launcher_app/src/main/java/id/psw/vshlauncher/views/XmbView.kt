@@ -15,7 +15,6 @@ import id.psw.vshlauncher.*
 import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.typography.FontCollections
-import id.psw.vshlauncher.views.dialogviews.SubDialogUI
 import java.util.*
 import kotlin.ConcurrentModificationException
 import kotlin.concurrent.thread
@@ -154,7 +153,7 @@ class XmbView @JvmOverloads constructor(
         setZOrderOnTop(true)
         holder.setFormat(PixelFormat.TRANSPARENT)
         loadPreferences()
-        SubDialogUI.init(context.vsh)
+        DrawExtension.init(context.vsh)
     }
 
     private fun adaptScreenSize(){

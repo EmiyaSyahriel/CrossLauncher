@@ -62,7 +62,7 @@ class StatusBarFormatDialogView(val vsh: VSH) : XmbDialogSubview(vsh) {
         }
 
         tmpRectF1.set(tmpRectF.left, tmpRectF.bottom + lineSz * 1.0f, tmpRectF.right - 100.0f, tmpRectF.bottom + (lineSz * 3.0f))
-        SubDialogUI.glowOverlay(ctx, tmpRectF1, (tPaint.textSize).toInt(), null, isTextBarSelect, cTime)
+        DrawExtension.glowOverlay(ctx, tmpRectF1, (tPaint.textSize).toInt(), null, isTextBarSelect, cTime)
         ctx.withClip(tmpRectF1){
             tPaint.textAlign = Paint.Align.LEFT
             ctx.drawText(textContent, tmpRectF1.left + 10.0f, tmpRectF1.centerY(), tPaint, 0.5f)

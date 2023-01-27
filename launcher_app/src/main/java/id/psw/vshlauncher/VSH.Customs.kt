@@ -10,6 +10,7 @@ object VshBaseDirs {
     const val FLASH_DATA_DIR = "dev_flash/data"
     const val USER_DIR = "dev_hdd0/home"
     const val APPS_DIR = "dev_hdd0/games"
+    const val PLUGINS_DIR = "dev_hdd0/plugins"
     const val CACHE_DIR = "dev_hdd1/caches"
 }
 

@@ -1,16 +1,16 @@
-package id.psw.vshlauncher.views.dialogviews
+package id.psw.vshlauncher.views
 
 import android.graphics.*
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.toRect
 import androidx.core.graphics.toRectF
+import androidx.core.graphics.withClip
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.types.XMBItem
-import id.psw.vshlauncher.views.drawText
+import id.psw.vshlauncher.types.Ref
+import kotlin.math.PI
+import kotlin.math.cos
 import kotlin.math.sin
 
-object SubDialogUI {
+object DrawExtension {
     private var hasInit = false
     private lateinit var texProgressBar : Bitmap
     private lateinit var texGlowEdge : Bitmap
@@ -118,6 +118,46 @@ object SubDialogUI {
             ctx.drawPath(arrowPath, encpPaint)
         }
     }
+
+    fun scrollSinTime(time:Float, maxTime:Float) : Float{
+        val x = (time % maxTime) / maxTime
+        return (((2.0 * cos (2 * x * PI)) + 1) / 2).coerceIn(0.0, 1.0).toFloat()
+    }
+
+    private val scrollClipRectF = RectF()
+
+    fun scrollText(ctx:Canvas, str:String, startX:Float, endX:Float, y:Float, paint:Paint, yOffset:Float, time: Ref<Float>, cps: Float)
+        = scrollText(ctx, str, startX, endX, y, paint, yOffset, time.p, cps)
+
+    fun scrollText(ctx:Canvas, str:String, startX:Float, endX:Float, y:Float, paint:Paint, yOffset:Float, time: Float, cps: Float){
+        val w = paint.measureText(str)
+        if(w > endX - startX){
+            val align = paint.textAlign
+            paint.textAlign = Paint.Align.LEFT
+            val oy = y + (yOffset * paint.textSize)
+            scrollClipRectF.set(
+                startX,
+                oy - paint.textSize,
+                endX,
+                oy + paint.textSize
+            )
+            ctx.withClip(scrollClipRectF){
+                val t = scrollSinTime(time, str.length / cps)
+                val x = t.toLerp(startX, startX - w + (endX - startX))
+                ctx.drawText(str, x, y, paint, yOffset)
+            }
+            paint.textAlign = align
+        }else{
+            val x = when(paint.textAlign) {
+                Paint.Align.LEFT -> startX
+                Paint.Align.RIGHT -> endX
+                Paint.Align.CENTER -> (startX + endX) / 2.0f
+                else -> startX
+            }
+            ctx.drawText(str, x, y, paint, yOffset)
+        }
+    }
+
 
     fun progressBar(ctx: Canvas, min:Float, max:Float, value:Float, x:Float, y:Float, w:Float, h:Float = 12.0f , align : Paint.Align = Paint.Align.LEFT){
         val xAlign = paintAlignToFloat(align)

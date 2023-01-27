@@ -27,6 +27,8 @@ class XPKGFile(val zip:ZipFile) {
 
     val title get() = info[INI_PKG_METADATA, "TITLE"] ?: "[No Title]"
     val author get() = info[INI_PKG_METADATA, "AUTHOR"] ?: "[Anonymous]"
+    val packager get() = info[INI_PKG_METADATA, "PACKAGER"] ?: "[Anonymous]"
+    val description get() = info[INI_PKG_METADATA, "DESCRIPTION"] ?: "- no description -"
     val checkInstalls get() = info[INI_PKG_METADATA, "CHECK_INSTALL"] ?: ""
     val iconPath get() = info[INI_PKG_METADATA, "ICON"] ?: ""
 

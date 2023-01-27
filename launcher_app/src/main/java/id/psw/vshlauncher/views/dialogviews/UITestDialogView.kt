@@ -8,6 +8,7 @@ import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.typography.drawText
 import id.psw.vshlauncher.typography.toButtonSpan
+import id.psw.vshlauncher.views.DrawExtension
 import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
 import kotlin.random.Random
@@ -71,15 +72,15 @@ class UITestDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
 
         when(pageNum){
             0 -> {
-                SubDialogUI.progressBar(ctx,0.0f, 100.0f, testBarValue, xCenterL, 100.0f, 300.0f)
+                DrawExtension.progressBar(ctx,0.0f, 100.0f, testBarValue, xCenterL, 100.0f, 300.0f)
             }
             1 -> {
                 rctF.set(drawBound.right - 20.0f, drawBound.top, drawBound.right, drawBound.bottom)
-                SubDialogUI.scrollBar(ctx,
+                DrawExtension.scrollBar(ctx,
                     rctF,
                     testVScrollPc, testVScrollSz)
                 rctF.set(drawBound.left, drawBound.bottom - 20.0f, drawBound.right, drawBound.bottom)
-                SubDialogUI.scrollBar(ctx,
+                DrawExtension.scrollBar(ctx,
                     rctF,
                     testHScrollPc, testHScrollSz)
             }
@@ -96,7 +97,7 @@ class UITestDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
             }
             3 -> {
                 rctF.set(drawBound.left + 30.0f, drawBound.centerY() - 15.0f,drawBound.right - 30.0f,drawBound.centerY() + 15.0f)
-                SubDialogUI.glowOverlay(ctx, rctF, 10, null, true, currentTime)
+                DrawExtension.glowOverlay(ctx, rctF, 10, null, true, currentTime)
             }
         }
     }

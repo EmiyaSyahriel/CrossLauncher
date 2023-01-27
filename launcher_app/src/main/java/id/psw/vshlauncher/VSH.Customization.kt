@@ -1,12 +1,16 @@
 package id.psw.vshlauncher
 
 import android.content.Intent
+import id.psw.vshlauncher.views.dialogviews.InstallPackageDialogView
+import id.psw.vshlauncher.views.showDialog
 
 
-fun VSH.isXPKGIntent(intent:Intent) : Boolean{
-    return intent.action == Intent.ACTION_VIEW && intent.data?.path?.endsWith(".xpkg") == true
+inline fun VSH.isXPKGIntent(intent:Intent) : Boolean{
+    val isView = intent.action == Intent.ACTION_VIEW
+    val path = intent.data?.path ?: ""
+    return isView && path.endsWith(".xpkg")
 }
 
-fun VSH.showInstallPkgDialog(intent: Intent) {
-
+inline fun VSH.showInstallPkgDialog(intent: Intent) {
+    xmbView?.showDialog(InstallPackageDialogView(this, intent))
 }

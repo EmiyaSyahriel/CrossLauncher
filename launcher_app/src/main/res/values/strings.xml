@@ -337,4 +337,8 @@
     <string name="settings_install_package">★ Install Package Files</string>
     <string name="custom_package_error_no_intent">No file intent is returned</string>
     <string name="common_toggle">Toggle</string>
+    <string name="package_import_unknown_error">Unknown error occurred</string>
+  <string name="package_import_error_corrupt">Package Corrupted</string>
+  <string name="package_import_error_type_mismatch">File type mismatch, not XPKG file</string>
+  <string name="package_import_status_loading">Loading package file...</string>
 </resources>

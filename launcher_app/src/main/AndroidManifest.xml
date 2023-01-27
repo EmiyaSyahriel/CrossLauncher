@@ -101,13 +101,23 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.OPENABLE"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
 
+                <data android:mimeType="*/*"/>
                 <data android:host="*"/>
-                <data android:mimeType="*/*/"/>
-                <data android:pathPattern=".*\\.xpkg"/>
-                <data android:scheme="*"/>
+                <data android:scheme="file"/>
+                <data android:scheme="content"/>
+                <data android:pathPattern=".*.xpkg"/>
+                <data android:pathPattern=".*..*.xpkg"/>
+                <data android:pathPattern=".*..*..*.xpkg"/>
+                <data android:pathPattern=".*..*..*..*.xpkg"/>
+                <data android:pathPattern=".*..*..*..*..*.xpkg"/>
+                <data android:pathPattern=".*..*..*..*..*..*.xpkg"/>
+                <data android:pathPattern=".*..*..*..*..*..*..*.xpkg"/>
+                <data android:pathPattern=".*..*..*..*..*..*..*..*.xpkg"/>
+                <data android:pathPattern=".*..*..*..*..*..*..*..*..*.xpkg"/>
+                <data android:pathPattern=".*..*..*..*..*..*..*..*..*..*.xpkg"/>
+                <data android:pathPattern=".*..*..*..*..*..*..*..*..*..*..*.xpkg"/>
             </intent-filter>
         </activity>
         <activity

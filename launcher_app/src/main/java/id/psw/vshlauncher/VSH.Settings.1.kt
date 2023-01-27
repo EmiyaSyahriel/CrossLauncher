@@ -155,8 +155,6 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 GamepadSubmodule.Key.spotMarkedByX.select(1,0)).apply()
         })
 
-
-
         content.add(XMBSettingsItem(vsh, "settings_system_epimsg_disable",
             R.string.settings_system_disable_splash_message_title,
             R.string.settings_system_disable_splash_message_desc,
