@@ -36,7 +36,7 @@ class TextDialogView(vsh: VSH) : XmbDialogSubview(vsh) {
 
     override fun onDraw(ctx: Canvas, drawBound: RectF, deltaTime:Float) {
         textPaint.textSize = isPSP.select(30.0f, 25.0f)
-        val lines = textPaint.wrapText(content, drawBound.width() - 25.0f).lines()
+        val lines = textPaint.wrapText(content, drawBound.width() - 200.0f).lines()
         var y = -(lines.size * 0.5f) * (textPaint.textSize * textSpacing)
         lines.forEach {
             ctx.drawText(it, drawBound.centerX(), drawBound.centerY() + y, textPaint, 0.5f)
