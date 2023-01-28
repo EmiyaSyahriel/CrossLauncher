@@ -30,6 +30,7 @@ val Context.vsh : VSH
 val Context.xmb : XMB
     get() {
         // Check if current context is an XMB Activity Context
+        if(this is VSH) return this.xmbView?.context?.xmb!!
         if(this is XMB) return this
         return this as XMB
     }

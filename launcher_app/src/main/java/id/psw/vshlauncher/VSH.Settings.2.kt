@@ -1,13 +1,10 @@
 package id.psw.vshlauncher
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.WallpaperManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.edit
 import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
 import id.psw.vshlauncher.livewallpaper.XMBWaveSettingSubDialog
@@ -18,7 +15,6 @@ import id.psw.vshlauncher.types.items.XMBMenuItem
 import id.psw.vshlauncher.types.items.XMBSettingsCategory
 import id.psw.vshlauncher.types.items.XMBSettingsItem
 import id.psw.vshlauncher.views.VshViewPage
-import id.psw.vshlauncher.views.dialogviews.InstallPackageDialogView
 import id.psw.vshlauncher.views.dialogviews.TextDialogView
 import id.psw.vshlauncher.views.showDialog
 
@@ -119,4 +115,51 @@ fun VSH.settingsAddInstallPackage(): XMBItem {
 
     }
     return xi
+}
+
+fun VSH.setSysBarVisibility(i:Int){
+    vsh.xmb.sysBarVisibility = i
+    vsh.pref.edit().putInt(PrefEntry.SYSTEM_STATUS_BAR, i).apply()
+    vsh.xmb.updateSystemBarVisibility()
+}
+
+fun VSH.settingsAddSystemSetting2(cat : XMBSettingsCategory){
+    cat.content.add(XMBSettingsItem(vsh, "settings_system_android_bar",
+        R.string.settings_system_android_bar_name,
+        R.string.settings_system_android_bar_desc,
+        R.drawable.icon_hidden,
+        {
+            vsh.getString(when(vsh.xmb.sysBarVisibility){
+                SysBar.ALL -> R.string.system_bar_visible_all
+                SysBar.NAVIGATION -> R.string.system_bar_visible_navigation
+                SysBar.STATUS -> R.string.system_bar_visible_status
+                SysBar.NONE -> R.string.system_bar_visible_none
+                else -> R.string.unknown
+            })
+        }
+    ){
+        val i = when(vsh.xmb.sysBarVisibility){
+            SysBar.ALL -> SysBar.STATUS
+            SysBar.STATUS -> SysBar.NAVIGATION
+            SysBar.NAVIGATION -> SysBar.NONE
+            SysBar.NONE -> SysBar.ALL
+            else -> SysBar.NONE
+        }
+        setSysBarVisibility(i)
+    }.apply {
+        val menu = arrayListOf<XMBMenuItem>()
+        arrayListOf(
+            R.string.system_bar_visible_all to SysBar.ALL,
+            R.string.system_bar_visible_navigation to SysBar.NAVIGATION,
+            R.string.system_bar_visible_status to SysBar.STATUS,
+            R.string.system_bar_visible_none to SysBar.NONE
+        ).forEachIndexed { i, it ->
+            menu.add(XMBMenuItem.XMBMenuItemLambda({ getString(it.first) }, { false }, i){
+                setSysBarVisibility(it.second)
+                xmb.xmbView.state.itemMenu.isDisplayed = false
+            })
+        }
+        menuItems = menu
+        hasMenu = true
+    })
 }

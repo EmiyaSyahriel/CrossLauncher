@@ -34,6 +34,7 @@ fun VSH.fillSettingsCategory(){
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryAndroidSetting())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryDebug())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, settingsAddInstallPackage())
+
     }
 }
 
@@ -98,7 +99,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 vsh.xmbView?.showDialog(ArrangeCategoryDialogView(vsh))
             }
         )
-
+        settingsAddSystemSetting2(this)
         content.add(XMBSettingsItem(vsh, "settings_system_orientation",
             R.string.item_orientation,
             R.string.orient_user, R.drawable.icon_orientation, {

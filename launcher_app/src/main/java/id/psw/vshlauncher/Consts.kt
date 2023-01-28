@@ -20,7 +20,6 @@ object Consts {
 
 }
 
-
 @Suppress("SpellCheckingInspection")
 object PrefEntry{
 
@@ -76,6 +75,13 @@ object PrefEntry{
     const val DISPLAY_STATUS_DISPLAY = "/crosslauncher/menu/statusBarDisplay"
     /** Int, SurfaceView FPS Limit, 0 = Infinite */
     const val SURFACEVIEW_FPS_LIMIT = "/crosslauncher/xmb/fps"
+    /** Int,
+     * - 0 = All
+     * - 1 = Status
+     * - 2 = Navigation
+     * - 3 = None
+     */
+    const val SYSTEM_STATUS_BAR = "/crosslauncher/system/barDisplay"
 }
 
 enum class FittingMode {
@@ -89,4 +95,11 @@ enum class AppItemSorting{
     PackageName,
     UpdateTime,
     FileSize
+}
+
+object SysBar {
+    const val NONE       = 0b0000
+    const val STATUS     = 0b0001
+    const val NAVIGATION = 0b0010
+    const val ALL        = 0b0011
 }

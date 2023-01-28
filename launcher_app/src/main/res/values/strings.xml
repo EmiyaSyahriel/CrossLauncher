@@ -343,4 +343,10 @@
   <string name="package_import_status_loading">Loading package file...</string>
     <string name="xmb_view_content_description">This app is targeted to users who have perfect and partial vision. we do not provide any additional accessibility feature for visually impaired user, So please exit the app immediately and uninstall this app if you think it is unnecessarily installed.</string>
     <string name="common_apply">Apply</string>
+    <string name="settings_system_android_bar_name">System Bar Visibility</string>
+  <string name="settings_system_android_bar_desc">How system status bar is displayed when launcher is active</string>
+  <string name="system_bar_visible_all">All</string>
+  <string name="system_bar_visible_status">Status Bar</string>
+  <string name="system_bar_visible_navigation">Navigation Bar</string>
+  <string name="system_bar_visible_none">None</string>
 </resources>
