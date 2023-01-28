@@ -83,18 +83,24 @@ class VSH : Application(), ServiceConnection {
     val categories = arrayListOf<XMBItemCategory>()
     /** Return all item in current selected category or current active item, including the hidden ones */
     val items : ArrayList<XMBItem>? get(){
-        var root = categories.visibleItems.find { it.id == selectedCategoryId }?.content
-        var i = 0
-        while(root != null && i < selectStack.size){
-            root = root.find { it.id == selectStack[i]}?.content
-            i++
-        }
-        if(root != null){
-            if(root.indexOfFirst { it.id == selectedItemId } < 0 && root.size > 0){
-                selectedItemId = root[0].id
+        try {
+            var root = categories.visibleItems.find { it.id == selectedCategoryId }?.content
+            var i = 0
+            while(root != null && i < selectStack.size){
+                root = root.find { it.id == selectStack[i]}?.content
+                i++
             }
+            if(root != null){
+                if(root.indexOfFirst { it.id == selectedItemId } < 0 && root.size > 0){
+                    selectedItemId = root[0].id
+                }
+            }
+            return root
+        }catch(e:Exception){
+            e.printStackTrace()
+            vsh.postNotification(R.drawable.ic_close, e.javaClass.name, e.toString())
         }
-        return root
+        return arrayListOf<XMBItem>()
     }
 
     val activeParent : XMBItem? get(){
