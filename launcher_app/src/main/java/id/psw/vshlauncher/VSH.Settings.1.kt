@@ -526,21 +526,7 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 r
             }
         ){
-            xmbView?.state?.itemMenu?.isDisplayed = true
-        }.apply {
-            val menus = arrayListOf<XMBMenuItem>(
-                XMBMenuItem.XMBMenuItemLambda( {"1280x720 (16:9)"},  {false}, 0, ){ xmbView?.setReferenceScreenSize(1280, 720, true) },
-                XMBMenuItem.XMBMenuItemLambda( {"960x720 (4:3)"  },  {false}, 1, ){ xmbView?.setReferenceScreenSize(960, 720, true) },
-                XMBMenuItem.XMBMenuItemLambda( {"1080x720 (3:2)" },  {false}, 2, ){ xmbView?.setReferenceScreenSize(1080, 720, true) },
-                XMBMenuItem.XMBMenuItemLambda( {"1200x720 (5:3)" },  {false}, 3, ){ xmbView?.setReferenceScreenSize(1200, 720, true) },
-                XMBMenuItem.XMBMenuItemLambda( {"1600x720 (20:9)"},  {false}, 4, ){ xmbView?.setReferenceScreenSize(1600, 720, true) },
-                XMBMenuItem.XMBMenuItemLambda( {"1280x960 (4:3)" },  {false}, 5, ){ xmbView?.setReferenceScreenSize(1280, 960, true) },
-                XMBMenuItem.XMBMenuItemLambda( {"1280x854 (3:2)" },  {false}, 6, ){ xmbView?.setReferenceScreenSize(1280, 854, true) },
-                XMBMenuItem.XMBMenuItemLambda( {"1280x768 (5:3)" },  {false}, 7, ){ xmbView?.setReferenceScreenSize(1280, 768, true) },
-                XMBMenuItem.XMBMenuItemLambda( {"1280x576 (20:9)"},  {false}, 8, ){ xmbView?.setReferenceScreenSize(1280, 576, true) },
-            )
-            menuItems = menus
-            hasMenu = true
+            xmbView?.showDialog(CustomAspectRatioDialogView(vsh))
         }
 
         content.add(scRef)
