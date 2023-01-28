@@ -1,13 +1,12 @@
 package id.psw.vshlauncher.views.dialogviews
 
-import android.app.Dialog
 import android.graphics.*
 import android.view.KeyEvent.ACTION_DOWN
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
+import id.psw.vshlauncher.views.DrawExtension
 import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
 import kotlin.math.abs
@@ -30,6 +29,8 @@ class ArrangeCategoryDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
         get() = vsh.getString(doLift.select(R.string.rearrange_end, R.string.rearrange_start))
     private val drawBound: RectF = RectF()
     private val pathArrowDown = Path()
+    private val selBound = RectF()
+    private var dTime = 0.0f
 
     override val title: String
         get() = vsh.getString(R.string.dlg_rearrange_categories)
@@ -65,7 +66,10 @@ class ArrangeCategoryDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
 
     override fun onDraw(ctx: Canvas, drawBound: RectF, deltaTime: Float) {
         this.drawBound.set(drawBound)
+        dTime += deltaTime
         tPaint.textAlign = Paint.Align.CENTER
+        selBound.left = drawBound.centerX() - iconSize.x
+        selBound.right = drawBound.centerX() + iconSize.x
         visibleItems.forEachIndexed { i, it ->
             val xi = i - activeIndexF
             val x = drawBound.centerX() + (xi * 2.0f * iconSize.x)
@@ -77,8 +81,12 @@ class ArrangeCategoryDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
             if(it.isHidden)
                 alpha * 0.5f
 
+            selBound.top = y - (iconSize.y * 0.75f)
+            selBound.bottom = y + iconSize.y
+
             drawIcon(ctx, it, tmpIconPf, alpha)
         }
+
         activeIndexF = 0.5f.toLerp(activeIndexF, activeIndex * 1.0f)
         liftOffset = 0.3f.toLerp(liftOffset, doLift.select(1.0f, 0.0f))
 
@@ -91,12 +99,16 @@ class ArrangeCategoryDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
             val x = drawBound.centerX()
             val y = drawBound.centerY() - (iconSize.y * liftOffset)
 
+            selBound.top = y - (iconSize.y * 0.75f)
+
             val item = vsh.categories.firstOrNull { it.id == liftItemId }
             tmpIconPf.set(x, y)
             if(item != null){
                 drawIcon(ctx, item, tmpIconPf, liftOffset)
             }
         }
+
+        DrawExtension.glowOverlay(ctx, selBound, 20, null, true, dTime)
     }
 
     private fun setActiveIndex(num: Int){
@@ -105,7 +117,7 @@ class ArrangeCategoryDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
 
     override fun onTouch(a: PointF, b: PointF, act: Int) {
         if(act == ACTION_DOWN){
-            val w = drawBound.width() / 3.0f;
+            val w = drawBound.width() / 3.0f
             if(a.x < (w * 1.0f)){
                 setActiveIndex(activeIndex - 1)
             }else if(a.x < (w * 2.0f))
