@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Typeface
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -16,6 +17,7 @@ import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.scale
 import id.psw.vshlauncher.livewallpaper.NativeGL
 // import com.facebook.drawee.backends.pipeline.Fresco
 import id.psw.vshlauncher.pluginservices.IconPluginServiceHandle
@@ -260,6 +262,37 @@ class VSH : Application(), ServiceConnection {
     fun loadTexture(@DrawableRes d : Int, whiteFallback:Boolean = false ) : Bitmap {
         val dwb =ResourcesCompat.getDrawable(resources, d, null)
         return dwb?.toBitmap(dwb.intrinsicWidth ?: 1, dwb.intrinsicHeight?: 1) ?: whiteFallback.select(XMBItem.WHITE_BITMAP, XMBItem.TRANSPARENT_BITMAP)
+    }
+    fun loadTexture(@DrawableRes d: Int, customId:String, w:Int, h:Int, whiteFallback: Boolean) : Bitmap{
+        var retval : Bitmap? = null
+        val file = getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "$customId.png")
+            .find { it.exists() }
+        if(file != null){
+            try {
+                retval = BitmapFactory.decodeFile(file.absolutePath)
+                val dr = retval.scale(w, h)
+                retval.recycle()
+                retval = dr
+            }catch(e:Exception){
+                postNotification(R.drawable.ic_close, e.javaClass.name, "Failed to decode file ${file.absolutePath} : ${e.message}")
+            }
+        }
+
+        return retval ?: loadTexture(d, w, h, whiteFallback)
+    }
+    fun loadTexture(@DrawableRes d: Int, customId:String, whiteFallback: Boolean) : Bitmap{
+        var retval : Bitmap? = null
+        val file = getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "$customId.png")
+            .find { it.exists() }
+        if(file != null){
+            try {
+                retval = BitmapFactory.decodeFile(file.absolutePath)
+            }catch(e:Exception){
+                postNotification(R.drawable.ic_close, e.javaClass.name, "Failed to decode file ${file.absolutePath} : ${e.message}")
+            }
+        }
+
+        return retval ?: loadTexture(d, whiteFallback)
     }
 
     fun moveCursorY(bottom:Boolean){
