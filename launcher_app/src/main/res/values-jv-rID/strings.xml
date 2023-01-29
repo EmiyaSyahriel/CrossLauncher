@@ -170,4 +170,5 @@
     <string name="android_sys_deviceinfo_name">Miturut piranti</string>
     <string name="android_sys_deviceinfo_desc">Versi Android, alamat IP, IMEI</string>
     <string name="setting_show_gameboot_desc">Play gameboot animation when launching application</string>
+    <string name="item_orientation_desc">Parane piranti wayah nggawe peluncur iki</string>
 </resources>
