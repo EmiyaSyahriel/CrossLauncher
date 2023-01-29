@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.os.Build
+import android.os.Debug
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.*
@@ -319,8 +320,10 @@ class XmbView @JvmOverloads constructor(
 
         val isTvTxt = isTV.select("Device : TV","")
 
+        val memSz = "NATIVE - SIZE:${Debug.getNativeHeapSize().asBytes()} | ALLOC:${Debug.getNativeHeapAllocatedSize().asBytes()} | FREE:${Debug.getNativeHeapFreeSize().asBytes()}"
+
         arrayOf(
-            fpsTxt, isTvTxt
+            fpsTxt, memSz, isTvTxt
         ).forEachIndexed { i, it ->
             ctx.drawText(it, 20f, 50f + (i * (dummyPaint.textSize * 1.25f)), dummyPaint, 1.0f)
         }
