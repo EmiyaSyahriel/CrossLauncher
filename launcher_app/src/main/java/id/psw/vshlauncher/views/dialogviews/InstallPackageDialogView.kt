@@ -54,13 +54,13 @@ class InstallPackageDialogView(private val vsh: VSH, private val intent: Intent)
     }
 
     override val icon: Bitmap
-        get() = vsh.loadTexture(R.drawable.ic_folder)
+        get() = vsh.loadTexture(R.drawable.ic_folder, "icon_folder", true)
 
     override val hasNegativeButton: Boolean
         get() = status.canShowButton
 
     override val hasPositiveButton: Boolean
-        get() = status.canShowButton && status != Status.InstallFailed
+        get() = status.canShowButton && status != Status.InstallFailed && status != Status.LoadFailed
 
     override val positiveButton: String
         get() = vsh.getString(R.string.common_install)
@@ -102,7 +102,7 @@ class InstallPackageDialogView(private val vsh: VSH, private val intent: Intent)
         InstallFailed;
 
         val isLoading get() =       this == UriVerification || this == CopyPackage    || this == ReadPackage    || this == LoadAsset
-        val canShowButton get() =   this == Confirmation    || this == InstallSuccess || this == InstallFailed  || this == PackageNotInstalled
+        val canShowButton get() =   this == LoadFailed      || this == Confirmation   || this == InstallSuccess || this == InstallFailed  || this == PackageNotInstalled
         val isFinished get() =      this == InstallSuccess  || this == InstallFailed
     }
 
