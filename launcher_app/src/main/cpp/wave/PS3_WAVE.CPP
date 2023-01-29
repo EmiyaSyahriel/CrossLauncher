@@ -8,6 +8,9 @@
 #include "WAVE.HPP"
 #include <vector>
 
+std::vector<GLfloat> vtx_wave_vdata;
+std::vector<GLuint> vtx_wave_index;
+
 void cxl_ps3_wave_query_shader_interfaces(){
     wave_state.ps3_wave._Time       = glGetUniformLocation(wave_state.ps3_wave.program, wave_consts.unif_names._Time);
     wave_state.ps3_wave._NormalStep = glGetUniformLocation(wave_state.ps3_wave.program, wave_consts.unif_names._NormalStep);
@@ -26,8 +29,8 @@ void cxl_ps3_wave_query_shader_interfaces(){
 void cxl_ps3_wave_generate_vertex(){
     // fill out background buffer
     // fill wave buffer
-    std::vector<GLfloat> vtx_wave_vdata;
-    std::vector<GLuint> vtx_wave_index;
+    vtx_wave_vdata.clear();
+    vtx_wave_index.clear();
 
     int vx, vy;
 

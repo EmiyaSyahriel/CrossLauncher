@@ -15,5 +15,6 @@ void W32_PRINT(char stype, string_t tag, string_t format, ...)
 	va_end(args);
 
 	printf("%c/%s %s\n", stype, tag, buffer);
+	delete[] buffer;
 }
 #endif

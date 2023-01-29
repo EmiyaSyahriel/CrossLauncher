@@ -15,6 +15,8 @@ object DrawExtension {
     private lateinit var texProgressBar : Bitmap
     private lateinit var texGlowEdge : Bitmap
     private var checkBoxTextures : Array<Bitmap> = arrayOf()
+    private lateinit var texArrow : Bitmap
+    var drawArrowUsingPath = false
 
     private val texProgressBarUVRectBuffer = Rect()
     private fun texProgressBarUv(hPart:Int, isBack:Boolean) : Rect{
@@ -63,13 +65,14 @@ object DrawExtension {
     }
 
     fun init(vsh: VSH){
-        texProgressBar = vsh.loadTexture(R.drawable.miptex_progressbar, false)
+        texProgressBar = vsh.loadTexture(R.drawable.miptex_progressbar, "progress_bar", false)
 
-        texGlowEdge = vsh.loadTexture(R.drawable.miptex_gradient_border_128, 120, 120, false)
+        texGlowEdge = vsh.loadTexture(R.drawable.miptex_gradient_border_128, "glow_edge", 120, 120, false)
         checkBoxTextures = arrayOf(
-            vsh.loadTexture(R.drawable.ic_checkbox_blank, false),
-            vsh.loadTexture(R.drawable.ic_checkbox_filled, true),
+            vsh.loadTexture(R.drawable.ic_checkbox_blank, "checkbox_blank", false),
+            vsh.loadTexture(R.drawable.ic_checkbox_filled, "checkbox_filled", true),
         )
+        texArrow = vsh.loadTexture(R.drawable.miptex_ui_arrow, "miptex_arrow", 64, 32, false)
 
         hasInit = true
     }
@@ -87,8 +90,12 @@ object DrawExtension {
     private val scrollBarPaint = Paint().apply {
         color = Color.WHITE
     }
-    private val arrows = arrayOf('\u25BA','\u25C4')
+
     private val arrowPath = Path()
+
+    private val arrowUv = Rect()
+    private val arrowVtx = RectF()
+
     fun arrowCapsule(ctx:Canvas, x:Float, y:Float, w:Float, paint:Paint, cTime:Float, yOffset:Float = 0.0f, isLeft:Boolean = true, isRight: Boolean = true){
         synchronized(encpPaint){
             encpPaint.set(paint)
@@ -96,26 +103,49 @@ object DrawExtension {
             val animT = (cTime % 2.0f) / 2.0f
             encpPaint.alpha = (1.0f - animT).toLerp(0.0f, 255.0f).toInt().coerceIn(0, 255)
             val tSlate = (1.0f - animT).toLerp(20.0f, 5.0f)
-            arrowPath.reset()
             val h = encpPaint.textSize
-            val hx = x - xAlign.toLerp(0.0f, w)
-            val lx = hx - xAlign.toLerp(0.0f, tSlate)
-            val rx = hx + w + xAlign.toLerp(0.0f, tSlate)
-            val hy = (y + h) - (h * yOffset)
-            val hh = h * 0.5f
-            if(isLeft) {
-                arrowPath.moveTo(lx, hy)
-                arrowPath.lineTo(lx, hy + h)
-                arrowPath.lineTo(lx - h, hy + hh)
-                arrowPath.close()
+
+            if(drawArrowUsingPath){
+                val hx = x - xAlign.toLerp(0.0f, w)
+                val hy = (y + h) - (h * yOffset)
+                val hh = h * 0.5f
+                val rx = hx + w + xAlign.toLerp(0.0f, tSlate)
+                val lx = hx - xAlign.toLerp(0.0f, tSlate)
+
+                arrowPath.reset()
+                if(isLeft) {
+                    arrowPath.moveTo(lx, hy)
+                    arrowPath.lineTo(lx, hy + h)
+                    arrowPath.lineTo(lx - h, hy + hh)
+                    arrowPath.lineTo(lx, hy)
+                    arrowPath.close()
+                }
+                if(isRight) {
+                    arrowPath.moveTo(rx, hy)
+                    arrowPath.lineTo(rx, hy + h)
+                    arrowPath.lineTo(rx + h, hy + hh)
+                    arrowPath.lineTo(rx, hy)
+                    arrowPath.close()
+                }
+
+                ctx.drawPath(arrowPath, encpPaint)
+            }else{
+                val cx = x - xAlign.toLerp(0.0f, w)
+                val crx = cx + 10.0f + w + xAlign.toLerp(0.0f, tSlate)
+                val clx = cx - 10.0f - xAlign.toLerp(0.0f, tSlate)
+                val ch = encpPaint.textSize / 3.0f
+                val cy = y + ch
+                if(isLeft){
+                    arrowUv.set(0,0,32,32)
+                    arrowVtx.set(clx - ch, cy - ch, clx + h, cy + h)
+                    ctx.drawBitmap(texArrow, arrowUv, arrowVtx, paint)
+                }
+                if(isRight){
+                    arrowUv.set(32,0,64,32)
+                    arrowVtx.set(crx - ch, cy - ch, crx + h, cy + h)
+                    ctx.drawBitmap(texArrow, arrowUv, arrowVtx, paint)
+                }
             }
-            if(isRight) {
-                arrowPath.moveTo(rx, hy)
-                arrowPath.lineTo(rx, hy + h)
-                arrowPath.lineTo(rx + h, hy + hh)
-                arrowPath.close()
-            }
-            ctx.drawPath(arrowPath, encpPaint)
         }
     }
 
