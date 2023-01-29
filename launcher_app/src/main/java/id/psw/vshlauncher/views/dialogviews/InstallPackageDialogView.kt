@@ -60,13 +60,15 @@ class InstallPackageDialogView(private val vsh: VSH, private val intent: Intent)
         get() = status.canShowButton
 
     override val hasPositiveButton: Boolean
-        get() = status.canShowButton && status != Status.InstallFailed && status != Status.LoadFailed
+        get() = status.canShowButton && !status.isFinished
 
     override val positiveButton: String
         get() = vsh.getString(R.string.common_install)
 
     override val negativeButton: String
         get() = vsh.getString(status.isFinished.select(R.string.common_back, android.R.string.cancel))
+
+    private var installingForSystem = false
 
     override val title: String
         get() = vsh.getString(R.string.settings_install_package)
@@ -270,6 +272,7 @@ class InstallPackageDialogView(private val vsh: VSH, private val intent: Intent)
                     installInfo = info
                 }
             }
+            installingForSystem = false
 
             try{
                 val xpp = xpkg!!
@@ -310,6 +313,15 @@ class InstallPackageDialogView(private val vsh: VSH, private val intent: Intent)
                                 val fName = isApps.select(getPathFileName(file).toString(), file)
                                 val targetFile = targetDir.combine(fName)
                                 val ins = xpp.zip.getInputStream(e)
+
+                                if(targetFile.parentFile?.isFile == true){
+                                    targetFile.parentFile?.delete()
+                                }
+
+                                if(targetFile.parentFile?.exists() == false){
+                                    targetFile.parentFile?.mkdirs()
+                                }
+
                                 if (!targetFile.exists()) {
                                     targetFile.createNewFile()
                                 }
@@ -330,6 +342,11 @@ class InstallPackageDialogView(private val vsh: VSH, private val intent: Intent)
                                 } while (read >= bufSize || ins.available() > 0)
                             }
                         }
+
+                        if(isSystem){
+                            installingForSystem = true
+                        }
+
                     }
                 }
                 status = Status.InstallSuccess
@@ -422,6 +439,12 @@ class InstallPackageDialogView(private val vsh: VSH, private val intent: Intent)
             tBig.textAlign = Paint.Align.CENTER
             val str = (status == Status.InstallSuccess).select("Installation Success", "Installation Failed : $installInfo")
             DrawExtension.scrollText(ctx, str, left, right, drawBound.centerY(), tBig, 0.0f, cFilePathDrawTime, 12.0f)
+
+            if(installingForSystem && status == Status.InstallSuccess){
+
+                val cStr = "Installed Package contains new system file, Please restart launcher for some changes to take effect."
+                DrawExtension.scrollText(ctx, cStr, drawBound.left + 100.0f, drawBound.right - 100.0f, drawBound.bottom - (tBig.textSize * 2.0f), tBig, 0.0f, cFilePathDrawTime, 12.0f)
+            }
         }
         super.onDraw(ctx, drawBound, deltaTime)
     }
