@@ -87,7 +87,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 }
             ){
                 showLauncherFPS = !showLauncherFPS
-                pref.edit().putInt(PrefEntry.SHOW_LAUNCHER_FPS, showLauncherFPS.select(0,1)).apply()
+                pref.edit().putInt(PrefEntry.SHOW_LAUNCHER_FPS, showLauncherFPS.select(1,0)).apply()
             }
         )
         content.add(
@@ -208,7 +208,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
             ){
                 xmbView?.state?.gameBoot?.defaultSkip = !(xmbView?.state?.gameBoot?.defaultSkip ?: true)
                 pref.edit().putInt(PrefEntry.SKIP_GAMEBOOT,
-                    xmbView?.state?.gameBoot?.defaultSkip?.select(0, 1) ?: 0
+                    xmbView?.state?.gameBoot?.defaultSkip?.select(1, 0) ?: 0
                 ).apply()
             }
         )
