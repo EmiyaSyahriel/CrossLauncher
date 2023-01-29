@@ -157,6 +157,7 @@ class VSH : Application(), ServiceConnection {
     fun reloadPreference() {
         pref = getSharedPreferences("xRegistry.sys", Context.MODE_PRIVATE)
         setActiveLocale(readSerializedLocale(pref.getString(PrefEntry.SYSTEM_LANGUAGE, "") ?: ""))
+        showLauncherFPS = pref.getInt(PrefEntry.SHOW_LAUNCHER_FPS, 0) == 1
         XMBAppItem.disableAnimatedIcon = pref.getInt(PrefEntry.DISPLAY_VIDEO_ICON, 1) == 0
     }
 
