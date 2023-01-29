@@ -189,7 +189,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 XMBAppItem.disableAnimatedIcon = !XMBAppItem.disableAnimatedIcon
                 pref.edit().putInt(
                     PrefEntry.DISPLAY_VIDEO_ICON,
-                    XMBAppItem.disableAnimatedIcon.select(0,1)
+                    XMBAppItem.disableAnimatedIcon.select(1,0)
                 ).apply()
             }
         )
