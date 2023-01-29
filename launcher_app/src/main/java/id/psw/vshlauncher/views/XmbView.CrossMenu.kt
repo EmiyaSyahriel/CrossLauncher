@@ -375,7 +375,7 @@ fun XmbView.menu3SearchQuery(ctx:Canvas){
             val q = cat.getProperty(Consts.XMB_ACTIVE_SEARCH_QUERY, "")
             if(q.isNotEmpty()){
                 if(searchQuery.searchIcon == null){
-                    searchQuery.searchIcon = vsh.loadTexture(R.drawable.ic_search, 32, 32, true)
+                    searchQuery.searchIcon = vsh.loadTexture(R.drawable.ic_search, "icon_search", 32, 32, true)
                 }
                 val icon = searchQuery.searchIcon ?: XMBItem.WHITE_BITMAP
                 val hSize = 40.0f / 2.0f
@@ -404,7 +404,7 @@ fun XmbView.menuPSearchQuery(ctx:Canvas){
             val q = cat.getProperty(Consts.XMB_ACTIVE_SEARCH_QUERY, "")
             if(q.isNotEmpty()){
                 if(searchQuery.searchIcon == null){
-                    searchQuery.searchIcon = vsh.loadTexture(R.drawable.ic_search, 32, 32, true)
+                    searchQuery.searchIcon = vsh.loadTexture(R.drawable.ic_search, "icon_search", 32, 32, true)
                 }
                 val icon = searchQuery.searchIcon ?: XMBItem.WHITE_BITMAP
 

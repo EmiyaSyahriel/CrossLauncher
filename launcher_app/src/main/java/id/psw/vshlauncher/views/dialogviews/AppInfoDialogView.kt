@@ -55,7 +55,7 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
         strokeWidth = 2.0f
     }
 
-    private var _icon =vsh.loadTexture(R.drawable.icon_info, true)
+    private var _icon =vsh.loadTexture(R.drawable.icon_info, "dialog_icon_app_info", true)
 
     override val icon: Bitmap
         get() = _icon
