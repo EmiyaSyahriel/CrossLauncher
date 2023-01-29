@@ -15,11 +15,10 @@ android {
     defaultConfig {
         applicationId = "id.psw.vshlauncher"
         minSdk = 19
-        targetSdk = 30
-        versionCode = 2
-        versionName = "0.1"
+        targetSdk = 33
+        versionCode = 3
+        versionName = "0.11"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        versionNameSuffix = "0.1"
         multiDexEnabled = true
 
         ndk {
