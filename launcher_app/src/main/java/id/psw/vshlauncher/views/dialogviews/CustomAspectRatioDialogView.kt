@@ -239,7 +239,7 @@ class CustomAspectRatioDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) 
             val limit = isCustom.select(3, presetSize.size)
             return when(key){
                 GamepadSubmodule.Key.PadU -> { selection = (selection - 1).coerceIn(0, limit); true; }
-                GamepadSubmodule.Key.PadL -> { selection = (selection + 1).coerceIn(0, limit); true; }
+                GamepadSubmodule.Key.PadD -> { selection = (selection + 1).coerceIn(0, limit); true; }
                 else -> true
             }
         }
