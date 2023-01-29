@@ -38,7 +38,7 @@ class XMBItemCategory(
     override val id: String get() = cateId
     private var _sortIndex = 0
 
-    private val pkSortIndex : String get() ="${Consts.CATEGORY_SORT_INDEX_PREFIX}_${cateId}"
+    private val pkSortIndex : String get() ="/crosslauncher/${Consts.CATEGORY_SORT_INDEX_PREFIX}/${cateId}"
 
     var sortIndex : Int
         get() = _sortIndex
