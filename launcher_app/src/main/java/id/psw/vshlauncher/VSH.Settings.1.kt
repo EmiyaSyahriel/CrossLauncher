@@ -102,7 +102,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
         settingsAddSystemSetting2(this)
         content.add(XMBSettingsItem(vsh, "settings_system_orientation",
             R.string.item_orientation,
-            R.string.orient_user, R.drawable.icon_orientation, {
+            R.string.item_orientation_desc, R.drawable.icon_orientation, {
                 val xmb = xmbView?.context?.xmb
                 getString(when(xmb?.requestedOrientation){
                     ActivityInfo.SCREEN_ORIENTATION_USER -> R.string.orient_user

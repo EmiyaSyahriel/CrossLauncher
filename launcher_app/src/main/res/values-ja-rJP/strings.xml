@@ -144,6 +144,8 @@
     <string name="string_systeminfo_android_security_patch">セキュリティパッチ</string>
     <string name="settings_systeminfo_storage_usage">無料ストレージ</string>
     <string name="settings_systeminfo_ram_usage">無料メモリー</string>
-    <string name="setting_show_gameboot_desc">Play gameboot animation when launching application</string>
+    <string name="setting_show_gameboot_desc">アプリ起動時にゲーム起動アニメーションを再生</string>
     <string name="dlg_set_search_query">アイテムの検索 (クリアしてキャンセル)</string>
+    <string name="item_orientation_desc">このランチャーを表示するときに使用したデバイスの向き</string>
+    <string name="setting_display_button_type_name">ボタン表示</string>
 </resources>

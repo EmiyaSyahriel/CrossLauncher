@@ -349,4 +349,5 @@
   <string name="system_bar_visible_status">Status Bar</string>
   <string name="system_bar_visible_navigation">Navigation Bar</string>
   <string name="system_bar_visible_none">None</string>
+  <string name="item_orientation_desc">Which device orientation used when displaying this launcher</string>
 </resources>

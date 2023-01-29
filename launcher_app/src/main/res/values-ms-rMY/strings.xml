@@ -204,4 +204,5 @@
     <string name="unknown"><![CDATA[<Tak dikenal>]]></string>
     <string name="setting_show_gameboot_desc">Play gameboot animation when launching application</string>
     <string name="dlg_set_search_query">Cari dalam Kategori ini (kosongkn utk. batalkn carian)</string>
+    <string name="item_orientation_desc">Orientasi peranti yang digunakan semasa memaparkan pelancar ini</string>
 </resources>

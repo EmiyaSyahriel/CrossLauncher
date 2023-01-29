@@ -337,4 +337,12 @@
       &#8226; {battery_f(:[decimal])} -> Persen Baterai dalam desimal (0.0-100.0), tidak termasuk simbol persen\n
       &#8212; Bagian \'decimal\' adalah opsional, diisi dengan berapa banyak angka dibelakang koma\n
     </string>
+    <string name="common_apply">Terapkan</string>
+  <string name="settings_system_android_bar_name">Keterlihatan Bilah Sistem</string>
+  <string name="settings_system_android_bar_desc">Bilah sistem mana saja yang akan ditampilkan.</string>
+  <string name="system_bar_visible_all">Semua</string>
+  <string name="system_bar_visible_status">Bilah Status</string>
+  <string name="system_bar_visible_navigation">Bilah Navigasi</string>
+  <string name="system_bar_visible_none">Tidak ada</string>
+  <string name="item_orientation_desc">Kemana perangkat mengarah ketika menampilkan peluncur ini</string>
 </resources>
