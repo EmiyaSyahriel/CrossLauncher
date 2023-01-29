@@ -454,7 +454,7 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 val x = xmbView
                 if(x != null){
                     x.state.crossMenu.statusBar.secondOnAnalog = !x.state.crossMenu.statusBar.secondOnAnalog
-                    pref.edit().putInt(PrefEntry.DISPLAY_SHOW_CLOCK_SECOND, x.state.crossMenu.statusBar.secondOnAnalog.select(0, 1)).apply()
+                    pref.edit().putInt(PrefEntry.DISPLAY_SHOW_CLOCK_SECOND, x.state.crossMenu.statusBar.secondOnAnalog.select(1, 0)).apply()
 
                 }
             }
