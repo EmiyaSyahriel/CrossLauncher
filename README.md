@@ -3,20 +3,21 @@ Sony XMB-like Android Launcher, Mainly inspired by Sony PlayStation 3(TM) XMB.
 
 [Baca dalam Bahasa Indonesia](README_ID.md)
 
-## Main Focus
-This launcher is not really focused to Android touch-based devices, But for Android devices that 
-naturally doesn't have a native touch interface like TV, PC, Laptop, and Emulators.
+## **⚠ Warning! ⚠**
+This app is in heavy alpha stage development and therefore not really stable! If you have
+technical issue like crash or system bug (not graphical or audio), please provide a logcat 
+or screen record. You are free to test the app in your device but if you do encounter these 
+problems without gathering and providing more informations about it, you are most certainly 
+slow to get issue support. And please use the issue template when creating new issue!
 
-The launcher is still fairly usable on Phones. Just with a bit struggle if you have a
+## Main Focus
+This launcher is not really focused to be used on touch-screen Android, it's mostly targeted
+for devices that uses physical navigation like Gamepad, TV Remote or Keyboard.
+
+The launcher is still fairly usable on touch screen. Just with a bit struggle if you have a
 lot of apps to navigate.
 
 ## Memory Usage
-On my test devices, Base memory usage (without items) is about 10MB.
-With about 500Kb~1MB per item since icons will be cached in memory.
-
-18/11/2020: Icon bitmap loading is more dynamic now, but possibly caused hiccups when
-an icon is first drawn on screen after hidden before
-
 20/03/2022: The launcher is currently very RAM demanding, in my phone which currently
 have around 75 launch-able icons. It requires almost 512-700MB even with a very tight
 bitmap lifecycling
