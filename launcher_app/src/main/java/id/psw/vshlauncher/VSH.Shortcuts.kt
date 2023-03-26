@@ -28,7 +28,7 @@ fun VSH.reloadShortcutList(){
             }
         }
     } else {
-        TODO("VERSION.SDK_INT < LOLLIPOP")
+        // TODO("VERSION.SDK_INT < Q")
     }
 
     threadPool.execute {
