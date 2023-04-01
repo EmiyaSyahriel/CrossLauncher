@@ -12,6 +12,9 @@ import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.views.XmbView
 import java.io.File
+import java.io.FileOutputStream
+import java.nio.charset.Charset
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.experimental.and
 
@@ -128,5 +131,39 @@ fun readSerializedLocale(srlLocale:String) : Locale {
         2 -> Locale(locData[0], locData[1])
         3 -> Locale(locData[0], locData[1], locData[2])
         else -> Locale.getDefault()
+    }
+}
+
+fun Context.installExceptionLogger(){
+    if(BuildConfig.DEBUG){
+        val sdf = SimpleDateFormat("yyyy_MM_dd-HH_mm_ss", Locale.getDefault())
+        val tsdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+
+        val date = sdf.format(Calendar.getInstance().time)
+        val file = File(getExternalFilesDir(null), "logs.txt")
+
+        if(!file.exists()){
+            file.createNewFile()
+        }
+
+        val oos = FileOutputStream(file, true).writer(Charsets.UTF_8)
+
+        val writer : ((String) -> Unit) = { str ->
+            oos.write(str)
+            oos.flush()
+        }
+
+        writer("========= SESSION! : $date =========\n")
+
+        val handler = Thread.UncaughtExceptionHandler { t, e ->
+            val now = tsdf.format(Calendar.getInstance().time)
+            writer("[$now #${t.id}/${t.name}] ${e.message}\n")
+
+            for(s in e.stackTraceToString().lines()){
+                writer("$s\n")
+            }
+            writer("\n")
+        }
+        Thread.setDefaultUncaughtExceptionHandler(handler)
     }
 }

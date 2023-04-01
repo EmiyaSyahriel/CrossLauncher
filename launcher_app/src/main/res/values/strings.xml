@@ -350,4 +350,5 @@
   <string name="system_bar_visible_navigation">Navigation Bar</string>
   <string name="system_bar_visible_none">None</string>
   <string name="item_orientation_desc">Which device orientation used when displaying this launcher</string>
+    <string name="dbg_custom_throw_unhandled_exception">Throw Unhandled Exception</string>
 </resources>

@@ -162,6 +162,7 @@ class VSH : Application(), ServiceConnection {
     }
 
     override fun onCreate() {
+        installExceptionLogger()
         reloadPreference()
         FontCollections.init(this)
         preparePlaceholderAudio()

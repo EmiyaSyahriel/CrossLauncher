@@ -289,6 +289,18 @@ private fun VSH.createCategoryDebug() : XMBSettingsCategory{
             }
         )
 
+        if(BuildConfig.DEBUG){
+            content.add(
+                XMBSettingsItem(vsh, "dbg_throw_exception",
+                    R.string.dbg_custom_throw_unhandled_exception,
+                    R.string.empty_string,
+                    R.drawable.ic_close, { "" }
+                ){
+                    throw Exception("This is an unhandled exception, present in log file")
+                }
+            )
+        }
+
         content.add(XMBSettingsItem(vsh, "settings_system_language",
             R.string.settings_system_language, R.string.settings_system_language_description,
             R.drawable.icon_language, { getCurrentLocaleName() }

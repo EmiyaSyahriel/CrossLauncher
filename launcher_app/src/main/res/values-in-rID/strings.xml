@@ -345,4 +345,5 @@
   <string name="system_bar_visible_navigation">Bilah Navigasi</string>
   <string name="system_bar_visible_none">Tidak ada</string>
   <string name="item_orientation_desc">Kemana perangkat mengarah ketika menampilkan peluncur ini</string>
+    <string name="dbg_custom_throw_unhandled_exception">Lempar Exception Tak Tertangani</string>
 </resources>
