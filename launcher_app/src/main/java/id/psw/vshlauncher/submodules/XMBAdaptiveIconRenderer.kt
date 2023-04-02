@@ -1,6 +1,5 @@
 package id.psw.vshlauncher.submodules
 
-import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -9,14 +8,12 @@ import android.graphics.Canvas
 import android.graphics.RectF
 import android.graphics.drawable.*
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.types.Ref
 import java.io.File
-import java.io.FileDescriptor
 import java.lang.Exception
 
 class XMBAdaptiveIconRenderer(ctx: VSH) {
@@ -63,7 +60,7 @@ class XMBAdaptiveIconRenderer(ctx: VSH) {
             fileRoots.add(it)
             mSb.appendLine(it.absolutePath)
         }
-        Log.d(TAG, mSb.toString())
+        Logger.d(TAG, mSb.toString())
     }
 
     private fun drawFittedBitmap(c:Canvas, d:Drawable?, scale:Float, xAnchor:Float, yAnchor:Float, drawRect:RectF){
@@ -135,12 +132,12 @@ class XMBAdaptiveIconRenderer(ctx: VSH) {
     private fun loadCustomIcon(act:ActivityInfo) :Bitmap?{
         fileRoots.forEach {
             val f = it.combine(act.uniqueActivityName, "ICON0.PNG")
-            if(f.exists()){
+            if(f?.exists() == true){
                 try{
                     val b = BitmapFactory.decodeFile(f.absolutePath)
                     if( b != null) return b
                 }catch (e:Exception){
-                    Log.e(TAG, "Cannot decode custom image : ${f.absolutePath}")
+                    Logger.e(TAG, "Cannot decode custom image : ${f.absolutePath}")
                 }
             }
         }

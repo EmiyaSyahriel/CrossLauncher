@@ -314,32 +314,34 @@ class InstallPackageDialogView(private val vsh: VSH, private val intent: Intent)
                                 val targetFile = targetDir.combine(fName)
                                 val ins = xpp.zip.getInputStream(e)
 
-                                if(targetFile.parentFile?.isFile == true){
+                                if(targetFile?.parentFile?.isFile == true){
                                     targetFile.parentFile?.delete()
                                 }
 
-                                if(targetFile.parentFile?.exists() == false){
+                                if(targetFile?.parentFile?.exists() == false){
                                     targetFile.parentFile?.mkdirs()
                                 }
 
-                                if (!targetFile.exists()) {
+                                if (targetFile?.exists() == false) {
                                     targetFile.createNewFile()
                                 }
 
                                 setProgressInfo(file)
 
-                                val out = targetFile.outputStream()
-                                out.channel.truncate(0L)
+                                val out = targetFile?.outputStream()
+                                if(out != null){
+                                    out.channel.truncate(0L)
 
-                                var read = 0
-                                val bufSize = 4096
-                                val bar = ByteArray(bufSize)
-                                do {
-                                    read = ins.read(bar)
-                                    out.write(bar, 0, read)
-                                    copyNow += read
-                                    postProgress()
-                                } while (read >= bufSize || ins.available() > 0)
+                                    var read = 0
+                                    val bufSize = 4096
+                                    val bar = ByteArray(bufSize)
+                                    do {
+                                        read = ins.read(bar)
+                                        out.write(bar, 0, read)
+                                        copyNow += read
+                                        postProgress()
+                                    } while (read >= bufSize || ins.available() > 0)
+                                }
                             }
                         }
 

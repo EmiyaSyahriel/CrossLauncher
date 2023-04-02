@@ -3,7 +3,7 @@ package id.psw.vshlauncher.pluginservices
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import android.util.Log
+import id.psw.vshlauncher.Logger
 import id.psw.vshlauncher.IXMBIconListProvider
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.types.ExternalXMBItem
@@ -73,7 +73,7 @@ class MusicListXMBPluginService : Service() {
     }
 
     override fun onCreate() {
-        Log.d(TAG, "Music List Module Started")
+        Logger.d(TAG, "Music List Module Started")
     }
 
     override fun onBind(intent: Intent): IBinder = getCachedPluginInterface()

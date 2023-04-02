@@ -1,20 +1,16 @@
 package id.psw.vshlauncher
 
 import android.content.Context
-import android.content.Intent
 import android.content.pm.LauncherApps
 import android.os.Build
-import android.os.UserManager
-import android.util.Log
 import id.psw.vshlauncher.VSH.Companion.ITEM_CATEGORY_SHORTCUT
 import id.psw.vshlauncher.types.XMBItem
-import id.psw.vshlauncher.types.XMBShortcutInfo
 import id.psw.vshlauncher.types.items.XMBShortcutItem
 
 
 fun VSH.reloadShortcutList(){
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        Log.d("SHORTCUT", "Getting shortcuts...")
+        Logger.d("SHORTCUT", "Getting shortcuts...")
         val apl = getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
         if(apl.hasShortcutHostPermission()){
             for(p in apl.profiles){
@@ -22,7 +18,7 @@ fun VSH.reloadShortcutList(){
                 val ss = apl.getShortcuts(q, p)
                 if( ss != null){
                     for(s in ss){
-                        Log.d("SHORTCUT", "${s.id} - ${s.`package`} - ${s.intent} - ${s.activity?.packageName}")
+                        Logger.d("SHORTCUT", "${s.id} - ${s.`package`} - ${s.intent} - ${s.activity?.packageName}")
                     }
                 }
             }

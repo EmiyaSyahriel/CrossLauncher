@@ -33,17 +33,13 @@ object VshResName {
  * @param isUserSpecific Data in this directory is specific for the user when is located at an external/portable storage
  * e.g : Settings, Configurations, Preferences
  */
-fun VSH.getAllPathsFor(base:String, vararg args:String, createParentDir:Boolean = false, isUserSpecific:Boolean = false, isCache:Boolean = false) : ArrayList<File> {
+fun VSH.getAllPathsFor(base:String, vararg args:String, createParentDir:Boolean = false, isCache:Boolean = false) : ArrayList<File> {
     val retval = ArrayList<File>()
 
-    isCache.select(allCacheDirs, getExternalFilesDirs("")).forEach {
-        val baseFile = if(isUserSpecific && !it.isOnInternalStorage){
-            it.combine(base, getUserIdPath(), *args)
-        }else{
-            it.combine(base, *args)
-        }
-        if(createParentDir && (baseFile.parentFile?.exists() != true)) baseFile.parentFile?.mkdirs()
-        retval.add(baseFile)
+    isCache.select(allCacheDirs, getExternalFilesDirs(null)).forEach {
+        val baseFile = it.combine(base, *args)
+        if(createParentDir && (baseFile?.parentFile?.exists() != true)) baseFile?.parentFile?.mkdirs()
+        if(baseFile != null) retval.add(baseFile)
     }
     return retval
 }

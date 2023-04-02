@@ -1,12 +1,8 @@
 package id.psw.vshlauncher
 
-import android.media.AudioAttributes
-import android.media.AudioManager
-import android.util.Log
 import id.psw.vshlauncher.types.XMBItem
 import java.io.File
 import java.lang.Exception
-import android.media.SoundPool
 
 private const val TAG = "vsh_audio"
 
@@ -48,9 +44,9 @@ fun VSH.setAudioSource(newSrc: File, doNotStart : Boolean = false){
             bgmPlayer.setDataSource(newSrc.absolutePath)
             bgmPlayer.prepareAsync()
             bgmPlayerDoNotAutoPlay = doNotStart
-            Log.d(VSH.TAG, "Changing BGM Player Source to ${newSrc.absolutePath}")
+            Logger.d(VSH.TAG, "Changing BGM Player Source to ${newSrc.absolutePath}")
         }catch(e: Exception){
-            Log.e(VSH.TAG, "BGM Player Failed : ${e.message}")
+            Logger.e(VSH.TAG, "BGM Player Failed : ${e.message}")
             e.printStackTrace()
         }
     }
@@ -96,7 +92,7 @@ fun VSH.loadSfxData(){
             if(this != null){
                 val sfxId = sfxPlayer.load(absolutePath, 0)
                 sfxIds[it.first] = sfxId
-                Log.d(TAG, "SFX Player : $absolutePath -> $sfxId")
+                Logger.d(TAG, "SFX Player : $absolutePath -> $sfxId")
             }
         }
     }

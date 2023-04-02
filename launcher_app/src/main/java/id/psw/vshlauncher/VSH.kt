@@ -13,7 +13,6 @@ import android.media.SoundPool
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -29,7 +28,6 @@ import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.filterBySearch
-import junit.runner.Version.id
 import java.io.File
 import java.lang.Exception
 import java.lang.StringBuilder
@@ -162,7 +160,7 @@ class VSH : Application(), ServiceConnection {
     }
 
     override fun onCreate() {
-        installExceptionLogger()
+        Logger.init(this)
         reloadPreference()
         FontCollections.init(this)
         preparePlaceholderAudio()
@@ -230,7 +228,7 @@ class VSH : Application(), ServiceConnection {
         supportedLocaleList.forEach {
             sb.appendLine("- ${getStringLocale(it, R.string.category_games)}")
         }
-        Log.d(TAG, sb.toString())
+        Logger.d(TAG, sb.toString())
     }
 
     fun moveCursorX(right:Boolean){
@@ -352,7 +350,7 @@ class VSH : Application(), ServiceConnection {
         if(item != null){
             if(item.hasContent){
                 preventPlayMedia = false
-                Log.d(TAG, "Found content in item ${item.id}, pushing to content stack...")
+                Logger.d(TAG, "Found content in item ${item.id}, pushing to content stack...")
                 if(isInRoot){
                     categories.find { it.id == selectedCategoryId }?.lastSelectedItemId = selectedItemId
                 }else{
@@ -414,14 +412,14 @@ class VSH : Application(), ServiceConnection {
         val baseIntent = createPluginIntent(CATEGORY_PLUGIN_WAVE_VISUALIZER)
         val resolves = packageManager.queryIntentServices(baseIntent, PackageManager.GET_RESOLVED_FILTER)
         for(i in resolves){
-            Log.d(TAG, "Vis Plugin : ${i.serviceInfo.packageName} / ${i.serviceInfo.name} - ${i.serviceInfo.loadLabel(packageManager)}")
+            Logger.d(TAG, "Vis Plugin : ${i.serviceInfo.packageName} / ${i.serviceInfo.name} - ${i.serviceInfo.loadLabel(packageManager)}")
             val dIntent = Intent(ACTION_PICK_PLUGIN).addCategory(CATEGORY_PLUGIN_WAVE_VISUALIZER).setComponent(
                 ComponentName(i.serviceInfo.packageName, i.serviceInfo.name)
             )
             if(!bindService(dIntent, this, Context.BIND_AUTO_CREATE)){
-                Log.e(TAG, "Failed to icon bind service")
+                Logger.e(TAG, "Failed to icon bind service")
             }else{
-                Log.d(TAG, "Bind success")
+                Logger.d(TAG, "Bind success")
             }
         }
     }
@@ -432,7 +430,7 @@ class VSH : Application(), ServiceConnection {
         val baseIntent = createPluginIntent(CATEGORY_PLUGIN_ICON)
         val resolves = packageManager.queryIntentServices(baseIntent, PackageManager.GET_RESOLVED_FILTER)
         for(i in resolves){
-            Log.d(TAG, "Icon Plugin : ${i.serviceInfo.packageName} / ${i.serviceInfo.name}  - ${i.serviceInfo.loadLabel(packageManager)}")
+            Logger.d(TAG, "Icon Plugin : ${i.serviceInfo.packageName} / ${i.serviceInfo.name}  - ${i.serviceInfo.loadLabel(packageManager)}")
             val cName = ComponentName(i.serviceInfo.packageName, i.serviceInfo.name)
 
             iconPlugins.add(IconPluginServiceHandle(className = cName))
@@ -443,9 +441,9 @@ class VSH : Application(), ServiceConnection {
 
 
             if(!bindService(dIntent, this, Context.BIND_AUTO_CREATE)){
-                Log.e(TAG, "Failed to icon bind service")
+                Logger.e(TAG, "Failed to icon bind service")
             }else{
-                Log.d(TAG, "Bind success")
+                Logger.d(TAG, "Bind success")
             }
         }
     }
@@ -461,7 +459,7 @@ class VSH : Application(), ServiceConnection {
                 this.disabled = false
                 this.provider = binder
             }
-            Log.d(TAG, "Icon Plugin Connected : ${name?.className} :: ${binder.name} (${binder.versionString}) - ${binder.description}")
+            Logger.d(TAG, "Icon Plugin Connected : ${name?.className} :: ${binder.name} (${binder.versionString}) - ${binder.description}")
         }
     }
 
@@ -469,7 +467,7 @@ class VSH : Application(), ServiceConnection {
         val iconIdx = iconPlugins.indexOfFirst { it.className == name }
         if(iconIdx > -1){
             iconPlugins.removeAt(iconIdx)
-            Log.d(TAG, "Plugin Disconnected : ${name?.className}")
+            Logger.d(TAG, "Plugin Disconnected : ${name?.className}")
         }
     }
 

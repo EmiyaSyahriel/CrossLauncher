@@ -1,8 +1,6 @@
 package id.psw.vshlauncher.views
 
-import android.app.Activity
 import android.graphics.*
-import android.util.Log
 import android.view.MotionEvent
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withScale
@@ -38,7 +36,7 @@ private fun XmbView.gbColorFilterCache(color:Int): PorterDuffColorFilter{
         }else{
             val retval = PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY)
             cachedPDuffFilter[color] = retval
-            Log.d(TAG, "Color filter for color 0x${color.toUInt().toString(16)} created and cached")
+            Logger.d(TAG, "Color filter for color 0x${color.toUInt().toString(16)} created and cached")
             retval
         }
     }

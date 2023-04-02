@@ -4,17 +4,11 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PixelFormat
-import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import android.service.wallpaper.WallpaperService
 import android.util.AttributeSet
-import android.util.Log
-import android.view.SurfaceHolder
-import id.psw.vshlauncher.R
+import id.psw.vshlauncher.Logger
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.vsh
-import java.io.InputStream
-import java.nio.charset.Charset
 import kotlin.concurrent.thread
 
 
@@ -53,7 +47,7 @@ open class XMBWaveSurfaceView : GLSurfaceView {
     lateinit var renderer : XMBWaveRenderer
 
     private fun readPreferences(){
-        Log.d(TAG, "Re-reading preferences...")
+        Logger.d(TAG, "Re-reading preferences...")
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         NativeGL.setWaveStyle(prefs.getInt(KEY_STYLE, XMBWaveRenderer.WAVE_TYPE_PS3_BLINKS.toInt()).toByte())
         NativeGL.setSpeed(prefs.getFloat(KEY_SPEED, 1.0f))
@@ -73,7 +67,7 @@ open class XMBWaveSurfaceView : GLSurfaceView {
         if(fps > 0){
             threadSleepDuration = 1000 / fps
         }
-        Log.d(TAG, "${renderVsync.select("VSync","FPS")} - ${threadSleepDuration}ms per frame")
+        Logger.d(TAG, "${renderVsync.select("VSync","FPS")} - ${threadSleepDuration}ms per frame")
     }
 
     fun init(){
@@ -96,7 +90,7 @@ open class XMBWaveSurfaceView : GLSurfaceView {
             }.apply { name = "wave_frame_rate_man" }
         }
         holder.setFormat(PixelFormat.TRANSLUCENT)
-        Log.d(TAG, "Wave Surface Initialized")
+        Logger.d(TAG, "Wave Surface Initialized")
     }
 
     fun checkPreferenceReRead(){

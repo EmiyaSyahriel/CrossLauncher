@@ -54,9 +54,12 @@ fun Double.lerpFactor(a:Double, b:Double) : Double = (this - a) / (b - a)
 var swapLayoutType = false
 
 val Drawable?.hasSize : Boolean get() = if(this != null) this.intrinsicWidth > 0 && this.intrinsicHeight > 0 else false
-fun File.combine(vararg paths : String) : File {
+fun File?.combine(vararg paths : String?) : File? {
     var rv = this
-    paths.forEach { rv = File(rv, it) }
+    paths.forEach {
+        if(rv != null && it != null)  rv = File(rv, it)
+        else Logger.v("Combiner", "- Invalid Combination File : $rv '/' $it ")
+    }
     return rv
 }
 
@@ -131,39 +134,5 @@ fun readSerializedLocale(srlLocale:String) : Locale {
         2 -> Locale(locData[0], locData[1])
         3 -> Locale(locData[0], locData[1], locData[2])
         else -> Locale.getDefault()
-    }
-}
-
-fun Context.installExceptionLogger(){
-    if(BuildConfig.DEBUG){
-        val sdf = SimpleDateFormat("yyyy_MM_dd-HH_mm_ss", Locale.getDefault())
-        val tsdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-
-        val date = sdf.format(Calendar.getInstance().time)
-        val file = File(getExternalFilesDir(null), "logs.txt")
-
-        if(!file.exists()){
-            file.createNewFile()
-        }
-
-        val oos = FileOutputStream(file, true).writer(Charsets.UTF_8)
-
-        val writer : ((String) -> Unit) = { str ->
-            oos.write(str)
-            oos.flush()
-        }
-
-        writer("========= SESSION! : $date =========\n")
-
-        val handler = Thread.UncaughtExceptionHandler { t, e ->
-            val now = tsdf.format(Calendar.getInstance().time)
-            writer("[$now #${t.id}/${t.name}] ${e.message}\n")
-
-            for(s in e.stackTraceToString().lines()){
-                writer("$s\n")
-            }
-            writer("\n")
-        }
-        Thread.setDefaultUncaughtExceptionHandler(handler)
     }
 }

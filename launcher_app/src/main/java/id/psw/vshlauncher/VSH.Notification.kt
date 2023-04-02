@@ -2,7 +2,6 @@ package id.psw.vshlauncher
 
 import android.graphics.Bitmap
 import android.os.SystemClock
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -47,7 +46,7 @@ fun VSH.getUpdatedNotification() : ArrayList<XMBNotification> {
         }
 
         if(notifications.removeAll { it.remainingTime <= 0 }){
-            Log.d(TAG, "Removed ${lastNotifCount - notifications.size} Notification due to expired")
+            Logger.d(TAG, "Removed ${lastNotifCount - notifications.size} Notification due to expired")
         }
         return notifications
     }
