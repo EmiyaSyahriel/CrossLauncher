@@ -1,5 +1,4 @@
-# Cross Launcher
-Sony XMB-like Android Launcher, Mainly inspired by Sony PlayStation 3(TM) XMB.
+![Cross Launcher Logo](readme_asset/logo_base.png)
 
 [Baca dalam Bahasa Indonesia](README_ID.md)
 
