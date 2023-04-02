@@ -31,7 +31,7 @@ ketat.
 Lihat [Main Project](https://github.com/EmiyaSyahriel/CrossLauncher/projects/1)
 
 ## Kustomisasi
-Lihat [Supported customization](CUSTOM.MD)
+Lihat [Supported customization](https://github.com/EmiyaSyahriel/CrossLauncher/wiki/Customization)
 
 ## Download
 [👉 Dimari gan 👈](https://github.com/EmiyaSyahriel/CrossLauncher/releases), atau silahkan coba 

@@ -5,10 +5,7 @@ Sony XMB-like Android Launcher, Mainly inspired by Sony PlayStation 3(TM) XMB.
 
 ## **⚠ Warning! ⚠**
 This app is in heavy alpha stage development and therefore not really stable! If you have
-technical issue like crash or system bug (not graphical or audio), please provide a logcat 
-or screen record. You are free to test the app in your device but if you do encounter these 
-problems without gathering and providing more informations about it, you are most certainly 
-slow to get issue support. And please use the issue template when creating new issue!
+technical issue like crash or system bug, Please refer to [this page](https://github.com/EmiyaSyahriel/CrossLauncher/wiki/Error-Reporting)
 
 ## Main Focus
 This launcher is not really focused to be used on touch-screen Android, it's mostly targeted
@@ -32,7 +29,7 @@ bitmap lifecycling
 see [Main Project](https://github.com/EmiyaSyahriel/CrossLauncher/projects/1)
 
 ## Supported customizations
-see [Supported customization](CUSTOM.MD)
+see [Supported customization](https://github.com/EmiyaSyahriel/CrossLauncher/wiki/Customization)
 
 ## Releases
 You can build it yourself, Or go to [Release](https://github.com/EmiyaSyahriel/CrossLauncher/releases)
