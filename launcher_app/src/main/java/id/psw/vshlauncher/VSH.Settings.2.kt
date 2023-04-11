@@ -15,6 +15,7 @@ import id.psw.vshlauncher.types.items.XMBMenuItem
 import id.psw.vshlauncher.types.items.XMBSettingsCategory
 import id.psw.vshlauncher.types.items.XMBSettingsItem
 import id.psw.vshlauncher.views.VshViewPage
+import id.psw.vshlauncher.views.dialogviews.LegacyIconBackgroundDialogView
 import id.psw.vshlauncher.views.dialogviews.TextDialogView
 import id.psw.vshlauncher.views.showDialog
 
@@ -161,5 +162,11 @@ fun VSH.settingsAddSystemSetting2(cat : XMBSettingsCategory){
         }
         menuItems = menu
         hasMenu = true
+    })
+
+    cat.content.add(XMBSettingsItem(vsh, "settings_system_legacy_icon_bg", R.string.dlg_legacyicon_title, R.string.settings_system_legacy_icon_background_desc, R.drawable.icon_video_anim_icon, {
+        vsh.getString(vsh.pref.getBoolean(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, false).select(R.string.common_yes, R.string.common_no))
+    }){
+        vsh.xmbView?.showDialog(LegacyIconBackgroundDialogView(vsh))
     })
 }

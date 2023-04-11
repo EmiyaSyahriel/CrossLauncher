@@ -351,4 +351,6 @@
   <string name="system_bar_visible_none">None</string>
   <string name="item_orientation_desc">Which device orientation used when displaying this launcher</string>
     <string name="dbg_custom_throw_unhandled_exception">Throw Unhandled Exception</string>
+    <string name="dlg_legacyicon_title">Legacy Icon Background</string>
+    <string name="settings_system_legacy_icon_background_desc">Display background on a non-adaptive app icons</string>
 </resources>

@@ -1,0 +1,54 @@
+<vector android:height="22dp"
+    android:viewportHeight="22" android:viewportWidth="40"
+    android:width="40dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#88000000"
+        android:pathData="
+        M 9 1
+        m 0 5
+        a 5 5 0 0 1 5 -5
+        h 10
+        a 5 5 0 0 1 5 5
+        v 10
+        a 5 5 0 0 1 -5 5
+        h -10
+        a 5 5 0 0 1 -5 -5
+        v -10
+        z
+        "/>
+    <path android:fillColor="#FFFFFF"
+    android:pathData="
+        M 15 3
+        m 0 0 h 3 v 3 h -3 v -3
+        m 0 4 h 3 v 3 h -3 v -3
+        m 0 4 h 3 v 3 h -3 v -3
+        m 0 4 h 3 v 3 h -3 v -3
+        m -4 -8 h 3 v 3 h -3 v -3
+        m 8 0 h 3 v 3 h -3 v -3
+        m 4 0 h 3 v 3 h -3 v -3
+        "/>
+    <group android:scaleX="0.4" android:scaleY="0.4" android:translateX="22" android:translateY="18">
+    <!-- CrossLauncher PRO coming soon! no, just kidding. -->
+        <path android:fillColor="#F9CC00"
+            android:pathData="
+        m 0 -0.5
+        a 1 1 0 0 0 0 6
+        h 14
+        a 1 1 0 0 0 0 -6
+        z
+        "/>
+    <path android:fillColor="#000000"
+        android:pathData="
+        M 0 0
+        m 0 0 h 2 a 1.5 1.5 0 1 1 0 3 h -1 v 2 h -1 v -5 l 1 1 v 1 h 1 a 0.5 0.5 0 0 0 0 -1 h -1 z
+        m 4 0 h 2 a 1.5 1.5 0 1 1 0 3 a 1.5 1.5 0 0 1 1.5 1.5 v 0.5 h -1 v -0.5 a 1.5 1.5 0 0 0 -1.5 -1.5 v 2 h -1 v -5 l 1 1 v 1 h 1 a 0.5 0.5 0 0 0 0 -1 h -1 z
+        m 4 2 a 2 2 0 0 1 4 0
+        v 1 a 2 2 0 0 1 -4 0
+        v -1 h 1
+        v 1 a 1 1 0 0 0 2 0
+        v -1 a 1 1 0 0 0 -2 0 z
+        m 5 -2
+        h 1 v 3.5 h -1 v -3.5 m 0 4 h 1 v 1 h -1 v -1
+        z
+        "/>
+    </group>
+</vector>

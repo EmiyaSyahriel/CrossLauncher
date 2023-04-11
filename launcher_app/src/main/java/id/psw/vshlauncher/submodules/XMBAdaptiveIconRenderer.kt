@@ -2,10 +2,7 @@ package id.psw.vshlauncher.submodules
 
 import android.content.pm.ActivityInfo
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.RectF
+import android.graphics.*
 import android.graphics.drawable.*
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -16,7 +13,7 @@ import id.psw.vshlauncher.types.Ref
 import java.io.File
 import java.lang.Exception
 
-class XMBAdaptiveIconRenderer(ctx: VSH) {
+class XMBAdaptiveIconRenderer(private val ctx: VSH) {
 
     companion object {
         private const val TAG = "XMBIconGen"
@@ -44,6 +41,8 @@ class XMBAdaptiveIconRenderer(ctx: VSH) {
             var LegacyScale = 0.0f
             var LegacyXAnchor = 0.5f
             var LegacyYAnchor = 0.5f
+            var legacyBg = false
+            var legacyBgColor = 0x7FFFFFFF
         }
     }
 
@@ -61,6 +60,12 @@ class XMBAdaptiveIconRenderer(ctx: VSH) {
             mSb.appendLine(it.absolutePath)
         }
         Logger.d(TAG, mSb.toString())
+        readPreferences()
+    }
+
+    fun readPreferences(){
+        AdaptiveRenderSetting.legacyBg = ctx.pref.getBoolean(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, false)
+        AdaptiveRenderSetting.legacyBgColor = ctx.pref.getInt(PrefEntry.ICON_RENDERER_LEGACY_BACK_COLOR, 0x7FFFFFFF)
     }
 
     private fun drawFittedBitmap(c:Canvas, d:Drawable?, scale:Float, xAnchor:Float, yAnchor:Float, drawRect:RectF){
@@ -125,6 +130,15 @@ class XMBAdaptiveIconRenderer(ctx: VSH) {
     private fun drawLegacy(ctx:Canvas, legacyIcon:Drawable){
         with(AdaptiveRenderSetting)
         {
+            if(legacyBg){
+                ctx.drawARGB(
+                    (Color.alpha(legacyBgColor) shl 1 or 1),
+                    Color.red(legacyBgColor),
+                    Color.green(legacyBgColor),
+                    Color.blue(legacyBgColor)
+                )
+            }
+
             drawFittedBitmap(ctx, legacyIcon, LegacyScale, LegacyXAnchor, LegacyYAnchor, emptyRectF)
         }
     }

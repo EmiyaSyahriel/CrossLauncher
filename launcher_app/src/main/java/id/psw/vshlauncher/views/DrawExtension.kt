@@ -149,6 +149,43 @@ object DrawExtension {
         }
     }
 
+    private val editorGaugeRect = RectF()
+    private val editorGaugeText = RectF()
+
+    fun editorGauge(vsh: VSH, ctx : Canvas, selected: Boolean, title: String, value:Float, displayValue:String, paint:Paint, kvpSeparateAt:Float, rect:RectF){
+        val align =paint.textAlign
+        editorGaugeText.set(rect.left, rect.top, kvpSeparateAt.toLerp(rect.left, rect.right) - 10.0f, rect.bottom)
+        editorGaugeRect.set(kvpSeparateAt.toLerp(rect.left, rect.right) + 30.0f, rect.top, rect.right, rect.bottom)
+
+        val t = vsh.xmbView?.time?.currentTime ?: 0.0f
+        paint.textAlign = Paint.Align.RIGHT
+        scrollText(ctx, title, editorGaugeText.left, editorGaugeText.right, editorGaugeText.top, paint, 1.0f, t, 5.0f)
+        progressBar(ctx, 0.0f, 1.0f, value, editorGaugeRect.left, editorGaugeRect.centerY(), editorGaugeRect.width() - 50.0f, align = Paint.Align.LEFT)
+        paint.textAlign = Paint.Align.LEFT
+        ctx.drawText(displayValue, rect.right - 40.0f, editorGaugeRect.top, paint, 1.0f)
+
+        if(selected){
+            arrowCapsule(ctx, editorGaugeRect.left - 15.0f, editorGaugeRect.top, editorGaugeRect.width() + 15, paint, t, 1.0f, value > 0.0f, value < 1.0f )
+        }
+        paint.textAlign = align
+    }
+
+    fun editorCheckBox(vsh:VSH, ctx : Canvas, selected: Boolean, title: String, value:Boolean, paint:Paint, kvpSeparateAt:Float, rect:RectF){
+        val align =paint.textAlign
+        editorGaugeText.set(rect.left, rect.top, kvpSeparateAt.toLerp(rect.left, rect.right) - 10.0f, rect.bottom)
+        editorGaugeRect.set(kvpSeparateAt.toLerp(rect.left, rect.right) + 30.0f, rect.top, rect.right, rect.bottom)
+        val t = vsh.xmbView?.time?.currentTime ?: 0.0f
+
+        paint.textAlign = Paint.Align.RIGHT
+        scrollText(ctx, title, editorGaugeText.left, editorGaugeText.right, editorGaugeText.top, paint, 1.0f, t, 5.0f)
+        checkBox(ctx, editorGaugeRect.centerX(), editorGaugeRect.centerY(), value)
+        paint.textAlign = Paint.Align.LEFT
+        if(selected){
+            arrowCapsule(ctx, editorGaugeRect.left - 15.0f, editorGaugeRect.top, editorGaugeRect.width() + 15, paint, t, 1.0f )
+        }
+        paint.textAlign = align
+    }
+
     fun scrollSinTime(time:Float, maxTime:Float) : Float{
         val x = (time % maxTime) / maxTime
         return (((2.0 * cos (2 * x * PI)) + 1) / 2).coerceIn(0.0, 1.0).toFloat()
