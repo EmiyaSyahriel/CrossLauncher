@@ -138,6 +138,8 @@
     <string name="android_sys_setting_homepage_desc">Bukak langsung halaman ngarep setelan</string>
     <string name="android_sys_nodisturb_name">Ojo ngganggu</string>
     <string name="android_sys_nodisturb_desc">Ganti apl sing endi wae sing panggah iso ngeweruhi wayah mode Ojo ngganggu aktif</string>
+    <string name="android_sys_wallpaper_name"><![CDATA[Wallpaper & gaya]]></string>
+    <string name="android_sys_wallpaper_desc">Layar ngarep, layar kunci</string>
     <string name="common_install">Pasang</string>
     <string name="app_force_kill">Peksa Mandheg</string>
     <string name="force_kill_sent_desc">Panjalukan kanggo nutup aplikasi wes dikirim menyang sistem Android : %s</string>
@@ -172,4 +174,24 @@
     <string name="setting_show_gameboot_desc">Play gameboot animation when launching application</string>
     <string name="item_orientation_desc">Parane piranti wayah nggawe peluncur iki</string>
     <string name="dbg_custom_throw_unhandled_exception">Uncalno Exception</string>
+
+
+    <string name="dlg_legacyicon_material_you">Material You</string>
+    <string name="dlg_legacyicon_you_accent">Nomor Rupa</string>
+    <string name="dlg_legacyicon_you_brightness">Peteng</string>
+    <string name="color_red">Abang</string>
+    <string name="color_alpha">Alfa</string>
+    <string name="color_blue">Biru</string>
+    <string name="color_green">Ijo</string>
+    <string name="Mode">Mode</string>
+    <string name="dlg_legacyicon_material_you_accent_1">Rupa 1</string>
+    <string name="dlg_legacyicon_material_you_accent_2">Rupa 2</string>
+    <string name="dlg_legacyicon_material_you_accent_3">Rupa 3</string>
+    <string name="common_enabled">Urip</string>
+    <string name="common_disabled">Mati</string>
+
+    <string name="dlg_legacyicon_update_info">
+        Ikon aplikasi lawas nggak iso diganti lek ikon e durung di muat ulang nggae cara
+        ditokne terus dilebokne tekan nduwur karo ngesor layar.
+    </string>
 </resources>

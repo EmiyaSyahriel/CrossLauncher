@@ -104,13 +104,13 @@ fun XmbView.menuRenderItemMenu(ctx: Canvas){
                 item.menuItems?.forEach {
                     menuContextMenuTextPaint.color = it.isDisabled .select(Color.GRAY, Color.WHITE)
                     if(it.displayOrder == selectedIndex){
-                        menuContextMenuTextPaint
-                            .setShadowLayer(
-                                abs(sin(time.currentTime)) * 10.0f,
-                                0f,0f, Color.WHITE)
+                        // menuContextMenuTextPaint
+                        //     .setShadowLayer(
+                        //         abs(sin(time.currentTime)) * 10.0f,
+                        //         0f,0f, Color.WHITE)
                     } else {
-                        menuContextMenuTextPaint
-                            .setShadowLayer(0.0f, 0f,0f, Color.TRANSPARENT)
+                        // menuContextMenuTextPaint
+                        //     .setShadowLayer(0.0f, 0f,0f, Color.TRANSPARENT)
                     }
 
                     if(it.displayOrder == selectedIndex){

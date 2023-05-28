@@ -164,6 +164,8 @@
     <string name="android_sys_developer_desc">Tetapan pembangun, tweak grafik</string>
     <string name="android_sys_deviceinfo_name">Mengenai peranti</string>
     <string name="android_sys_deviceinfo_desc">Versi Android, alamat IP, IMEI</string>
+    <string name="android_sys_wallpaper_name"><![CDATA[Kertas dinding & gaya]]></string>
+    <string name="android_sys_wallpaper_desc">Skrin utama, skrin kunci</string>
     <string name="settings_system_test_option_name">Aktifkan Pelancar Cross</string>
     <string name="settings_system_test_option_desc">Aktifkan Pelancar Cross sehingga dimulakan ulang</string>
     <string name="settings_system_test_option_value_on">Diaktifkan</string>
@@ -206,4 +208,22 @@
     <string name="dlg_set_search_query">Cari dalam Kategori ini (kosongkn utk. batalkn carian)</string>
     <string name="item_orientation_desc">Orientasi peranti yang digunakan semasa memaparkan pelancar ini</string>
     <string name="dbg_custom_throw_unhandled_exception">Lempar Exception Tak Tertadah</string>
+
+    <string name="dlg_legacyicon_material_you">Material You</string>
+    <string name="dlg_legacyicon_you_accent">Aksen</string>
+    <string name="dlg_legacyicon_you_brightness">Tingkat</string>
+    <string name="color_red">Merah</string>
+    <string name="color_alpha">Alfa</string>
+    <string name="color_blue">Biru</string>
+    <string name="color_green">Hijau</string>
+    <string name="Mode">Mod</string>
+    <string name="dlg_legacyicon_material_you_accent_1">Aksen 1</string>
+    <string name="dlg_legacyicon_material_you_accent_2">Aksen 2</string>
+    <string name="dlg_legacyicon_material_you_accent_3">Aksen 3</string>
+    <string name="common_enabled">Aktif</string>
+    <string name="common_disabled">Tidak Aktif</string>
+    <string name="dlg_legacyicon_update_info">
+        Ikon yang tidak adaptif dalam menu tidak akan dikemas kini melainkan ikon dimuat
+        semula dengan menggerakkan ikon masuk dan keluar dari bahagian atas dan bawah skrin.
+    </string>
 </resources>

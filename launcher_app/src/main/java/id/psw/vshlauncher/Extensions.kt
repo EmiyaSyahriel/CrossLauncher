@@ -5,16 +5,15 @@ package id.psw.vshlauncher
 import android.content.Context
 import android.graphics.Point
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Parcel
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.core.content.res.ResourcesCompat
 import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.views.XmbView
 import java.io.File
-import java.io.FileOutputStream
-import java.nio.charset.Charset
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.experimental.and
 
@@ -135,4 +134,38 @@ fun readSerializedLocale(srlLocale:String) : Locale {
         3 -> Locale(locData[0], locData[1], locData[2])
         else -> Locale.getDefault()
     }
+}
+
+@ChecksSdkIntAtLeast
+fun sdkAtLeast(num : Int) : Boolean = Build.VERSION.SDK_INT >= num
+
+private val youAccentBrightness = arrayListOf(
+    0, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 1000
+)
+
+private fun <T> getResourcesIdentifier(e:String, c:Class<T>) : Int{
+    try{
+        val idField = c.getDeclaredField(e)
+        return idField.getInt(idField)
+    }catch(e:Exception){
+
+    }
+    return 0
+}
+
+fun getMaterialYouColor(ctx:Context, accent:Int, brightness:Int, retval : Ref<Int>) : Boolean{
+    if(!sdkAtLeast(Build.VERSION_CODES.S)){
+        return false
+    }
+
+    val y = youAccentBrightness[brightness.coerceIn(0, youAccentBrightness.size - 1)]
+    val i = getResourcesIdentifier("system_accent${accent + 1}_${y}",  android.R.color::class.java)
+    if(i == 0) {
+        return false
+    }
+
+    retval.p =
+        if(sdkAtLeast(23)) ctx.resources.getColor(i, null)
+        else ctx.resources.getColor(i)
+    return true
 }

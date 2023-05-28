@@ -165,7 +165,11 @@ fun VSH.settingsAddSystemSetting2(cat : XMBSettingsCategory){
     })
 
     cat.content.add(XMBSettingsItem(vsh, "settings_system_legacy_icon_bg", R.string.dlg_legacyicon_title, R.string.settings_system_legacy_icon_background_desc, R.drawable.icon_video_anim_icon, {
-        vsh.getString(vsh.pref.getBoolean(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, false).select(R.string.common_yes, R.string.common_no))
+        vsh.getString(when(vsh.pref.getInt(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, 0)){
+            1 -> R.string.common_enabled
+            2 -> R.string.dlg_legacyicon_material_you
+            else -> R.string.common_disabled
+        })
     }){
         vsh.xmbView?.showDialog(LegacyIconBackgroundDialogView(vsh))
     })

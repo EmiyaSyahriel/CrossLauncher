@@ -1,6 +1,7 @@
 package id.psw.vshlauncher
 
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Build
@@ -297,6 +298,17 @@ private fun VSH.createCategoryDebug() : XMBSettingsCategory{
                     R.drawable.ic_close, { "" }
                 ){
                     throw Exception("This is an unhandled exception, present in log file")
+                }
+            )
+
+            content.add(
+                XMBSettingsItem(
+                    vsh,
+                    "dbg_throw_window",
+                    R.string.dbg_bitman_info, R.string.empty_string,
+                    R.drawable.settings_category_display, {""})
+                {
+                    vsh.xmbView?.showDialog(BitManDlgView(vsh))
                 }
             )
         }
@@ -689,6 +701,14 @@ private fun VSH.createCategoryAndroidSetting() : XMBSettingsCategory{
             R.string.android_sys_display_desc,
             android.provider.Settings.ACTION_DISPLAY_SETTINGS
         ))
+
+        content.add(XMBAndroidSettingShortcutItem(
+            vsh, R.drawable.icon_color,
+            R.string.android_sys_wallpaper_name,
+            R.string.android_sys_wallpaper_desc,
+            Intent.ACTION_SET_WALLPAPER
+        ))
+
         content.add(XMBAndroidSettingShortcutItem(
             vsh, R.drawable.icon_volume,
             R.string.android_sys_sound_name,

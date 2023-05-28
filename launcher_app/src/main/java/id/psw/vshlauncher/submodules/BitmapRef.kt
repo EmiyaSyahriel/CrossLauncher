@@ -15,13 +15,20 @@ class BitmapRef (
         White
     }
 
+    private var released = false
+
     init {
         BitmapManager.instance.load(this)
     }
 
     val bitmap : Bitmap get() = BitmapManager.instance.get(this)
     val isLoading : Boolean get() = BitmapManager.instance.isLoading(this)
-    fun release() = BitmapManager.instance.release(this)
+    fun release() {
+        if(!released){
+            BitmapManager.instance.release(this)
+            released = true
+        }
+    }
 
     fun finalize() = release()
 }

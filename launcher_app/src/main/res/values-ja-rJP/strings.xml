@@ -149,4 +149,23 @@
     <string name="item_orientation_desc">このランチャーを表示するときに使用したデバイスの向き</string>
     <string name="setting_display_button_type_name">ボタン表示</string>
     <string name="dbg_custom_throw_unhandled_exception">Unhandled Exceptionを投げる</string>
+
+    <string name="dlg_legacyicon_title">不整合のアイコンの背景</string>
+    <string name="settings_system_legacy_icon_background_desc">適応性のないアプリアイコンに背景色を付けます</string>
+    <string name="dbg_bitman_info">ビットマップマネージャーの情報</string>
+
+    <string name="dlg_legacyicon_material_you">Material You</string>
+    <string name="dlg_legacyicon_you_accent">アックセント</string>
+    <string name="dlg_legacyicon_you_brightness">レベル</string>
+    <string name="color_red">赤</string>
+    <string name="color_alpha">アルファ</string>
+    <string name="color_blue">青</string>
+    <string name="color_green">緑</string>
+    <string name="Mode">モード</string>
+    <string name="dlg_legacyicon_material_you_accent_1">アックセント 1</string>
+    <string name="dlg_legacyicon_material_you_accent_2">アックセント 2</string>
+    <string name="dlg_legacyicon_material_you_accent_3">アックセント 3</string>
+    <string name="common_enabled">有効</string>
+    <string name="common_disabled">無効</string>
+    <string name="dlg_legacyicon_update_info">メニューの非適応アイコンは、アイコンが画面上部と下部に出入りすることによってアイコンが再ロードされない限り、更新されません。</string>
 </resources>

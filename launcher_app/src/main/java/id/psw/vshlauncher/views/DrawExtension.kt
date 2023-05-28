@@ -1,6 +1,7 @@
 package id.psw.vshlauncher.views
 
 import android.graphics.*
+import android.text.TextPaint
 import androidx.core.graphics.toRect
 import androidx.core.graphics.toRectF
 import androidx.core.graphics.withClip
@@ -186,6 +187,43 @@ object DrawExtension {
         paint.textAlign = align
     }
 
+    fun editorTextValues(
+        vsh: VSH,
+        ctx: Canvas,
+        selected: Boolean,
+        title: String,
+        activeMode: Int,
+        modes: ArrayList<String>,
+        paint: TextPaint,
+        kvpSeparateAt: Float,
+        rect: RectF
+    ) {
+        val align =paint.textAlign
+        editorGaugeText.set(rect.left, rect.top, kvpSeparateAt.toLerp(rect.left, rect.right) - 10.0f, rect.bottom)
+        editorGaugeRect.set(kvpSeparateAt.toLerp(rect.left, rect.right) + 30.0f, rect.top, rect.right, rect.bottom)
+        val t = vsh.xmbView?.time?.currentTime ?: 0.0f
+
+        paint.textAlign = Paint.Align.RIGHT
+        scrollText(ctx, title, editorGaugeText.left, editorGaugeText.right, editorGaugeText.top, paint, 1.0f, t, 5.0f)
+
+        val value = if(activeMode >= modes.size || activeMode < 0){
+            "(OutOfRange)"
+        }else{
+            modes[activeMode]
+        }
+
+        paint.textAlign = Paint.Align.CENTER
+        scrollText(ctx, value, editorGaugeRect.left, editorGaugeRect.right, editorGaugeRect.top, paint, 1.0f, t, 5.0f)
+
+        paint.textAlign = Paint.Align.LEFT
+        if(selected){
+            arrowCapsule(ctx, editorGaugeRect.left - 15.0f, editorGaugeRect.top, editorGaugeRect.width() + 15, paint, t, 1.0f,
+            activeMode > 0,
+            activeMode < modes.size -1)
+        }
+        paint.textAlign = align
+    }
+
     fun scrollSinTime(time:Float, maxTime:Float) : Float{
         val x = (time % maxTime) / maxTime
         return (((2.0 * cos (2 * x * PI)) + 1) / 2).coerceIn(0.0, 1.0).toFloat()
@@ -328,4 +366,5 @@ object DrawExtension {
         glowOverlayDrawPatches(ctx, 40,80,80,120, rect.left + edge, rect.bottom - edge, rect.right - edge, rect.bottom)
         glowOverlayDrawPatches(ctx, 80,80,120,120, rect.right - edge, rect.bottom - edge, rect.right, rect.bottom)
     }
+
 }

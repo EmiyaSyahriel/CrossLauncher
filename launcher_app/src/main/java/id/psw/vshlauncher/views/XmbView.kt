@@ -15,6 +15,7 @@ import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.typography.FontCollections
 import java.util.*
 import kotlin.ConcurrentModificationException

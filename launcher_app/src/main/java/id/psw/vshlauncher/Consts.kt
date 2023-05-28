@@ -82,10 +82,17 @@ object PrefEntry{
      * - 3 = None
      */
     const val SYSTEM_STATUS_BAR = "/crosslauncher/system/barDisplay"
-    /** Boolean, Should add background to legacy (non-adaptive) icon? */
+    /** Int, Should add background to legacy (non-adaptive) icon?
+     * - 0 = Disabled
+     * - 1 = Other
+     * - 2 = Material You if supported
+     * */
     const val ICON_RENDERER_LEGACY_BACKGROUND : String = "/crosslauncher/iconrenderer/legacyBg"
     /** Int, Color, of Legacy Icon Background*/
     const val ICON_RENDERER_LEGACY_BACK_COLOR : String = "/crosslauncher/iconrenderer/legacyBgColor"
+
+    /** Int, Accent and Brightness of Material You, Format : `(accent * 100) + brightness` */
+    const val ICON_RENDERER_LEGACY_BACK_MATERIAL_YOU : String = "/crosslauncher/iconrenderer/legacyBgYou"
 }
 
 enum class FittingMode {

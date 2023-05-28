@@ -162,6 +162,7 @@ class VSH : Application(), ServiceConnection {
     override fun onCreate() {
         Logger.init(this)
         reloadPreference()
+        BitmapManager.instance = BitmapManager().apply { init(vsh) }
         FontCollections.init(this)
         preparePlaceholderAudio()
         bgmPlayer.setOnPreparedListener {

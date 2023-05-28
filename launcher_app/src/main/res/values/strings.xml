@@ -189,6 +189,8 @@
     <string name="android_sys_battery_desc">Battery usages, battery saver settings</string>
     <string name="android_sys_display_name">Display</string>
     <string name="android_sys_display_desc">Wallpaper, sleep, font size</string>
+    <string name="android_sys_wallpaper_name"><![CDATA[Wallpaper & style]]></string>
+    <string name="android_sys_wallpaper_desc">Wallpaper, lock screen</string>
     <string name="android_sys_sound_name">Sound</string>
     <string name="android_sys_sound_desc">Volume, vibration, Do Not Disturb</string>
     <string name="android_sys_storage_name">Storage</string>
@@ -353,4 +355,19 @@
     <string name="dbg_custom_throw_unhandled_exception">Throw Unhandled Exception</string>
     <string name="dlg_legacyicon_title">Legacy Icon Background</string>
     <string name="settings_system_legacy_icon_background_desc">Display background on a non-adaptive app icons</string>
+    <string name="dbg_bitman_info">Bitmap Manager Info</string>
+    <string name="dlg_legacyicon_material_you">Material You</string>
+    <string name="dlg_legacyicon_you_accent">Accent</string>
+  <string name="dlg_legacyicon_you_brightness">Brightness</string>
+    <string name="color_red">Red</string>
+  <string name="color_alpha">Alpha</string>
+  <string name="color_blue">Blue</string>
+  <string name="color_green">Green</string>
+  <string name="Mode">Mode</string>
+  <string name="dlg_legacyicon_material_you_accent_1">Accent 1</string>
+  <string name="dlg_legacyicon_material_you_accent_2">Accent 2</string>
+  <string name="dlg_legacyicon_material_you_accent_3">Accent 3</string>
+  <string name="common_enabled">Enabled</string>
+  <string name="common_disabled">Disabled</string>
+  <string name="dlg_legacyicon_update_info">Legacy app icons in menu will not be updated unless the icon is reloaded by moving the icon in and out of screen\'s top and bottom. </string>
 </resources>

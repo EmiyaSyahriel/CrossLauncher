@@ -41,13 +41,17 @@ class XMBAdaptiveIconRenderer(private val ctx: VSH) {
             var LegacyScale = 0.0f
             var LegacyXAnchor = 0.5f
             var LegacyYAnchor = 0.5f
-            var legacyBg = false
+            var legacyBg = 0
+            var legacyBgYouA = 0
+            var legacyBgYouB = 0
             var legacyBgColor = 0x7FFFFFFF
         }
     }
 
     private val pm = ctx.packageManager
     private val fileRoots = ArrayList<File>()
+    private val materialYouColor = Ref(0)
+    private var supportsMaterialYou = getMaterialYouColor(ctx, 0, 0, materialYouColor)
 
     init {
         val d = ctx.resources.displayMetrics.density
@@ -64,8 +68,11 @@ class XMBAdaptiveIconRenderer(private val ctx: VSH) {
     }
 
     fun readPreferences(){
-        AdaptiveRenderSetting.legacyBg = ctx.pref.getBoolean(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, false)
+        AdaptiveRenderSetting.legacyBg = ctx.pref.getInt(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, 0)
         AdaptiveRenderSetting.legacyBgColor = ctx.pref.getInt(PrefEntry.ICON_RENDERER_LEGACY_BACK_COLOR, 0x7FFFFFFF)
+        val you = ctx.pref.getInt(PrefEntry.ICON_RENDERER_LEGACY_BACK_MATERIAL_YOU, 0)
+        AdaptiveRenderSetting.legacyBgYouA = you / 100
+        AdaptiveRenderSetting.legacyBgYouB = you % 100
     }
 
     private fun drawFittedBitmap(c:Canvas, d:Drawable?, scale:Float, xAnchor:Float, yAnchor:Float, drawRect:RectF){
@@ -128,14 +135,19 @@ class XMBAdaptiveIconRenderer(private val ctx: VSH) {
 
     private val emptyRectF =RectF()
     private fun drawLegacy(ctx:Canvas, legacyIcon:Drawable){
+        val that = this.ctx
         with(AdaptiveRenderSetting)
         {
-            if(legacyBg){
+            supportsMaterialYou = getMaterialYouColor(that, legacyBgYouA, legacyBgYouB, materialYouColor)
+
+            val color = (legacyBg == 2 && supportsMaterialYou).select(materialYouColor.p, legacyBgColor)
+
+            if(legacyBg != 0){
                 ctx.drawARGB(
-                    (Color.alpha(legacyBgColor) shl 1 or 1),
-                    Color.red(legacyBgColor),
-                    Color.green(legacyBgColor),
-                    Color.blue(legacyBgColor)
+                    (Color.alpha(color) shl 1 or 1),
+                    Color.red(color),
+                    Color.green(color),
+                    Color.blue(color)
                 )
             }
 

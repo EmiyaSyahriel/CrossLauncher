@@ -62,7 +62,11 @@ fun XmbView.dlgRender(ctx: Canvas){
             // Draw title
             ctx.drawText(dlg.title, 125f, 65f, textPaint, 0.5f)
             iconTmpBound.set(50f, 65f - 25f, 100f, 65f + 25f)
-            ctx.drawBitmap(dlg.icon, null, iconTmpBound, null, FittingMode.FIT, 0.5f, 0.5f)
+            if(dlg.useRefIcon){
+                ctx.drawBitmap(dlg.reficon.bitmap, null, iconTmpBound, null, FittingMode.FIT, 0.5f, 0.5f)
+            }else{
+                ctx.drawBitmap(dlg.icon, null, iconTmpBound, null, FittingMode.FIT, 0.5f, 0.5f)
+            }
 
             if(context.vsh.hasConcurrentLoading){
                 drawClock(ctx, Calendar.getInstance(), 65f)
