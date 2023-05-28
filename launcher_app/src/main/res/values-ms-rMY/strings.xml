@@ -223,7 +223,7 @@
     <string name="common_enabled">Aktif</string>
     <string name="common_disabled">Tidak Aktif</string>
     <string name="dlg_legacyicon_update_info">
-        Ikon yang tidak adaptif dalam menu tidak akan dikemas kini melainkan ikon dimuat
+        Ikon yang tidak adaptif dalam menu tidak akan berganti melainkan ikon dimuat
         semula dengan menggerakkan ikon masuk dan keluar dari bahagian atas dan bawah skrin.
     </string>
 </resources>

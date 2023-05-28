@@ -70,8 +70,8 @@ class LegacyIconBackgroundDialogView(private val vsh: VSH) : XmbDialogSubview(vs
 
     override fun onTouch(a: PointF, b: PointF, act: Int) {
         val limit = when(bgMode) {
-            1 -> 2
-            2 -> 4
+            1 -> 4
+            2 -> 2
             else -> 0
         }
         val dif = (a - b)
@@ -144,8 +144,8 @@ class LegacyIconBackgroundDialogView(private val vsh: VSH) : XmbDialogSubview(vs
 
     override fun onGamepad(key: GamepadSubmodule.Key, isPress: Boolean): Boolean {
         val clampNum = when(bgMode) {
-            1 -> 2
-            2 -> 4
+            1 -> 4
+            2 -> 2
             else -> 1
         }
         return if(isPress){
