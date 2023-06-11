@@ -21,6 +21,7 @@ import id.psw.vshlauncher.views.showDialog
 import java.io.File
 import java.lang.StringBuilder
 import android.text.format.DateFormat
+import id.psw.vshlauncher.types.items.XMBAppItem.Companion.ENABLE_EMBEDDED_MEDIA
 import id.psw.vshlauncher.views.asBytes
 import java.text.SimpleDateFormat
 import java.util.*
@@ -359,12 +360,18 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
             }
 
             val files = requestCustomizationFiles("PARAM.INI")
-            val validFile = files.firstOrNull { it.exists() } ?: files[0]
-            try {
-                if(!validFile.exists()) validFile.createNewFile()
+            var success = false
+            files.forEach { file ->
+                try {
+                    if(!file.exists()) file.createNewFile()
 
-                iniFile.write(validFile.absolutePath)
-            }catch(_:Exception ){
+                    iniFile.write(file.absolutePath)
+                    success = true
+                    return@forEach
+                }catch(_:Exception ){
+                }
+            }
+            if(!success){
                 vsh.postNotification(R.drawable.ic_close, "Error", "Failed to write application-specific configuration")
             }
 
