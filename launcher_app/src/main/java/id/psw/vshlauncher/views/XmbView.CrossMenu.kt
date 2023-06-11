@@ -306,7 +306,7 @@ fun XmbView.menuPStatusBar(ctx:Canvas){
     with(state.crossMenu){
         val topBar = statusBar.padPSPStatusBar.select(48f, 10f)
 
-        statusTextPaint.setShadowLayer(10.0f, 2.0f, 2.0f, Color.BLACK)
+        // statusTextPaint.setShadowLayer(10.0f, 2.0f, 2.0f, Color.BLACK)
         statusTextPaint.setColorAndSize(Color.WHITE, 40.0f, Paint.Align.RIGHT)
         val statusText = StringBuilder()
         statusText.append(formatStatusBar(dateTimeFormat))
@@ -346,7 +346,7 @@ fun XmbView.menuPStatusBar(ctx:Canvas){
                 tmpPath.addRect(left, tmpRectF.top + 3.0f, left+ sWidth, tmpRectF.bottom - 3.0f, Path.Direction.CW)
             }
             ctx.drawPath(tmpPath, statusFillPaint)
-            statusTextPaint.removeShadowLayer()
+            // statusTextPaint.removeShadowLayer()
         }
         // endregion
     }
@@ -537,11 +537,11 @@ fun XmbView.menu3HorizontalMenu(ctx:Canvas){
                 size = tmpPointFA
 
                 val radius = abs((kotlin.math.sin(currentTime / 3.0f)) * 10f)
-                menuHorizontalNamePaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
-                menuHorizontalIconPaint.setShadowLayer(radius, 0f, 0f, Color.BLACK)
+                // menuHorizontalNamePaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
+                // menuHorizontalIconPaint.setShadowLayer(radius, 0f, 0f, Color.BLACK)
             }else{
-                menuHorizontalNamePaint.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
-                menuHorizontalIconPaint.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
+                // menuHorizontalNamePaint.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
+                // menuHorizontalIconPaint.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
             }
 
             val hSizeX = size.x / 2.0f
