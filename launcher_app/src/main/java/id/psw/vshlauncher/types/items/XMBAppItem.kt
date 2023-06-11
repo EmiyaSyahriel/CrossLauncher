@@ -360,9 +360,13 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
 
             val files = requestCustomizationFiles("PARAM.INI")
             val validFile = files.firstOrNull { it.exists() } ?: files[0]
-            if(!validFile.exists()) validFile.createNewFile()
+            try {
+                if(!validFile.exists()) validFile.createNewFile()
 
-            iniFile.write(validFile.absolutePath)
+                iniFile.write(validFile.absolutePath)
+            }catch(_:Exception ){
+                vsh.postNotification(R.drawable.ic_close, "Error", "Failed to write application-specific configuration")
+            }
 
         }else{
             iniFile.write(null)

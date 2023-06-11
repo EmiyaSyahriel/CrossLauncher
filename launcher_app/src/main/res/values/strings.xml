@@ -370,4 +370,10 @@
   <string name="common_enabled">Enabled</string>
   <string name="common_disabled">Disabled</string>
   <string name="dlg_legacyicon_update_info">Legacy app icons in menu will not be updated unless the icon is reloaded by moving the icon in and out of screen\'s top and bottom. </string>
+    <string name="settings_audio_bgm_volume_name">Music Volume</string>
+  <string name="settings_audio_bgm_volume_desc">Music volumes for the menu items and multimedia content</string>
+  <string name="settings_audio_sysbgm_volume_name">System Music Volume</string>
+  <string name="settings_audio_sysbgm_volume_desc">Music volume for system e.g: Gameboot, Coldboot</string>
+  <string name="settings_audio_sfx_volume_name">Sound Effect Volume</string>
+  <string name="settings_audio_sfx_volume_desc">Volume for sound effects</string>
 </resources>

@@ -142,6 +142,7 @@ class VSH : Application(), ServiceConnection {
     val loadingHandles = arrayListOf<XMBLoadingHandle>()
     val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
 
+    val volume = VolumeManager()
     val bgmPlayer = MediaPlayer()
     val systemBgmPlayer = MediaPlayer()
     lateinit var bgmPlayerActiveSrc : File
@@ -154,14 +155,32 @@ class VSH : Application(), ServiceConnection {
 
     fun reloadPreference() {
         pref = getSharedPreferences("xRegistry.sys", Context.MODE_PRIVATE)
+        volume.pref = pref
         setActiveLocale(readSerializedLocale(pref.getString(PrefEntry.SYSTEM_LANGUAGE, "") ?: ""))
         showLauncherFPS = pref.getInt(PrefEntry.SHOW_LAUNCHER_FPS, 0) == 1
         XMBAppItem.disableAnimatedIcon = pref.getInt(PrefEntry.DISPLAY_VIDEO_ICON, 1) == 0
     }
 
+    private fun updateVolume(channel: VolumeManager.Channel, vol : Float){
+        when(channel){
+            VolumeManager.Channel.Sfx -> {
+                sfxIds.forEach { i ->  sfxPlayer.setVolume(i.value, vol, vol)  }
+            }
+            VolumeManager.Channel.Bgm -> { bgmPlayer.setVolume(vol, vol) }
+            VolumeManager.Channel.SystemBgm -> { systemBgmPlayer.setVolume(vol, vol) }
+            else -> {
+                updateVolume(VolumeManager.Channel.Sfx, volume.sfx)
+                updateVolume(VolumeManager.Channel.Bgm, volume.bgm)
+                updateVolume(VolumeManager.Channel.SystemBgm, volume.systemBgm)
+            }
+        }
+    }
+
     override fun onCreate() {
         Logger.init(this)
         reloadPreference()
+        volume.onVolumeChange = {a,b -> updateVolume(a, b)}
+        volume.readPreferences()
         BitmapManager.instance = BitmapManager().apply { init(vsh) }
         FontCollections.init(this)
         preparePlaceholderAudio()

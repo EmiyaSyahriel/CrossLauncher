@@ -22,7 +22,6 @@ object Consts {
 
 @Suppress("SpellCheckingInspection")
 object PrefEntry{
-
     /** Boolean, Display Wave Wallpaper as internal layer, for use with  */
     const val USES_INTERNAL_WAVE_LAYER: String = "/crosslauncher/wave/beat_angel_escalayer"
     /** Int (0 = PS3, 1 = PSP, 2 = Bravia, 3 = PSX) */
@@ -93,6 +92,15 @@ object PrefEntry{
 
     /** Int, Accent and Brightness of Material You, Format : `(accent * 100) + brightness` */
     const val ICON_RENDERER_LEGACY_BACK_MATERIAL_YOU : String = "/crosslauncher/iconrenderer/legacyBgYou"
+
+    /** Int, Master Volume */
+    const val VOLUME_AUDIO_MASTER :String = "/crosslauncher/audio/volume/master"
+    /** Int, Sound Effect Volume (Multiplier of of other volume) */
+    const val VOLUME_AUDIO_SFX :String = "/crosslauncher/audio/volume/effect"
+    /** Int, Music Volume (used by user items) */
+    const val VOLUME_AUDIO_BGM :String = "/crosslauncher/audio/volume/music"
+    /** Int, System Music Volume (used by e.g Coldboot & Gameboot) */
+    const val VOLUME_AUDIO_SYSBGM :String = "/crosslauncher/audio/volume/sysmusic"
 }
 
 enum class FittingMode {

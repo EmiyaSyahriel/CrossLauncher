@@ -16,6 +16,7 @@ import id.psw.vshlauncher.views.formatStatusBar
 import id.psw.vshlauncher.views.showDialog
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
 object SettingsCategoryID {
     const val CATEGORY_SETTINGS_WAVE = "settings_category_wave"
@@ -47,25 +48,65 @@ private fun VSH.getCurrentLocaleName() : String {
     }
 }
 
+private fun makeVolume(setting: XMBSettingsItem, volume : (Float) -> Unit ){
+    setting.hasMenu = true
+    val v = arrayListOf<XMBMenuItem>()
+    for(i in 0 .. 10)
+    {
+        v.add(XMBMenuItem.XMBMenuItemLambda({ i.toString() }, {false}, i){
+            volume.invoke(i / 10.0f)
+        })
+    }
+    setting.menuItems = v
+}
+
+private fun volumeToString(v: Float) : String = (v * 10).roundToInt().toString()
+
 private fun VSH.createCategoryAudio(): XMBSettingsCategory{
     val vsh = this
     return XMBSettingsCategory(this, SettingsCategoryID.CATEGORY_SETTINGS_AUDIO,
         R.drawable.icon_volume,
         R.string.settings_category_audio_name, R.string.settings_category_audio_title
     ).apply {
-        content.add(XMBSettingsItem(vsh, "audio_master_volume",
+        content.add(XMBSettingsItem(vsh, "audio_volume_master",
             R.string.settings_audio_master_volume_name,
             R.string.settings_audio_master_volume_desc,
-            R.drawable.icon_volume, {
-                "WIP"
-            }
+            R.drawable.icon_volume, { volumeToString(vsh.volume.master) }
         ){
+            vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+        }.apply {
+            makeVolume( this) { vsh.volume.master = it }
+        })
 
-        }).apply {
+        content.add(XMBSettingsItem(vsh, "audio_volume_bgm",
+            R.string.settings_audio_bgm_volume_name,
+            R.string.settings_audio_bgm_volume_desc,
+            R.drawable.category_music, { volumeToString(vsh.volume.bgm) }
+        ){
+            vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+        }.apply {
+            makeVolume( this) { vsh.volume.bgm = it }
+        })
 
-        }
+        content.add(XMBSettingsItem(vsh, "audio_volume_sysbgm",
+            R.string.settings_audio_sysbgm_volume_name,
+            R.string.settings_audio_sysbgm_volume_desc,
+            R.drawable.ic_component_audio, { volumeToString(vsh.volume.systemBgm) }
+        ){
+            vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+        }.apply {
+            makeVolume( this) { vsh.volume.systemBgm = it }
+        })
 
-
+        content.add(XMBSettingsItem(vsh, "audio_volume_sfx",
+            R.string.settings_audio_sfx_volume_name,
+            R.string.settings_audio_sfx_volume_desc,
+            R.drawable.ic_speaker_phone, { volumeToString(vsh.volume.sfx) }
+        ){
+            vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+        }.apply {
+            makeVolume( this) { vsh.volume.sfx = it }
+        })
     }
 }
 
