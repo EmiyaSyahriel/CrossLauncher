@@ -48,13 +48,14 @@ private fun VSH.getCurrentLocaleName() : String {
     }
 }
 
-private fun makeVolume(setting: XMBSettingsItem, volume : (Float) -> Unit ){
+private fun VSH.makeVolume(setting: XMBSettingsItem, volume : (Float) -> Unit ){
     setting.hasMenu = true
     val v = arrayListOf<XMBMenuItem>()
-    for(i in 0 .. 10)
+    for(i in 10 downTo 0)
     {
-        v.add(XMBMenuItem.XMBMenuItemLambda({ i.toString() }, {false}, i){
+        v.add(XMBMenuItem.XMBMenuItemLambda({ i.toString() }, {false}, (10 - i) - 5){
             volume.invoke(i / 10.0f)
+            vsh.xmbView?.state?.itemMenu?.isDisplayed = false
         })
     }
     setting.menuItems = v
