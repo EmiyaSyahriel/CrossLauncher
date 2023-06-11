@@ -63,20 +63,28 @@ enum class SFXType {
     Cancel
 }
 
-fun VSH.loadSfxData(){
+fun VSH.loadSfxData(attach : Boolean = true){
     var that = this
 
-    sfxPlayer.setOnLoadCompleteListener { _, id, status ->
-        if(status != 0){
-            val ks = arrayListOf<Pair<SFXType, Int>>()
-            sfxIds.forEach {
-                if(it.value == id) ks.add(it.key to it.value)
-            }
-            if(ks.size == 1){
-                sfxIds.remove(ks[0].first)
+    if(attach){
+        sfxPlayer.setOnLoadCompleteListener { _, id, status ->
+            if(status != 0){
+                val ks = arrayListOf<Pair<SFXType, Int>>()
+                sfxIds.forEach {
+                    if(it.value == id) ks.add(it.key to it.value)
+                }
+                if(ks.size == 1){
+                    sfxIds.remove(ks[0].first)
+                }
             }
         }
     }
+
+    for(i in sfxIds){
+        sfxPlayer.unload(i.value)
+    }
+    sfxIds.clear()
+
     arrayListOf<Pair<SFXType, String>>(
         SFXType.Selection to "select",
         SFXType.Confirm to "confirm",

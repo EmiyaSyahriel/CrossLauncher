@@ -108,6 +108,13 @@ private fun VSH.createCategoryAudio(): XMBSettingsCategory{
         }.apply {
             makeVolume( this) { vsh.volume.sfx = it }
         })
+        content.add(XMBSettingsItem(vsh, "audio_reload_sfx",
+            R.string.settings_audio_sfx_reload_name,
+            R.string.settings_audio_sfx_reload_desc,
+            R.drawable.icon_refresh, { "" }
+        ){
+            vsh.loadSfxData(false)
+        })
     }
 }
 
