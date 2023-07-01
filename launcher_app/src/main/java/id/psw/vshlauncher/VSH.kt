@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Typeface
+import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.SoundPool
@@ -147,7 +148,7 @@ class VSH : Application(), ServiceConnection {
     val systemBgmPlayer = MediaPlayer()
     lateinit var bgmPlayerActiveSrc : File
     var bgmPlayerDoNotAutoPlay = false
-    val sfxPlayer = SoundPool(10, AudioManager.STREAM_SYSTEM, 0)
+    lateinit var sfxPlayer : SoundPool
     val sfxIds = mutableMapOf<SFXType, Int>()
     var shouldShowExitOption = false
 
@@ -182,6 +183,23 @@ class VSH : Application(), ServiceConnection {
     override fun onCreate() {
         Logger.init(this)
         reloadPreference()
+        if(sdkAtLeast(21)){
+            val attr =AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+
+            if(sdkAtLeast(29)){
+                attr.setAllowedCapturePolicy(AudioAttributes.ALLOW_CAPTURE_BY_ALL)
+            }
+
+
+            sfxPlayer = SoundPool.Builder()
+                .setMaxStreams(6)
+                .setAudioAttributes(attr.build())
+                .build()
+        }else{
+            sfxPlayer = SoundPool(6, AudioManager.STREAM_MUSIC, 0)
+        }
         volume.onVolumeChange = {a,b -> updateVolume(a, b)}
         volume.readPreferences()
         BitmapManager.instance = BitmapManager().apply { init(vsh) }
