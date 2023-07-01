@@ -2,6 +2,7 @@ package id.psw.vshlauncher
 
 import id.psw.vshlauncher.types.XMBItem
 import java.io.File
+import java.io.FileDescriptor
 import java.lang.Exception
 
 private const val TAG = "vsh_audio"
@@ -57,6 +58,7 @@ fun VSH.removeAudioSource(){
         bgmPlayerActiveSrc = XMBItem.SILENT_AUDIO
     }
 }
+
 enum class SFXType {
     Selection,
     Confirm,
@@ -85,22 +87,32 @@ fun VSH.loadSfxData(attach : Boolean = true){
     }
     sfxIds.clear()
 
-    arrayListOf<Pair<SFXType, String>>(
+    val types = arrayListOf(
         SFXType.Selection to "select",
         SFXType.Confirm to "confirm",
         SFXType.Cancel to "cancel",
-    ).forEach {
-        arrayListOf<File>().apply {
+    )
+
+    for(it in types)
+    {
+
+        var found = false
+        val files = arrayListOf<File>().apply {
             addAll(getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "sfx", "${it.second}.ogg"))
             addAll(getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "sfx", "${it.second}.wav"))
             addAll(getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "sfx", "${it.second}.mp3"))
-        }.find { it.exists() }.apply {
-            if(this != null){
-                val sfxId = sfxPlayer.load(absolutePath, 0)
-                sfxIds[it.first] = sfxId
-                Logger.d(TAG, "SFX Player : $absolutePath -> $sfxId")
+        }
+
+        for(file in files){
+            found = file.isFile
+            Logger.d(TAG, " ${it.first}::\"${file.absolutePath}\" found ? $found")
+            if(found){
+                val i = sfxPlayer.load(file.absolutePath, 0)
+                sfxIds[it.first] = i
+                break
             }
         }
+
     }
 }
 

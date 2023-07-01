@@ -16,6 +16,7 @@ import id.psw.vshlauncher.views.XmbView
 import java.io.File
 import java.util.*
 import kotlin.experimental.and
+import kotlin.reflect.KClass
 
 /**
  * Cast get instance of VSH, either from the application context or the calling context
@@ -169,3 +170,13 @@ fun getMaterialYouColor(ctx:Context, accent:Int, brightness:Int, retval : Ref<In
         else ctx.resources.getColor(i)
     return true
 }
+
+inline fun <reified  E : Enum<E>> enumFromInt(i : Int) : E{
+    val eis = enumValues<E>()
+    for(e in eis){
+        if(e.ordinal == i) return e
+    }
+    return eis[0]
+}
+
+fun <E : Enum<E>> Enum<E>.toInt(): Int = this.ordinal

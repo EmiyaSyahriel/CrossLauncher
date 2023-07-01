@@ -2,6 +2,7 @@ package id.psw.vshlauncher.types.items
 
 import android.app.ActivityManager
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
@@ -28,12 +29,21 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh) {
-    enum class DescriptionDisplay {
-        None,
-        PackageName,
-        Date,
-        FileSize,
-        ModificationId
+    enum class DescriptionDisplay(val v : Int) {
+        /** No description is displayed */
+        None(0),
+        /** Default - Android App's package name */
+        PackageName(1),
+        /** Update Date Time */
+        Date(2),
+        /** Size of APK and Split APK Sum (not including app data size) */
+        FileSize(3),
+        /** CrossLauncher Modification ID */
+        ModificationId(4),
+        /** App version */
+        Version(5),
+        /** Nokia S40 List Style file description (Date      Size) */
+        NkFileStyle(40)
     }
 
     companion object {
@@ -56,7 +66,9 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
 
         private val ios = mutableMapOf<File, Ref<Boolean>>()
         private val ioc = mutableMapOf<File, Ref<Int>>()
-
+        var sdf : SimpleDateFormat? = null
+        private val SDF
+        get() = sdf ?: SimpleDateFormat.getDateInstance()
     }
 
     private var _customAppDesc: String =""
@@ -78,10 +90,11 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     private var _backSound : File = SILENT_AUDIO
     private val displayedDescription : String get(){
         return when (descriptionDisplay){
-            DescriptionDisplay.Date -> apkFile.lastModified().toString()
+            DescriptionDisplay.Date -> SDF.format(apkFile.lastModified())
             DescriptionDisplay.PackageName -> resInfo.activityInfo.processName
             DescriptionDisplay.ModificationId -> resInfo.uniqueActivityName
-            DescriptionDisplay.FileSize -> apkFile.length().toString()
+            DescriptionDisplay.FileSize -> fileSize
+            DescriptionDisplay.NkFileStyle -> "$fileSize     ${SDF.format(apkFile.lastModified())}"
             DescriptionDisplay.None -> ""
             else -> ""
         }

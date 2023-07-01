@@ -227,6 +227,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
         }
         )
 
+
         content.add(
             XMBSettingsItem(vsh, "settings_system_disable_video_icon",
                 R.string.settings_system_disable_video_icon_name,
@@ -241,6 +242,41 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                     PrefEntry.DISPLAY_VIDEO_ICON,
                     XMBAppItem.disableAnimatedIcon.select(1,0)
                 ).apply()
+            }
+        )
+
+        val kTypeAppDescKey = mapOf<XMBAppItem.DescriptionDisplay, Int>(
+            XMBAppItem.DescriptionDisplay.None to R.string.settings_system_visible_desc_val_none,
+            XMBAppItem.DescriptionDisplay.Date to R.string.settings_system_visible_desc_val_date,
+            XMBAppItem.DescriptionDisplay.FileSize to R.string.settings_system_visible_desc_val_filesize,
+            XMBAppItem.DescriptionDisplay.ModificationId to R.string.settings_system_visible_desc_val_modid,
+            XMBAppItem.DescriptionDisplay.PackageName to R.string.settings_system_visible_desc_val_packagename,
+            XMBAppItem.DescriptionDisplay.NkFileStyle to R.string.settings_system_visible_desc_val_nkfile
+        )
+        content.add(
+            XMBSettingsItem(vsh, "settings_system_visible_app_desc",
+                R.string.settings_system_visible_app_desc_name,
+                R.string.settings_system_visible_app_desc_desc,
+                R.drawable.category_video,
+                {
+                    getString(
+                        kTypeAppDescKey[XMBAppItem.descriptionDisplay] ?: R.string.settings_system_visible_desc_val_none
+                    )
+                }
+            ){
+                vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+            }.apply {
+                hasMenu = true
+                val menu = arrayListOf<XMBMenuItem>()
+                var i = -(kTypeAppDescKey.size / 2)
+                for((k, m) in kTypeAppDescKey){
+                    menu.add(XMBMenuItem.XMBMenuItemLambda( { getString(m) }, {false}, i++){
+                        XMBAppItem.descriptionDisplay = k
+                        pref.edit().putInt(PrefEntry.SYSTEM_VISIBLE_APP_DESC, k.ordinal).apply()
+                        vsh.xmbView?.state?.itemMenu?.isDisplayed = false
+                    })
+                }
+                menuItems= menu
             }
         )
 

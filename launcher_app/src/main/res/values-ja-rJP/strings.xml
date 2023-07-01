@@ -168,4 +168,10 @@
     <string name="common_enabled">有効</string>
     <string name="common_disabled">無効</string>
     <string name="dlg_legacyicon_update_info">メニューの非適応アイコンは、アイコンが画面上部と下部に出入りすることによってアイコンが再ロードされない限り、更新されません。</string>
+    <string name="settings_audio_bgm_volume_name">ミュジックのボリューム</string>
+    <string name="settings_audio_bgm_volume_desc">マルチメディア音楽のボリューム</string>
+    <string name="settings_audio_sysbgm_volume_name">システムボリューム</string>
+    <string name="settings_audio_sysbgm_volume_desc">システムのボリュームサウンド、例えばGameBoot</string>
+    <string name="settings_audio_sfx_volume_name">サウンドエフェクトボリューム</string>
+    <string name="settings_audio_sfx_volume_desc">すべてのサウンドエフェクトのボリューム</string>
 </resources>

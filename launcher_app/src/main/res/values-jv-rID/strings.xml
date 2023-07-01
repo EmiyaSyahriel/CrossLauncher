@@ -194,4 +194,10 @@
         Ikon aplikasi lawas nggak iso diganti lek ikon e durung di muat ulang nggae cara
         ditokne terus dilebokne tekan nduwur karo ngesor layar.
     </string>
+    <string name="settings_audio_bgm_volume_name">Banter e Musik</string>
+    <string name="settings_audio_bgm_volume_desc">Dingge suara musik menu karo multimedia</string>
+    <string name="settings_audio_sysbgm_volume_name">Banter e Musik Sistem</string>
+    <string name="settings_audio_sysbgm_volume_desc">Dingge suara musik menu karo gameboot</string>
+    <string name="settings_audio_sfx_volume_name">Banter e Efek Suara</string>
+    <string name="settings_audio_sfx_volume_desc">Dingge suara efek</string>
 </resources>

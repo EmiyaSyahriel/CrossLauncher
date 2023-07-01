@@ -226,4 +226,10 @@
         Ikon yang tidak adaptif dalam menu tidak akan berganti melainkan ikon dimuat
         semula dengan menggerakkan ikon masuk dan keluar dari bahagian atas dan bawah skrin.
     </string>
+    <string name="settings_audio_bgm_volume_name">Kelantangan Muzik</string>
+    <string name="settings_audio_bgm_volume_desc">Kelantangan muzik untuk item menu dan kandungan multimedia</string>
+    <string name="settings_audio_sysbgm_volume_name">Kelantangan Muzik Sistem</string>
+    <string name="settings_audio_sysbgm_volume_desc">Kelantangan muzik yang digunakan oleh sistem misalnya: GameBoot, Coldboot</string>
+    <string name="settings_audio_sfx_volume_name">Kelantangan Suara Kesan</string>
+    <string name="settings_audio_sfx_volume_desc">Kelantangan untuk semua kesan bunyi</string>
 </resources>

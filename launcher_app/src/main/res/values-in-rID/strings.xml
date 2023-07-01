@@ -367,4 +367,10 @@
   <string name="common_enabled">Aktif</string>
   <string name="common_disabled">Nonaktif</string>
   <string name="dlg_legacyicon_update_info">Ikon aplikasi lawas tidak akan diupdate kecuali ikon dimuat ulang dengan mengeluarkan dan memasukkan lagi ikon ke layar bagian atas dan bawah.</string>
+  <string name="settings_audio_bgm_volume_name">Volume Musik</string>
+  <string name="settings_audio_bgm_volume_desc">Untuk musik menu</string>
+  <string name="settings_audio_sysbgm_volume_name">Volume Musik Sistem</string>
+  <string name="settings_audio_sysbgm_volume_desc">Untuk musik coldboot dan gameboot</string>
+  <string name="settings_audio_sfx_volume_name">Volume Suara Efek</string>
+  <string name="settings_audio_sfx_volume_desc">Untuk efek dan suara</string>
 </resources>

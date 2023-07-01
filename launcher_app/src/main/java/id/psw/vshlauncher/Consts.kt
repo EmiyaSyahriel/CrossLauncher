@@ -40,6 +40,8 @@ object PrefEntry{
     const val DISPLAY_ORIENTATION = "/setting/display/0/orientation"
     /** Boolean */
     const val DISPLAY_VIDEO_ICON = "/crosslauncher/menu/playVideoIcon"
+    /** Int */
+    const val SYSTEM_VISIBLE_APP_DESC = "/crosslauncher/menu/visibleAppDesc"
     /** Boolean */
     const val SKIP_GAMEBOOT = "/crosslauncher/system/skipGameboot"
     /** Boolean */

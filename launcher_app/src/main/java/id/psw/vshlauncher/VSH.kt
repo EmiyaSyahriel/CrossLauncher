@@ -159,9 +159,12 @@ class VSH : Application(), ServiceConnection {
         setActiveLocale(readSerializedLocale(pref.getString(PrefEntry.SYSTEM_LANGUAGE, "") ?: ""))
         showLauncherFPS = pref.getInt(PrefEntry.SHOW_LAUNCHER_FPS, 0) == 1
         XMBAppItem.disableAnimatedIcon = pref.getInt(PrefEntry.DISPLAY_VIDEO_ICON, 1) == 0
+        val o = pref.getInt(PrefEntry.SYSTEM_VISIBLE_APP_DESC, XMBAppItem.DescriptionDisplay.PackageName.ordinal)
+        XMBAppItem.descriptionDisplay = enumFromInt(o)
     }
 
     private fun updateVolume(channel: VolumeManager.Channel, vol : Float){
+        Logger.d(TAG, "VolChange :: $channel @ $vol")
         when(channel){
             VolumeManager.Channel.Sfx -> {
                 sfxIds.forEach { i ->  sfxPlayer.setVolume(i.value, vol, vol)  }
