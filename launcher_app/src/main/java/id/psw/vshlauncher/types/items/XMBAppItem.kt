@@ -67,6 +67,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
         private val ios = mutableMapOf<File, Ref<Boolean>>()
         private val ioc = mutableMapOf<File, Ref<Int>>()
         var sdf : SimpleDateFormat? = null
+        const val loadingText = "[...]"
         private val SDF
         get() = sdf ?: SimpleDateFormat.getDateInstance()
     }
@@ -90,11 +91,11 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     private var _backSound : File = SILENT_AUDIO
     private val displayedDescription : String get(){
         return when (descriptionDisplay){
-            DescriptionDisplay.Date -> SDF.format(apkFile.lastModified())
+            DescriptionDisplay.Date -> SDF.format(apkFile?.lastModified() ?: 1)
             DescriptionDisplay.PackageName -> resInfo.activityInfo.processName
             DescriptionDisplay.ModificationId -> resInfo.uniqueActivityName
             DescriptionDisplay.FileSize -> fileSize
-            DescriptionDisplay.NkFileStyle -> "$fileSize     ${SDF.format(apkFile.lastModified())}"
+            DescriptionDisplay.NkFileStyle -> "$fileSize     ${SDF.format(apkFile?.lastModified() ?: 1)}"
             DescriptionDisplay.None -> ""
             else -> ""
         }
@@ -232,12 +233,12 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     override val animatedIcon: XMBFrameAnimation get() = synchronized(_animatedIcon) { _animatedIcon }
     override val hasDescription: Boolean get() = description.isNotEmpty()
     override val menuItems: ArrayList<XMBMenuItem> = arrayListOf()
-    private lateinit var apkFile : File
-    private lateinit var pkgInfo : PackageInfo
-    private lateinit var apkSplits : Array<File>
-    private lateinit var externalResource : Resources
+    private var apkFile : File? = null
+    private var pkgInfo : PackageInfo? = null
+    private var apkSplits : Array<File> = arrayOf()
+    private var externalResource : Resources? = null
 
-    private val latestApkSplit : File get() {
+    private val latestApkSplit : File? get() {
         return if(apkSplits.size > 1){
             apkSplits.maxByOrNull { it.lastModified() } ?: apkFile
         }else{
@@ -245,9 +246,10 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
         }
     }
 
-    val sortUpdateTime get() = if(latestApkSplit.exists()) latestApkSplit.lastModified().toString() else "0"
+    val sortUpdateTime get() =
+        if(latestApkSplit?.exists() == true) latestApkSplit?.lastModified().toString() else "0"
     val displayUpdateTime : String get() {
-        return if(apkFile.exists()){
+        return if(apkFile?.exists() == true){
             val fmt = DateFormat.is24HourFormat(vsh).select( "d/M/yyyy k:m", "d/M/yyyy h:m a")
             val sdf =
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
@@ -255,25 +257,25 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
                 }else{
                     SimpleDateFormat(fmt, vsh.resources.configuration.locale)
                 }
-            sdf.format(latestApkSplit.lastModified())
+            sdf.format(latestApkSplit?.lastModified())
         }else{
             "Unknown"
         }
     }
 
     val fileSize : String get() {
-        var l = 0L
-        if(apkSplits.size > 1){
+        return if(apkSplits.size > 1){
+            var l = 0L
             for(apk in apkSplits){
                 l += apk.length()
             }
+            (l > 0L).select(l.asBytes(), loadingText)
         }else{
-            l += apkFile.length()
+            apkFile?.length()?.asBytes() ?: loadingText
         }
-        return l.asBytes()
     }
 
-    val version : String get() = pkgInfo.versionName
+    val version : String get() = pkgInfo?.versionName ?: loadingText
 
     private val isSystemApp : Boolean get() {
         return resInfo.activityInfo.applicationInfo.flags hasFlag (ApplicationInfo.FLAG_UPDATED_SYSTEM_APP or ApplicationInfo.FLAG_SYSTEM)
@@ -291,7 +293,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
         writeAppConfig()
     }
 
-    val packageName get() = pkgInfo.packageName
+    val packageName get() = pkgInfo?.packageName ?: loadingText
 
     private fun readAppConfig(){
         val files = requestCustomizationFiles("PARAM.INI")
@@ -414,12 +416,16 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
             }
 
             if(ENABLE_EMBEDDED_MEDIA){
-                externalResource = vsh.packageManager.getResourcesForApplication(pkgInfo.packageName)
-                embeddedIconId = externalResource.getIdentifier("vsh_icon", "drawable", pkgInfo.packageName)
-                embeddedBackgroundId = externalResource.getIdentifier("vsh_background", "drawable", pkgInfo.packageName)
-                embeddedBackSoundId = externalResource.getIdentifier("vsh_background", "raw", pkgInfo.packageName)
-                embeddedBackOverlayId = externalResource.getIdentifier("vsh_back_overlay", "drawable", pkgInfo.packageName)
-                embeddedAnimIconId = externalResource.getIdentifier("vsh_anim_icon", "raw", pkgInfo.packageName)
+                val pkg = pkgInfo
+                val res = externalResource
+                if(pkg != null && res != null){
+                    externalResource = vsh.packageManager.getResourcesForApplication(pkg.packageName)
+                    embeddedIconId = res.getIdentifier("vsh_icon", "drawable", pkg.packageName)
+                    embeddedBackgroundId = res.getIdentifier("vsh_background", "drawable", pkg.packageName)
+                    embeddedBackSoundId = res.getIdentifier("vsh_background", "raw", pkg.packageName)
+                    embeddedBackOverlayId = res.getIdentifier("vsh_back_overlay", "drawable", pkg.packageName)
+                    embeddedAnimIconId = res.getIdentifier("vsh_anim_icon", "raw", pkg.packageName)
+                }
             }
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
@@ -429,10 +435,10 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
                     if(splits.size > 1){
                         Array(splits.size){ File(splits[it]) }
                     }else{
-                        Array(0){ apkFile }
+                        Array(0){ apkFile!!}
                     }
                 }else{
-                    Array(0){ apkFile }
+                    Array(0){ apkFile!! }
                 }
             }
 

@@ -38,6 +38,8 @@ object PrefEntry{
     const val REFERENCE_RESOLUTION = "/setting/display/0/resolution"
     /** Int, See [android.content.pm.ActivityInfo.screenOrientation] */
     const val DISPLAY_ORIENTATION = "/setting/display/0/orientation"
+    /** Boolean, Show Detailed Memory */
+    const val SHOW_DETAILED_MEMORY = "/crosslauncher/debug/showJvmMemory"
     /** Boolean */
     const val DISPLAY_VIDEO_ICON = "/crosslauncher/menu/playVideoIcon"
     /** Int */
@@ -94,7 +96,8 @@ object PrefEntry{
 
     /** Int, Accent and Brightness of Material You, Format : `(accent * 100) + brightness` */
     const val ICON_RENDERER_LEGACY_BACK_MATERIAL_YOU : String = "/crosslauncher/iconrenderer/legacyBgYou"
-
+    /** 2Bit Array, Which icon type should be rendered first */
+    const val ICON_RENDERER_PRIORITY : String = "/crosslauncher/iconrenderer/loadPriority"
     /** Int, Master Volume */
     const val VOLUME_AUDIO_MASTER :String = "/crosslauncher/audio/volume/master"
     /** Int, Sound Effect Volume (Multiplier of of other volume) */

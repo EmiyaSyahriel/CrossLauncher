@@ -36,7 +36,7 @@ class XmbView @JvmOverloads constructor(
         var fillScale = 1.0f
         /** Raw screen / canvas rect */
         var screen : RectF = RectF(0.0f, 0.0f, 1280.0f, 720.0f)
-        /** Raw screen / canvas rect */
+        /** Raw screen / canvasval rect */
         var offsetScreen : RectF = RectF(0.0f, 0.0f, 1280.0f, 720.0f)
         /** Target rect to draw, with paddings outside target drawing rectangle */
         var viewport : RectF = RectF()
@@ -66,6 +66,7 @@ class XmbView @JvmOverloads constructor(
     private lateinit var drawThread : Thread
     private var shouldKeepRenderThreadRunning = true
     private var isRenderThreadRunning = false
+    internal var showDetailedMemory = false
     private fun doNothing(){}
 
     private fun drawThreadFunc(){
@@ -147,6 +148,7 @@ class XmbView @JvmOverloads constructor(
                 ?: state.crossMenu.dateTimeFormat
         state.gameBoot.defaultSkip = pref.getInt(PrefEntry.SKIP_GAMEBOOT, 0) != 0
         vsh.showLauncherFPS = pref.getInt(PrefEntry.SHOW_LAUNCHER_FPS, 0) != 0
+        showDetailedMemory = pref.getInt(PrefEntry.SHOW_DETAILED_MEMORY, 0) != 0
     }
 
     init {
@@ -306,6 +308,28 @@ class XmbView @JvmOverloads constructor(
 
     private val fpsRect = Rect()
     private val fpsRectF = RectF()
+    private val memFmtSb = StringBuilder()
+    private val memFmtNames = arrayOf("PSS", "PD", "SD", "PC", "SC", "??", "E", "??", "E", "??", "E", "??")
+    private val memInfo = Debug.MemoryInfo()
+    private var memInfoThreadKeepRunning = false
+
+    private fun memFmt(name:String, vararg names:Int) : String {
+        memFmtSb.clear()
+        memFmtSb.append(name).append(" - ")
+        names.forEachIndexed { i, v ->
+            memFmtSb.append(memFmtNames[i]).append(":").append((v * 1000L).asBytes()).append(" | ")
+        }
+        return memFmtSb.toString()
+    }
+
+    private val memInfoThread = Thread {
+        memInfoThreadKeepRunning = true
+        while(memInfoThreadKeepRunning){
+            Debug.getMemoryInfo(memInfo)
+            Thread.sleep(30L)
+        }
+    }
+
     private fun drawFPS(ctx:Canvas){
         val fps = (1.0f / time.deltaTime).roundToInt()
         val fpsTxt = "[FPS] $fps FPS | ${(time.deltaTime * 1000).roundToInt()} ms"
@@ -321,15 +345,40 @@ class XmbView @JvmOverloads constructor(
 
         val isTvTxt = isTV.select("Device : TV","")
 
-        val memSz = "NATIVE - SIZE:${Debug.getNativeHeapSize().asBytes()} | ALLOC:${Debug.getNativeHeapAllocatedSize().asBytes()} | FREE:${Debug.getNativeHeapFreeSize().asBytes()}"
+        val nMemSz = "ANDROID NATIVE MEM - TOTAL:${Debug.getNativeHeapSize().asBytes()} | USED:${Debug.getNativeHeapAllocatedSize().asBytes()} | FREE:${Debug.getNativeHeapFreeSize().asBytes()}"
 
-        arrayOf(
-            fpsTxt, memSz, isTvTxt
-        ).forEachIndexed { i, it ->
+
+        val arr = arrayListOf<String>()
+        arr.add(fpsTxt)
+        arr.add(nMemSz)
+
+        if(showDetailedMemory){
+            if(!memInfoThreadKeepRunning){
+                memInfoThread.start()
+            }
+
+            val jdMemSz = memFmt("JVM RUNTIME MEM", memInfo.dalvikPss, memInfo.dalvikPrivateDirty, memInfo.dalvikSharedDirty)
+            val jnMemSz = memFmt("JVM NATIVE MEM", memInfo.nativePss, memInfo.nativePrivateDirty, memInfo.nativeSharedDirty)
+            val joMemSz = memFmt("JVM OTHER MEM", memInfo.otherPss, memInfo.otherPrivateDirty ,memInfo.otherSharedDirty)
+            val jtMemSz = memFmt("JVM TOTAL MEM", memInfo.totalPss, memInfo.totalPrivateDirty, memInfo.totalSharedDirty, memInfo.totalPrivateClean, memInfo.totalSharedClean)
+
+            arr.add(jdMemSz)
+            arr.add(jnMemSz)
+            arr.add(joMemSz)
+            arr.add(jtMemSz)
+        }
+        arr.add(isTvTxt)
+
+        arr.forEachIndexed { i, it ->
             ctx.drawText(it, 20f, 50f + (i * (dummyPaint.textSize * 1.25f)), dummyPaint, 1.0f)
         }
 
         dummyPaint.removeShadowLayer()
+    }
+
+    override fun onDetachedFromWindow() {
+        memInfoThreadKeepRunning = false
+        super.onDetachedFromWindow()
     }
 
     fun xmbOnDraw(canvas: Canvas?) {

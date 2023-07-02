@@ -8,6 +8,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.GamepadUISubmodule
+import id.psw.vshlauncher.submodules.XMBAdaptiveIconRenderer
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.*
 import id.psw.vshlauncher.views.XMBLayoutType
@@ -140,6 +141,21 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 pref.edit().putInt(PrefEntry.SHOW_LAUNCHER_FPS, showLauncherFPS.select(1,0)).apply()
             }
         )
+
+        content.add(
+            XMBSettingsItem(vsh, "settings_system_show_detailed_mem",
+                R.string.settings_system_detailed_mem_name,
+                R.string.settings_system_detailed_mem_desc,
+                R.drawable.icon_device_info,
+                {
+                    (xmbView?.showDetailedMemory ?: false).select(vsh.getString(R.string.common_yes),vsh.getString(R.string.common_no))
+                }
+            ){
+                xmbView?.showDetailedMemory = xmbView?.showDetailedMemory != true
+                pref.edit().putInt(PrefEntry.SHOW_DETAILED_MEMORY, (xmbView?.showDetailedMemory == true).select(1,0)).apply()
+            }
+        )
+
         content.add(
             XMBSettingsItem(vsh, "settings_system_rearrange",
                 R.string.settings_system_rearrange_category_name,
@@ -149,6 +165,21 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 vsh.xmbView?.showDialog(ArrangeCategoryDialogView(vsh))
             }
         )
+
+        content.add(
+            XMBSettingsItem(vsh, "settings_system_reorder_icon_loading",
+                R.string.settings_system_reorder_icon_loading_name,
+                R.string.settings_system_reorder_icon_loading_desc,
+                R.drawable.icon_storage, {
+                    val i = XMBAdaptiveIconRenderer.getIconPriorityAt(0)
+                    val id = IconPriorityDialogView.iconTypeToStrId[i]
+                    vsh.getString(R.string.settings_system_reorder_icon_loading_value).format(vsh.getString(id))
+                }
+            ){
+                vsh.xmbView?.showDialog(IconPriorityDialogView(vsh))
+            }
+        )
+
         settingsAddSystemSetting2(this)
         content.add(XMBSettingsItem(vsh, "settings_system_orientation",
             R.string.item_orientation,
@@ -257,7 +288,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
             XMBSettingsItem(vsh, "settings_system_visible_app_desc",
                 R.string.settings_system_visible_app_desc_name,
                 R.string.settings_system_visible_app_desc_desc,
-                R.drawable.category_video,
+                R.drawable.icon_info,
                 {
                     getString(
                         kTypeAppDescKey[XMBAppItem.descriptionDisplay] ?: R.string.settings_system_visible_desc_val_none

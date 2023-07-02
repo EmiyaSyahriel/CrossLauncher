@@ -162,6 +162,8 @@ class VSH : Application(), ServiceConnection {
         XMBAppItem.disableAnimatedIcon = pref.getInt(PrefEntry.DISPLAY_VIDEO_ICON, 1) == 0
         val o = pref.getInt(PrefEntry.SYSTEM_VISIBLE_APP_DESC, XMBAppItem.DescriptionDisplay.PackageName.ordinal)
         XMBAppItem.descriptionDisplay = enumFromInt(o)
+        XMBAdaptiveIconRenderer.Companion.AdaptiveRenderSetting.iconPriority =
+            vsh.pref.getInt(PrefEntry.ICON_RENDERER_PRIORITY, 0b01111000)
     }
 
     private fun updateVolume(channel: VolumeManager.Channel, vol : Float){

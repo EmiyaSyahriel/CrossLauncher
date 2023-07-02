@@ -45,6 +45,22 @@ class XMBAdaptiveIconRenderer(private val ctx: VSH) {
             var legacyBgYouA = 0
             var legacyBgYouB = 0
             var legacyBgColor = 0x7FFFFFFF
+            /** Usage : Leftmost 2 bits is highest
+             - 00 = Application Icon
+             - 01 = Adaptive Application Icon
+             - 10 = Application Banner (Usually used by Android TV Launcher)
+             - 11 = Adaptive Application Banner
+             Highest means if available then use, if not, use the lower
+            */
+            var iconPriority = 0b01111000
+        }
+        const val ICON_PRIORITY_TYPE_APP_ICON_LEGACY = 0b00
+        const val ICON_PRIORITY_TYPE_APP_ICON_ADAPTIVE = 0b01
+        const val ICON_PRIORITY_TYPE_APP_BANNER_LEGACY = 0b10
+        const val ICON_PRIORITY_TYPE_APP_BANNER_ADAPTIVE = 0b11
+
+        fun getIconPriorityAt(at:Int) : Int{
+            return (AdaptiveRenderSetting.iconPriority shr ((3 - at) * 2)) and 0b11
         }
     }
 
@@ -104,9 +120,9 @@ class XMBAdaptiveIconRenderer(private val ctx: VSH) {
         }
     }
 
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     private fun drawAdaptive(ctx:Canvas, icon : Drawable, banner : Drawable?){
-        var fbScale = 1.0f
         val drawRect = emptyRectF
         with(AdaptiveRenderSetting){
             var isBannerUsed = false
@@ -114,20 +130,34 @@ class XMBAdaptiveIconRenderer(private val ctx: VSH) {
                 isBannerUsed = banner?.intrinsicHeight != banner?.intrinsicWidth
             }
 
-            if(isBannerUsed){
-                if(banner is AdaptiveIconDrawable)
-                {
-                    drawFittedBitmap(ctx, banner.background, BackScale, BackXAnchor, BackYAnchor, drawRect)
-                    drawFittedBitmap(ctx, banner.foreground, ForeScale, ForeXAnchor, ForeYAnchor, drawRect)
-                }else if(banner != null && banner.hasSize){
-                    drawLegacy(ctx, banner)
-                }
-            }else{
-                if(icon is AdaptiveIconDrawable){
-                    drawFittedBitmap(ctx, icon.background, BackScale, BackXAnchor, BackYAnchor, drawRect)
-                    drawFittedBitmap(ctx, icon.foreground, ForeScale, ForeXAnchor, ForeYAnchor, drawRect)
-                }else{
-                    drawLegacy(ctx, icon);
+            for(i in 0 .. 3){
+                when(getIconPriorityAt(i)){
+                    ICON_PRIORITY_TYPE_APP_ICON_ADAPTIVE -> {
+                        if(icon is AdaptiveIconDrawable){
+                            drawFittedBitmap(ctx, icon.background, BackScale, BackXAnchor, BackYAnchor, drawRect)
+                            drawFittedBitmap(ctx, icon.foreground, ForeScale, ForeXAnchor, ForeYAnchor, drawRect)
+                            return
+                        }
+                    }
+                    ICON_PRIORITY_TYPE_APP_BANNER_LEGACY -> {
+                        if(isBannerUsed && banner != null && banner.hasSize){
+                            drawLegacy(ctx, banner)
+                            return
+                        }
+                    }
+                    ICON_PRIORITY_TYPE_APP_BANNER_ADAPTIVE -> {
+                        if(isBannerUsed && banner is AdaptiveIconDrawable)
+                        {
+                            drawFittedBitmap(ctx, banner.background, BackScale, BackXAnchor, BackYAnchor, drawRect)
+                            drawFittedBitmap(ctx, banner.foreground, ForeScale, ForeXAnchor, ForeYAnchor, drawRect)
+                            return
+                        }
+                    }
+                    ICON_PRIORITY_TYPE_APP_ICON_LEGACY -> {
+                        // Legacy Icon is absolute fallback
+                        drawLegacy(ctx, icon)
+                        return
+                    }
                 }
             }
         }

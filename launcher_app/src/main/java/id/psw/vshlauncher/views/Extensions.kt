@@ -132,3 +132,10 @@ fun Long.asMBytes(useBi:Boolean = false) : String {
 fun String.substituteIfEmpty(substitute:String) : String{
     return ifEmpty { substitute }
 }
+
+fun Paint.withTextAlignment(align : Paint.Align, fn : () -> Unit){
+    val p = this.textAlign
+    this.textAlign = align
+    fn()
+    this.textAlign = p
+}

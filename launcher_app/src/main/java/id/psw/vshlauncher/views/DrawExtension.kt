@@ -348,9 +348,9 @@ object DrawExtension {
         if(isActive){
             val s = sin(time)
             val t = (s * 5.0f)
-            glowOverlayPaint.setShadowLayer(t, 0.0f, 0.0f, Color.WHITE)
+            // glowOverlayPaint.setShadowLayer(t, 0.0f, 0.0f, Color.WHITE)
         }else{
-            glowOverlayPaint.setShadowLayer(0.0f, 0.0f,0.0f, Color.TRANSPARENT)
+            // glowOverlayPaint.setShadowLayer(0.0f, 0.0f,0.0f, Color.TRANSPARENT)
         }
 
         // Top
