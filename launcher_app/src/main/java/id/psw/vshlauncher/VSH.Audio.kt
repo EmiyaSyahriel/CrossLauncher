@@ -120,7 +120,8 @@ fun VSH.playSfx(type:SFXType){
     if(sfxIds.containsKey(type)){
         val sid = sfxIds[type]
         if(sid != null){
-            sfxPlayer.play(sid, 1.0f, 1.0f, 0, 0, 1.0f)
+            val v = volume.sfx * volume.master
+            sfxPlayer.play(sid, v, v, 0, 0, 1.0f)
         }
     }
 }

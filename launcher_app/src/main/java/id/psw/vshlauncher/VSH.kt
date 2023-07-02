@@ -170,14 +170,21 @@ class VSH : Application(), ServiceConnection {
         Logger.d(TAG, "VolChange :: $channel @ $vol")
         when(channel){
             VolumeManager.Channel.Sfx -> {
-                sfxIds.forEach { i ->  sfxPlayer.setVolume(i.value, vol, vol)  }
+                sfxIds.forEach { i ->
+                    sfxPlayer.setVolume(i.value, vol, vol)
+                }
+
             }
-            VolumeManager.Channel.Bgm -> { bgmPlayer.setVolume(vol, vol) }
-            VolumeManager.Channel.SystemBgm -> { systemBgmPlayer.setVolume(vol, vol) }
+            VolumeManager.Channel.Bgm -> {
+                bgmPlayer.setVolume(vol, vol)
+            }
+            VolumeManager.Channel.SystemBgm -> {
+                systemBgmPlayer.setVolume(vol, vol)
+            }
             else -> {
-                updateVolume(VolumeManager.Channel.Sfx, volume.sfx)
-                updateVolume(VolumeManager.Channel.Bgm, volume.bgm)
-                updateVolume(VolumeManager.Channel.SystemBgm, volume.systemBgm)
+                updateVolume(VolumeManager.Channel.Sfx, volume.sfx * volume.master)
+                updateVolume(VolumeManager.Channel.Bgm, volume.bgm * volume.master)
+                updateVolume(VolumeManager.Channel.SystemBgm, volume.systemBgm * volume.master)
             }
         }
     }
@@ -193,7 +200,6 @@ class VSH : Application(), ServiceConnection {
             if(sdkAtLeast(29)){
                 attr.setAllowedCapturePolicy(AudioAttributes.ALLOW_CAPTURE_BY_ALL)
             }
-
 
             sfxPlayer = SoundPool.Builder()
                 .setMaxStreams(6)
