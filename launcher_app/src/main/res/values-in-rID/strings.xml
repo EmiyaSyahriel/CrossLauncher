@@ -373,4 +373,26 @@
   <string name="settings_audio_sysbgm_volume_desc">Untuk musik coldboot dan gameboot</string>
   <string name="settings_audio_sfx_volume_name">Volume Suara Efek</string>
   <string name="settings_audio_sfx_volume_desc">Untuk efek dan suara</string>
+
+  <string name="settings_audio_sfx_reload_name">Muat Ulang Efek Suara</string>
+  <string name="settings_audio_sfx_reload_desc">Muat ulang efek suara yang sudah dimuat</string>
+  <string name="settings_system_visible_app_desc_name">Deskripsi Aplikasi</string>
+  <string name="settings_system_visible_app_desc_desc">Apa yang ditampilkan di bawah nama aplikasi</string>
+  <string name="settings_system_visible_desc_val_date">Tanggal</string>
+  <string name="settings_system_visible_desc_val_filesize">Ukuran Paket</string>
+  <string name="settings_system_visible_desc_val_none">Tidak ada</string>
+  <string name="settings_system_visible_desc_val_modid">ID Kustomisasi</string>
+  <string name="settings_system_visible_desc_val_packagename">Nama Paket</string>
+  <string name="settings_system_visible_desc_val_nkfile">Ukuran dan Tanggal</string>
+  <string name="settings_system_detailed_mem_name">Tmplkn Memori Rinci</string>
+  <string name="settings_system_detailed_mem_desc">Tampilikan informasi memori yang lebih rinci dibawah FPS</string>
+  <string name="dlg_iconprior_warning_top">Ikon di paling atas dimuat dulu, jika ikon tidak ada atau tidak bisa dimuat, maka urutan bawahnya akan dimuat hingga sampai di "Ikon Lawas". Ikon lawas selalu diberikan oleh OS meskipun di dalam aplikasi nya sendiri tidak ada</string>
+  <string name="dlg_iconprior_warning_btm">Jika aplikasi memiliki ikon kustomisasi, maka ikon tersebut akan selalu dipakai terlepas urutan ini.</string>
+  <string name="dlg_iconprior_priority_app_icon">Ikon Lawas</string>
+  <string name="dlg_iconprior_priority_app_icon_adaptive">Ikon Adaptif</string>
+  <string name="dlg_iconprior_priority_app_banner">Banner Lawas (TV)</string>
+  <string name="dlg_iconprior_priority_app_banner_adaptive">Banner Adaptif (TV)</string>
+  <string name="settings_system_reorder_icon_loading_name">Prioritas Muat Ikon Apl</string>
+  <string name="settings_system_reorder_icon_loading_desc">Ikon Apl mana yang akan dicek-muat dulu.</string>
+  <string name="settings_system_reorder_icon_loading_value">%s lebih dulu</string>
 </resources>

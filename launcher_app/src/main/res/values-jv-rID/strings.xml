@@ -200,4 +200,27 @@
     <string name="settings_audio_sysbgm_volume_desc">Dingge suara musik menu karo gameboot</string>
     <string name="settings_audio_sfx_volume_name">Banter e Efek Suara</string>
     <string name="settings_audio_sfx_volume_desc">Dingge suara efek</string>
+
+
+    <string name="settings_audio_sfx_reload_name">Muat Ulang Suara</string>
+    <string name="settings_audio_sfx_reload_desc">Muat neh suara seng wes dimuat nyang memori</string>
+    <string name="settings_system_visible_app_desc_name">Deskripsi Aplikasi</string>
+    <string name="settings_system_visible_app_desc_desc">Apa seng diketokne nyang ngesor jeneng aplikasi</string>
+    <string name="settings_system_visible_desc_val_date">Tanggal</string>
+    <string name="settings_system_visible_desc_val_filesize">Ukuran file</string>
+    <string name="settings_system_visible_desc_val_none">Nggak enek</string>
+    <string name="settings_system_visible_desc_val_modid">ID Kustom</string>
+    <string name="settings_system_visible_desc_val_packagename">Jeneng paket</string>
+    <string name="settings_system_visible_desc_val_nkfile">Ukuran lan Tanggal</string>
+    <string name="settings_system_detailed_mem_name">Memori Luwih Rinci</string>
+    <string name="settings_system_detailed_mem_desc">Ketokna memori JVM nyang ngesor e itungan FPS</string>
+    <string name="dlg_iconprior_warning_top">Muat e tekan nduwur nyang ngesor nganti nemu "Ikon Lawas", amarga Ikon lawas bakal dikekne karo OS padahal aplikasi ne dewe nggak nduwe ikon.</string>
+    <string name="dlg_iconprior_warning_btm">Lek enek ikon kustom, ikon kustom seng dingge, ora ngangge urutan iki. Ikon kudu dimuat ulang sak durung e enek sing ganti</string>
+    <string name="dlg_iconprior_priority_app_icon">Ikon Lawas</string>
+    <string name="dlg_iconprior_priority_app_icon_adaptive">Ikon Adaptif</string>
+    <string name="dlg_iconprior_priority_app_banner">Banner Lawas (TV)</string>
+    <string name="dlg_iconprior_priority_app_banner_adaptive">Banner Adaptif (TV)</string>
+    <string name="settings_system_reorder_icon_loading_name">Ikon Seng Dimuat Disik</string>
+    <string name="settings_system_reorder_icon_loading_desc">Ganti ikon opo seng dimuat disik tekan aplikasi.</string>
+    <string name="settings_system_reorder_icon_loading_value">%s disik</string>
 </resources>

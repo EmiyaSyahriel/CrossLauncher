@@ -174,4 +174,26 @@
     <string name="settings_audio_sysbgm_volume_desc">システムのボリュームサウンド、例えばGameBoot</string>
     <string name="settings_audio_sfx_volume_name">サウンドエフェクトボリューム</string>
     <string name="settings_audio_sfx_volume_desc">すべてのサウンドエフェクトのボリューム</string>
+
+    <string name="settings_audio_sfx_reload_name">SFXおリロード</string>
+    <string name="settings_audio_sfx_reload_desc">公開されているSFXを再ロードします</string>
+    <string name="settings_system_visible_app_desc_name">目に見えるアプリの説明</string>
+    <string name="settings_system_visible_app_desc_desc">アプリ名の下に表示される情報</string>
+    <string name="settings_system_visible_desc_val_date">日付</string>
+    <string name="settings_system_visible_desc_val_filesize">ファイルサイズ</string>
+    <string name="settings_system_visible_desc_val_none">なし</string>
+    <string name="settings_system_visible_desc_val_modid">カスタマイズID</string>
+    <string name="settings_system_visible_desc_val_packagename">パッケージ名</string>
+    <string name="settings_system_visible_desc_val_nkfile">サイズと日付</string>
+    <string name="settings_system_detailed_mem_name">詳細なメモリ使用</string>
+    <string name="settings_system_detailed_mem_desc">FPSカウンターの下で追加のJVMメモリ使用量を表示します</string>
+    <string name="dlg_iconprior_warning_top">ローダーは、「レガシーアイコン」が見つかるまでアイコンタイプを上から下部の注文にロードしようとします。レガシーアイコンの制限の理由は、アプリ自体が供給していなくても常にOSによって提示されるため、 最上部へのレガシーアイコンは、他のタイプのアイコンがロードされないように効果的に無効にします。</string>
+    <string name="dlg_iconprior_warning_btm">カスタムアイコンが利用可能な場合、この優先順位に関係なく使用されます</string>
+    <string name="dlg_iconprior_priority_app_icon">レガシーアイコン</string>
+    <string name="dlg_iconprior_priority_app_icon_adaptive">適応アイコン</string>
+    <string name="dlg_iconprior_priority_app_banner">レガシーバナー（スマートテレビ）</string>
+    <string name="dlg_iconprior_priority_app_banner_adaptive">アダプティブバナー（スマートテレビ）</string>
+    <string name="settings_system_reorder_icon_loading_name">アプリアイコンの読み込み優先度</string>
+    <string name="settings_system_reorder_icon_loading_desc">他のタイプのアイコンをロードしようとする前に、最初にロードするアプリアイコンタイプを設定します。</string>
+    <string name="settings_system_reorder_icon_loading_value">最初にロードは%s</string>
 </resources>
