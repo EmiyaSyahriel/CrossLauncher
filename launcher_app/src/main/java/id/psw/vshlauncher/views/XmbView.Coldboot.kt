@@ -10,6 +10,7 @@ import id.psw.vshlauncher.livewallpaper.NativeGL
 import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
 import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.typography.FontCollections
 import java.io.File
 import java.nio.file.Files.exists
@@ -43,10 +44,11 @@ fun XmbView.playColdBootSound() {
         }
     }
 
-    vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, VshResName.COLDBOOT_SOUND_MP3)
-        .forEach { vshIterator(it) }
-    vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, VshResName.COLDBOOT_SOUND_AAC)
-        .forEach { vshIterator(it) }
+    FileQuery(VshBaseDirs.VSH_RESOURCES_DIR)
+        .withNames(VshResName.GAMEBOOT)
+        .withExtensionArray(VshResTypes.SOUNDS)
+        .execute(vsh)
+        .forEach(vshIterator)
 }
 
 fun XmbView.cbStart(){
@@ -65,7 +67,11 @@ fun XmbView.cbEnsureImageLoaded(){
     if(state.coldBoot.image == null){
 
         // Load custom coldboot if exists
-        val i = context.vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "COLDBOOT.PNG", createParentDir = true).firstOrNull { it.exists() }
+        val i = FileQuery(VshBaseDirs.VSH_RESOURCES_DIR)
+            .withNames(VshResName.GAMEBOOT)
+            .withExtensionArray(VshResTypes.IMAGES)
+            .onlyIncludeExists(true)
+            .execute(context.vsh).firstOrNull()
         if(i != null) { state.coldBoot.image = BitmapFactory.decodeFile(i.absolutePath) }
 
         // Load default if no custom coldboot can be loaded

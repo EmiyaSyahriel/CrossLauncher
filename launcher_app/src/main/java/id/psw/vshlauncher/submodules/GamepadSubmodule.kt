@@ -5,9 +5,11 @@ import android.view.KeyEvent.*
 import android.view.MotionEvent
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.VshBaseDirs
-import id.psw.vshlauncher.getAllPathsFor
 import id.psw.vshlauncher.select
+import id.psw.vshlauncher.types.FileQuery
 import java.lang.Math.abs
+import java.nio.file.Files.exists
+import java.nio.file.Files.isDirectory
 
 /**
  * ## Keymapping Format
@@ -184,14 +186,16 @@ class GamepadSubmodule(ctx: VSH) {
     private val axisRemaps = mutableMapOf(ANDROID_GAMEPAD to defaultAndroidGamepadAxisMap)
 
     init {
-        ctx.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "keymap").forEach {
-            if(it.exists()){
+        FileQuery(VshBaseDirs.VSH_RESOURCES_DIR).atPath("keymap")
+            .onlyIncludeExists(true)
+            .execute(ctx)
+            .forEach {
                 if(it.isDirectory){
                     it.list { _, name -> name.endsWith(".txt", ignoreCase = true)}?.forEach {
+
                     }
                 }
             }
-        }
     }
 
     fun translate(key: Int, devId:Int) : Key{

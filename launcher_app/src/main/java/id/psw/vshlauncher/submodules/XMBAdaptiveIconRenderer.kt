@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.types.Ref
 import java.io.File
 import java.lang.Exception
@@ -75,7 +76,7 @@ class XMBAdaptiveIconRenderer(private val ctx: VSH) {
         HEIGHT = (BaseHeight * d).toInt()
         val mSb = StringBuilder()
         mSb.appendLine("Icon file source : ")
-        ctx.getAllPathsFor(VshBaseDirs.APPS_DIR, createParentDir = true).forEach {
+        FileQuery(VshBaseDirs.APPS_DIR).createParentDirectory(true).execute(ctx).forEach {
             fileRoots.add(it)
             mSb.appendLine(it.absolutePath)
         }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.LauncherApps
 import android.os.Build
 import id.psw.vshlauncher.VSH.Companion.ITEM_CATEGORY_SHORTCUT
+import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBShortcutItem
 
@@ -39,7 +40,7 @@ fun VSH.reloadShortcutList(){
 
         c.content.clear()
 
-        val paths = getAllPathsFor(VshBaseDirs.USER_DIR, "shortcuts")
+        val paths = FileQuery(VshBaseDirs.USER_DIR).atPath("shortcuts").execute(this)
         for(path in paths){
             if(path.exists()){
                 val inis = path.listFiles { a, b ->

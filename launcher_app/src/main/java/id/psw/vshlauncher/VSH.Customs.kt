@@ -16,32 +16,17 @@ object VshBaseDirs {
 }
 
 object VshResName {
-    const val COLDBOOT_SOUND_MP3 = "coldboot.mp3"
-    const val COLDBOOT_SOUND_AAC = "coldboot.aac"
-    const val GAMEBOOT_SOUND_MP3 = "gameboot.mp3"
-    const val GAMEBOOT_SOUND_AAC = "gameboot.aac"
-    const val COLDBOOT_BACKGROUND_PNG = "coldboot.png"
-    const val COLDBOOT_BACKGROUND_JPG = "coldboot.jpg"
-    const val GAMEBOOT_BACKGROUND_PNG = "gameboot.png"
-    const val GAMEBOOT_BACKGROUND_JPG = "gameboot.jpg"
+    const val COLDBOOT = "coldboot"
+    const val GAMEBOOT = "gameboot"
+    const val APP_ICON = "ICON0"
+    const val APP_ANIM_ICON = "ICON1"
 }
-
-/**
- * @param base Base directory after the storage path, treat it like the root of a PS3 HDD
- * @param args Additional directories
- * @param createParentDir Create Parent Directory if is not exist
- * @param isUserSpecific Data in this directory is specific for the user when is located at an external/portable storage
- * e.g : Settings, Configurations, Preferences
- */
-fun VSH.getAllPathsFor(base:String, vararg args:String, createParentDir:Boolean = false, isCache:Boolean = false) : ArrayList<File> {
-    val retval = ArrayList<File>()
-
-    isCache.select(allCacheDirs, getExternalFilesDirs(null)).forEach {
-        val baseFile = it.combine(base, *args)
-        if(createParentDir && (baseFile?.parentFile?.exists() != true)) baseFile?.parentFile?.mkdirs()
-        if(baseFile != null) retval.add(baseFile)
-    }
-    return retval
+object VshResTypes {
+    val IMAGES = arrayOf("jpg","png","webp","JPG","PNG","WEBP")
+    val ICONS = arrayOf("png","webp","PNG","WEBP")
+    val ANIMATED_ICONS = arrayOf("webp","apng","mp4","gif", "WEBP","APNG","MP4", "GIF")
+    val SOUNDS = arrayOf("AAC","OGG","MP3","WAV","MID","MIDI","aac","ogg","mp3","wav","mid","midi")
+    val INI = arrayOf("ini","INI")
 }
 
 val ActivityInfo.uniqueActivityName get() = "${processName}_${name.removeSimilarPrefixes(processName)}"

@@ -5,6 +5,7 @@ import android.graphics.PointF
 import android.graphics.RectF
 import android.view.MotionEvent
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
 import java.io.File
@@ -42,11 +43,7 @@ class CustomResourceListDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh
             SFXType.Confirm to "confirm",
             SFXType.Cancel to "cancel"
         ).forEach {
-            findUsage("SFX - ${it.first}", arrayListOf<File>().apply {
-                addAll(vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "sfx", "${it.second}.ogg"))
-                addAll(vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "sfx", "${it.second}.wav"))
-                addAll(vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "sfx", "${it.second}.mp3"))
-            })
+            findUsage("SFX - ${it.first}", FileQuery(VshBaseDirs.VSH_RESOURCES_DIR).atPath("sfx").withNames(it.second).withExtensionArray(VshResTypes.SOUNDS).execute(vsh))
         }
     }
 

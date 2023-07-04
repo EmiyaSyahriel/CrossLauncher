@@ -10,6 +10,7 @@ import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.AsyncTask.execute
 import android.os.Build
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.types.INIFile
@@ -22,8 +23,10 @@ import id.psw.vshlauncher.views.showDialog
 import java.io.File
 import java.lang.StringBuilder
 import android.text.format.DateFormat
+import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.types.items.XMBAppItem.Companion.ENABLE_EMBEDDED_MEDIA
 import id.psw.vshlauncher.views.asBytes
+import java.nio.file.Files.exists
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -101,54 +104,43 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
         }
     }
 
-    private fun requestCustomizationFiles(fileName:String) : ArrayList<File>{
-        return vsh.getAllPathsFor(VshBaseDirs.APPS_DIR, resInfo.uniqueActivityName, fileName, createParentDir = false)
+    private fun requestCustomizationFiles(fileBaseName : String, extensions: Array<String>) : ArrayList<File>{
+        return FileQuery(VshBaseDirs.APPS_DIR).atPath(resInfo.uniqueActivityName).withNames(fileBaseName).withExtensionArray(extensions).execute(vsh)
     }
 
     private var backdropFiles = ArrayList<File>().apply {
         if(!disableBackdrop) {
-            addAll(requestCustomizationFiles("PIC1.PNG"))
-            addAll(requestCustomizationFiles("PIC1.JPG"))
+            addAll(requestCustomizationFiles("PIC1", VshResTypes.IMAGES))
         }
     }
     private var backdropOverlayFiles = ArrayList<File>().apply {
         if(!disableBackdropOverlay) {
-            addAll(requestCustomizationFiles("PIC0.PNG"))
-            addAll(requestCustomizationFiles("PIC0.JPG"))
+            addAll(requestCustomizationFiles("PIC0", VshResTypes.IMAGES))
         }
     }
     private var portraitBackdropFiles = ArrayList<File>().apply {
         if(!disableBackdrop) {
-            addAll(requestCustomizationFiles("PIC1_P.PNG"))
-            addAll(requestCustomizationFiles("PIC1_P.JPG"))
+            addAll(requestCustomizationFiles("PIC1_P", VshResTypes.IMAGES))
         }
     }
     private var portraitBackdropOverlayFiles = ArrayList<File>().apply {
         if(!disableBackdropOverlay) {
-            addAll(requestCustomizationFiles("PIC0_P.PNG"))
-            addAll(requestCustomizationFiles("PIC0_P.JPG"))
+            addAll(requestCustomizationFiles("PIC0_P", VshResTypes.IMAGES))
         }
     }
     private var animatedIconFiles = ArrayList<File>().apply{
         if(!disableAnimatedIcon) {
-            addAll(requestCustomizationFiles("ICON1.APNG")) // Animated PNG (Line APNG-Drawable), best quality, just bigger file, Renderer OK
-            addAll(requestCustomizationFiles("ICON1.WEBP")) // WEBP (Facebook Fresco), good quality, relatively small file, Renderer Bad
-            addAll(requestCustomizationFiles("ICON1.MP4")) // MP4 (Android MediaMetadataRetriever), average quality, small file, Renderer Slow
-            addAll(requestCustomizationFiles("ICON1.GIF")) // GIF (Facebook Fresco), low quality, small file, Renderer Bad
+            addAll(requestCustomizationFiles("ICON1", VshResTypes.ANIMATED_ICONS))
         }
     }
     private var iconFiles = ArrayList<File>().apply{
         if(!disableAnimatedIcon) {
-            addAll(requestCustomizationFiles("ICON0.PNG"))
-            addAll(requestCustomizationFiles("ICON0.JPG"))
+            addAll(requestCustomizationFiles("ICON0", VshResTypes.ICONS))
         }
     }
     private var backSoundFiles = ArrayList<File>().apply {
         if(!disableBackSound) {
-            addAll(requestCustomizationFiles("SND0.MP3"))
-            addAll(requestCustomizationFiles("SND0.AAC"))
-            addAll(requestCustomizationFiles("SND0.MID"))
-            addAll(requestCustomizationFiles("SND0.MIDI"))
+            addAll(requestCustomizationFiles("SND0", VshResTypes.SOUNDS))
         }
     }
     private var _iconSync = Object()
@@ -296,7 +288,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     val packageName get() = pkgInfo?.packageName ?: loadingText
 
     private fun readAppConfig(){
-        val files = requestCustomizationFiles("PARAM.INI")
+        val files = requestCustomizationFiles("PARAM", VshResTypes.INI)
         val validFile = files.firstOrNull { it.exists() }
         if(validFile != null){
             iniFile.parseFile(validFile.absolutePath)
@@ -369,12 +361,12 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
         iniFile[INI_KEY_TYPE, INI_KEY_CATEGORY] = _appCategory
 
         if(iniFile.path.isEmpty()){
-            val haveCustomFolder = vsh.getAllPathsFor(VshBaseDirs.APPS_DIR, resInfo.uniqueActivityName).any { it.exists() }
+            val haveCustomFolder = FileQuery(VshBaseDirs.APPS_DIR).atPath(resInfo.uniqueActivityName).createParentDirectory(true).execute(vsh).any { it.exists() }
             if(!haveCustomFolder){
                 createAppCustomDirectory()
             }
 
-            val files = requestCustomizationFiles("PARAM.INI")
+            val files = requestCustomizationFiles("PARAM.INI", VshResTypes.INI)
             var success = false
             files.forEach { file ->
                 try {
@@ -495,21 +487,17 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     }
 
     private fun createAppCustomDirectory() {
-        vsh.getAllPathsFor(VshBaseDirs.APPS_DIR, resInfo.uniqueActivityName).forEach { file ->
-            var found = file.exists()
-            if(!found){
-                found = file.mkdirs()
-            }
+        FileQuery(VshBaseDirs.APPS_DIR).atPath(resInfo.uniqueActivityName).createParentDirectory(true){file, created ->
             val sb = StringBuilder()
             for(i in file.absolutePath.indices){
                 if((i + 1) % 50 == 0) sb.append('\n')
                 sb.append(file.absolutePath[i])
             }
 
-            if(found){
+            if(created){
                 vsh.postNotification(null, vsh.getString(R.string.app_customization_file_created), sb.toString(), 10.0f)
             }
-        }
+        }.execute(vsh)
     }
 
     private fun pIconLoad(){

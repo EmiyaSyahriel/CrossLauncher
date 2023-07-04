@@ -2,6 +2,8 @@ package id.psw.vshlauncher.typography
 
 import android.graphics.Typeface
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.types.FileQuery
+import java.nio.file.Files.exists
 
 object FontCollections {
     /**
@@ -31,11 +33,17 @@ object FontCollections {
     lateinit var buttonFont : Typeface
 
     const val TAG = "fntmgr.self"
-    private const val FONT_NAME = "VSH-CustomFont.ttf"
+    private const val FONT_NAME = "VSH-CustomFont"
 
     fun init(ctx: VSH){
         buttonFont = Typeface.createFromAsset(ctx.assets, "vshbtn.ttf")
-        val ttf = ctx.getAllPathsFor(VshBaseDirs.FLASH_DATA_DIR, "font", FONT_NAME, createParentDir = true).firstOrNull { it.exists() }
+        val ttf = FileQuery(VshBaseDirs.FLASH_DATA_DIR)
+            .atPath("font")
+            .withNames(FONT_NAME)
+            .withExtensions("ttf", "TTF")
+            .createParentDirectory(true)
+            .execute(ctx)
+            .firstOrNull { it.exists() }
         val isCustomFontFound = if(ttf != null){
             masterFont = Typeface.createFromFile(ttf)
             true

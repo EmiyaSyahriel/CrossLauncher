@@ -6,8 +6,10 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withScale
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.typography.FontCollections
 import java.io.File
+import java.nio.file.Files.exists
 
 class VshViewGameBootState {
     var currentTime : Float = 0.0f
@@ -58,11 +60,12 @@ fun XmbView.playGameBootSound(){
             vsh.setSystemAudioSource(it)
         }
     }
-    vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, VshResName.GAMEBOOT_SOUND_MP3)
-        .forEach { vshIterator(it) }
-    vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, VshResName.GAMEBOOT_SOUND_AAC)
-        .forEach { vshIterator(it) }
 
+    FileQuery(VshBaseDirs.VSH_RESOURCES_DIR)
+        .withNames(VshResName.GAMEBOOT)
+        .withExtensionArray(VshResTypes.SOUNDS)
+        .execute(vsh)
+        .forEach(vshIterator)
 }
 
 fun XmbView.gbStart(){
@@ -75,7 +78,11 @@ private fun XmbView.gbEnsureImageLoaded(){
     if(state.gameBoot.image == null){
 
         // Load custom gameboot if exists
-        val i = context.vsh.getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "GAMEBOOT.PNG", createParentDir = true).firstOrNull { it.exists() }
+        val i = FileQuery(VshBaseDirs.VSH_RESOURCES_DIR)
+            .withNames(VshResName.GAMEBOOT)
+            .withExtensionArray(VshResTypes.IMAGES)
+            .onlyIncludeExists(true)
+            .execute(context.vsh).firstOrNull()
         if(i != null) { state.gameBoot.image = BitmapFactory.decodeFile(i.absolutePath) }
 
         // Load default if no custom gameboot can be loaded

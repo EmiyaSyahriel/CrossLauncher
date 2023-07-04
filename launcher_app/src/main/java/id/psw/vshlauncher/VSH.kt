@@ -32,6 +32,7 @@ import id.psw.vshlauncher.views.filterBySearch
 import java.io.File
 import java.lang.Exception
 import java.lang.StringBuilder
+import java.nio.file.Files.exists
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
@@ -305,6 +306,8 @@ class VSH : Application(), ServiceConnection {
         }
     }
 
+    fun queryTexture(customId:String) : ArrayList<File> =FileQuery(VshBaseDirs.VSH_RESOURCES_DIR).withNames("$customId.png").execute(this)
+
     fun loadTexture(@DrawableRes d : Int, w:Int, h:Int, whiteFallback:Boolean = false ) : Bitmap {
         return ResourcesCompat.getDrawable(resources, d, null)?.toBitmap(w, h) ?: whiteFallback.select(XMBItem.WHITE_BITMAP, XMBItem.TRANSPARENT_BITMAP)
     }
@@ -314,8 +317,7 @@ class VSH : Application(), ServiceConnection {
     }
     fun loadTexture(@DrawableRes d: Int, customId:String, w:Int, h:Int, whiteFallback: Boolean) : Bitmap{
         var retval : Bitmap? = null
-        val file = getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "$customId.png")
-            .find { it.exists() }
+        val file = queryTexture(customId).find { it.exists() }
         if(file != null){
             try {
                 retval = BitmapFactory.decodeFile(file.absolutePath)
@@ -331,8 +333,7 @@ class VSH : Application(), ServiceConnection {
     }
     fun loadTexture(@DrawableRes d: Int, customId:String, whiteFallback: Boolean) : Bitmap{
         var retval : Bitmap? = null
-        val file = getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "$customId.png")
-            .find { it.exists() }
+        val file = queryTexture(customId).find { it.exists() }
         if(file != null){
             try {
                 retval = BitmapFactory.decodeFile(file.absolutePath)

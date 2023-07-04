@@ -7,6 +7,7 @@ import android.util.Base64
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.XMBShortcutInfo
 import id.psw.vshlauncher.typography.FontCollections
@@ -14,6 +15,7 @@ import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.drawBitmap
 import id.psw.vshlauncher.views.drawText
+import java.nio.file.Files.exists
 
 class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent) : XmbDialogSubview(vsh) {
     override val title: String
@@ -49,14 +51,18 @@ class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent
                 val idb = id.toByteArray(Charsets.UTF_16)
                 val b64 = Base64.encode(idb, Base64.DEFAULT)
 
-                val files = vsh.getAllPathsFor(VshBaseDirs.USER_DIR, "shortcuts", "${b64}.ini", createParentDir = true)
+                val files = FileQuery(VshBaseDirs.USER_DIR).atPath("shortcuts").createParentDirectory(true).execute(vsh)
                 var file = files.find { it.exists() }
                 if(file == null){
-                    files[0].createNewFile()
-                    file = files[0]
+                    for(ffile in files){
+                        if(ffile.createNewFile()){
+                            file = ffile
+                            break
+                        }
+                    }
                 }
 
-                shortcut.write(file)
+                if(file != null) shortcut.write(file)
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     req.accept()
