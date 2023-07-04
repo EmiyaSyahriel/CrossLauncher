@@ -51,7 +51,12 @@ class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent
                 val idb = id.toByteArray(Charsets.UTF_16)
                 val b64 = Base64.encode(idb, Base64.DEFAULT)
 
-                val files = FileQuery(VshBaseDirs.USER_DIR).atPath("shortcuts").createParentDirectory(true).execute(vsh)
+                val files = FileQuery(VshBaseDirs.USER_DIR)
+                    .atPath("shortcuts")
+                    .withNames(b64.toString())
+                    .withExtensionArray(VshResTypes.INI)
+                    .createParentDirectory(true)
+                    .execute(vsh)
                 var file = files.find { it.exists() }
                 if(file == null){
                     for(ffile in files){
