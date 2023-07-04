@@ -1,13 +1,13 @@
 package id.psw.vshlauncher.types.items
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
-import id.psw.vshlauncher.Consts
-import id.psw.vshlauncher.R
-import id.psw.vshlauncher.VSH
-import id.psw.vshlauncher.activities.XMB
-import id.psw.vshlauncher.postNotification
+import androidx.core.graphics.scale
+import id.psw.vshlauncher.*
+import id.psw.vshlauncher.submodules.BitmapRef
+import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.types.XMBItem
 
 class XMBItemCategory(
@@ -21,7 +21,7 @@ class XMBItemCategory(
     }
 
     private var _isLoadingIcon = false
-    private lateinit var _icon : Bitmap
+    private lateinit var _icon : BitmapRef
     override val isIconLoaded: Boolean get() = _isLoadingIcon
     override val hasBackSound: Boolean = false
     override val hasBackdrop: Boolean = false
@@ -34,7 +34,7 @@ class XMBItemCategory(
         get() = vsh.isCategoryHidden(id)
 
     override val displayName: String get() = vsh.getString(strId)
-    override val icon: Bitmap get() = _icon
+    override val icon: Bitmap get() = _icon.bitmap
     override val id: String get() = cateId
     private var _sortIndex = 0
 
@@ -47,13 +47,47 @@ class XMBItemCategory(
             vsh.pref.edit().putInt(pkSortIndex, _sortIndex).apply()
         }
 
+    private fun makeCustomResName(name:String) : String{
+        var r = name
+        if(r.startsWith("vsh_") && r.length >= 4) r = "explore_category_${r.substring(4)}"
+        return r
+    }
+
     init {
         _sortIndex = vsh.pref.getInt(pkSortIndex, defaultSortIndex)
         vsh.threadPool.execute {
             _isLoadingIcon = true
-            _icon =
-                ResourcesCompat.getDrawable(vsh.resources, iconId, null)?.toBitmap(300,300)
+            _icon = BitmapRef("icon_category_$id", {
+                val fileQ = FileQuery(VshBaseDirs.VSH_RESOURCES_DIR)
+                    .onlyIncludeExists(true)
+
+                if(!id.startsWith("vsh")){
+                    fileQ.atPath("plugins")
+                }
+
+                val cFiles = fileQ.withNames(makeCustomResName(id))
+                    .withExtensions("png","jpg")
+                    .execute(vsh)
+
+                var cbmp : Bitmap? = null
+
+                for(file in cFiles){
+                    try{
+                        val srcb =BitmapFactory.decodeFile(file.absolutePath)
+                        cbmp = srcb?.scale(300, 300)
+                        srcb.recycle()
+                    }catch(_:Exception){
+                    }
+                }
+
+                cbmp ?:
+                    ResourcesCompat.getDrawable(vsh.resources, iconId, null)?.toBitmap(300,300)
                     ?: TRANSPARENT_BITMAP
+            })
+
+            while(_icon.isLoading){
+                Thread.sleep(100)
+            }
             _isLoadingIcon = false
         }
     }
