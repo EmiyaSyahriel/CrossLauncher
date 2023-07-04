@@ -30,6 +30,8 @@ class XMBShortcutItem(val vsh: VSH, file: File) : XMBItem(vsh) {
     override val description: String
         get() = shortcut.longName
 
+    val category : String get() = shortcut.category
+
     fun launch(x:XMBItem){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             val lcher = vsh.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
@@ -37,7 +39,6 @@ class XMBShortcutItem(val vsh: VSH, file: File) : XMBItem(vsh) {
             lcher.startShortcut(shortcut.packageName, shortcut.id, null, null, UserHandle.getUserHandleForUid(uid))
         }
     }
-
 
     init {
 

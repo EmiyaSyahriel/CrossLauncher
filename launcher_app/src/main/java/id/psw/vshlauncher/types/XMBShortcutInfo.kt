@@ -22,6 +22,7 @@ class XMBShortcutInfo {
         const val INI_NAME = "SNAME"
         const val INI_LNAME = "LNAME"
         const val INI_PKG = "PACKAGE"
+        const val INI_CATEGORY = "CATEGORY"
         const val INI_ENABLED = "BOOTABLE"
         const val INI_DISABLED_MSG = "NBOOTMSG"
         const val INI_HANDLE = "USER"
@@ -29,6 +30,7 @@ class XMBShortcutInfo {
         const val DEF_ID = "ko.id!"
         const val DEF_NAME = "Unknown"
         const val DEF_LNAME = "Unknown Shortcut"
+        const val DEF_CATEGORY = ""
         const val DEF_PKG = "id.psw.vshlauncher"
         const val DEF_DISABLED_MSG = "???"
         const val DEF_HANDLE = ""
@@ -40,6 +42,7 @@ class XMBShortcutInfo {
     var longName : String = DEF_LNAME
     var packageName : String = DEF_PKG
     var enabled : Boolean = false
+    var category : String = DEF_CATEGORY
     var disabledMsg : String = DEF_DISABLED_MSG
     var userHandle : UserHandle? = null
     var pinItem : LauncherApps.PinItemRequest? = null
@@ -64,6 +67,7 @@ class XMBShortcutInfo {
                     longName = shInfo.longLabel?.toString() ?: longName
                     packageName = shInfo.activity?.toShortString() ?: packageName
                     enabled = shInfo.isEnabled
+                    category = DEF_CATEGORY
                     disabledMsg = shInfo.disabledMessage?.toString() ?: DEF_DISABLED_MSG
                     userHandle = shInfo.userHandle
                     isNextGen = true
@@ -90,11 +94,12 @@ class XMBShortcutInfo {
         name = ini[INI_TYPE, INI_NAME] ?: DEF_NAME
         longName = ini[INI_TYPE, INI_LNAME] ?: DEF_LNAME
         packageName = ini[INI_TYPE, INI_PKG] ?: DEF_PKG
+        category = ini[INI_TYPE, INI_CATEGORY] ?: DEF_CATEGORY
         enabled = ini[INI_TYPE, INI_ENABLED] == "true"
         disabledMsg = ini[INI_TYPE, INI_DISABLED_MSG] ?: DEF_DISABLED_MSG
         val uHandleStr = ini[INI_TYPE, INI_HANDLE] ?: ""
 
-        if(uHandleStr.length > 0){
+        if(uHandleStr.isNotEmpty()){
             val p = Parcel.obtain()
             val dat = Base64.decode(uHandleStr, Base64.DEFAULT)
             p.writeByteArray(dat)
@@ -112,6 +117,7 @@ class XMBShortcutInfo {
     fun write(iniPath: File){
         ini[INI_TYPE, INI_ID] = id
         ini[INI_TYPE, INI_NAME] = name
+        ini[INI_TYPE, INI_CATEGORY] = category
         ini[INI_TYPE, INI_LNAME] = longName
         ini[INI_TYPE, INI_PKG] = packageName
         ini[INI_TYPE, INI_DISABLED_MSG] = disabledMsg
