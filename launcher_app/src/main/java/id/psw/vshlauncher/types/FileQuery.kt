@@ -52,13 +52,13 @@ class FileQuery {
         return this
     }
 
-    fun withExtensionArray(exts: Array<String>) : FileQuery {
-        this.extensions.addAll(exts)
+    fun withExtensionArray(extensionList: Array<String>) : FileQuery {
+        this.extensions.addAll(extensionList)
         return this
     }
 
-    fun withExtensions(vararg exts: String) : FileQuery {
-        this.extensions.addAll(exts)
+    fun withExtensions(vararg extensionList: String) : FileQuery {
+        this.extensions.addAll(extensionList)
         return this
     }
 
@@ -72,11 +72,11 @@ class FileQuery {
         }else{
             val storages = vsh.getExternalFilesDirs(null)
             for (storage in storages){
-                var bdir = File(storage, baseDir)
+                var baseFile = File(storage, baseDir)
                 for(path in paths){
-                    bdir = File(bdir, path)
+                    baseFile = File(baseFile, path)
                 }
-                bStorages.add(bdir)
+                bStorages.add(baseFile)
             }
         }
 
