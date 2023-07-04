@@ -1,5 +1,6 @@
 package id.psw.vshlauncher.types.items
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.content.SharedPreferences
@@ -407,18 +408,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
                 vsh.packageManager.getPackageInfo(resInfo.activityInfo.applicationInfo.packageName, 0)
             }
 
-            if(ENABLE_EMBEDDED_MEDIA){
-                val pkg = pkgInfo
-                val res = externalResource
-                if(pkg != null && res != null){
-                    externalResource = vsh.packageManager.getResourcesForApplication(pkg.packageName)
-                    embeddedIconId = res.getIdentifier("vsh_icon", "drawable", pkg.packageName)
-                    embeddedBackgroundId = res.getIdentifier("vsh_background", "drawable", pkg.packageName)
-                    embeddedBackSoundId = res.getIdentifier("vsh_background", "raw", pkg.packageName)
-                    embeddedBackOverlayId = res.getIdentifier("vsh_back_overlay", "drawable", pkg.packageName)
-                    embeddedAnimIconId = res.getIdentifier("vsh_anim_icon", "raw", pkg.packageName)
-                }
-            }
+            loadEmbeddedResource()
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
                 val splits : Array<String>? = resInfo.activityInfo.applicationInfo.splitPublicSourceDirs
@@ -483,6 +473,22 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
                     vsh.doCategorySorting()
                 }
             )
+        }
+    }
+
+    @SuppressLint("DiscouragedApi")
+    private fun loadEmbeddedResource() {
+        if(ENABLE_EMBEDDED_MEDIA){
+            val pkg = pkgInfo
+            val res = externalResource
+            if(pkg != null && res != null){
+                externalResource = vsh.packageManager.getResourcesForApplication(pkg.packageName)
+                embeddedIconId = res.getIdentifier("vsh_icon", "drawable", pkg.packageName)
+                embeddedBackgroundId = res.getIdentifier("vsh_background", "drawable", pkg.packageName)
+                embeddedBackSoundId = res.getIdentifier("vsh_background", "raw", pkg.packageName)
+                embeddedBackOverlayId = res.getIdentifier("vsh_back_overlay", "drawable", pkg.packageName)
+                embeddedAnimIconId = res.getIdentifier("vsh_anim_icon", "raw", pkg.packageName)
+            }
         }
     }
 
