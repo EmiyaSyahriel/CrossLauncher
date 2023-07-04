@@ -1,5 +1,6 @@
 package id.psw.vshlauncher
 
+import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.types.XMBItem
 import java.io.File
 import java.io.FileDescriptor
@@ -95,16 +96,15 @@ fun VSH.loadSfxData(attach : Boolean = true){
 
     for(it in types)
     {
-
-        var found = false
-        val files = arrayListOf<File>().apply {
-            addAll(getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "sfx", "${it.second}.ogg"))
-            addAll(getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "sfx", "${it.second}.wav"))
-            addAll(getAllPathsFor(VshBaseDirs.VSH_RESOURCES_DIR, "sfx", "${it.second}.mp3"))
-        }
+        val files = FileQuery(VshBaseDirs.VSH_RESOURCES_DIR)
+            .atPath("sfx")
+            .withNames(it.second)
+            .onlyIncludeExists(true)
+            .withExtensions("ogg", "wav", "mp3")
+            .execute(vsh)
 
         for(file in files){
-            found = file.isFile
+            val found = file.isFile
             Logger.d(TAG, " ${it.first}::\"${file.absolutePath}\" found ? $found")
             if(found){
                 val i = sfxPlayer.load(file.absolutePath, 0)
