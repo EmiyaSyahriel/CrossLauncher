@@ -3,7 +3,6 @@ package id.psw.vshlauncher.types
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.select
 import java.io.File
-import kotlin.math.abs
 
 /**
  * Used to find files in in storages
@@ -16,6 +15,7 @@ class FileQuery {
     private val names = ArrayList<String>()
     private var mkDir = false
     private var onlyExists = false
+    private var onDirectoryCreation : ((File, Boolean) -> Unit)? = null
 
     /**
      * @param baseDir Base Directory for search
@@ -31,13 +31,14 @@ class FileQuery {
         isBaseAbsolute = true
     }
 
-    fun createParentDirectory(create:Boolean) : FileQuery{
+    fun createParentDirectory(create:Boolean, onCreate : ((File, Boolean) -> Unit)? = null) : FileQuery{
         mkDir = create
+        onDirectoryCreation = onCreate
         return this
     }
 
     fun onlyIncludeExists(exists:Boolean) : FileQuery {
-        onlyExists = true
+        onlyExists = exists
         return this
     }
 
@@ -48,6 +49,11 @@ class FileQuery {
 
     fun withNames(vararg fileName:String) : FileQuery {
         this.names.addAll(fileName)
+        return this
+    }
+
+    fun withExtensionArray(exts: Array<String>) : FileQuery {
+        this.extensions.addAll(exts)
         return this
     }
 
@@ -77,16 +83,30 @@ class FileQuery {
         for(bStorage in bStorages){
             if(mkDir){
                 if(!bStorage.isDirectory){
-                    bStorage.mkdirs()
+                    val success = bStorage.mkdirs()
+                    onDirectoryCreation?.invoke(bStorage, success)
                 }
             }
 
-            for(name in names){
-                for(ext in extensions) {
-                    val file = File(bStorage, "$name.$ext")
-                    if(onlyExists.select(file.exists() || file.isFile, true)){
-                        files.add(file)
+            if(names.isNotEmpty()){
+                for(name in names){
+                    if(extensions.isEmpty()){
+                        val file = File(bStorage, name)
+                        if(onlyExists.select(file.exists() || file.isFile, true)){
+                            files.add(file)
+                        }
+                    }else{
+                        for(ext in extensions) {
+                            val file = File(bStorage, "$name.$ext")
+                            if(onlyExists.select(file.exists() || file.isFile, true)){
+                                files.add(file)
+                            }
+                        }
                     }
+                }
+            }else{
+                if(onlyExists.select(bStorage.exists() || bStorage.isDirectory, true)){
+                    files.add(bStorage)
                 }
             }
         }
