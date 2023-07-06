@@ -32,7 +32,6 @@ import id.psw.vshlauncher.views.filterBySearch
 import java.io.File
 import java.lang.Exception
 import java.lang.StringBuilder
-import java.nio.file.Files.exists
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
@@ -160,7 +159,7 @@ class VSH : Application(), ServiceConnection {
         volume.pref = pref
         setActiveLocale(readSerializedLocale(pref.getString(PrefEntry.SYSTEM_LANGUAGE, "") ?: ""))
         showLauncherFPS = pref.getInt(PrefEntry.SHOW_LAUNCHER_FPS, 0) == 1
-        XMBAppItem.disableAnimatedIcon = pref.getInt(PrefEntry.DISPLAY_VIDEO_ICON, 1) == 0
+        XMBAppItem.disableAnimatedIcon = pref.getInt(PrefEntry.DISABLE_VIDEO_ICON, 0) != 0
         val o = pref.getInt(PrefEntry.SYSTEM_VISIBLE_APP_DESC, XMBAppItem.DescriptionDisplay.PackageName.ordinal)
         XMBAppItem.descriptionDisplay = enumFromInt(o)
         XMBAdaptiveIconRenderer.Companion.AdaptiveRenderSetting.iconPriority =

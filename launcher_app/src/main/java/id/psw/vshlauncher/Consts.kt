@@ -41,7 +41,7 @@ object PrefEntry{
     /** Boolean, Show Detailed Memory */
     const val SHOW_DETAILED_MEMORY = "/crosslauncher/debug/showJvmMemory"
     /** Boolean */
-    const val DISPLAY_VIDEO_ICON = "/crosslauncher/menu/playVideoIcon"
+    const val DISABLE_VIDEO_ICON = "/crosslauncher/menu/disableVideoIcon"
     /** Int */
     const val SYSTEM_VISIBLE_APP_DESC = "/crosslauncher/menu/visibleAppDesc"
     /** Boolean */
