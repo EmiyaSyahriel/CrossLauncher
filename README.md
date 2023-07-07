@@ -14,9 +14,12 @@ The launcher is still fairly usable on touch screen. Just with a bit struggle if
 lot of apps to navigate.
 
 ## Memory Usage
-20/03/2022: The launcher is currently very RAM demanding, in my phone which currently
-have around 75 launch-able icons. It requires almost 512-700MB even with a very tight
-bitmap lifecycling
+08/07/2023 : Normally, at least on my Nokia T20, It should require around 50MB to 200MB of RAM, depending on :
+- Count of icons currently displayed (animated icon is obviously uses larger RAM)
+- Is currently playing audio file
+- How many layer of backdrop is now showing (currently only max 1 layer, the backdrop)
+- The resolution of the each backdrop
+- Any leak is there?
 
 ## Screenshots
 ![App List](readme_asset/0.png)
