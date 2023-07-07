@@ -3,6 +3,7 @@ package id.psw.vshlauncher.types
 import android.content.Context
 import android.content.Intent
 import android.content.pm.LauncherApps
+import android.content.pm.ShortcutInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
@@ -11,7 +12,12 @@ import android.os.UserHandle
 import android.util.Base64
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.asHexToByteArray
+import id.psw.vshlauncher.fromByteArray
+import id.psw.vshlauncher.sdkAtLeast
 import id.psw.vshlauncher.select
+import id.psw.vshlauncher.toByteArray
+import id.psw.vshlauncher.toHex
 import java.io.File
 
 class XMBShortcutInfo {
@@ -19,18 +25,22 @@ class XMBShortcutInfo {
     companion object {
         const val INI_TYPE = "CrossLauncher.ShortcutInfo"
         const val INI_ID = "ID"
+        const val INI_CXL_ID = "CXL_ID"
         const val INI_NAME = "SNAME"
         const val INI_LNAME = "LNAME"
         const val INI_PKG = "PACKAGE"
         const val INI_CATEGORY = "CATEGORY"
         const val INI_ENABLED = "BOOTABLE"
         const val INI_DISABLED_MSG = "NBOOTMSG"
+        const val INI_SHORTCUT_INFO = "SHELLDATA"
         const val INI_HANDLE = "USER"
 
-        const val DEF_ID = "ko.id!"
+        const val DEF_ID = "ko.id"
+        const val DEF_CXL_ID = "ko.id"
         const val DEF_NAME = "Unknown"
         const val DEF_LNAME = "Unknown Shortcut"
         const val DEF_CATEGORY = ""
+        const val DEF_SHORTCUT_INFO = "00"
         const val DEF_PKG = "id.psw.vshlauncher"
         const val DEF_DISABLED_MSG = "???"
         const val DEF_HANDLE = ""
@@ -38,6 +48,7 @@ class XMBShortcutInfo {
 
     var icon : Bitmap = XMBItem.TRANSPARENT_BITMAP
     var id : String = DEF_ID
+    var cxl_id : String = DEF_CXL_ID
     var name : String = DEF_NAME
     var longName : String = DEF_LNAME
     var packageName : String = DEF_PKG
@@ -55,17 +66,17 @@ class XMBShortcutInfo {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             if(intent.action!!.equals(LauncherApps.ACTION_CONFIRM_PIN_SHORTCUT, true)){
                 val lcher = vsh.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
-                val _pinItem = lcher.getPinItemRequest(intent)
+                val cPinItem = lcher.getPinItemRequest(intent)
 
-                val shInfo = _pinItem.shortcutInfo
+                val shInfo = cPinItem.shortcutInfo
                 if(shInfo != null){
                     icon = lcher
                         .getShortcutIconDrawable(shInfo, vsh.resources.displayMetrics.densityDpi)
                         .toBitmap(100,100)
                     id = shInfo.id
                     name = shInfo.shortLabel?.toString() ?: name
-                    longName = shInfo.longLabel?.toString() ?: longName
-                    packageName = shInfo.activity?.toShortString() ?: packageName
+                    longName = shInfo.longLabel?.toString() ?: shInfo.shortLabel?.toString() ?: longName
+                    packageName = shInfo.activity?.packageName ?: packageName
                     enabled = shInfo.isEnabled
                     category = DEF_CATEGORY
                     disabledMsg = shInfo.disabledMessage?.toString() ?: DEF_DISABLED_MSG
@@ -73,10 +84,9 @@ class XMBShortcutInfo {
                     isNextGen = true
                 }
 
-                pinItem = _pinItem
+                pinItem = cPinItem
             }
         }
-
 
         // Use old Android static shortcut installation
         if(!isNextGen){
@@ -88,9 +98,21 @@ class XMBShortcutInfo {
         }
     }
 
+    fun saveIcon(iniPath:File){
+        val iconFile = File(iniPath.parent, "${iniPath.nameWithoutExtension}.png")
+
+        if(!iconFile.exists()){
+            iconFile.createNewFile()
+        }
+        icon.compress(Bitmap.CompressFormat.PNG, 100, iconFile.outputStream())
+
+        ini.write(iniPath.absolutePath)
+    }
+
     constructor(vsh:VSH, iniPath: File){
         ini.parseFile(iniPath.absolutePath)
         id = ini[INI_TYPE, INI_ID] ?: DEF_ID
+        cxl_id = ini[INI_TYPE, INI_CXL_ID] ?: DEF_CXL_ID
         name = ini[INI_TYPE, INI_NAME] ?: DEF_NAME
         longName = ini[INI_TYPE, INI_LNAME] ?: DEF_LNAME
         packageName = ini[INI_TYPE, INI_PKG] ?: DEF_PKG
@@ -107,17 +129,13 @@ class XMBShortcutInfo {
             userHandle = UserHandle.readFromParcel(p)
             p.recycle()
         }
-
-        val iconFile = File(iniPath.parent, "${iniPath.nameWithoutExtension}.png")
-        if(iconFile.exists()){
-            icon = BitmapFactory.decodeFile(iconFile.absolutePath)
-        }
     }
 
     fun write(iniPath: File){
         ini[INI_TYPE, INI_ID] = id
         ini[INI_TYPE, INI_NAME] = name
         ini[INI_TYPE, INI_CATEGORY] = category
+        ini[INI_TYPE, INI_CXL_ID] = cxl_id
         ini[INI_TYPE, INI_LNAME] = longName
         ini[INI_TYPE, INI_PKG] = packageName
         ini[INI_TYPE, INI_DISABLED_MSG] = disabledMsg
@@ -138,13 +156,5 @@ class XMBShortcutInfo {
 
         ini[INI_TYPE, INI_HANDLE] = uHandleStr
 
-        val iconFile = File(iniPath.parent, "${iniPath.nameWithoutExtension}.png")
-
-        if(!iconFile.exists()){
-            iconFile.createNewFile()
-        }
-        icon.compress(Bitmap.CompressFormat.PNG, 100, iconFile.outputStream())
-
-        ini.write(iniPath.absolutePath)
     }
 }
