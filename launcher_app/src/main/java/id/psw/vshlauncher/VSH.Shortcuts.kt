@@ -8,7 +8,15 @@ import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBShortcutItem
 
-
+/**
+ * Shortcut will be located at `(Cross Launcher Data)/files/dev_hdd0/shortcuts/`
+ * Each shortcut is it's own directory, each with randomized id (to mitigate apps that uses unacceptable id and package name)
+ * Contains :
+ * - `SHORTCUT.INI` - Main Shortcut Definition
+ * - `ICON0.PNG` - Shortcut Icon
+ *
+ * Shortcut support same customization level as Apps
+ */
 fun VSH.reloadShortcutList(){
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         Logger.d("SHORTCUT", "Getting shortcuts...")

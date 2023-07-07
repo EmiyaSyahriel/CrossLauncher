@@ -4,9 +4,10 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.ResolveInfo
 import android.os.Build
-import id.psw.vshlauncher.types.XMBItem
+import android.util.Log
 import id.psw.vshlauncher.types.items.XMBAppItem
 import id.psw.vshlauncher.types.items.XMBItemCategory
+import java.io.File
 
 fun VSH.isAGame(rInfo: ResolveInfo): Boolean {
     val appInfo = packageManager.getApplicationInfo(rInfo.activityInfo.packageName, 0)
@@ -63,6 +64,33 @@ fun VSH.appCategorySortingName(it : XMBItemCategory) : String{
     }
 }
 
+fun VSH.tryMigrateOldGameDirectory(){
+    val TAG = "GameCustomMigrate"
+    if(!runtimeTriageCheck(TAG)) return
+
+    val storages = getExternalFilesDirs(null)
+    for(storage in storages){
+        val src = storage.combine("dev_hdd0","games")
+        val dst = storage.combine("dev_hdd0","game")
+
+        if(src == null || dst == null) continue
+
+        if(!src.isDirectory) continue
+
+        Log.w(TAG, "Found old directory of app customization, migrating...")
+        if(dst.isDirectory) {
+            Log.w(TAG, "Both new and old directory is present, Migration cancelled")
+            continue
+        }
+
+        try{
+            src.renameTo(dst)
+        }catch (e:Exception){
+            Log.e(TAG, "Migration error", e)
+        }
+    }
+}
+
 fun VSH.reloadAppList(){
     threadPool.execute {
         XMBAppItem.showHiddenByConfig = false
@@ -92,7 +120,6 @@ fun VSH.reloadAppList(){
             addToCategory(isGame.select(VSH.ITEM_CATEGORY_GAME, VSH.ITEM_CATEGORY_APPS), item)
             isGame.select(gameCat, appCat)?.setSort(AppItemSorting.Name)
         }
-        Thread.sleep(5000)
 
         setLoadingFinished(lh)
     }

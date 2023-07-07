@@ -398,4 +398,7 @@
   <string name="settings_system_reorder_icon_loading_name">App Icon Loading Priority</string>
   <string name="settings_system_reorder_icon_loading_desc">Set which app icon type to be loaded first before trying to load other type of icon.</string>
   <string name="settings_system_reorder_icon_loading_value">%s first</string>
+    <string name="shortcut_failed_to_launch_title">Failed to Launch Shortcut</string>
+  <string name="shortcut_failed_to_launch_desc">Activity %s is not found or is forbidden to be launched by CrossLauncher.</string>
+  <string name="error_pkgi_no_media">No writable media found</string>
 </resources>

@@ -7,6 +7,7 @@ import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Parcel
+import android.os.Parcelable
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.core.content.res.ResourcesCompat
 import id.psw.vshlauncher.activities.XMB
@@ -180,3 +181,29 @@ inline fun <reified  E : Enum<E>> enumFromInt(i : Int) : E{
 }
 
 fun <E : Enum<E>> Enum<E>.toInt(): Int = this.ordinal
+
+fun <E: Parcelable> E.toByteArray() : ByteArray {
+    val p = Parcel.obtain()
+    writeToParcel(p, 0);
+    val a = p.marshall()
+    p.recycle()
+    return a
+}
+
+fun <E: Parcelable, P: Parcelable.Creator<E>> P.fromByteArray(arr: ByteArray) : E {
+    val p = Parcel.obtain()
+    p.unmarshall(arr, 0, arr.size);
+    p.setDataPosition(0)
+    val r = createFromParcel(p)
+    p.recycle()
+    return r
+}
+
+fun ByteArray.toHex() : String =
+    asUByteArray().joinToString(""){ it.toString(16).padStart(2, '0') }
+
+fun String.asHexToByteArray() : ByteArray {
+    if(length % 2 != 0) throw NumberFormatException("Length is odd")
+
+    return chunked(2).map { it.toInt(16).toByte() }.toByteArray()
+}

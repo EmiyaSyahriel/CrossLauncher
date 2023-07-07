@@ -20,7 +20,6 @@ import id.psw.vshlauncher.views.*
 import kotlinx.coroutines.sync.Mutex
 import java.io.File
 import java.util.zip.ZipFile
-import kotlin.io.path.Path
 import kotlin.math.min
 
 
@@ -260,11 +259,19 @@ class InstallPackageDialogView(private val vsh: VSH, private val intent: Intent)
         return src.split(File.separatorChar).last()
     }
 
-    private fun installData(){
-        if(!storageDestination.exists()){
-            storageDestination = vsh.getExternalFilesDir(null) ?: vsh.filesDir
-        }
+    private fun tryWrite(f:File) : Boolean {
+        try{
+            val cf = File(f, "io.check")
+            if(cf.exists()) cf.delete() else cf.createNewFile()
+            return true
+        }catch(_:Exception){
 
+        }
+        return false
+    }
+
+    private fun installData(){
+        val nwStr = vsh.getString(R.string.error_pkgi_no_media)
         vsh.threadPool.execute {
             status = Status.Installing
             fun setProgressInfo(info:String) {
@@ -272,6 +279,24 @@ class InstallPackageDialogView(private val vsh: VSH, private val intent: Intent)
                     installInfo = info
                 }
             }
+
+            if(!storageDestination.exists()){
+                val dirs = vsh.getExternalFilesDirs(null)
+                storageDestination = vsh.filesDir
+                for(dir in dirs){
+                    if(tryWrite(dir)){
+                        storageDestination = dir
+                        break
+                    }
+                }
+
+                if(!tryWrite(storageDestination)){
+                    setProgressInfo(nwStr)
+                    return@execute
+                }
+            }
+
+
             installingForSystem = false
 
             try{

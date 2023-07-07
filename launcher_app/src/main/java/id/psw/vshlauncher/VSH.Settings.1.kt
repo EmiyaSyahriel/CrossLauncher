@@ -9,7 +9,7 @@ import androidx.core.app.ActivityCompat
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.GamepadUISubmodule
 import id.psw.vshlauncher.submodules.XMBAdaptiveIconRenderer
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.CIFLoader
 import id.psw.vshlauncher.types.items.*
 import id.psw.vshlauncher.views.XMBLayoutType
 import id.psw.vshlauncher.views.dialogviews.*
@@ -265,13 +265,13 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 R.string.settings_system_disable_video_icon_desc,
                 R.drawable.category_video,
                 {
-                    getString(XMBAppItem.disableAnimatedIcon.select(R.string.common_yes, R.string.common_no))
+                    getString(CIFLoader.disableAnimatedIcon.select(R.string.common_yes, R.string.common_no))
                 }
             ){
-                XMBAppItem.disableAnimatedIcon = !XMBAppItem.disableAnimatedIcon
+                CIFLoader.disableAnimatedIcon = !CIFLoader.disableAnimatedIcon
                 pref.edit().putInt(
-                    PrefEntry.DISPLAY_VIDEO_ICON,
-                    XMBAppItem.disableAnimatedIcon.select(1,0)
+                    PrefEntry.DISABLE_VIDEO_ICON,
+                    CIFLoader.disableAnimatedIcon.select(1,0)
                 ).apply()
             }
         )
@@ -490,18 +490,18 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 hasMenu = true
                 val dMenu = ArrayList<XMBMenuItem>()
 
-                    dMenu.add(XMBMenuItem.XMBMenuItemLambda(
-                        {"PlayStation Portable"}, {false}, 1)
-                    {
-                        xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PSP
-                        saveLayoutSetting()
-                    })
-                    dMenu.add(XMBMenuItem.XMBMenuItemLambda(
-                        {"PlayStation 3"}, {false}, 0)
-                    {
-                        xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PS3
-                        saveLayoutSetting()
-                    })
+                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                    {"PlayStation Portable"}, {false}, 1)
+                {
+                    xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PSP
+                    saveLayoutSetting()
+                })
+                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                    {"PlayStation 3"}, {false}, 0)
+                {
+                    xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PS3
+                    saveLayoutSetting()
+                })
                 menuItems = dMenu
             }
         )

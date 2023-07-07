@@ -23,6 +23,8 @@ class BitmapRef (
 
     val bitmap : Bitmap get() = BitmapManager.instance.get(this)
     val isLoading : Boolean get() = BitmapManager.instance.isLoading(this)
+    val isLoaded : Boolean get() = BitmapManager.instance.isLoaded(this)
+
     fun release() {
         if(!released){
             BitmapManager.instance.release(this)

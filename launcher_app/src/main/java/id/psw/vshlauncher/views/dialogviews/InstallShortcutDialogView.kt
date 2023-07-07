@@ -3,7 +3,6 @@ package id.psw.vshlauncher.views.dialogviews
 import android.content.Intent
 import android.graphics.*
 import android.os.Build
-import android.util.Base64
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
@@ -15,9 +14,13 @@ import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.drawBitmap
 import id.psw.vshlauncher.views.drawText
-import java.nio.file.Files.exists
+import kotlin.random.Random
 
 class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent) : XmbDialogSubview(vsh) {
+    companion object {
+        private val rng = Random(System.nanoTime())
+    }
+
     override val title: String
         get() = vsh.getString(R.string.install_shortcut_dialog_title)
 
@@ -47,27 +50,33 @@ class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent
         if(isPositive){
             val req = shortcut.pinItem
             if(req != null){
-                val id = "${shortcut.packageName}_${shortcut.id}"
-                val idb = id.toByteArray(Charsets.UTF_16)
-                val b64 = Base64.encode(idb, Base64.DEFAULT)
+                val id = rng.nextBytes(16).toHex()
+                shortcut.cxl_id = id
 
                 val files = FileQuery(VshBaseDirs.USER_DIR)
                     .atPath("shortcuts")
-                    .withNames(b64.toString())
+                    .withNames(id)
                     .withExtensionArray(VshResTypes.INI)
                     .createParentDirectory(true)
                     .execute(vsh)
                 var file = files.find { it.exists() }
                 if(file == null){
                     for(ffile in files){
-                        if(ffile.createNewFile()){
-                            file = ffile
-                            break
+                        try {
+                            if(ffile.createNewFile()){
+                                file = ffile
+                                break
+                            }
+                        }catch(e:Exception){
+                            e.printStackTrace()
                         }
                     }
                 }
 
-                if(file != null) shortcut.write(file)
+                if(file != null) {
+                    shortcut.write(file)
+                    shortcut.saveIcon(file)
+                }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     req.accept()

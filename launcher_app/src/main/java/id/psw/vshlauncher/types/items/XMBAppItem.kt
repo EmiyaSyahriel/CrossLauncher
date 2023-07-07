@@ -3,19 +3,15 @@ package id.psw.vshlauncher.types.items
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.os.AsyncTask.execute
 import android.os.Build
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.types.INIFile
-import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.sequentialimages.*
 import id.psw.vshlauncher.views.bootInto
@@ -24,10 +20,9 @@ import id.psw.vshlauncher.views.showDialog
 import java.io.File
 import java.lang.StringBuilder
 import android.text.format.DateFormat
+import id.psw.vshlauncher.types.CIFLoader
 import id.psw.vshlauncher.types.FileQuery
-import id.psw.vshlauncher.types.items.XMBAppItem.Companion.ENABLE_EMBEDDED_MEDIA
 import id.psw.vshlauncher.views.asBytes
-import java.nio.file.Files.exists
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -62,14 +57,8 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
 
         var descriptionDisplay : DescriptionDisplay = DescriptionDisplay.PackageName
 
-        var disableAnimatedIcon = false
-        var disableBackSound = false
-        var disableBackdrop = false
-        var disableBackdropOverlay = false
         var showHiddenByConfig = false
 
-        private val ios = mutableMapOf<File, Ref<Boolean>>()
-        private val ioc = mutableMapOf<File, Ref<Int>>()
         var sdf : SimpleDateFormat? = null
         const val loadingText = "[...]"
         private val SDF
@@ -79,20 +68,8 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     private var _customAppDesc: String =""
     private var _icon = TRANSPARENT_BITMAP
 
-    private var hasIconLoaded = false
-    private var hasAnimIconLoaded = false
-    private var hasBackdropLoaded = false
-    private var hasPortBackdropLoaded = false
-    private var hasBackSoundLoaded = false
-
     private val iconId : String = "${resInfo.activityInfo.processName}::${resInfo.activityInfo.packageName}"
     private var appLabel = ""
-    private var _animatedIcon : XMBFrameAnimation = TRANSPARENT_ANIM_BITMAP
-    private var _backdrop = TRANSPARENT_BITMAP
-    private var _backOverlay = TRANSPARENT_BITMAP
-    private var _portBackdrop = TRANSPARENT_BITMAP
-    private var _portBackdropOverlay = TRANSPARENT_BITMAP
-    private var _backSound : File = SILENT_AUDIO
     private val displayedDescription : String get(){
         return when (descriptionDisplay){
             DescriptionDisplay.Date -> SDF.format(apkFile?.lastModified() ?: 1)
@@ -105,84 +82,23 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
         }
     }
 
-    private fun requestCustomizationFiles(fileBaseName : String, extensions: Array<String>) : ArrayList<File>{
-        return FileQuery(VshBaseDirs.APPS_DIR).atPath(resInfo.uniqueActivityName).withNames(fileBaseName).withExtensionArray(extensions).execute(vsh)
-    }
+    private val cif = CIFLoader(vsh, resInfo, FileQuery(VshBaseDirs.APPS_DIR).withNames(resInfo.uniqueActivityName).execute(vsh))
 
-    private var backdropFiles = ArrayList<File>().apply {
-        if(!disableBackdrop) {
-            addAll(requestCustomizationFiles("PIC1", VshResTypes.IMAGES))
-        }
-    }
-    private var backdropOverlayFiles = ArrayList<File>().apply {
-        if(!disableBackdropOverlay) {
-            addAll(requestCustomizationFiles("PIC0", VshResTypes.IMAGES))
-        }
-    }
-    private var portraitBackdropFiles = ArrayList<File>().apply {
-        if(!disableBackdrop) {
-            addAll(requestCustomizationFiles("PIC1_P", VshResTypes.IMAGES))
-        }
-    }
-    private var portraitBackdropOverlayFiles = ArrayList<File>().apply {
-        if(!disableBackdropOverlay) {
-            addAll(requestCustomizationFiles("PIC0_P", VshResTypes.IMAGES))
-        }
-    }
-    private var animatedIconFiles = ArrayList<File>().apply{
-        if(!disableAnimatedIcon) {
-            addAll(requestCustomizationFiles("ICON1", VshResTypes.ANIMATED_ICONS))
-        }
-    }
-    private var iconFiles = ArrayList<File>().apply{
-        if(!disableAnimatedIcon) {
-            addAll(requestCustomizationFiles("ICON0", VshResTypes.ICONS))
-        }
-    }
-    private var backSoundFiles = ArrayList<File>().apply {
-        if(!disableBackSound) {
-            addAll(requestCustomizationFiles("SND0", VshResTypes.SOUNDS))
-        }
-    }
-    private var _iconSync = Object()
-    private var _animIconSync = Object()
-    private var _backdropSync = Object()
-    private var _portBackdropSync = Object()
-    private var _backSoundSync = Object()
-    private var iniFile = INIFile()
-    private fun <K> MutableMap<File, Ref<K>>.getOrMake(k:File, refDefVal:K) = getOrMake<File, Ref<K>>(k){ Ref<K>(refDefVal) }
-
-    override val isIconLoaded: Boolean get()= hasIconLoaded
-    override val isAnimatedIconLoaded: Boolean get() = hasAnimIconLoaded
-    override val isBackSoundLoaded: Boolean get() = hasBackSoundLoaded
-    override val isBackdropLoaded: Boolean get() = hasBackdropLoaded
-    override val isPortraitBackdropLoaded: Boolean get() = hasPortBackdropLoaded
+    override val isIconLoaded: Boolean get()= cif.hasIconLoaded
+    override val isAnimatedIconLoaded: Boolean get() = cif.hasAnimIconLoaded
+    override val isBackSoundLoaded: Boolean get() = cif.hasBackSoundLoaded
+    override val isBackdropLoaded: Boolean get() = cif.hasBackdropLoaded
+    override val isPortraitBackdropLoaded: Boolean get() = cif.hasPortBackdropLoaded
 
     override val hasIcon: Boolean get()= true
-    override val hasBackdrop: Boolean get() = !disableBackdrop &&
-            backdropFiles.any {
-                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
-            }
-    override val hasPortraitBackdrop: Boolean get() = !disableBackdrop &&
-            portraitBackdropFiles.any {
-                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
-            }
-    override val hasBackOverlay: Boolean get() = !disableBackdropOverlay &&
-            backdropOverlayFiles.any {
-                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
-            }
-    override val hasPortraitBackdropOverlay: Boolean get() = !disableBackdropOverlay &&
-            portraitBackdropOverlayFiles.any {
-                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
-            }
-    override val hasBackSound: Boolean get() = !disableBackSound &&
-            backSoundFiles.any {
-                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
-            }
-    override val hasAnimatedIcon: Boolean get() = !disableAnimatedIcon &&
-            animatedIconFiles.any {
-                it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false))
-            }
+    override val hasBackdrop: Boolean get() = cif.hasBackdrop
+    override val hasPortraitBackdrop: Boolean get() = cif.hasPortraitBackdrop
+    override val hasBackOverlay: Boolean get() = cif.hasBackOverlay
+    override val hasPortraitBackdropOverlay: Boolean get() = cif.hasPortraitBackdropOverlay
+    override val hasBackSound: Boolean get() = cif.hasBackSound
+    override val hasAnimatedIcon: Boolean get() = cif.hasAnimatedIcon
+    private var iniFile = INIFile()
+
     override val hasMenu: Boolean get() = true
     private var _customAppLabel = ""
     private var _appAlbum = ""
@@ -194,7 +110,6 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
             _customAppLabel = value
             writeAppConfig()
         }
-
 
     var appCustomDesc: String
         get() = _customAppDesc
@@ -220,10 +135,10 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     override val id: String get()= iconId
     override val description: String get()= displayedDescription
     override val displayName: String get()= _customAppLabel.isEmpty().select(appLabel, _customAppLabel)
-    override val icon: Bitmap get()= synchronized(_icon) { _icon }
-    override val backdrop: Bitmap get() = _backdrop
-    override val backSound: File get() = _backSound
-    override val animatedIcon: XMBFrameAnimation get() = synchronized(_animatedIcon) { _animatedIcon }
+    override val icon: Bitmap get()= cif.icon.bitmap
+    override val backdrop: Bitmap get() = cif.backdrop.bitmap
+    override val backSound: File get() = cif.backSound
+    override val animatedIcon: XMBFrameAnimation get() = synchronized(cif.animIcon) { cif.animIcon }
     override val hasDescription: Boolean get() = description.isNotEmpty()
     override val menuItems: ArrayList<XMBMenuItem> = arrayListOf()
     private var apkFile : File? = null
@@ -289,13 +204,13 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     val packageName get() = pkgInfo?.packageName ?: loadingText
 
     private fun readAppConfig(){
-        val files = requestCustomizationFiles("PARAM", VshResTypes.INI)
+        val files = cif.requestCustomizationFiles("PARAM", VshResTypes.INI)
         val validFile = files.firstOrNull { it.exists() }
         if(validFile != null){
             iniFile.parseFile(validFile.absolutePath)
         }
 
-        _customAppLabel =   iniFile[INI_KEY_TYPE, INI_KEY_TITLE] ?: ""
+        _customAppLabel =  iniFile[INI_KEY_TYPE, INI_KEY_TITLE] ?: ""
 
         if(_customAppLabel.isEmpty()){
             forEveryLocale {
@@ -355,19 +270,20 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     }
 
     private fun writeAppConfig(){
-        iniFile[INI_KEY_TYPE, INI_KEY_TITLE] = _customAppLabel
-        iniFile[INI_KEY_TYPE, INI_KEY_SUBTITLE] = _customAppDesc
-        iniFile[INI_KEY_TYPE, INI_KEY_ALBUM] = _appAlbum
-        iniFile[INI_KEY_TYPE, INI_KEY_BOOTABLE] = _isHidden.select("false", "true")
-        iniFile[INI_KEY_TYPE, INI_KEY_CATEGORY] = _appCategory
+        iniFile[XMBAppItem.INI_KEY_TYPE, XMBAppItem.INI_KEY_TITLE] = appCustomLabel
+        iniFile[XMBAppItem.INI_KEY_TYPE, XMBAppItem.INI_KEY_SUBTITLE] = appCustomDesc
+        iniFile[XMBAppItem.INI_KEY_TYPE, XMBAppItem.INI_KEY_ALBUM] = appAlbum
+        iniFile[XMBAppItem.INI_KEY_TYPE, XMBAppItem.INI_KEY_BOOTABLE] = isHidden.select("false", "true")
+        iniFile[XMBAppItem.INI_KEY_TYPE, XMBAppItem.INI_KEY_CATEGORY] = appCategory
 
         if(iniFile.path.isEmpty()){
+            vsh.tryMigrateOldGameDirectory()
             val haveCustomFolder = FileQuery(VshBaseDirs.APPS_DIR).atPath(resInfo.uniqueActivityName).createParentDirectory(true).execute(vsh).any { it.exists() }
             if(!haveCustomFolder){
                 createAppCustomDirectory()
             }
 
-            val files = requestCustomizationFiles("PARAM.INI", VshResTypes.INI)
+            val files = cif.requestCustomizationFiles("PARAM", VshResTypes.INI)
             var success = false
             files.forEach { file ->
                 try {
@@ -493,6 +409,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     }
 
     private fun createAppCustomDirectory() {
+        vsh.tryMigrateOldGameDirectory()
         FileQuery(VshBaseDirs.APPS_DIR).atPath(resInfo.uniqueActivityName).createParentDirectory(true){file, created ->
             val sb = StringBuilder()
             for(i in file.absolutePath.indices){
@@ -507,107 +424,34 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     }
 
     private fun pIconLoad(){
-        synchronized(_iconSync){
-            if(!hasIconLoaded){
-                var isCust = false
-                iconFiles.find {it.exists()}?.apply {
-                    try{
-                        _icon = BitmapFactory.decodeFile(path)
-                        isCust = true
-                    }catch(e:Exception){
-                        vsh.postNotification(
-                            null,
-                            vsh.getString(R.string.error_common_header),
-                            "Icon file for package $packageName is corrupted : $path :\n${e.message}"
-                        )
-                    }
-                }
-                if(!isCust){
-                    _icon = vsh.iconAdapter.create(resInfo.activityInfo, vsh)
-                }
-                hasIconLoaded = true
-            }
-        }
-        if(vsh.playAnimatedIcon){
-            synchronized(_animIconSync){
-                if((!hasAnimIconLoaded || _animatedIcon.hasRecycled)){
-                    animatedIconFiles.find { it.exists() }?.apply{
-                        _animatedIcon = when (this.extension.uppercase()) {
-                            "WEBP" -> XMBAnimWebP(this)
-                            "APNG" -> XMBAnimAPNG(this)
-                            "MP4" -> XMBAnimMMR(this.absolutePath)
-                            "GIF" -> XMBAnimGIF(this)
-                            else -> WHITE_ANIM_BITMAP
-                        }
-                        hasAnimIconLoaded = true
-                    }
-                }
-            }
-        }
-    }
-
-    private fun pBackdropLoad(){
-        synchronized(_backdropSync){
-            if(!hasBackdropLoaded){
-                backdropFiles.find{
-                    it.exists()
-                }?.apply {
-                    _backdrop = BitmapFactory.decodeFile(this.absolutePath)
-                    hasBackdropLoaded = true
-                }
-            }
-        }
-    }
-
-    private fun pBackdropUnload(){
-        synchronized(_backdropSync){
-            if(hasBackdropLoaded){
-                hasBackdropLoaded = false
-                if(_backdrop != TRANSPARENT_BITMAP) _backdrop.recycle()
-                _backdrop = TRANSPARENT_BITMAP
-            }
-        }
-    }
-
-    private fun pSoundLoad(){
-        synchronized(_backSoundSync){
-            backSoundFiles.find { it.exists() }?.let {
-                _backSound = it
-                hasBackSoundLoaded = true
-            }
-        }
-    }
-
-    private fun pSoundUnload(){
-        synchronized(_backSoundSync){
-            if(hasBackSoundLoaded) {
-                hasBackSoundLoaded = false
-                _backSound = SILENT_AUDIO
-            }
-        }
+        cif.loadIcon()
     }
 
     private fun pIconUnload(){
-        synchronized(_iconSync) {
-            if(hasIconLoaded){
-                hasIconLoaded = false
-                if(_icon != TRANSPARENT_BITMAP) _icon.recycle()
-                _icon = TRANSPARENT_BITMAP
-            }
-        }
-        synchronized(_animIconSync){
-            if(hasAnimIconLoaded || !_animatedIcon.hasRecycled){
-                hasAnimIconLoaded = false
-                if(_animatedIcon != WHITE_ANIM_BITMAP) _animatedIcon.recycle()
-            }
-        }
+        cif.unloadIcon()
+    }
+
+    private fun pBackdropLoad(){
+        cif.loadBackdrop()
+    }
+
+    private fun pBackdropUnload(){
+        cif.unloadBackdrop()
+    }
+
+    private fun pSoundLoad(){
+        cif.loadSound()
+    }
+
+    private fun pSoundUnload(){
+        cif.unloadSound()
     }
 
     private fun pOnScreenVisible(i : XMBItem){
         vsh.threadPool.execute {
             appLabel = resInfo.loadLabel(vsh.packageManager).toString()
             if(_icon == TRANSPARENT_BITMAP){
-                pIconLoad()
+                cif.loadIcon()
             }
         }
     }
@@ -617,7 +461,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
         vsh.threadPool.execute {
             if(vsh.aggressiveUnloading){
                 if(_icon != TRANSPARENT_BITMAP){
-                    pIconUnload()
+                    cif.unloadIcon()
                 }
             }
         }
@@ -625,15 +469,15 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
 
     private fun pOnHovered(i : XMBItem){
         vsh.threadPool.execute {
-            pBackdropLoad()
-            pSoundLoad()
+            cif.loadBackdrop()
+            cif.loadSound()
         }
     }
 
     private fun pOnUnHovered(i: XMBItem){
         vsh.threadPool.execute {
-            pBackdropUnload()
-            pSoundUnload()
+            cif.unloadBackdrop()
+            cif.unloadSound()
         }
     }
 

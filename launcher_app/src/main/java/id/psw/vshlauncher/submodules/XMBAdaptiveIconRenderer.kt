@@ -76,6 +76,9 @@ class XMBAdaptiveIconRenderer(private val ctx: VSH) {
         HEIGHT = (BaseHeight * d).toInt()
         val mSb = StringBuilder()
         mSb.appendLine("Icon file source : ")
+
+        ctx.tryMigrateOldGameDirectory()
+
         FileQuery(VshBaseDirs.APPS_DIR).createParentDirectory(true).execute(ctx).forEach {
             fileRoots.add(it)
             mSb.appendLine(it.absolutePath)

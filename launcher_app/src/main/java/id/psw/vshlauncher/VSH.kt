@@ -72,6 +72,7 @@ class VSH : Application(), ServiceConnection {
 
     val selectStack = Stack<String>()
     var aggressiveUnloading = true
+    val runtimeTriageList = ArrayList<String>()
     var xmbView : XmbView? = null
     var playAnimatedIcon = true
     var gameFilterList = arrayListOf<String>(
@@ -159,7 +160,7 @@ class VSH : Application(), ServiceConnection {
         volume.pref = pref
         setActiveLocale(readSerializedLocale(pref.getString(PrefEntry.SYSTEM_LANGUAGE, "") ?: ""))
         showLauncherFPS = pref.getInt(PrefEntry.SHOW_LAUNCHER_FPS, 0) == 1
-        XMBAppItem.disableAnimatedIcon = pref.getInt(PrefEntry.DISABLE_VIDEO_ICON, 0) != 0
+        CIFLoader.disableAnimatedIcon = pref.getInt(PrefEntry.DISABLE_VIDEO_ICON, 0) != 0
         val o = pref.getInt(PrefEntry.SYSTEM_VISIBLE_APP_DESC, XMBAppItem.DescriptionDisplay.PackageName.ordinal)
         XMBAppItem.descriptionDisplay = enumFromInt(o)
         XMBAdaptiveIconRenderer.Companion.AdaptiveRenderSetting.iconPriority =
@@ -191,6 +192,7 @@ class VSH : Application(), ServiceConnection {
 
     override fun onCreate() {
         Logger.init(this)
+        BitmapManager.instance = BitmapManager().apply { init(vsh) }
         reloadPreference()
         if(sdkAtLeast(21)){
             val attr =AudioAttributes.Builder()
@@ -210,7 +212,6 @@ class VSH : Application(), ServiceConnection {
         }
         volume.onVolumeChange = {a,b -> updateVolume(a, b)}
         volume.readPreferences()
-        BitmapManager.instance = BitmapManager().apply { init(vsh) }
         FontCollections.init(this)
         preparePlaceholderAudio()
         bgmPlayer.setOnPreparedListener {
@@ -543,5 +544,14 @@ class VSH : Application(), ServiceConnection {
         i.data = Uri.fromParts("package", app.resInfo.activityInfo.applicationInfo.packageName, null)
         i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(i)
+    }
+
+    fun runtimeTriageCheck(id:String) : Boolean {
+        if(!runtimeTriageList.contains(id))
+        {
+            runtimeTriageList.add(id)
+            return true
+        }
+        return false
     }
 }

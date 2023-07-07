@@ -23,6 +23,7 @@ class BitmapManager {
         var bitmap : Bitmap?,
         var loadMutex : Mutex,
         var isLoading : Boolean = false,
+        var isLoaded : Boolean = false,
         var refCount : Int = 0
             )
 
@@ -108,12 +109,15 @@ class BitmapManager {
                         val bmp = h.bitmap
                         if(bmp != null){
                             val sz = approximateBitmapSize(bmp).toLong()
+                            h.isLoaded = true
                             Logger.i(TAG, "[${q.id}] Loaded - ${sz.asBytes()}")
                         }else{
                             Logger.w(TAG, "[${q.id}] Load Failed")
+                            h.isLoaded = false
                         }
                     }catch (e:Exception){
                         e.printStackTrace()
+                        h.isLoaded = false
                     }
 
                     h.isLoading = false
@@ -133,7 +137,7 @@ class BitmapManager {
                 val h = BitmapCache(
                 ref.id,
                 null,
-                Mutex(false), true, 0
+                Mutex(false), isLoading = true, isLoaded = false, 0
                 )
                 cache.add(h)
                 h
@@ -194,6 +198,7 @@ class BitmapManager {
                 val bmp = handle.bitmap
                 val sz = if(bmp != null){ approximateBitmapSize(bmp) }else{ 0 }.toLong()
                 handle.bitmap = null
+                handle.isLoaded = false
                 remHandle(handle)
                 bmp?.recycle()
                 Logger.i(TAG, "[${handle.id}] - Unloaded ${sz.asBytes()}")
@@ -210,4 +215,6 @@ class BitmapManager {
         }
         cache.clear()
     }
+
+    fun isLoaded(ref: BitmapRef): Boolean = findHandle(ref)?.isLoaded == true
 }
