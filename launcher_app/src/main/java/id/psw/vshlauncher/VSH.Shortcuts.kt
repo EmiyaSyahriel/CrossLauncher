@@ -5,8 +5,8 @@ import android.content.pm.LauncherApps
 import android.os.Build
 import id.psw.vshlauncher.VSH.Companion.ITEM_CATEGORY_SHORTCUT
 import id.psw.vshlauncher.types.FileQuery
-import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBShortcutItem
+import java.io.File
 
 /**
  * Shortcut will be located at `(Cross Launcher Data)/files/dev_hdd0/shortcuts/`
@@ -15,7 +15,7 @@ import id.psw.vshlauncher.types.items.XMBShortcutItem
  * - `SHORTCUT.INI` - Main Shortcut Definition
  * - `ICON0.PNG` - Shortcut Icon
  *
- * Shortcut support same customization level as Apps
+ * Shortcut uses same customization directory structure as Apps
  */
 fun VSH.reloadShortcutList(){
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -40,25 +40,19 @@ fun VSH.reloadShortcutList(){
         val h = addLoadHandle()
         val c = categories.find { it.id == ITEM_CATEGORY_SHORTCUT }!!
 
-        for(i in c.content){
-            if(i.icon != XMBItem.TRANSPARENT_BITMAP){
-                i.icon.recycle()
-            }
-        }
-
         c.content.clear()
+        System.gc()
 
-        val paths = FileQuery(VshBaseDirs.USER_DIR).atPath("shortcuts").execute(this)
+        val paths = FileQuery(VshBaseDirs.SHORTCUTS_DIR).execute(this)
         for(path in paths){
-            if(path.exists()){
-                val inis = path.listFiles { a, b ->
-                    b.endsWith("ini", true)
-                }
-                if(inis != null){
-                    for(ini in inis){
-                        if(ini.exists()){
-                            c.content.add(XMBShortcutItem(vsh, ini))
-                        }
+            if(path.isDirectory){
+                val scDirs = path.listFiles { dir, _ -> dir.isDirectory } ?: continue
+                for(sc in scDirs){
+                    val ini = File(sc, "SHORTCUT.INI")
+                    if(ini.exists() || ini.isFile){
+                        val app = XMBShortcutItem(vsh, ini)
+                        addToCategory(ITEM_CATEGORY_SHORTCUT, app)
+                        break
                     }
                 }
             }

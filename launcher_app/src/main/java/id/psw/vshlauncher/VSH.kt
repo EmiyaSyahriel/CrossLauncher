@@ -100,7 +100,7 @@ class VSH : Application(), ServiceConnection {
             return root
         }catch(e:Exception){
             e.printStackTrace()
-            vsh.postNotification(R.drawable.ic_close, e.javaClass.name, e.toString())
+            vsh.postNotification(R.drawable.ic_error, e.javaClass.name, e.toString())
         }
         return arrayListOf<XMBItem>()
     }
@@ -325,7 +325,7 @@ class VSH : Application(), ServiceConnection {
                 retval.recycle()
                 retval = dr
             }catch(e:Exception){
-                postNotification(R.drawable.ic_close, e.javaClass.name, "Failed to decode file ${file.absolutePath} : ${e.message}")
+                postNotification(R.drawable.ic_error, e.javaClass.name, "Failed to decode file ${file.absolutePath} : ${e.message}")
             }
         }
 
@@ -338,7 +338,7 @@ class VSH : Application(), ServiceConnection {
             try {
                 retval = BitmapFactory.decodeFile(file.absolutePath)
             }catch(e:Exception){
-                postNotification(R.drawable.ic_close, e.javaClass.name, "Failed to decode file ${file.absolutePath} : ${e.message}")
+                postNotification(R.drawable.ic_error, e.javaClass.name, "Failed to decode file ${file.absolutePath} : ${e.message}")
             }
         }
 

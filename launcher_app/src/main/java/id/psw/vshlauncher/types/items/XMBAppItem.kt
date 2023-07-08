@@ -296,7 +296,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
                 }
             }
             if(!success){
-                vsh.postNotification(R.drawable.ic_close, "Error", "Failed to write application-specific configuration")
+                vsh.postNotification(R.drawable.ic_error, "Error", "Failed to write application-specific configuration")
             }
 
         }else{

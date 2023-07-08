@@ -411,7 +411,7 @@ private fun VSH.createCategoryDebug() : XMBSettingsCategory{
                 XMBSettingsItem(vsh, "dbg_throw_exception",
                     R.string.dbg_custom_throw_unhandled_exception,
                     R.string.empty_string,
-                    R.drawable.ic_close, { "" }
+                    R.drawable.ic_error, { "" }
                 ){
                     throw Exception("This is an unhandled exception, present in log file")
                 }

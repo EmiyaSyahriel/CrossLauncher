@@ -14,6 +14,7 @@ import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.drawBitmap
 import id.psw.vshlauncher.views.drawText
+import java.io.File
 import kotlin.random.Random
 
 class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent) : XmbDialogSubview(vsh) {
@@ -51,31 +52,43 @@ class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent
             val req = shortcut.pinItem
             if(req != null){
                 val id = rng.nextBytes(16).toHex()
-                shortcut.cxl_id = id
+                shortcut.idInLauncher = id
 
-                val files = FileQuery(VshBaseDirs.USER_DIR)
-                    .atPath("shortcuts")
+                val dirs = FileQuery(VshBaseDirs.SHORTCUTS_DIR)
                     .withNames(id)
-                    .withExtensionArray(VshResTypes.INI)
                     .createParentDirectory(true)
                     .execute(vsh)
-                var file = files.find { it.exists() }
-                if(file == null){
-                    for(ffile in files){
-                        try {
-                            if(ffile.createNewFile()){
-                                file = ffile
-                                break
-                            }
-                        }catch(e:Exception){
-                            e.printStackTrace()
+
+                var success = false
+                var exc = Exception("Unknown exception")
+                for(dir in dirs)
+                {
+                    try {
+                        if(dir.isFile){
+                            dir.delete()
                         }
+                        if(!dir.isDirectory){
+                            dir.mkdir()
+                        }
+
+                        val ini = File(dir, "SHORTCUT.INI")
+                        val icon = File(dir, "ICON0.PNG")
+
+                        if(!ini.isFile){
+                            ini.createNewFile()
+                        }
+
+                        shortcut.write(ini)
+                        shortcut.saveIcon(icon)
+                        success = true
+                        break
+                    }catch(e:Exception){
+                        exc = e
                     }
                 }
 
-                if(file != null) {
-                    shortcut.write(file)
-                    shortcut.saveIcon(file)
+                if(!success){
+                    vsh.postNotification(R.drawable.ic_error, vsh.getString(R.string.error_common_header), exc.localizedMessage ?: vsh.getString(R.string.package_import_unknown_error))
                 }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

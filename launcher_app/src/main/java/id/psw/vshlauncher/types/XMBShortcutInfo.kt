@@ -48,7 +48,7 @@ class XMBShortcutInfo {
 
     var icon : Bitmap = XMBItem.TRANSPARENT_BITMAP
     var id : String = DEF_ID
-    var cxl_id : String = DEF_CXL_ID
+    var idInLauncher : String = DEF_CXL_ID
     var name : String = DEF_NAME
     var longName : String = DEF_LNAME
     var packageName : String = DEF_PKG
@@ -98,21 +98,18 @@ class XMBShortcutInfo {
         }
     }
 
-    fun saveIcon(iniPath:File){
-        val iconFile = File(iniPath.parent, "${iniPath.nameWithoutExtension}.png")
-
+    fun saveIcon(iconFile:File){
         if(!iconFile.exists()){
             iconFile.createNewFile()
         }
-        icon.compress(Bitmap.CompressFormat.PNG, 100, iconFile.outputStream())
-
-        ini.write(iniPath.absolutePath)
+        val outStream = iconFile.outputStream()
+        icon.compress(Bitmap.CompressFormat.PNG, 100, outStream)
     }
 
     constructor(vsh:VSH, iniPath: File){
         ini.parseFile(iniPath.absolutePath)
         id = ini[INI_TYPE, INI_ID] ?: DEF_ID
-        cxl_id = ini[INI_TYPE, INI_CXL_ID] ?: DEF_CXL_ID
+        idInLauncher = ini[INI_TYPE, INI_CXL_ID] ?: DEF_CXL_ID
         name = ini[INI_TYPE, INI_NAME] ?: DEF_NAME
         longName = ini[INI_TYPE, INI_LNAME] ?: DEF_LNAME
         packageName = ini[INI_TYPE, INI_PKG] ?: DEF_PKG
@@ -135,7 +132,7 @@ class XMBShortcutInfo {
         ini[INI_TYPE, INI_ID] = id
         ini[INI_TYPE, INI_NAME] = name
         ini[INI_TYPE, INI_CATEGORY] = category
-        ini[INI_TYPE, INI_CXL_ID] = cxl_id
+        ini[INI_TYPE, INI_CXL_ID] = idInLauncher
         ini[INI_TYPE, INI_LNAME] = longName
         ini[INI_TYPE, INI_PKG] = packageName
         ini[INI_TYPE, INI_DISABLED_MSG] = disabledMsg
@@ -155,6 +152,6 @@ class XMBShortcutInfo {
         }
 
         ini[INI_TYPE, INI_HANDLE] = uHandleStr
-
+        ini.write(iniPath.absolutePath)
     }
 }

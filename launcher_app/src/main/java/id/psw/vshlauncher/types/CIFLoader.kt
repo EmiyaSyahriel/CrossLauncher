@@ -24,7 +24,7 @@ import java.io.File
  * Since XmbAppItem and XmbShortcutItem is generic, this class is to make sure
  * the loader implementation have the same exact behaviour
  */
-class CIFLoader(val vsh : VSH, private val resInfo : ResolveInfo, val root : ArrayList<File>) {
+class CIFLoader {
     companion object {
         var disableAnimatedIcon = false
         var disableBackSound = false
@@ -41,6 +41,27 @@ class CIFLoader(val vsh : VSH, private val resInfo : ResolveInfo, val root : Arr
     private val _backdropSync = Object()
     private val _portBackdropSync = Object()
     private val _backSoundSync = Object()
+    private lateinit var vsh : VSH
+    private var root = ArrayList<File>()
+    private var resInfo : ResolveInfo? = null
+    private var itemId = ""
+
+    constructor(vsh : VSH, resInfo : ResolveInfo, root : ArrayList<File>){
+        this.vsh = vsh
+        this.root.addAll(root)
+        this.resInfo = resInfo
+        itemId = resInfo.uniqueActivityName
+
+        listCustomFiles()
+    }
+
+    constructor(vsh : VSH, id:String, directory : File){
+        this.vsh = vsh
+        itemId = id
+        root.add(directory)
+
+        listCustomFiles()
+    }
 
     private var _animIcon : XMBFrameAnimation = XMBItem.TRANSPARENT_ANIM_BITMAP
     private var _backdrop = default_bitmap
@@ -76,13 +97,23 @@ class CIFLoader(val vsh : VSH, private val resInfo : ResolveInfo, val root : Arr
         }
     }
 
-    private var backdropFiles = createCustomizationFileArray(disableBackdrop,"PIC1",VshResTypes.IMAGES)
-    private var backdropOverlayFiles = createCustomizationFileArray(disableBackdropOverlay,"PIC0",VshResTypes.IMAGES)
-    private var portraitBackdropFiles = createCustomizationFileArray(disableBackdrop,"PIC1_P",VshResTypes.IMAGES)
-    private var portraitBackdropOverlayFiles = createCustomizationFileArray(disableBackdropOverlay,"PIC0_P",VshResTypes.IMAGES)
-    private var animatedIconFiles = createCustomizationFileArray(disableAnimatedIcon,"ICON1",VshResTypes.ANIMATED_ICONS)
-    private var iconFiles = createCustomizationFileArray(false,"ICON0",VshResTypes.ICONS)
-    private var backSoundFiles = createCustomizationFileArray(disableBackSound,"SND0",VshResTypes.SOUNDS)
+    private fun listCustomFiles(){
+        backdropFiles = createCustomizationFileArray(disableBackdrop,"PIC1",VshResTypes.IMAGES)
+        backdropOverlayFiles = createCustomizationFileArray(disableBackdropOverlay,"PIC0",VshResTypes.IMAGES)
+        portraitBackdropFiles = createCustomizationFileArray(disableBackdrop,"PIC1_P",VshResTypes.IMAGES)
+        portraitBackdropOverlayFiles = createCustomizationFileArray(disableBackdropOverlay,"PIC0_P",VshResTypes.IMAGES)
+        animatedIconFiles = createCustomizationFileArray(disableAnimatedIcon,"ICON1",VshResTypes.ANIMATED_ICONS)
+        iconFiles = createCustomizationFileArray(false,"ICON0",VshResTypes.ICONS)
+        backSoundFiles = createCustomizationFileArray(disableBackSound,"SND0",VshResTypes.SOUNDS)
+    }
+
+    private lateinit var backdropFiles : ArrayList<File>
+    private lateinit var backdropOverlayFiles : ArrayList<File>
+    private lateinit var portraitBackdropFiles : ArrayList<File>
+    private lateinit var portraitBackdropOverlayFiles : ArrayList<File>
+    private lateinit var animatedIconFiles : ArrayList<File>
+    private lateinit var iconFiles : ArrayList<File>
+    private lateinit var backSoundFiles : ArrayList<File>
     private var _hasAnimIconLoaded = false
     val hasIconLoaded get() = _icon.isLoaded
     val hasAnimIconLoaded get() = _hasAnimIconLoaded
@@ -104,7 +135,7 @@ class CIFLoader(val vsh : VSH, private val resInfo : ResolveInfo, val root : Arr
 
     fun loadIcon(){
         // No need to sync, BitmapRef loaded directly
-        _icon = BitmapRef("${resInfo.uniqueActivityName}_icon", {
+        _icon = BitmapRef("${itemId}_icon", {
             var found = false
             var rv : Bitmap? = null
             val file = iconFiles.firstOrNull {it.exists()}
@@ -117,13 +148,16 @@ class CIFLoader(val vsh : VSH, private val resInfo : ResolveInfo, val root : Arr
                     vsh.postNotification(
                         null,
                         vsh.getString(R.string.error_common_header),
-                        "Icon file for package ${resInfo.uniqueActivityName} is corrupted : $file :\n${e.message}"
+                        "Icon file for package $itemId is corrupted : $file :\n${e.message}"
                     )
                 }
             }
 
-            if(!found){
-                rv = vsh.iconAdapter.create(resInfo.activityInfo, vsh)
+            if(!found ){
+                val ri = resInfo
+                if(ri != null){
+                    rv = vsh.iconAdapter.create(ri.activityInfo, vsh)
+                }
             }
             rv
         })
@@ -164,7 +198,7 @@ class CIFLoader(val vsh : VSH, private val resInfo : ResolveInfo, val root : Arr
     }
 
     fun loadBackdrop(){
-        _backdrop = BitmapRef("${resInfo.uniqueActivityName}_backdrop", {
+        _backdrop = BitmapRef("${itemId}_backdrop", {
             val f = backdropFiles.find {
                 it.exists()
             }
