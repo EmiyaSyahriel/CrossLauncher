@@ -112,7 +112,7 @@ fun <TType, TReturn> TType.callOnCount(countRef: Ref<Int>, lastStateRef: Ref<TRe
  * storage media faster
  */
 fun File.delayedExistenceCheck(iTrack: Ref<Int>, lastState:Ref<Boolean>, pollEveryNCall:Int = 61) : Boolean =
-    callOnCount(iTrack, lastState, pollEveryNCall) { it.exists() }
+    callOnCount(iTrack, lastState, pollEveryNCall) { it.exists() || it.isFile }
 
 fun <K,V> MutableMap<K, V>.getOrMake(k:K, v:() -> V) : V{
     return if(containsKey(k)){

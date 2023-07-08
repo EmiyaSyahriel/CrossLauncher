@@ -85,7 +85,7 @@ class CIFLoader(val vsh : VSH, private val resInfo : ResolveInfo, val root : Arr
     private var backSoundFiles = createCustomizationFileArray(disableBackSound,"SND0",VshResTypes.SOUNDS)
     private var _hasAnimIconLoaded = false
     val hasIconLoaded get() = _icon.isLoaded
-    val hasAnimIconLoaded = _hasAnimIconLoaded
+    val hasAnimIconLoaded get() = _hasAnimIconLoaded
     val hasBackSoundLoaded get() = _backSound.exists()
     val hasBackdropLoaded get() = _backdrop.isLoaded
     val hasPortBackdropLoaded get() = _portBackdrop.isLoaded
@@ -131,15 +131,18 @@ class CIFLoader(val vsh : VSH, private val resInfo : ResolveInfo, val root : Arr
         if(vsh.playAnimatedIcon){
             synchronized(_animIconSync){
                 if((!_hasAnimIconLoaded || _animIcon.hasRecycled)){
-                    animatedIconFiles.find { it.exists() }?.apply{
-                        _animIcon = when (this.extension.uppercase()) {
-                            "WEBP" -> XMBAnimWebP(this)
-                            "APNG" -> XMBAnimAPNG(this)
-                            "MP4" -> XMBAnimMMR(this.absolutePath)
-                            "GIF" -> XMBAnimGIF(this)
-                            else -> XMBItem.WHITE_ANIM_BITMAP
+                    for(file in animatedIconFiles){
+                        if(file.exists() || file.isFile){
+                            _animIcon = when (file.extension.uppercase()) {
+                                "WEBP" -> XMBAnimWebP(file)
+                                "APNG" -> XMBAnimAPNG(file)
+                                "MP4" -> XMBAnimMMR(file.absolutePath)
+                                "GIF" -> XMBAnimGIF(file)
+                                else -> XMBItem.WHITE_ANIM_BITMAP
+                            }
+                            _hasAnimIconLoaded = true
+                            break
                         }
-                        _hasAnimIconLoaded = true
                     }
                 }
             }
@@ -152,7 +155,7 @@ class CIFLoader(val vsh : VSH, private val resInfo : ResolveInfo, val root : Arr
         _icon = default_bitmap
 
         synchronized(_animIconSync){
-            if(hasAnimIconLoaded || !_animIcon.hasRecycled){
+            if(_hasAnimIconLoaded || !_animIcon.hasRecycled){
                 _hasAnimIconLoaded = false
                 if(_animIcon != XMBItem.WHITE_ANIM_BITMAP && _animIcon != XMBItem.TRANSPARENT_ANIM_BITMAP) _animIcon.recycle()
                 _animIcon = XMBItem.TRANSPARENT_ANIM_BITMAP
