@@ -80,6 +80,18 @@ open class XMBItem(private val vsh: VSH) {
         onLaunch(this)
     }
 
+    /**
+     * Called when menu is tried to be opened
+     *
+     * On this opportunity, You can update the menu content
+     * and returns on which index the selected menu is currently at
+     */
+    open val onSetMenuOpened : ((Boolean) -> Int) get() = { _ -> 0}
+
+    fun setMenuOpened(open : Boolean) : Int{
+        return onSetMenuOpened(open)
+    }
+
     private var lastScreenVisibility = false
     private var lastIsHovered =false
     var lastSelectedItemId = ""

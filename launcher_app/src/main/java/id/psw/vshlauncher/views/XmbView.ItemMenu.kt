@@ -3,6 +3,7 @@ package id.psw.vshlauncher.views
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Point
 import android.graphics.RectF
 import androidx.core.graphics.withRotation
 import androidx.core.graphics.withTranslation
@@ -33,6 +34,8 @@ class ItemMenuState {
     var showMenuDisplayFactor = 0.0f
     var isDisplayed = false
     var selectedIndex = 0
+    var viewedIndex = Point(-5, 5)
+    var viewRangeMinPlus = 5
 }
 
 val itemMenuRectF = RectF()
@@ -55,7 +58,7 @@ fun XmbView.menuMoveItemMenuCursor(isDown:Boolean){
                     }
                 }
             }
-        }catch(e:ArrayIndexOutOfBoundsException){
+        }catch(_:ArrayIndexOutOfBoundsException){
 
         }
     }
@@ -71,7 +74,7 @@ fun XmbView.menuStartItemMenu(){
                     context.vsh.playSfx(SFXType.Confirm)
                 }
             }
-        }catch(e:ArrayIndexOutOfBoundsException){
+        }catch(_:ArrayIndexOutOfBoundsException){
 
         }
     }
@@ -85,7 +88,7 @@ fun XmbView.menuRenderItemMenu(ctx: Canvas){
             if(item.hasMenu){
                 menuContextMenuTextPaint.textSize = isPSP.select(30.0f, 20.0f)
 
-                showMenuDisplayFactor = (time.deltaTime * 10.0f).toLerp(showMenuDisplayFactor, isDisplayed.select(1.0f, 0.0f))
+                showMenuDisplayFactor = (time.deltaTime * 10.0f).toLerp(showMenuDisplayFactor, isDisplayed.select(1.0f, 0.0f)).coerceIn(0.0f, 1.0f)
                 val menuLeft = showMenuDisplayFactor.toLerp(scaling.viewport.right + 10.0f, scaling.target.right - 400f)
 
                 itemMenuRectF.set(

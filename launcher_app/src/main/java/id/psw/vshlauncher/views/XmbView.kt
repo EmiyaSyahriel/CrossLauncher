@@ -15,7 +15,6 @@ import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.submodules.GamepadSubmodule
-import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.typography.FontCollections
 import java.util.*
 import kotlin.ConcurrentModificationException
@@ -226,6 +225,12 @@ class XmbView @JvmOverloads constructor(
     }
 
     private val notificationRectBuffer = RectF()
+
+    fun openItemMenu(open: Boolean = true) {
+        state.itemMenu.isDisplayed = open
+        state.itemMenu.selectedIndex = context.vsh.hoveredItem?.setMenuOpened(open) ?: 0
+
+    }
 
     fun drawNotifications(ctx:Canvas){
         var top = 20.0f
