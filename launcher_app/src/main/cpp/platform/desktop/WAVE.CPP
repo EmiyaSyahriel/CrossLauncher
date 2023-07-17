@@ -6,7 +6,7 @@
 #include <string.h>
 #endif
 #include "GL/glew.h"
-#include "../wave/WAVE.HPP"
+#include "../../wave/WAVE.HPP"
 #include <GLFW/glfw3.h>
 
 bool w32_hasInit = false;

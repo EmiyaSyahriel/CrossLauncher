@@ -3,7 +3,7 @@
  * JNI Exports for use in Android and possibly LWJGL-based Java applications
  */
 #include <jni.h>
-#include "../wave/WAVE.HPP"
+#include "../../wave/WAVE.HPP"
 
 #define EXTC extern "C"
 
