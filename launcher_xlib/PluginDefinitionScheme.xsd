@@ -1,0 +1,17 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:element name="plugin">
+        <xs:complexType>
+            <xs:attribute name="className" type="xs:string"/>
+            <xs:attribute name="displayName" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:attribute name="apiVersion" type="xs:string"/>
+    <xs:element name="cxlpluginlist">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="plugin" maxOccurs="unbounded" minOccurs="1"/>
+            </xs:sequence>
+            <xs:attribute ref="apiVersion"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

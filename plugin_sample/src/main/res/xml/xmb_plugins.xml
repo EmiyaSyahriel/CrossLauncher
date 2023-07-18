@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cxlpluginlist apiVersion="0.1" xmlns="../../../../../launcher_xlib/PluginDefinitionScheme.xsd">
+    <plugin className="id.psw.crosslauncher.xlib.sample.InfoTextSamplePlugin" displayName="@string/app_name"/>
+</cxlpluginlist>
