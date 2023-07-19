@@ -13,6 +13,7 @@ import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBAppItem
+import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.drawBitmap
@@ -46,6 +47,7 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
     private var tPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
         textSize = 20.0f
+        typeface = FontCollections.masterFont
     }
 
     private var iconPaint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -174,12 +176,11 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
 
         tPaint.textAlign = Paint.Align.CENTER
         if(cursorPos == 5){
-            tPaint.setShadowLayer(5.0f, 0.0f, 0.0f, Color.WHITE)
+            val ccx = drawBound.centerX()
+            selRectF.set(ccx - 300.0f, sY - tPaint.textSize + 20.0f, ccx + 300.0f, sY+ 5.0f + 20.0f)
+            ctx.drawRoundRect(selRectF, 5.0f, 5.0f, rectPaint)
         }
         ctx.drawText(vsh.getString(R.string.app_info_by_system), drawBound.centerX(), sY + 20.0f, tPaint)
-        if(cursorPos == 5){
-            tPaint.setShadowLayer(0.0f, 0.0f, 0.0f, Color.WHITE)
-        }
     }
 
     override fun onGamepad(key: GamepadSubmodule.Key, isPress: Boolean): Boolean {
