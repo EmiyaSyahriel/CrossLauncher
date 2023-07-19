@@ -30,7 +30,7 @@ class PluginManager(private val vsh : VSH) {
     }
 
     @SuppressLint("DiscouragedApi")
-    fun loadPlugin(pkgName:String) : PluginInfo {
+    private fun loadPlugin(pkgName:String) : PluginInfo {
         val retval = arrayListOf<XMBPlugin>()
         var lastException : Exception? = null
         var err : PluginErrorReason = PluginErrorReason.None
@@ -69,7 +69,6 @@ class PluginManager(private val vsh : VSH) {
                     }
                     eventType =parser.next()
                 }
-
 
                 for(cName in pluginClasses){
                     try {

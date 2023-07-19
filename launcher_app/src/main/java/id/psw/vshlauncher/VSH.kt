@@ -20,7 +20,6 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
 import id.psw.vshlauncher.livewallpaper.NativeGL
 // import com.facebook.drawee.backends.pipeline.Fresco
-import id.psw.vshlauncher.pluginservices.IconPluginServiceHandle
 import id.psw.vshlauncher.submodules.*
 import id.psw.vshlauncher.types.*
 import id.psw.vshlauncher.types.Stack
@@ -37,14 +36,11 @@ import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 import kotlin.system.exitProcess
 
-class VSH : Application(), ServiceConnection {
+class VSH : Application() {
 
     companion object {
         private lateinit var _appFont : Typeface
         val AppFont get() = _appFont
-        const val ACTION_PICK_PLUGIN = "id.psw.vshlauncher.action.PICK_PLUGIN"
-        const val CATEGORY_PLUGIN_ICON = "id.psw.vshlauncher.category.PLUGIN_ICON"
-        const val CATEGORY_PLUGIN_WAVE_VISUALIZER = "id.psw.vshlauncher.category.PLUGIN_VISUALIZER"
         const val TAG = "VshApp"
         const val ITEM_CATEGORY_HOME = "vsh_home"
         const val ITEM_CATEGORY_APPS = "vsh_apps"
@@ -63,6 +59,7 @@ class VSH : Application(), ServiceConnection {
     lateinit var _gamepad : GamepadSubmodule
     var showDebuggerCount = 0
     var _gamepadUi : GamepadUISubmodule = GamepadUISubmodule()
+    lateinit var pluginManager : PluginManager
     lateinit var iconAdapter : XMBAdaptiveIconRenderer
     lateinit var network : NetworkSubmodule
 
@@ -75,13 +72,8 @@ class VSH : Application(), ServiceConnection {
     val runtimeTriageList = ArrayList<String>()
     var xmbView : XmbView? = null
     var playAnimatedIcon = true
-    var gameFilterList = arrayListOf<String>(
-        "bandai",
-        "cygames",
-        "sudoku",
-        "umamusume",
-        "unity"
-    )
+    var mediaListingStarted = false
+
     val categories = arrayListOf<XMBItemCategory>()
     /** Return all item in current selected category or current active item, including the hidden ones */
     val items : ArrayList<XMBItem>? get(){
@@ -193,6 +185,8 @@ class VSH : Application(), ServiceConnection {
     override fun onCreate() {
         Logger.init(this)
         BitmapManager.instance = BitmapManager().apply { init(vsh) }
+        pluginManager = PluginManager(this)
+        pluginManager.reloadPluginList()
         reloadPreference()
         if(sdkAtLeast(21)){
             val attr =AudioAttributes.Builder()
@@ -229,8 +223,6 @@ class VSH : Application(), ServiceConnection {
         iconAdapter = XMBAdaptiveIconRenderer(this)
         network = NetworkSubmodule(this)
         registerInternalCategory()
-        listInstalledIconPlugins()
-        listInstalledWaveRenderPlugins()
         reloadAppList()
         reloadShortcutList()
         fillSettingsCategory()
@@ -449,75 +441,6 @@ class VSH : Application(), ServiceConnection {
             categories.sortBy { it.sortIndex }
         }catch(e:Exception){
 
-        }
-    }
-
-    private fun createPluginIntent(category: String) : Intent {
-        return Intent(ACTION_PICK_PLUGIN)
-            .setFlags(Intent.FLAG_DEBUG_LOG_RESOLUTION)
-            .addCategory(category)
-    }
-
-    private fun listInstalledWaveRenderPlugins(){
-        val baseIntent = createPluginIntent(CATEGORY_PLUGIN_WAVE_VISUALIZER)
-        val resolves = packageManager.queryIntentServices(baseIntent, PackageManager.GET_RESOLVED_FILTER)
-        for(i in resolves){
-            Logger.d(TAG, "Vis Plugin : ${i.serviceInfo.packageName} / ${i.serviceInfo.name} - ${i.serviceInfo.loadLabel(packageManager)}")
-            val dIntent = Intent(ACTION_PICK_PLUGIN).addCategory(CATEGORY_PLUGIN_WAVE_VISUALIZER).setComponent(
-                ComponentName(i.serviceInfo.packageName, i.serviceInfo.name)
-            )
-            if(!bindService(dIntent, this, Context.BIND_AUTO_CREATE)){
-                Logger.e(TAG, "Failed to icon bind service")
-            }else{
-                Logger.d(TAG, "Bind success")
-            }
-        }
-    }
-
-    val iconPlugins : ArrayList<IconPluginServiceHandle> = arrayListOf()
-
-    private fun listInstalledIconPlugins(){
-        val baseIntent = createPluginIntent(CATEGORY_PLUGIN_ICON)
-        val resolves = packageManager.queryIntentServices(baseIntent, PackageManager.GET_RESOLVED_FILTER)
-        for(i in resolves){
-            Logger.d(TAG, "Icon Plugin : ${i.serviceInfo.packageName} / ${i.serviceInfo.name}  - ${i.serviceInfo.loadLabel(packageManager)}")
-            val cName = ComponentName(i.serviceInfo.packageName, i.serviceInfo.name)
-
-            iconPlugins.add(IconPluginServiceHandle(className = cName))
-
-            val dIntent = Intent(ACTION_PICK_PLUGIN)
-                .addCategory(CATEGORY_PLUGIN_ICON)
-                .setComponent(cName)
-
-
-            if(!bindService(dIntent, this, Context.BIND_AUTO_CREATE)){
-                Logger.e(TAG, "Failed to icon bind service")
-            }else{
-                Logger.d(TAG, "Bind success")
-            }
-        }
-    }
-
-    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        val asIcon = iconPlugins.find { it -> it.className == name }
-        if(asIcon != null){
-            val binder = IXMBIconListProvider.Stub.asInterface(service)
-            asIcon.apply {
-                this.name = binder.name
-                this.description = binder.description
-                this.version = binder.versionString
-                this.disabled = false
-                this.provider = binder
-            }
-            Logger.d(TAG, "Icon Plugin Connected : ${name?.className} :: ${binder.name} (${binder.versionString}) - ${binder.description}")
-        }
-    }
-
-    override fun onServiceDisconnected(name: ComponentName?) {
-        val iconIdx = iconPlugins.indexOfFirst { it.className == name }
-        if(iconIdx > -1){
-            iconPlugins.removeAt(iconIdx)
-            Logger.d(TAG, "Plugin Disconnected : ${name?.className}")
         }
     }
 
