@@ -9,11 +9,12 @@ plugins{
 
 android {
     compileSdk = 33
+    namespace = "id.psw.vshlauncher.plugin_example"
 
     defaultConfig {
         applicationId = "id.psw.vshlauncher.plugin_example"
         minSdk = 19
-        targetSdk = 30
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 

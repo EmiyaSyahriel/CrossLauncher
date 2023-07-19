@@ -6,9 +6,11 @@ plugins {
 android {
     compileSdk = 33
 
+    namespace = "id.psw.crosslauncher.xlib"
+
     defaultConfig {
         minSdk = 19
-        targetSdk = 29
+        targetSdk = 33
 
         consumerProguardFiles("consumer-rules.pro")
     }

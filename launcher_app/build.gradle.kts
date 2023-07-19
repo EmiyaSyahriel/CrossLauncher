@@ -1,4 +1,5 @@
-import org.jetbrains.kotlin.config.KotlinCompilerVersion
+import java.util.Date
+import java.text.SimpleDateFormat
 
 plugins{
     id("com.android.application")
@@ -7,10 +8,21 @@ plugins{
     kotlin("android")
 }
 
+fun getDate() : String {
+    val date = Date().time
+    val fmt = SimpleDateFormat("yyyy:MM:dd:HH:mm")
+    return fmt.format(date)
+}
+
+
 android {
     compileSdk = 33
-
+    namespace = "id.psw.vshlauncher"
     // buildToolVersion = "30.0.2"
+
+    buildFeatures{
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "id.psw.vshlauncher"
@@ -28,9 +40,15 @@ android {
     }
 
     buildTypes{
+        val buildDate = "\"${getDate()}\""
         getByName("release"){
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            buildConfigField("String", "BUILD_DATE", buildDate)
+        }
+        getByName("debug"){
+            isMinifyEnabled = false
+            buildConfigField("String", "BUILD_DATE",buildDate)
         }
     }
 
@@ -52,22 +70,30 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar") )))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.10")
-    implementation("androidx.appcompat:appcompat:1.5.0")
-    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.media:media:1.6.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.preference:preference-ktx:1.2.0")
-    implementation("com.google.android.material:material:1.6.1")
+    implementation("com.google.android.material:material:1.9.0")
     implementation("com.github.penfeizhou.android.animation:awebp:2.17.2")
     implementation("com.github.penfeizhou.android.animation:apng:2.17.2")
     implementation("com.github.penfeizhou.android.animation:gif:2.17.2")
-    implementation("androidx.test:rules:1.4.0")
+    implementation("androidx.test:rules:1.5.0")
     implementation("com.android.support:multidex:1.0.3")
     implementation(project(mapOf("path" to ":launcher_xlib")))
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    constraints {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
+            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
+        }
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0") {
+            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
+        }
+    }
 }
 
 configurations {
