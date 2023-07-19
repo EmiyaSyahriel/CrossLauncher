@@ -53,15 +53,6 @@
         android:description="@string/app_desc"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
-        <service
-            android:name=".pluginservices.MusicListXMBPluginService"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="id.psw.vshlauncher.action.PICK_PLUGIN"/>
-                <category android:name="id.psw.vshlauncher.category.PLUGIN_ICON"/>
-            </intent-filter>
-        </service>
 
         <activity
             android:name=".test_activity.XMBAdaptiveIconTestActivity"
@@ -141,6 +132,11 @@
                 android:name="android.service.wallpaper"
                 android:resource="@xml/ps3_lines_wallpaper" />
         </service>
+        <service
+            android:name=".services.MediaListingJobService"
+            android:enabled="true"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            />
 
         <provider
             android:name="androidx.core.content.FileProvider"
