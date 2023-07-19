@@ -7,10 +7,14 @@ import android.graphics.PointF
 import android.graphics.RectF
 import android.text.TextPaint
 import android.view.MotionEvent
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withClip
+import androidx.core.graphics.withRotation
+import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.select
+import id.psw.vshlauncher.submodules.BitmapRef
 import id.psw.vshlauncher.submodules.GamepadSubmodule.Key
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.VshViewPage
@@ -54,6 +58,9 @@ class LicenseDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
 
     private var isLastDown = false
     private var lastY = 0.0f
+    private val arrowIcon = BitmapRef("license_arrow", {
+        vsh.loadTexture(R.drawable.miptex_arrow, "license_arrow", 32, 32, false)
+    })
 
     // Display :
     //_______________
@@ -76,7 +83,6 @@ class LicenseDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
         }
 
         licIs.close()
-
         switchTab(true)
     }
 
@@ -118,6 +124,25 @@ class LicenseDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
                 ctx.drawText(s.trim(), drawBound.centerX(), y, paint)
             }
         }
+
+        val arr = arrowIcon.bitmap
+        // Draw Arrow
+        if(tabIndex > 0){ // Left
+            ctx.withTranslation(bound.left + 50.0f, bound.centerY()){
+                ctx.withRotation(0.0f){
+                    ctx.drawBitmap(arr, -arr.width / 2.0f, -arr.height / 2.0f, null)
+                }
+            }
+        }
+
+        if(tabIndex < tabs.size + 1){ // Right
+            ctx.withTranslation(bound.right - 50.0f, bound.centerY()){
+                ctx.withRotation(180.0f){
+                    ctx.drawBitmap(arr, -arr.width / 2.0f, -arr.height / 2.0f, null)
+                }
+            }
+        }
+
 
         super.onDraw(ctx, drawBound, deltaTime)
     }
