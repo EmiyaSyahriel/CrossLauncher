@@ -1,0 +1,2 @@
+CrossLauncher = CrossLauncher.MIT
+APNG4Droid = APNG4Droid.Apache2

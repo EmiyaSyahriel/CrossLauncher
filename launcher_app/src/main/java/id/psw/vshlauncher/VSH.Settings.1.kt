@@ -355,6 +355,16 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
             }
         )
 
+        content.add(
+            XMBSettingsItem(vsh, "settings_license_dialog_open",
+                R.string.setting_license_name,
+                R.string.setting_license_desc,
+                R.drawable.icon_info, { "" }
+            ){
+                vsh.xmbView?.showDialog(LicenseDialogView(vsh))
+            }
+        )
+
         val cal = Calendar.getInstance()
         val mon = cal.get(Calendar.MONTH)
         val day = cal.get(Calendar.DAY_OF_MONTH)
