@@ -188,19 +188,25 @@ class XmbView @JvmOverloads constructor(
     fun switchPage(view:VshViewPage){
         System.gc() // Garbage Collect Every Page Change
         //if(currentPage != view){
-            when(currentPage){
-                VshViewPage.ColdBoot -> cbEnd()
-                VshViewPage.MainMenu -> menuEnd()
-                VshViewPage.GameBoot -> gbEnd()
-                VshViewPage.Dialog -> dlgEnd()
-            }
-            currentPage = view
-            when(currentPage){
-                VshViewPage.ColdBoot -> cbStart()
-                VshViewPage.MainMenu -> menuStart()
-                VshViewPage.GameBoot -> gbStart()
-                VshViewPage.Dialog -> dlgStart()
-            }
+        val nope : () -> Unit = {
+
+        }
+
+        when(currentPage){
+            VshViewPage.ColdBoot -> cbEnd()
+            VshViewPage.MainMenu -> menuEnd()
+            VshViewPage.GameBoot -> gbEnd()
+            VshViewPage.Dialog -> dlgEnd()
+            else -> nope()
+        }
+        currentPage = view
+        when(currentPage){
+            VshViewPage.ColdBoot -> cbStart()
+            VshViewPage.MainMenu -> menuStart()
+            VshViewPage.GameBoot -> gbStart()
+            VshViewPage.Dialog -> dlgStart()
+            else -> nope()
+        }
         //}
         System.gc() // Garbage Collect Every Page Change
     }
