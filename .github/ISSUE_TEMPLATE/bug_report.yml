@@ -1,0 +1,77 @@
+name: Bug Report
+description: Create a report the launcher behaviour that you think is not correct
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # Reporting error
+        Please refer to [this page](https://github.com/EmiyaSyahriel/CrossLauncher/wiki/Error-Reporting#steps-to-report-errors)
+        on how to reporting errors, to make some preparation. And also make sure that The bug is not reported yet in [issue listing](https://github.com/ppy/osu/issues), be it still open or have been closed
+  - type: dropdown
+    attributes:
+      label: Type
+      options:
+        - Crash
+        - Performance
+        - Behaviour
+        - Translation
+        - Other
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Version & APK Type
+      description: Which version of the app the bug is occurring
+      placeholder: "e.g: Alpha 20230101 debug"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: How to reproduce the bug
+      description: Steps to successfully trigger the bug again and again
+      placeholder: "- Start the launcher\
+      - Go to Settings > Debug Settings > System Language \
+      - Set Language to Indonesian (in-ID)"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behaviour
+      description: How the app should behave if this bug is not happening
+      placeholder: The launcher language should be changed to Indonesian
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Actual behaviour
+      description: How the app behaves when this bug is happening
+      placeholder: The launcher language should be changed to Polish
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Device Info
+      description: On what devices this bug happens on
+      placeholder: "e.g: Nokia X30 5G Android One 13.0, Xiaomi Redmi 4 MIUI 8 Android 6.0.1"
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Screenshot or videos
+      description: Any media that shows how the bug occurring on the device
+      placeholder: Drag and drop the screenshots and/or videos into this box.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Logs
+      placeholder: Drag and drop the log files into this box.
+      description: You can get the log files at `(Internal Storage)/Android/data/id.psw.vshlauncher/logs.txt` if you use the `debug` apk
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Additional Information
+      description: If there is some info you wanted to tell outside of the given boxes, put it here.
+    validations:
+      required: false
