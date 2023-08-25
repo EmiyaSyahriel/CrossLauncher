@@ -46,7 +46,7 @@ body:
     attributes:
       label: Actual behaviour
       description: How the app behaves when this bug is happening
-      placeholder: The launcher language should be changed to Polish
+      placeholder: The launcher language changed to Polish instead
     validations:
       required: true
   - type: input
