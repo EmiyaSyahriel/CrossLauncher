@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Ideas & Feature Request
-    about: Have an idea to put into CrossLauncher? Describe them in
+    about: Have an idea to put into CrossLauncher? Describe them in Ideas Discussion
     url: https://github.com/EmiyaSyahriel/CrossLauncher/discussions/categories/ideas
   - name: Help & Info
     about: Wanted to ask something regarding CrossLauncher? e.g How to install customization, check Q&A Discussion

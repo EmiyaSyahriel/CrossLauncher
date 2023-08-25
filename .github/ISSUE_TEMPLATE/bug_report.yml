@@ -29,9 +29,10 @@ body:
     attributes:
       label: How to reproduce the bug
       description: Steps to successfully trigger the bug again and again
-      placeholder: "- Start the launcher\
-      - Go to Settings > Debug Settings > System Language \
-      - Set Language to Indonesian (in-ID)"
+      placeholder: |
+        - Start the launcher
+        - Go to Settings > Debug Settings > System Language
+        - Set Language to Indonesian (in-ID)
     validations:
       required: true
   - type: textarea
