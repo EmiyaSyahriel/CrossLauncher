@@ -352,7 +352,6 @@ class XmbView @JvmOverloads constructor(
 
         val nMemSz = "ANDROID NATIVE MEM - TOTAL:${Debug.getNativeHeapSize().asBytes()} | USED:${Debug.getNativeHeapAllocatedSize().asBytes()} | FREE:${Debug.getNativeHeapFreeSize().asBytes()}"
 
-
         val arr = arrayListOf<String>()
         arr.add(fpsTxt)
         arr.add(nMemSz)

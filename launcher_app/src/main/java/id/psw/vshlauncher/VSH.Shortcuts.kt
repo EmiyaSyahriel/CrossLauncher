@@ -52,7 +52,6 @@ fun VSH.reloadShortcutList(){
                     if(ini.exists() || ini.isFile){
                         val app = XMBShortcutItem(vsh, ini)
                         addToCategory(ITEM_CATEGORY_SHORTCUT, app)
-                        break
                     }
                 }
             }
