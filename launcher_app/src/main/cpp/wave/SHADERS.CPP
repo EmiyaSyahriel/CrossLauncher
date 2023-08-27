@@ -1,6 +1,8 @@
 #include "SHADERS.HPP"
-//// AUTO-GENERATED RESOURCE FILE ////
-//// File auto-generated using C# Script at "app/csx/embed_res.csx" ////
+/**
+ * File auto-generated using Gradle Task at `buildSrc/src/main/kotlin/EmbedNativeResTask.kt`
+ */
+
 namespace R {
 	const char* const blank_frag = R"EMBEDRES(precision lowp float;
 void main(){ gl_FragColor = vec4(0.6, 0.0, 1, 1.0); }

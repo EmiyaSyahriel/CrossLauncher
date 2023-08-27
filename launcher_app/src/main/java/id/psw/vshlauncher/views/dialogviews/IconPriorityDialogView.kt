@@ -198,7 +198,6 @@ class IconPriorityDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
         }
         XMBAdaptiveIconRenderer.Companion.AdaptiveRenderSetting.iconPriority = va
         vsh.M.pref.set(PrefEntry.ICON_RENDERER_PRIORITY, va)
-
         iconBitmap.recycle()
         super.onClose()
     }

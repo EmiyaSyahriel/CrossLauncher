@@ -10,9 +10,6 @@ add_library(glm::glm ALIAS glm)
 
 project(wave)
 
-file(GLOB_RECURSE shaders "res/*.frag" "res/*.vert")
-embed_res("R" "EMBEDRES" "wave" "SHADERS" "${shaders}")
-
 file(GLOB_RECURSE wave_src "wave/*.CPP")
 file(GLOB_RECURSE canyon_src "canyon/*.CPP")
 file(GLOB_RECURSE gaia_src "gaia/*.CPP")

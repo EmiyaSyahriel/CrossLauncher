@@ -40,11 +40,10 @@ page for pre-built packages
 ## Building
 ### Prerequisites
 - Android Studio with:
-    - Android SDK 29+
+    - Android SDK 33+
     - NDK 21+
     - CMake 3.8+
-- .NET Scripting tool (Build script only, optional)
-    - .NET Core 3.1 (.NET 5.0 is recommended)
+
 ### Steps
 - Clone or Download this repository
 - Open this project directory at Android Studio
@@ -52,10 +51,10 @@ page for pre-built packages
 
 To compile without the entire Android Studio package, please refer to this page : 
 [Build your app from the command line | Android Developers](https://developer.android.com/studio/build/building-cmdline)
-However, you would still need the Android SDK, NDK, CMake and optionally .NET Scripting tool.
+However, you would still need the Android SDK, NDK, CMake and Gradle.
 
-.NET Scripting Tool is used to convert C++ resources to C++ source code, it's only used if you changes
-resources file such as shader source file (`frag` and `vert` files), etc.
+Note : If you edit any text resource file located in `launcher_app/src/main/cpp/res`, run gradle task `:launcher_app:generateEmbeddedNativeSource`
+to include the change to the source code since these files were all embedded into source code
 
 ## Contribution
 Translations and fixes are welcome.

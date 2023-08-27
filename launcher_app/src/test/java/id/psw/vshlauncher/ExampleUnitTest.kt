@@ -1,5 +1,6 @@
 package id.psw.vshlauncher
 
+import id.psw.vshlauncher.views.asBytes
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -18,13 +19,18 @@ class ExampleUnitTest {
 
     @Test
     fun testSize(){
-        System.out.println(File("I:\\Builds\\PacManUnity.apk").length().toSize())
+        println(File("I:\\Builds\\PacManUnity.apk").length().asBytes(false))
     }
 
     @Test
     fun testApl(){
+        fun Float.pingpong(a:Float, b:Float) : Float {
+            val l = kotlin.math.abs(b - a)
+            return (this % (l * 2)) / l
+        }
+
         for(i in 0 .. 100){
-            System.out.println(i.toFloat().pingpong(10.0f, 1.0f))
+            println(i.toFloat().pingpong(10.0f, 1.0f))
         }
     }
 }

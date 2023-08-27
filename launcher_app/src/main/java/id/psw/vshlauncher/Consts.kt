@@ -17,7 +17,6 @@ object Consts {
     const val INTENT_CAT_PLUGIN_ICON_PROVIDER = "id.psw.vshlauncher.plugin.category.ICON_PROVIDER"
     const val INTENT_ACT_PLUGIN_VISUALIZER = "id.psw.vshlauncher.plugin.action.VISUALIZER_PROVIDER"
     const val INTENT_CAT_PLUGIN_VISUALIZER = "id.psw.vshlauncher.plugin.category.VISUALIZER_PROVIDER"
-
 }
 
 @Suppress("SpellCheckingInspection")

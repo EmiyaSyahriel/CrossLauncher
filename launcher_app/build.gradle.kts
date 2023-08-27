@@ -42,12 +42,13 @@ android {
     buildTypes{
         val buildDate = "\"${getDate()}\""
         getByName("release"){
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            buildConfigField("String", "BUILD_DATE", buildDate)
         }
         getByName("debug"){
             isMinifyEnabled = false
+        }
+        all {
             buildConfigField("String", "BUILD_DATE",buildDate)
         }
     }
@@ -63,9 +64,16 @@ android {
         }
     }
 
-    packagingOptions{
-        resources.excludes.add("META-INF/*.kotlin_module")
+    tasks.create<GenerateEmbeddedResourceCppSourceTask>("generateEmbeddedResourceCppSource"){
+        inputDir = file("src/main/cpp/res")
+        inputExtensions = arrayOf("frag","vert")
+        cppNamespace = "R"
+        cppDelimiter = "EMBEDRES"
+        cppIncludes = arrayOf("SHADERS.HPP")
+        outputHeaderFile = file("src/main/cpp/wave/SHADERS.HPP")
+        outputSourceFile = file("src/main/cpp/wave/SHADERS.CPP")
     }
+
 }
 
 dependencies {
