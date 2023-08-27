@@ -348,13 +348,7 @@ class XmbView @JvmOverloads constructor(
         dummyPaint.style = Paint.Style.FILL
         dummyPaint.setShadowLayer(2.0f, 2.0f, 2.0f, Color.BLACK)
 
-        val isTV = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
-        }else{
-            context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEVISION)
-        }
-
-        val isTvTxt = isTV.select("Device : TV","")
+        val isTvTxt = context.vsh.isTv.select("Device : TV","")
 
         val nMemSz = "ANDROID NATIVE MEM - TOTAL:${Debug.getNativeHeapSize().asBytes()} | USED:${Debug.getNativeHeapAllocatedSize().asBytes()} | FREE:${Debug.getNativeHeapFreeSize().asBytes()}"
 

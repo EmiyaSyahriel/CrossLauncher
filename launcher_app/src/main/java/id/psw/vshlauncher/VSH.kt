@@ -3,6 +3,7 @@ package id.psw.vshlauncher
 import android.app.ActivityManager
 import android.app.Application
 import android.content.*
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Typeface
@@ -116,6 +117,7 @@ class VSH : Application() {
     var itemOffsetX = 0.0f
     var itemOffsetY = 0.0f
     var itemBackdropAlphaTime = 0.0f
+    var _prioritizeTvIntent = false
 
     val isInRoot : Boolean get() = selectStack.size == 0
     var notificationLastCheckTime = 0L
@@ -125,6 +127,7 @@ class VSH : Application() {
     val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
 
     val M = SubmoduleManager(this)
+    var isTv = false
     var shouldShowExitOption = false
 
     var useInternalWave = true
@@ -137,10 +140,19 @@ class VSH : Application() {
         XMBAppItem.descriptionDisplay = enumFromInt(o)
         XMBAdaptiveIconRenderer.Companion.AdaptiveRenderSetting.iconPriority =
             M.pref.get(PrefEntry.ICON_RENDERER_PRIORITY, 0b01111000)
+        val tvAsDefault = isTv.select(1, 0)
+        _prioritizeTvIntent = M.pref.get(PrefEntry.LAUNCHER_TV_INTENT_FIRST, tvAsDefault) != 0
     }
 
     override fun onCreate() {
         Logger.init(this)
+
+        isTv = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+        }else{
+            packageManager.hasSystemFeature(PackageManager.FEATURE_TELEVISION)
+        }
+
         M.onCreate()
         reloadPreference()
         FontCollections.init(this)

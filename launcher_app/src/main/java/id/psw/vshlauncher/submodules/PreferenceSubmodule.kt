@@ -2,6 +2,7 @@ package id.psw.vshlauncher.submodules
 
 import android.content.Context
 import android.content.SharedPreferences
+import id.psw.vshlauncher.Logger
 import id.psw.vshlauncher.VSH
 import kotlinx.coroutines.sync.Mutex
 import kotlin.concurrent.thread
@@ -13,6 +14,7 @@ class PreferenceSubmodule(private val ctx: VSH) : IVshSubmodule {
         private const val PREF_NAME = "xRegistry.sys"
         private const val PREF_PUSH_CHECK_EVERY = 30L
         private const val PREF_PUSH_DELAY = 300L
+        private const val TAG = "xRegistry"
     }
 
     private lateinit var pref : SharedPreferences
@@ -91,6 +93,7 @@ class PreferenceSubmodule(private val ctx: VSH) : IVshSubmodule {
             if(hasChange){
                 edit.apply()
                 hasChange = false
+                Logger.d(TAG, "Preference saved")
             }
         }
     }

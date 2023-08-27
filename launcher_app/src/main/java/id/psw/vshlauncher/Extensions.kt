@@ -172,6 +172,10 @@ fun getMaterialYouColor(ctx:Context, accent:Int, brightness:Int, retval : Ref<In
     return true
 }
 
+fun <T> ArrayList<T>.addAllV(vararg items:T) {
+    this.addAll(items)
+}
+
 inline fun <reified  E : Enum<E>> enumFromInt(i : Int) : E{
     val eis = enumValues<E>()
     for(e in eis){

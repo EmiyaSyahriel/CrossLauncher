@@ -346,6 +346,23 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
             }
         )
 
+
+        content.add(
+            XMBSettingsItem(vsh, "settings_system_prioritze_tv",
+                R.string.settings_system_prioritize_tv_intent_name,
+                R.string.settings_system_prioritize_tv_intent_desc,
+                R.drawable.icon_video_anim_icon, {
+                    getString(vsh._prioritizeTvIntent.select(
+                        R.string.common_yes,
+                        R.string.common_no
+                    ))
+                }
+            ){
+                _prioritizeTvIntent = !_prioritizeTvIntent
+                M.pref.set(PrefEntry.LAUNCHER_TV_INTENT_FIRST, _prioritizeTvIntent.select(1, 0))
+            }
+        )
+
         content.add(
             XMBSettingsItem(vsh, "settings_system_info_dialog_open",
                 R.string.setting_systeminfo_name,

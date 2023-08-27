@@ -3,6 +3,7 @@ package id.psw.vshlauncher.types.items
 import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
@@ -10,7 +11,6 @@ import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Build
-import android.os.Build.VERSION_CODES.M
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.types.INIFile
 import id.psw.vshlauncher.types.XMBItem
@@ -490,8 +490,33 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     private fun _launch(i: XMBItem){
         vsh.xmbView?.bootInto(false){
             try{
-                val launchInfo = vsh.packageManager.getLaunchIntentForPackage(resInfo.activityInfo.packageName)
-                vsh.startActivity(launchInfo)
+                val intents = arrayListOf<Intent?>()
+                val phone = vsh.packageManager.getLaunchIntentForPackage(resInfo.activityInfo.packageName)
+
+                if (sdkAtLeast(21)) {
+                    val tv = vsh.packageManager.getLeanbackLaunchIntentForPackage(resInfo.activityInfo.packageName)
+                    if(vsh._prioritizeTvIntent){
+                        intents.addAllV(tv, phone)
+                    }else{
+                        intents.addAllV(phone, tv)
+                    }
+                }else{
+                    intents.add(phone)
+                }
+
+                var launched = false
+                for (intent in intents){
+                    if(intent != null){
+                        vsh.startActivity(phone)
+                        launched = true
+                        break
+                    }
+                }
+
+                if(!launched){
+                    throw Exception()
+                }
+
                 vsh.M.audio.preventPlayMedia = true
             }catch(e:Exception){
                 vsh.postNotification(null, "Launch failed","Unable to launch this app, most likely due to this app is not available on the device", 10.0f)

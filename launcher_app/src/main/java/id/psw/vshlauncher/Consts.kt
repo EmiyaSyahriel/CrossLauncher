@@ -106,6 +106,8 @@ object PrefEntry{
     const val VOLUME_AUDIO_BGM :String = "/crosslauncher/audio/volume/music"
     /** Int, System Music Volume (used by e.g Coldboot & Gameboot) */
     const val VOLUME_AUDIO_SYSBGM :String = "/crosslauncher/audio/volume/sysmusic"
+    /** Boolean */
+    const val LAUNCHER_TV_INTENT_FIRST : String = "/crosslauncher/launcher/prioritizeTv"
 }
 
 enum class FittingMode {
