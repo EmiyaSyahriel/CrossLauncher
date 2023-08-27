@@ -31,7 +31,7 @@ For additional info, Please refer to "https://creativecommons.org/publicdomain/z
  *  ```cxx
  *  //// AUTO-GENERATED ////
  *  namespace resources {
- *      const char* const hamami_vert = R"CHIHAYA(#version 240 es
+ *      const char* const cutboard_vert = R"CHIHAYA(#version 240 es
  *  attribute vec3 v_vpos;
  *  attribute vec2 v_texcoord;
  *  uniform mat4 v_mvp;

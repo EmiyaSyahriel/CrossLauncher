@@ -79,6 +79,10 @@ android {
         outputSourceFile = file("src/main/cpp/wave/SHADERS.CPP")
     }
 
+    tasks.create<ForgeButtonFont>("generateButtonFont") {
+        sourceFile = project.rootProject.file("other_asset/vshbtn/vshbtn.svg")
+        targetFile = project.rootProject.file("other_asset/vshbtn/vshbtn.ttf")
+    }
 }
 
 dependencies {
