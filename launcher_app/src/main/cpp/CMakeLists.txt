@@ -1,8 +1,4 @@
-
 cmake_minimum_required(VERSION 3.4.1)
-
-include(EmbedRes.cmake)
-
 set(GLM_VERSION "0.9.9")
 project(glm VERSION ${GLM_VERSION} LANGUAGES CXX)
 add_subdirectory(glm)
