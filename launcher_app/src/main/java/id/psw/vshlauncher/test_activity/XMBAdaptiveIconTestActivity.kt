@@ -37,7 +37,7 @@ class XMBAdaptiveIconTestActivity : AppCompatActivity() {
                         val pkg = it.activityInfo.packageName
                         if(pkg != null){
                             val appName = "${it.activityInfo.loadLabel(app.packageManager)} [${it.activityInfo.packageName}]"
-                            appList[appName] = vsh.iconAdapter.create(it.activityInfo, vsh)
+                            appList[appName] = vsh.M.icons.create(it.activityInfo, vsh)
                             loadProgress = i / apps.size.toFloat()
                         }
                     }

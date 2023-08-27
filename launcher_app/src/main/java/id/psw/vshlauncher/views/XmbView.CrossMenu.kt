@@ -17,6 +17,8 @@ import id.psw.vshlauncher.livewallpaper.NativeGL
 import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
 import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
+import id.psw.vshlauncher.submodules.SfxType
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
@@ -152,8 +154,8 @@ fun XmbView.menuStart(){
         state.crossMenu.loadingIconBitmap = ResourcesCompat.getDrawable(context.resources,R.drawable.ic_sync_loading,null)?.toBitmap(256,256)
     }
 
-    state.crossMenu.statusBar.disabled = context.vsh.pref.getInt(PrefEntry.DISPLAY_DISABLE_STATUS_BAR, 0) == 1
-    state.crossMenu.statusBar.secondOnAnalog = context.vsh.pref.getInt(PrefEntry.DISPLAY_SHOW_CLOCK_SECOND, 0) == 1
+    state.crossMenu.statusBar.disabled = M.pref.get(PrefEntry.DISPLAY_DISABLE_STATUS_BAR, 0) == 1
+    state.crossMenu.statusBar.secondOnAnalog = M.pref.get(PrefEntry.DISPLAY_SHOW_CLOCK_SECOND, 0) == 1
 }
 
 private var baseDefRect = RectF()
@@ -233,7 +235,7 @@ fun XmbView.formatStatusBar(src:String) : String {
                 // Operator
                 "operator" -> {
                     if(state.crossMenu.statusBar.showMobileOperator)
-                    context.vsh.network.operatorName
+                    M.network.operatorName
                     else ""
                 }
 
@@ -719,8 +721,8 @@ fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
                         }
 
                         if (selected) {
-                            if (item.hasBackSound && item.isBackSoundLoaded) context.vsh.setAudioSource(item.backSound)
-                            else context.vsh.removeAudioSource()
+                            if (item.hasBackSound && item.isBackSoundLoaded) M.audio.setAudioSource(item.backSound)
+                            else M.audio.removeAudioSource()
                         }
 
                         val textLeft = verticalRectF.centerX() + (iconCenterToText)
@@ -819,7 +821,7 @@ fun XmbView.menuRenderVerticalMenu(ctx:Canvas){
                 val xxPos = xPos + (ps3SelectedIconSize.x / 2.0f)
                 menuVerticalNamePaint.color = Color.WHITE
                 ctx.drawText(eString, xxPos, yPos, menuVerticalNamePaint)
-                context.vsh.removeAudioSource()
+                M.audio.removeAudioSource()
             }
         }
     }
@@ -996,7 +998,7 @@ fun XmbView.menuRenderSortHeaderDisplay(ctx: Canvas) {
 }
 
 fun XmbView.updateColdBootWaveAnimation(){
-    val speed = context.vsh.pref.getFloat(XMBWaveSurfaceView.KEY_SPEED, 1.0f)
+    val speed = M.pref.get(XMBWaveSurfaceView.KEY_SPEED, 1.0f)
     NativeGL.setSpeed( state.crossMenu.coldBootTransition.toLerp(speed, 25.0f) )
     NativeGL.setVerticalScale( state.crossMenu.coldBootTransition.toLerp(1.0f, 1.25f) )
 
@@ -1026,7 +1028,7 @@ fun XmbView.menuRender(ctx: Canvas){
             menuRenderStatusBar(ctx)
             menuRenderItemMenu(ctx)
             menuRenderSortHeaderDisplay(ctx)
-        }catch(cme:ConcurrentModificationException){}
+        }catch(_:ConcurrentModificationException){}
     }
 }
 
@@ -1046,26 +1048,26 @@ fun XmbView.menuOpenSearchQuery(){
     }
 }
 
-fun XmbView.menuOnGamepad(key: GamepadSubmodule.Key, isPressing: Boolean) : Boolean {
+fun XmbView.menuOnGamepad(key: PadKey, isPressing: Boolean) : Boolean {
     var retval = false
     val vsh = context.vsh
     val inMenu = state.itemMenu.isDisplayed
 
     if(isPressing){
         when(key){
-            GamepadSubmodule.Key.PadL -> {
+            PadKey.PadL -> {
                 if(!inMenu){
                     if(vsh.isInRoot){
                         vsh.moveCursorX(false)
-                        vsh.playSfx(SFXType.Selection)
+                        M.audio.playSfx(SfxType.Selection)
                     }else{
                         vsh.backStep()
-                        vsh.playSfx(SFXType.Cancel)
+                        M.audio.playSfx(SfxType.Cancel)
                     }
                     retval = true
                 }
             }
-            GamepadSubmodule.Key.PadR -> {
+            PadKey.PadR -> {
                 if(vsh.isInRoot){
                     if(!inMenu){
                         context.vsh.moveCursorX(true)
@@ -1073,7 +1075,7 @@ fun XmbView.menuOnGamepad(key: GamepadSubmodule.Key, isPressing: Boolean) : Bool
                     retval = true
                 }
             }
-            GamepadSubmodule.Key.PadU -> {
+            PadKey.PadU -> {
                 if(inMenu){
                     menuMoveItemMenuCursor(false)
                 }else{
@@ -1081,7 +1083,7 @@ fun XmbView.menuOnGamepad(key: GamepadSubmodule.Key, isPressing: Boolean) : Bool
                 }
                 retval = true
             }
-            GamepadSubmodule.Key.PadD -> {
+            PadKey.PadD -> {
                 if(inMenu){
                     menuMoveItemMenuCursor(true)
                 }else{
@@ -1089,7 +1091,7 @@ fun XmbView.menuOnGamepad(key: GamepadSubmodule.Key, isPressing: Boolean) : Bool
                 }
                 retval = true
             }
-            GamepadSubmodule.Key.Triangle -> {
+            PadKey.Triangle -> {
                 val item = vsh.hoveredItem
                 if(inMenu){
                     state.itemMenu.isDisplayed = false
@@ -1102,17 +1104,17 @@ fun XmbView.menuOnGamepad(key: GamepadSubmodule.Key, isPressing: Boolean) : Bool
                 }
                 retval = true
             }
-            GamepadSubmodule.Key.Select -> {
+            PadKey.Select -> {
                 menuOpenSearchQuery()
             }
-            GamepadSubmodule.Key.Square -> {
+            PadKey.Square -> {
                 if(vsh.isInRoot){
                     vsh.doCategorySorting()
                     state.crossMenu.sortHeaderDisplay = 5.0f
                     retval = true
                 }
             }
-            GamepadSubmodule.Key.Confirm, GamepadSubmodule.Key.StaticConfirm -> {
+            PadKey.Confirm, PadKey.StaticConfirm -> {
                 if(inMenu) {
                     menuStartItemMenu()
                     state.itemMenu.isDisplayed = false
@@ -1121,7 +1123,7 @@ fun XmbView.menuOnGamepad(key: GamepadSubmodule.Key, isPressing: Boolean) : Bool
                 }
                 retval = true
             }
-            GamepadSubmodule.Key.Cancel, GamepadSubmodule.Key.StaticCancel -> {
+            PadKey.Cancel, PadKey.StaticCancel -> {
                 if(inMenu){
                     state.itemMenu.isDisplayed = false
                 }else{

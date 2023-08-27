@@ -5,6 +5,7 @@ import android.graphics.PointF
 import android.graphics.RectF
 import android.view.MotionEvent
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.submodules.SfxType
 import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
@@ -39,9 +40,9 @@ class CustomResourceListDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh
 
     override fun onStart() {
         arrayListOf(
-            SFXType.Selection to "select",
-            SFXType.Confirm to "confirm",
-            SFXType.Cancel to "cancel"
+            SfxType.Selection to "select",
+            SfxType.Confirm to "confirm",
+            SfxType.Cancel to "cancel"
         ).forEach {
             findUsage("SFX - ${it.first}", FileQuery(VshBaseDirs.VSH_RESOURCES_DIR).atPath("sfx").withNames(it.second).withExtensionArray(VshResTypes.SOUNDS).execute(vsh))
         }

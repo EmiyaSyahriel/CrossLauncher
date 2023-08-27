@@ -2,6 +2,11 @@ package id.psw.vshlauncher
 
 import android.content.pm.ActivityInfo
 import android.content.pm.ResolveInfo
+import android.graphics.Color
+import android.graphics.Paint
+import android.text.TextPaint
+import androidx.annotation.ColorInt
+import id.psw.vshlauncher.typography.FontCollections
 import java.io.File
 import java.lang.StringBuilder
 
@@ -35,6 +40,21 @@ val ResolveInfo.uniqueActivityName get() = activityInfo.uniqueActivityName
 
 val VSH.allCacheDirs : Array<File> get() {
     return arrayOf(cacheDir, *externalCacheDirs)
+}
+
+fun VSH.makeTextPaint(
+    size: Float = 12.0f,
+    align: Paint.Align = Paint.Align.LEFT,
+    @ColorInt color : Int = Color.WHITE,
+    style : Paint.Style = Paint.Style.FILL
+) : TextPaint {
+    return TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+        this.color = color
+        textAlign = align
+        textSize = size
+        this.style = style
+        typeface = FontCollections.masterFont
+    }
 }
 
 fun String.removeSimilarPrefixes(b:String) : String{

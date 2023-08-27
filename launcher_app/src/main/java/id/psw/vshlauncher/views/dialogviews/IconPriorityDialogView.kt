@@ -6,6 +6,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.minus
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.submodules.XMBAdaptiveIconRenderer
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.DrawExtension
@@ -102,11 +103,11 @@ class IconPriorityDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
         return true
     }
 
-    override fun onGamepad(key: GamepadSubmodule.Key, isPress: Boolean): Boolean {
+    override fun onGamepad(key: PadKey, isPress: Boolean): Boolean {
         return if(isPress){
             when(key){
-                GamepadSubmodule.Key.PadD -> updateCursor(true)
-                GamepadSubmodule.Key.PadU -> updateCursor(false)
+                PadKey.PadD -> updateCursor(true)
+                PadKey.PadU -> updateCursor(false)
                 else -> super.onGamepad(key, isPress)
             }
         } else super.onGamepad(key, isPress)
@@ -196,7 +197,7 @@ class IconPriorityDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
             va = va or orv
         }
         XMBAdaptiveIconRenderer.Companion.AdaptiveRenderSetting.iconPriority = va
-        vsh.pref.edit().putInt(PrefEntry.ICON_RENDERER_PRIORITY, va).apply()
+        vsh.M.pref.set(PrefEntry.ICON_RENDERER_PRIORITY, va)
 
         iconBitmap.recycle()
         super.onClose()

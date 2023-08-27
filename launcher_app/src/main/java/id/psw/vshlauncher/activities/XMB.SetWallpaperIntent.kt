@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import androidx.core.app.ActivityCompat
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.VshViewPage
@@ -95,9 +96,9 @@ class SetWallpaperDialog(private val vsh: VSH, private val xmb:XMB, private val 
         }
     }
 
-    override fun onGamepad(key: GamepadSubmodule.Key, isPress: Boolean): Boolean {
+    override fun onGamepad(key: PadKey, isPress: Boolean): Boolean {
         if(isPress){
-            if(key == GamepadSubmodule.Key.PadU || key == GamepadSubmodule.Key.PadD){
+            if(key == PadKey.PadU || key == PadKey.PadD){
                 isInternal = !isInternal
                 return true
             }

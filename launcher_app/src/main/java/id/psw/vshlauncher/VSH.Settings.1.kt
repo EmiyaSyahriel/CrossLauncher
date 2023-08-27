@@ -8,6 +8,8 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.GamepadUISubmodule
+import id.psw.vshlauncher.submodules.PadKey
+import id.psw.vshlauncher.submodules.PadType
 import id.psw.vshlauncher.submodules.XMBAdaptiveIconRenderer
 import id.psw.vshlauncher.types.CIFLoader
 import id.psw.vshlauncher.types.items.*
@@ -73,48 +75,48 @@ private fun VSH.createCategoryAudio(): XMBSettingsCategory{
         content.add(XMBSettingsItem(vsh, "audio_volume_master",
             R.string.settings_audio_master_volume_name,
             R.string.settings_audio_master_volume_desc,
-            R.drawable.icon_volume, { volumeToString(vsh.volume.master) }
+            R.drawable.icon_volume, { volumeToString(M.audio.master) }
         ){
             vsh.xmbView?.state?.itemMenu?.isDisplayed = true
         }.apply {
-            makeVolume( this) { vsh.volume.master = it }
+            makeVolume( this) { M.audio.master = it }
         })
 
         content.add(XMBSettingsItem(vsh, "audio_volume_bgm",
             R.string.settings_audio_bgm_volume_name,
             R.string.settings_audio_bgm_volume_desc,
-            R.drawable.category_music, { volumeToString(vsh.volume.bgm) }
+            R.drawable.category_music, { volumeToString(M.audio.bgm) }
         ){
             vsh.xmbView?.state?.itemMenu?.isDisplayed = true
         }.apply {
-            makeVolume( this) { vsh.volume.bgm = it }
+            makeVolume( this) { M.audio.bgm = it }
         })
 
         content.add(XMBSettingsItem(vsh, "audio_volume_sysbgm",
             R.string.settings_audio_sysbgm_volume_name,
             R.string.settings_audio_sysbgm_volume_desc,
-            R.drawable.ic_component_audio, { volumeToString(vsh.volume.systemBgm) }
+            R.drawable.ic_component_audio, { volumeToString(M.audio.systemBgm) }
         ){
             vsh.xmbView?.state?.itemMenu?.isDisplayed = true
         }.apply {
-            makeVolume( this) { vsh.volume.systemBgm = it }
+            makeVolume( this) { M.audio.systemBgm = it }
         })
 
         content.add(XMBSettingsItem(vsh, "audio_volume_sfx",
             R.string.settings_audio_sfx_volume_name,
             R.string.settings_audio_sfx_volume_desc,
-            R.drawable.ic_speaker_phone, { volumeToString(vsh.volume.sfx) }
+            R.drawable.ic_speaker_phone, { volumeToString(M.audio.sfx) }
         ){
             vsh.xmbView?.state?.itemMenu?.isDisplayed = true
         }.apply {
-            makeVolume( this) { vsh.volume.sfx = it }
+            makeVolume( this) { M.audio.sfx = it }
         })
         content.add(XMBSettingsItem(vsh, "audio_reload_sfx",
             R.string.settings_audio_sfx_reload_name,
             R.string.settings_audio_sfx_reload_desc,
             R.drawable.icon_refresh, { "" }
         ){
-            vsh.loadSfxData(false)
+            M.audio.loadSfxData(false)
         })
     }
 }
@@ -138,7 +140,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 }
             ){
                 showLauncherFPS = !showLauncherFPS
-                pref.edit().putInt(PrefEntry.SHOW_LAUNCHER_FPS, showLauncherFPS.select(1,0)).apply()
+                M.pref.set(PrefEntry.SHOW_LAUNCHER_FPS, showLauncherFPS.select(1,0))
             }
         )
 
@@ -152,7 +154,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 }
             ){
                 xmbView?.showDetailedMemory = xmbView?.showDetailedMemory != true
-                pref.edit().putInt(PrefEntry.SHOW_DETAILED_MEMORY, (xmbView?.showDetailedMemory == true).select(1,0)).apply()
+                M.pref.set(PrefEntry.SHOW_DETAILED_MEMORY, (xmbView?.showDetailedMemory == true).select(1,0))
             }
         )
 
@@ -199,7 +201,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> ActivityInfo.SCREEN_ORIENTATION_USER
                 else -> ActivityInfo.SCREEN_ORIENTATION_USER
             }
-            pref.edit().putInt(PrefEntry.DISPLAY_ORIENTATION, xmb?.requestedOrientation ?: ActivityInfo.SCREEN_ORIENTATION_SENSOR).apply()
+            M.pref.set(PrefEntry.DISPLAY_ORIENTATION, xmb?.requestedOrientation ?: ActivityInfo.SCREEN_ORIENTATION_SENSOR)
         }.apply {
             val xmb = xmbView?.context?.xmb
             hasMenu = true
@@ -225,16 +227,16 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
         R.string.settings_system_asian_console_name, R.string.settings_system_asian_console_desc,
         R.drawable.category_games, {
                 getString(
-                    if(GamepadSubmodule.Key.spotMarkedByX)
+                    if(PadKey.spotMarkedByX)
                         R.string.settings_system_asian_console_false
                     else
                         R.string.settings_system_asian_console_true
                 )
             }
         ){
-            GamepadSubmodule.Key.spotMarkedByX = !GamepadSubmodule.Key.spotMarkedByX
-            pref.edit().putInt(PrefEntry.CONFIRM_BUTTON,
-                GamepadSubmodule.Key.spotMarkedByX.select(1,0)).apply()
+            PadKey.spotMarkedByX = !PadKey.spotMarkedByX
+            M.pref.set(PrefEntry.CONFIRM_BUTTON,
+                PadKey.spotMarkedByX.select(1,0))
         })
 
         content.add(XMBSettingsItem(vsh, "settings_system_epimsg_disable",
@@ -249,11 +251,10 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
             val xv = xmbView
             if(xv != null){
                 xv.state.coldBoot.hideEpilepsyWarning = !xv.state.coldBoot.hideEpilepsyWarning
-                pref.edit()
-                    .putInt(
+                M.pref.set(
                         PrefEntry.DISABLE_EPILEPSY_WARNING,
                         xv.state.coldBoot.hideEpilepsyWarning.select(1,0)
-                    ).apply()
+                    )
             }
         }
         )
@@ -269,10 +270,10 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 }
             ){
                 CIFLoader.disableAnimatedIcon = !CIFLoader.disableAnimatedIcon
-                pref.edit().putInt(
+                M.pref.set(
                     PrefEntry.DISABLE_VIDEO_ICON,
                     CIFLoader.disableAnimatedIcon.select(1,0)
-                ).apply()
+                )
             }
         )
 
@@ -303,7 +304,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 for((k, m) in kTypeAppDescKey){
                     menu.add(XMBMenuItem.XMBMenuItemLambda( { getString(m) }, {false}, i++){
                         XMBAppItem.descriptionDisplay = k
-                        pref.edit().putInt(PrefEntry.SYSTEM_VISIBLE_APP_DESC, k.ordinal).apply()
+                        M.pref.set(PrefEntry.SYSTEM_VISIBLE_APP_DESC, k.ordinal)
                         vsh.xmbView?.state?.itemMenu?.isDisplayed = false
                     })
                 }
@@ -324,9 +325,9 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 }
             ){
                 xmbView?.state?.gameBoot?.defaultSkip = !(xmbView?.state?.gameBoot?.defaultSkip ?: true)
-                pref.edit().putInt(PrefEntry.SKIP_GAMEBOOT,
+                M.pref.set(PrefEntry.SKIP_GAMEBOOT,
                     xmbView?.state?.gameBoot?.defaultSkip?.select(1, 0) ?: 0
-                ).apply()
+                )
             }
         )
 
@@ -528,7 +529,7 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
             val x = xmbView
             if(x != null){
                 x.state.crossMenu.statusBar.disabled = !x.state.crossMenu.statusBar.disabled
-                pref.edit().putInt(PrefEntry.DISPLAY_DISABLE_STATUS_BAR, x.state.crossMenu.statusBar.disabled.select(1, 0)).apply()
+                M.pref.set(PrefEntry.DISPLAY_DISABLE_STATUS_BAR, x.state.crossMenu.statusBar.disabled.select(1, 0))
             }
         })
 
@@ -540,17 +541,17 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 R.string.setting_display_button_type_desc,
                 R.drawable.icon_button_display,
                 {
-                    when(vsh._gamepadUi.activeGamepad){
-                        GamepadUISubmodule.PadType.Unknown -> vsh.getString(R.string.common_default)
-                        GamepadUISubmodule.PadType.PlayStation -> "PlayStation"
-                        GamepadUISubmodule.PadType.Android -> "Android"
-                        GamepadUISubmodule.PadType.Xbox -> "Xbox"
-                        GamepadUISubmodule.PadType.Nintendo -> "Nintendo Switch"
+                    when(M.gamepadUi.activeGamepad){
+                        PadType.Unknown -> vsh.getString(R.string.common_default)
+                        PadType.PlayStation -> "PlayStation"
+                        PadType.Android -> "Android"
+                        PadType.Xbox -> "Xbox"
+                        PadType.Nintendo -> "Nintendo Switch"
                         else -> vsh.getString(R.string.unknown)
                     }
                 }
             ){
-//                vsh._gamepadUi.activeGamepad = when(vsh._gamepadUi.activeGamepad){
+//               M.gamepadUi.activeGamepad = when(M.gamepadUi.activeGamepad){
 //                    GamepadUISubmodule.PadType.Unknown -> GamepadUISubmodule.PadType.PlayStation
 //                    GamepadUISubmodule.PadType.PlayStation -> GamepadUISubmodule.PadType.Xbox
 //                    GamepadUISubmodule.PadType.Xbox -> GamepadUISubmodule.PadType.Nintendo
@@ -568,25 +569,25 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 dMenu.add(XMBMenuItem.XMBMenuItemLambda(
                     {"PlayStation"}, {false}, 0)
                 {
-                    vsh._gamepadUi.activeGamepad = GamepadUISubmodule.PadType.PlayStation
+                   M.gamepadUi.activeGamepad = PadType.PlayStation
                     saveButtonDisplaySetting()
                 })
                 dMenu.add(XMBMenuItem.XMBMenuItemLambda(
                     {"Xbox"}, {false}, 1)
                 {
-                    vsh._gamepadUi.activeGamepad = GamepadUISubmodule.PadType.Xbox
+                   M.gamepadUi.activeGamepad = PadType.Xbox
                     saveLayoutSetting()
                 })
                 dMenu.add(XMBMenuItem.XMBMenuItemLambda(
                     {"Nintendo Switch"}, {false}, 2)
                 {
-                    vsh._gamepadUi.activeGamepad = GamepadUISubmodule.PadType.Nintendo
+                   M.gamepadUi.activeGamepad = PadType.Nintendo
                     saveLayoutSetting()
                 })
                 dMenu.add(XMBMenuItem.XMBMenuItemLambda(
                     {"Android"}, {false}, -1)
                 {
-                    vsh._gamepadUi.activeGamepad = GamepadUISubmodule.PadType.Android
+                   M.gamepadUi.activeGamepad = PadType.Android
                     saveLayoutSetting()
                 })
                 menuItems= dMenu
@@ -604,7 +605,7 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 val x = xmbView
                 if(x != null){
                     x.state.crossMenu.statusBar.secondOnAnalog = !x.state.crossMenu.statusBar.secondOnAnalog
-                    pref.edit().putInt(PrefEntry.DISPLAY_SHOW_CLOCK_SECOND, x.state.crossMenu.statusBar.secondOnAnalog.select(1, 0)).apply()
+                    M.pref.set(PrefEntry.DISPLAY_SHOW_CLOCK_SECOND, x.state.crossMenu.statusBar.secondOnAnalog.select(1, 0))
 
                 }
             }
@@ -700,9 +701,7 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                     { i.toString() }, {false}, i)
                 {
                     xmbView?.state?.crossMenu?.dimOpacity = i
-                    pref.edit()
-                        .putInt(PrefEntry.BACKGROUND_DIM_OPACITY, xmbView?.state?.crossMenu?.dimOpacity?: 0)
-                        .apply()
+                    M.pref.set(PrefEntry.BACKGROUND_DIM_OPACITY, xmbView?.state?.crossMenu?.dimOpacity?: 0)
                 })
             }
             menuItems = dMenu
@@ -723,20 +722,21 @@ fun VSH.saveLayoutSetting() {
             XMBLayoutType.PSX -> 3
             else -> 0
         }
-        pref.edit().putInt(PrefEntry.MENU_LAYOUT, srlzLayout).apply()
+        M.pref.set(PrefEntry.MENU_LAYOUT, srlzLayout)
     }
 }
+
 fun VSH.saveButtonDisplaySetting() {
     val view = xmbView
     if(view != null) {
-        val srlzButton = when (vsh._gamepadUi.activeGamepad) {
-            GamepadUISubmodule.PadType.PlayStation -> 0
-            GamepadUISubmodule.PadType.Xbox -> 1
-            GamepadUISubmodule.PadType.Nintendo -> 2
-            GamepadUISubmodule.PadType.Android -> 3
+        val srlzButton = when (M.gamepadUi.activeGamepad) {
+            PadType.PlayStation -> 0
+            PadType.Xbox -> 1
+            PadType.Nintendo -> 2
+            PadType.Android -> 3
             else -> 0
         }
-        pref.edit().putInt(PrefEntry.BUTTON_DISPLAY_TYPE, srlzButton).apply()
+        M.pref.set(PrefEntry.BUTTON_DISPLAY_TYPE, srlzButton)
     }
 }
 

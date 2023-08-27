@@ -10,6 +10,7 @@ import id.psw.vshlauncher.livewallpaper.NativeGL
 import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
 import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.typography.FontCollections
 import java.io.File
@@ -40,7 +41,7 @@ fun XmbView.playColdBootSound() {
     val vshIterator : (File) -> Unit = { it ->
         if(it.exists() && !isFound){
             isFound = true
-            vsh.setSystemAudioSource(it)
+            M.audio.setSystemAudioSource(it)
         }
     }
 
@@ -158,18 +159,18 @@ fun XmbView.cbEnd(){
     state.coldBoot.image = null
 }
 
-fun XmbView.cbOnGamepad(k:GamepadSubmodule.Key, isPress:Boolean) : Boolean {
+fun XmbView.cbOnGamepad(k:PadKey, isPress:Boolean) : Boolean {
     var retval =false
 
     with(state.coldBoot){
         if(isPress){
             when(k){
-                GamepadSubmodule.Key.Confirm, GamepadSubmodule.Key.StaticConfirm -> {
+                PadKey.Confirm, PadKey.StaticConfirm -> {
                     if(currentTime <= 5.0f) currentTime = 5.0f
                     else if(currentTime <= 10.0f) currentTime = 10.0f
                     retval = true
                 }
-                GamepadSubmodule.Key.Cross -> {
+                PadKey.Cross -> {
                     if(isL1Down){
                         (context as Activity).finish() // L1 + Cross = Finish Activity
                     }
@@ -178,7 +179,7 @@ fun XmbView.cbOnGamepad(k:GamepadSubmodule.Key, isPress:Boolean) : Boolean {
             }
         }
 
-        if(k == GamepadSubmodule.Key.L1){
+        if(k == PadKey.L1){
             isL1Down = isPress
         }
     }

@@ -1,10 +1,12 @@
 package id.psw.vshlauncher.views.dialogviews
 
 import android.graphics.*
+import android.os.Build.VERSION_CODES.M
 import android.text.TextPaint
 import androidx.core.graphics.minus
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.typography.FontCollections
@@ -39,9 +41,9 @@ class LegacyIconBackgroundDialogView(private val vsh: VSH) : XmbDialogSubview(vs
 
     override fun onStart() {
         super.onStart()
-        bgMode = vsh.pref.getInt(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, 0)
-        bgColor = vsh.pref.getInt(PrefEntry.ICON_RENDERER_LEGACY_BACK_COLOR, Color.WHITE)
-        val you =vsh.pref.getInt(PrefEntry.ICON_RENDERER_LEGACY_BACK_MATERIAL_YOU, Color.WHITE)
+        bgMode = vsh.M.pref.get(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, 0)
+        bgColor = vsh.M.pref.get(PrefEntry.ICON_RENDERER_LEGACY_BACK_COLOR, Color.WHITE)
+        val you = vsh.M.pref.get(PrefEntry.ICON_RENDERER_LEGACY_BACK_MATERIAL_YOU, Color.WHITE)
         bgYouX = you / 100
         bgYouY = you % 100
         supportsYou = getMaterialYouColor(vsh, bgYouX, bgYouY, yourColor)
@@ -57,13 +59,12 @@ class LegacyIconBackgroundDialogView(private val vsh: VSH) : XmbDialogSubview(vs
             val bgYou = bgYouX * 100 + bgYouY
 
             // Save
-            vsh.pref.edit()
-                .putInt(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, bgMode)
-                .putInt(PrefEntry.ICON_RENDERER_LEGACY_BACK_COLOR, bgColor)
-                .putInt(PrefEntry.ICON_RENDERER_LEGACY_BACK_MATERIAL_YOU, bgYou)
-                .apply()
+            vsh.M.pref
+                .set(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, bgMode)
+                .set(PrefEntry.ICON_RENDERER_LEGACY_BACK_COLOR, bgColor)
+                .set(PrefEntry.ICON_RENDERER_LEGACY_BACK_MATERIAL_YOU, bgYou)
 
-            vsh.iconAdapter.readPreferences()
+            vsh.M.icons.readPreferences()
         }
         finish(VshViewPage.MainMenu)
     }
@@ -142,7 +143,7 @@ class LegacyIconBackgroundDialogView(private val vsh: VSH) : XmbDialogSubview(vs
         return true
     }
 
-    override fun onGamepad(key: GamepadSubmodule.Key, isPress: Boolean): Boolean {
+    override fun onGamepad(key: PadKey, isPress: Boolean): Boolean {
         val clampNum = when(bgMode) {
             1 -> 4
             2 -> 2
@@ -150,12 +151,12 @@ class LegacyIconBackgroundDialogView(private val vsh: VSH) : XmbDialogSubview(vs
         }
         return if(isPress){
             when(key){
-                GamepadSubmodule.Key.PadU -> { selection = (selection - 1).coerceIn(0, clampNum); true; }
-                GamepadSubmodule.Key.PadD -> { selection = (selection + 1).coerceIn(0, clampNum); true; }
-                GamepadSubmodule.Key.PadL -> onAdd(-1)
-                GamepadSubmodule.Key.PadR -> onAdd(1)
-                GamepadSubmodule.Key.L1 -> onAdd(-10)
-                GamepadSubmodule.Key.R1 -> onAdd(10)
+                PadKey.PadU -> { selection = (selection - 1).coerceIn(0, clampNum); true; }
+                PadKey.PadD -> { selection = (selection + 1).coerceIn(0, clampNum); true; }
+                PadKey.PadL -> onAdd(-1)
+                PadKey.PadR -> onAdd(1)
+                PadKey.L1 -> onAdd(-10)
+                PadKey.R1 -> onAdd(10)
                 else -> false
             }
         }else{

@@ -5,6 +5,7 @@ import android.os.Build
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.typography.drawText
 import id.psw.vshlauncher.typography.toButtonSpan
@@ -30,7 +31,7 @@ class UITestDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
     private var testHScrollSz = 0.2f
     private val rctF = RectF()
     private val btnDspLines = arrayOf(
-        "{confirm} Active Button Type : ${vsh._gamepadUi.activeGamepad} {confirm}".toButtonSpan(vsh),
+        "{confirm} Active Button Type : ${vsh.M.gamepadUi.activeGamepad} {confirm}".toButtonSpan(vsh),
         "{confirm} Confirm | {cancel} Cancel".toButtonSpan(vsh),
         "{triangle}{circle}{cross}{square}{triangle}{circle}{cross}{square}{triangle}{circle}{cross}{square}".toButtonSpan(vsh),
         "{triangle} Triangle | {square} Square | {circle} Circle | {cross} Cross".toButtonSpan(vsh),
@@ -102,37 +103,37 @@ class UITestDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
         }
     }
     private val cfwEEBtnCombo = mutableMapOf(
-        GamepadSubmodule.Key.R3 to false,
-        GamepadSubmodule.Key.L3 to false,
-        GamepadSubmodule.Key.R2 to false,
-        GamepadSubmodule.Key.L2 to false,
-        GamepadSubmodule.Key.Square to false,
+        PadKey.R3 to false,
+        PadKey.L3 to false,
+        PadKey.R2 to false,
+        PadKey.L2 to false,
+        PadKey.Square to false,
     )
-    private fun isDown(key:GamepadSubmodule.Key) : Boolean = cfwEEBtnCombo[key] == true
+    private fun isDown(key:PadKey) : Boolean = cfwEEBtnCombo[key] == true
 
     @Suppress("SpellCheckingInspection")
-    private fun cfwEasterEgg(key: GamepadSubmodule.Key, isPress: Boolean) {
+    private fun cfwEasterEgg(key: PadKey, isPress: Boolean) {
         if(cfwEEBtnCombo.containsKey(key)){
             cfwEEBtnCombo[key] = isPress
 
-            if( isDown(GamepadSubmodule.Key.Square) &&
-                isDown(GamepadSubmodule.Key.R2) &&
-                isDown(GamepadSubmodule.Key.L2)){
+            if( isDown(PadKey.Square) &&
+                isDown(PadKey.R2) &&
+                isDown(PadKey.L2)){
                     val rapCount = vsh.categories.find { it.id == VSH.ITEM_CATEGORY_APPS }?.contentCount ?: (Random.nextInt() % 128)
                     val edatCount = vsh.categories.find { it.id == VSH.ITEM_CATEGORY_GAME }?.contentCount ?: (Random.nextInt() % 72)
                 vsh.postNotification(null, "reActPSW v1.35.23","CFW : JKSEMBUG ${Build.VERSION.RELEASE}.1, WELING 4.84, " +
                         "activated : $rapCount RAPs, $edatCount EDATs", 10.0f)
             }
 
-            if( isDown(GamepadSubmodule.Key.L3) &&
-                isDown(GamepadSubmodule.Key.R3) &&
-                isDown(GamepadSubmodule.Key.R2)){
+            if( isDown(PadKey.L3) &&
+                isDown(PadKey.R3) &&
+                isDown(PadKey.R2)){
                 vsh.postNotification(null, "PSWPatch 2021.01/CX","IDPS & PSID Spoofed! Now you'll be safe (even without spoofing) to access Google Play Store from your Network", 10.0f)
             }
         }
     }
 
-    override fun onGamepad(key: GamepadSubmodule.Key, isPress: Boolean): Boolean {
+    override fun onGamepad(key: PadKey, isPress: Boolean): Boolean {
         var retval = false
         if(pageNum == 2){
             cfwEasterEgg(key, isPress)
@@ -140,35 +141,35 @@ class UITestDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
 
         if(isPress){
             when(key){
-                GamepadSubmodule.Key.L1 -> {
+                PadKey.L1 -> {
                     pageNum = (pageNum - 1).coerceIn(0, 3)
                     retval = true
                 }
-                GamepadSubmodule.Key.R1 -> {
+                PadKey.R1 -> {
                     pageNum = (pageNum + 1).coerceIn(0, 3)
                     retval = true
                 }
-                GamepadSubmodule.Key.PadR -> {
+                PadKey.PadR -> {
                     retval = when(pageNum){
                         0 -> { testBarValue = (testBarValue + 1.0f).coerceIn(0.0f, 100.0f); true }
                         1 -> { testHScrollPc = (testHScrollPc + 0.1f).coerceIn(0.0f, 1.0f); true }
                         else -> false
                     }
                 }
-                GamepadSubmodule.Key.PadL -> {
+                PadKey.PadL -> {
                     retval = when(pageNum){
                         0 -> { testBarValue = (testBarValue - 1.0f).coerceIn(0.0f, 100.0f); true }
                         1 -> { testHScrollPc = (testHScrollPc - 0.1f).coerceIn(0.0f, 1.0f); true }
                         else -> false
                     }
                 }
-                GamepadSubmodule.Key.PadU -> {
+                PadKey.PadU -> {
                     retval = when(pageNum){
                         1 -> { testVScrollPc = (testVScrollPc - 0.1f).coerceIn(0.0f, 1.0f); true }
                         else -> false
                     }
                 }
-                GamepadSubmodule.Key.PadD -> {
+                PadKey.PadD -> {
                     retval = when(pageNum){
                         1 -> { testVScrollPc = (testVScrollPc + 0.1f).coerceIn(0.0f, 1.0f); true }
                         else -> false

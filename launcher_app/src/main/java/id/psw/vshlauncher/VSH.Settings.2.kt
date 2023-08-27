@@ -84,7 +84,7 @@ fun VSH.createCategoryWaveSetting(): XMBSettingsCategory {
                     getString(R.string.settings_wave_apply_as_layer_dlg_text_main))
                     .setPositive(getString(R.string.common_reboot)){_ ->
                         // Commit instead of apply, allow the app to save the preference before restarting
-                        pref.edit().putBoolean(PrefEntry.USES_INTERNAL_WAVE_LAYER, !vsh.useInternalWave).commit()
+                        M.pref.set(PrefEntry.USES_INTERNAL_WAVE_LAYER, !vsh.useInternalWave)
                         vsh.restart()
                     }
                     .setNegative(getString(android.R.string.cancel)){dlg -> dlg.finish(VshViewPage.MainMenu) }
@@ -120,7 +120,7 @@ fun VSH.settingsAddInstallPackage(): XMBItem {
 
 fun VSH.setSysBarVisibility(i:Int){
     vsh.xmb.sysBarVisibility = i
-    vsh.pref.edit().putInt(PrefEntry.SYSTEM_STATUS_BAR, i).apply()
+    M.pref.set(PrefEntry.SYSTEM_STATUS_BAR, i)
     vsh.xmb.updateSystemBarVisibility()
 }
 
@@ -165,7 +165,8 @@ fun VSH.settingsAddSystemSetting2(cat : XMBSettingsCategory){
     })
 
     cat.content.add(XMBSettingsItem(vsh, "settings_system_legacy_icon_bg", R.string.dlg_legacyicon_title, R.string.settings_system_legacy_icon_background_desc, R.drawable.icon_video_anim_icon, {
-        vsh.getString(when(vsh.pref.getInt(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, 0)){
+        val mode = M.pref.get(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, 0)
+        vsh.getString(when(mode){
             1 -> R.string.common_enabled
             2 -> R.string.dlg_legacyicon_material_you
             else -> R.string.common_disabled

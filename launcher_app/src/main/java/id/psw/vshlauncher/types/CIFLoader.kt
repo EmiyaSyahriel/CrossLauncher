@@ -156,7 +156,7 @@ class CIFLoader {
             if(!found ){
                 val ri = resInfo
                 if(ri != null){
-                    rv = vsh.iconAdapter.create(ri.activityInfo, vsh)
+                    rv = vsh.M.icons.create(ri.activityInfo, vsh)
                 }
             }
             rv

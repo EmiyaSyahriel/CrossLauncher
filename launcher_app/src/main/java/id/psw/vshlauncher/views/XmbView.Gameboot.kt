@@ -6,6 +6,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withScale
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.typography.FontCollections
 import java.io.File
@@ -57,7 +58,7 @@ fun XmbView.playGameBootSound(){
     val vshIterator : (File) -> Unit = { it ->
         if(it.exists() && !isFound){
             isFound = true
-            vsh.setSystemAudioSource(it)
+            M.audio.setSystemAudioSource(it)
         }
     }
 
@@ -100,7 +101,7 @@ fun XmbView.bootInto(skip:Boolean, bootFunc : () -> Unit){
     state.gameBoot.skip = skip
     state.gameBoot.onBoot = bootFunc
     switchPage(VshViewPage.GameBoot)
-    context.vsh.removeAudioSource()
+    M.audio.removeAudioSource()
 }
 
 private fun XmbView.bootDirectly(){
@@ -201,11 +202,11 @@ fun XmbView.gbEnd(){
     state.gameBoot.image = null
 }
 
-fun XmbView.gbOnGamepad(k: GamepadSubmodule.Key, isPress:Boolean) : Boolean {
+fun XmbView.gbOnGamepad(k: PadKey, isPress:Boolean) : Boolean {
     var retval =false
 
     with(state.gameBoot){
-        if(isPress && (k == GamepadSubmodule.Key.Cancel || k == GamepadSubmodule.Key.StaticCancel)){
+        if(isPress && (k == PadKey.Cancel || k == PadKey.StaticCancel)){
             switchPage(VshViewPage.MainMenu)
             retval = true
         }

@@ -15,6 +15,7 @@ import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.typography.FontCollections
 import java.util.*
 import kotlin.ConcurrentModificationException
@@ -46,7 +47,6 @@ class XmbView @JvmOverloads constructor(
         val target : RectF get() = (screen.width() > screen.height()).select(landTarget, portTarget)
     }
 
-    var gamebootActive: Boolean = true
     var time = VshViewTimeData()
     var currentPage = VshViewPage.ColdBoot
     var state = VshViewStates()
@@ -54,7 +54,7 @@ class XmbView @JvmOverloads constructor(
     var tempRect = RectF()
     var isHWAccelerated = false
     var useInternalWallpaper = true
-    lateinit var gamepadNotifIcon : Bitmap
+    var gamepadNotifIcon : Bitmap
     val dummyPaint = Paint().apply {
         color = Color.GREEN
         textSize = 20.0f
@@ -120,15 +120,15 @@ class XmbView @JvmOverloads constructor(
 
         if(writePref){
             val dSize = (width shl 16) or height
-            context.vsh.pref.edit().putInt(PrefEntry.REFERENCE_RESOLUTION, dSize).apply()
+            M.pref.set(PrefEntry.REFERENCE_RESOLUTION, dSize)
         }
     }
 
     private fun loadPreferences(){
         val vsh = context.vsh
-        val pref = vsh.pref
+        val pref = vsh.M.pref
 
-        state.crossMenu.layoutMode = when(pref.getInt(PrefEntry.MENU_LAYOUT, 0)){
+        state.crossMenu.layoutMode = when(pref.get(PrefEntry.MENU_LAYOUT, 0)){
             0 -> XMBLayoutType.PS3
             1 -> XMBLayoutType.PSP
             2 -> XMBLayoutType.Bravia
@@ -137,17 +137,17 @@ class XmbView @JvmOverloads constructor(
         }
 
         val defSize = (1280 shl 16) or 720
-        val refSize = pref.getInt(PrefEntry.REFERENCE_RESOLUTION, defSize)
+        val refSize = pref.get(PrefEntry.REFERENCE_RESOLUTION, defSize)
         setReferenceScreenSize(refSize shr 16, refSize and 0xFFFF, false)
 
-        state.coldBoot.hideEpilepsyWarning = pref.getInt(PrefEntry.DISABLE_EPILEPSY_WARNING, 0) == 1
-        state.crossMenu.dimOpacity = pref.getInt(PrefEntry.BACKGROUND_DIM_OPACITY, 0)
+        state.coldBoot.hideEpilepsyWarning = pref.get(PrefEntry.DISABLE_EPILEPSY_WARNING, 0) == 1
+        state.crossMenu.dimOpacity = pref.get(PrefEntry.BACKGROUND_DIM_OPACITY, 0)
         state.crossMenu.dateTimeFormat =
-            pref.getString(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, state.crossMenu.dateTimeFormat)
+            pref.get(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, state.crossMenu.dateTimeFormat)
                 ?: state.crossMenu.dateTimeFormat
-        state.gameBoot.defaultSkip = pref.getInt(PrefEntry.SKIP_GAMEBOOT, 0) != 0
-        vsh.showLauncherFPS = pref.getInt(PrefEntry.SHOW_LAUNCHER_FPS, 0) != 0
-        showDetailedMemory = pref.getInt(PrefEntry.SHOW_DETAILED_MEMORY, 0) != 0
+        state.gameBoot.defaultSkip = pref.get(PrefEntry.SKIP_GAMEBOOT, 0) != 0
+        vsh.showLauncherFPS = pref.get(PrefEntry.SHOW_LAUNCHER_FPS, 0) != 0
+        showDetailedMemory = pref.get(PrefEntry.SHOW_DETAILED_MEMORY, 0) != 0
     }
 
     init {
@@ -297,7 +297,7 @@ class XmbView @JvmOverloads constructor(
         call(start, current, action)
     }
 
-    fun onGamepadInput(key:GamepadSubmodule.Key, isDown:Boolean) : Boolean{
+    fun onGamepadInput(key: PadKey, isDown:Boolean) : Boolean{
         return when(currentPage){
             VshViewPage.MainMenu -> ::menuOnGamepad
             VshViewPage.Dialog -> ::dlgOnGamepad

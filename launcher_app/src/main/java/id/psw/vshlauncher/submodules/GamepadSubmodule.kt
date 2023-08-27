@@ -52,117 +52,95 @@ import java.nio.file.Files.isDirectory
  * - `R3, RAnalog, RS, RStick` -> R3 / Right Analog Click
  * */
 
-class GamepadSubmodule(ctx: VSH) {
-    enum class Key (val base:UByte){
-        None (0b0u),
-        PS              (0b00000001u),
-        Start           (0b00000010u),
-        Select          (0b00000100u),
-        Triangle        (0b00010001u),
-        Square          (0b00010010u),
-        Circle          (0b00010100u),
-        Cross           (0b00011000u),
-        PadU            (0b00100001u),
-        PadD            (0b00100010u),
-        PadL            (0b00100100u),
-        PadR            (0b00101000u),
-        L1              (0b01000001u),
-        L2              (0b01000010u),
-        L3              (0b01000100u),
-        R1              (0b10000001u),
-        R2              (0b10000010u),
-        R3              (0b10000100u),
-        /** Non-swappable Confirm Button */
-        StaticConfirm   (0b01001000u),
-        /** Non-swappable Cancel Button */
-        StaticCancel    (0b10001000u),
-        ;
-
-        companion object {
-            /** Let the Asian and Western Console users to have their preference in here. they have their preference and culture
-             *
-             * And also... Who maps Triangle as Back button? isn't that adds more complexity than just swapping Circle and Cross? */
-            var spotMarkedByX = false
-            /** Standard Confirm Button */
-            val Confirm get() = spotMarkedByX.select(Cross, Circle)
-            /** Standard Cancel Button */
-            val Cancel get() = spotMarkedByX.select(Circle, Cross)
-
-            fun isCancel(k:Key) = k == Cancel || k == StaticCancel
-            fun isConfirm(k:Key) = k == Confirm || k == StaticConfirm
-        }
-    }
-
+class GamepadSubmodule(private val ctx: VSH) : IVshSubmodule {
     data class AxisInfo(
-        val negative:Key,
-        val positive:Key
+        val negative:PadKey,
+        val positive:PadKey
     )
 
     data class KeyRemap (
         val hidId : Int,
-        val map :  MutableMap<Int, GamepadSubmodule.Key>,
+        val map :  MutableMap<Int, PadKey>,
         val shouldUse : (() -> Boolean)? = null)
 
+    override fun onCreate() {
+        // Do nothing
+
+        FileQuery(VshBaseDirs.VSH_RESOURCES_DIR).atPath("keymap")
+            .onlyIncludeExists(true)
+            .execute(ctx)
+            .forEach {
+                if(it.isDirectory){
+                    it.list { _, name -> name.endsWith(".txt", ignoreCase = true)}?.forEach {
+
+                    }
+                }
+            }
+    }
+
+    override fun onDestroy() {
+        // Do nothing
+    }
 
     companion object {
         private val defaultPre12DualSenseReMap = mutableMapOf(
-            KEYCODE_BUTTON_MODE to Key.PS,
-            KEYCODE_BUTTON_L2 to Key.Select,
-            KEYCODE_BUTTON_R2 to Key.Start,
-            KEYCODE_BUTTON_A to Key.Square,
-            KEYCODE_BUTTON_B to Key.Cross,
-            KEYCODE_BUTTON_C to Key.Circle,
-            KEYCODE_BUTTON_X to Key.Triangle,
-            KEYCODE_BUTTON_START to Key.R3,
-            KEYCODE_BUTTON_SELECT to Key.L3,
-            KEYCODE_BUTTON_Y to Key.L1,
-            KEYCODE_BUTTON_L1 to Key.L2,
-            KEYCODE_BUTTON_Z to Key.R1,
-            KEYCODE_BUTTON_R1 to Key.R2,
+            KEYCODE_BUTTON_MODE to PadKey.PS,
+            KEYCODE_BUTTON_L2 to PadKey.Select,
+            KEYCODE_BUTTON_R2 to PadKey.Start,
+            KEYCODE_BUTTON_A to PadKey.Square,
+            KEYCODE_BUTTON_B to PadKey.Cross,
+            KEYCODE_BUTTON_C to PadKey.Circle,
+            KEYCODE_BUTTON_X to PadKey.Triangle,
+            KEYCODE_BUTTON_START to PadKey.R3,
+            KEYCODE_BUTTON_SELECT to PadKey.L3,
+            KEYCODE_BUTTON_Y to PadKey.L1,
+            KEYCODE_BUTTON_L1 to PadKey.L2,
+            KEYCODE_BUTTON_Z to PadKey.R1,
+            KEYCODE_BUTTON_R1 to PadKey.R2,
         )
         private val defaultAndroidGamepadAxisMap = mutableListOf(
-            MotionEvent.AXIS_HAT_X to AxisInfo(Key.PadL, Key.PadR),
-            MotionEvent.AXIS_HAT_Y to AxisInfo(Key.PadU, Key.PadD),
+            MotionEvent.AXIS_HAT_X to AxisInfo(PadKey.PadL, PadKey.PadR),
+            MotionEvent.AXIS_HAT_Y to AxisInfo(PadKey.PadU, PadKey.PadD),
         )
 
         private val defaultAndroidGamepadMap = mutableMapOf(
-            KEYCODE_BUTTON_A to Key.Cross,
-            KEYCODE_BUTTON_B to Key.Circle,
-            KEYCODE_BUTTON_X to Key.Square,
-            KEYCODE_BUTTON_Y to Key.Triangle,
-            KEYCODE_BUTTON_SELECT to Key.Select,
-            KEYCODE_BUTTON_START to Key.Start,
-            KEYCODE_BUTTON_MODE to Key.PS,
-            KEYCODE_BUTTON_L1 to Key.L1,
-            KEYCODE_BUTTON_L2 to Key.L2,
-            KEYCODE_BUTTON_THUMBL to Key.L3,
-            KEYCODE_BUTTON_R1 to Key.R1,
-            KEYCODE_BUTTON_R2 to Key.R2,
-            KEYCODE_BUTTON_THUMBR to Key.R3,
+            KEYCODE_BUTTON_A to PadKey.Cross,
+            KEYCODE_BUTTON_B to PadKey.Circle,
+            KEYCODE_BUTTON_X to PadKey.Square,
+            KEYCODE_BUTTON_Y to PadKey.Triangle,
+            KEYCODE_BUTTON_SELECT to PadKey.Select,
+            KEYCODE_BUTTON_START to PadKey.Start,
+            KEYCODE_BUTTON_MODE to PadKey.PS,
+            KEYCODE_BUTTON_L1 to PadKey.L1,
+            KEYCODE_BUTTON_L2 to PadKey.L2,
+            KEYCODE_BUTTON_THUMBL to PadKey.L3,
+            KEYCODE_BUTTON_R1 to PadKey.R1,
+            KEYCODE_BUTTON_R2 to PadKey.R2,
+            KEYCODE_BUTTON_THUMBR to PadKey.R3,
         )
 
         private val defaultAndroidKeyboardMap = mutableMapOf(
-            KEYCODE_ESCAPE to Key.StaticCancel,
-            KEYCODE_DEL to Key.StaticCancel,
-            KEYCODE_ENTER to Key.StaticConfirm,
-            KEYCODE_SPACE to Key.StaticConfirm,
-            KEYCODE_DPAD_CENTER to Key.StaticConfirm,
-            KEYCODE_GRAVE to Key.Square,
-            KEYCODE_MENU to Key.Triangle,
-            KEYCODE_TAB to Key.Triangle,
-            KEYCODE_PAGE_UP to Key.Select,
-            KEYCODE_PAGE_DOWN to Key.Start,
-            KEYCODE_BREAK to Key.PS,
-            KEYCODE_F1 to Key.L1,
-            KEYCODE_F2 to Key.L2,
-            KEYCODE_F3 to Key.L3,
-            KEYCODE_F7 to Key.R1,
-            KEYCODE_F8 to Key.R2,
-            KEYCODE_F9 to Key.R3,
-            KEYCODE_DPAD_UP to Key.PadU,
-            KEYCODE_DPAD_DOWN to Key.PadD,
-            KEYCODE_DPAD_LEFT to Key.PadL,
-            KEYCODE_DPAD_RIGHT to Key.PadR,
+            KEYCODE_ESCAPE to PadKey.StaticCancel,
+            KEYCODE_DEL to PadKey.StaticCancel,
+            KEYCODE_ENTER to PadKey.StaticConfirm,
+            KEYCODE_SPACE to PadKey.StaticConfirm,
+            KEYCODE_DPAD_CENTER to PadKey.StaticConfirm,
+            KEYCODE_GRAVE to PadKey.Square,
+            KEYCODE_MENU to PadKey.Triangle,
+            KEYCODE_TAB to PadKey.Triangle,
+            KEYCODE_PAGE_UP to PadKey.Select,
+            KEYCODE_PAGE_DOWN to PadKey.Start,
+            KEYCODE_BREAK to PadKey.PS,
+            KEYCODE_F1 to PadKey.L1,
+            KEYCODE_F2 to PadKey.L2,
+            KEYCODE_F3 to PadKey.L3,
+            KEYCODE_F7 to PadKey.R1,
+            KEYCODE_F8 to PadKey.R2,
+            KEYCODE_F9 to PadKey.R3,
+            KEYCODE_DPAD_UP to PadKey.PadU,
+            KEYCODE_DPAD_DOWN to PadKey.PadD,
+            KEYCODE_DPAD_LEFT to PadKey.PadL,
+            KEYCODE_DPAD_RIGHT to PadKey.PadR,
         )
 
         const val ANDROID_GAMEPAD = 0x00000001
@@ -185,20 +163,7 @@ class GamepadSubmodule(ctx: VSH) {
 
     private val axisRemaps = mutableMapOf(ANDROID_GAMEPAD to defaultAndroidGamepadAxisMap)
 
-    init {
-        FileQuery(VshBaseDirs.VSH_RESOURCES_DIR).atPath("keymap")
-            .onlyIncludeExists(true)
-            .execute(ctx)
-            .forEach {
-                if(it.isDirectory){
-                    it.list { _, name -> name.endsWith(".txt", ignoreCase = true)}?.forEach {
-
-                    }
-                }
-            }
-    }
-
-    fun translate(key: Int, devId:Int) : Key{
+    fun translate(key: Int, devId:Int) : PadKey{
         val remap = keyRemaps.firstOrNull {
             (it.hidId == devId && (it.shouldUse?.invoke()) ?: true) || it.hidId == ANDROID_GAMEPAD
         }
@@ -207,17 +172,17 @@ class GamepadSubmodule(ctx: VSH) {
                 return remap.map[key]!!
             }else{
                 val kbdRemap = defaultAndroidKeyboardMap
-                if(kbdRemap.containsKey(key)) return kbdRemap[key] ?: Key.None
+                if(kbdRemap.containsKey(key)) return kbdRemap[key] ?: PadKey.None
             }
         }
-        return Key.None
+        return PadKey.None
     }
 
-    fun translate(key:Int, vid:Int = 0, pid:Int = 0) : Key {
+    fun translate(key:Int, vid:Int = 0, pid:Int = 0) : PadKey {
         return translate(key, makePID(vid, pid))
     }
 
-    fun translateAxis(axis:Int, value:Float, devId:Int) : Key {
+    fun translateAxis(axis:Int, value:Float, devId:Int) : PadKey {
         if(abs(value) > axisThreshold){
             val remap = axisRemaps[devId] ?: axisRemaps[ANDROID_GAMEPAD]
             val axe = remap?.find { it.first == axis }
@@ -225,10 +190,10 @@ class GamepadSubmodule(ctx: VSH) {
                 return (value > 0.0).select(axe.second.positive, axe.second.negative)
             }
         }
-        return Key.None
+        return PadKey.None
     }
 
-    fun translateAxis(axis:Int, value:Float, vid:Int = 0, pid:Int = 0) : Key{
+    fun translateAxis(axis:Int, value:Float, vid:Int = 0, pid:Int = 0) : PadKey {
         return translateAxis(axis, value, makePID(vid, pid))
     }
 }

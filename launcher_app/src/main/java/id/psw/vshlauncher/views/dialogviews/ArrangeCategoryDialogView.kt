@@ -4,6 +4,7 @@ import android.graphics.*
 import android.view.KeyEvent.ACTION_DOWN
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.DrawExtension
@@ -163,12 +164,12 @@ class ArrangeCategoryDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
         }
     }
 
-    override fun onGamepad(key: GamepadSubmodule.Key, isPress: Boolean): Boolean {
+    override fun onGamepad(key: PadKey, isPress: Boolean): Boolean {
         when(key){
-            GamepadSubmodule.Key.PadL -> {
+            PadKey.PadL -> {
                 setActiveIndex(activeIndex - 1)
             }
-            GamepadSubmodule.Key.PadR -> {
+            PadKey.PadR -> {
                 setActiveIndex(activeIndex + 1)
             }
             else -> { } // Nothing to do

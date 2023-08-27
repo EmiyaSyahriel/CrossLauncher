@@ -14,7 +14,7 @@ import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.vsh
 import kotlin.concurrent.timer
 
-class NetworkSubmodule(ctx: VSH) {
+class NetworkSubmodule(private val ctx: VSH) : IVshSubmodule {
     private var isNetworkConnected = false
     private var isQuerying = false
     private var isEthernet = false
@@ -24,12 +24,17 @@ class NetworkSubmodule(ctx: VSH) {
     private var simName = ""
     private var wifiName = ""
     private var isQueryingStr = "..."
-    private var noInternet = ctx.getString(R.string.nettype_no_connection)
+    private var noInternet = " ... "
 
-    init{
+    override fun onCreate() {
+        noInternet = ctx.getString(R.string.nettype_no_connection)
         timer("vsh_mobile_net_update", false, 0L, 1000L){
             updateNetworkName(ctx)
         }
+    }
+
+    override fun onDestroy() {
+        // TODO : Nothing, stop the timer maybe?
     }
 
     val operatorName : String get() {
@@ -125,4 +130,5 @@ class NetworkSubmodule(ctx: VSH) {
         }
         isQuerying= false
     }
+
 }

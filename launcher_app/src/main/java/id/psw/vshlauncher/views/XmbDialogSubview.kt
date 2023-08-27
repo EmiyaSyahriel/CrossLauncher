@@ -8,6 +8,7 @@ import id.psw.vshlauncher.R
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.submodules.BitmapRef
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.XMBItem
 
 open class XmbDialogSubview(vsh: VSH) {
@@ -43,7 +44,7 @@ open class XmbDialogSubview(vsh: VSH) {
 
     }
 
-    open fun onGamepad(key:GamepadSubmodule.Key, isPress:Boolean) : Boolean {
+    open fun onGamepad(key: PadKey, isPress:Boolean) : Boolean {
         return false
     }
 

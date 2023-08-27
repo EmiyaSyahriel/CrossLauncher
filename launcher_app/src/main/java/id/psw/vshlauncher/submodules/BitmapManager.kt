@@ -12,7 +12,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class BitmapManager {
+class BitmapManager(private val ctx: VSH) : IVshSubmodule {
     companion object {
         lateinit var instance : BitmapManager
         private const val TAG = "Bitman"
@@ -81,10 +81,13 @@ class BitmapManager {
         }
     }
 
-    fun init(vsh: VSH){
+    override fun onCreate() {
         instance = this
+        ctx.threadPool.execute { loaderThreadMain() }
+    }
 
-        vsh.threadPool.execute { loaderThreadMain() }
+    override fun onDestroy() {
+        // TODO: Clean bitmaps from memory
     }
 
     private val loadQueue = arrayListOf<BitmapRef>()

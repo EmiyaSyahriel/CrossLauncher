@@ -9,6 +9,7 @@ import androidx.core.graphics.withClip
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.typography.MultifontSpan
 import id.psw.vshlauncher.typography.drawText
@@ -85,7 +86,7 @@ fun XmbView.dlgRender(ctx: Canvas){
                 }
             }
 
-            val asian = !GamepadSubmodule.Key.spotMarkedByX
+            val asian = !PadKey.spotMarkedByX
             val lAlign = textPaint.textAlign
             textPaint.textAlign = Paint.Align.CENTER
             // draw dialog buttons
@@ -148,17 +149,17 @@ fun XmbView.dlgEnd(){
     }
 }
 
-fun XmbView.dlgOnGamepad(k:GamepadSubmodule.Key, isPress: Boolean) : Boolean {
+fun XmbView.dlgOnGamepad(k:PadKey, isPress: Boolean) : Boolean {
     var retval = false
     with(state.dialog){
         val dlg = activeDialog
         if(dlg != null){
             when(k){
-                GamepadSubmodule.Key.Confirm, GamepadSubmodule.Key.StaticConfirm -> if(isPress) {
+                PadKey.Confirm, PadKey.StaticConfirm -> if(isPress) {
                     dlg.onDialogButton(true)
                     retval = true
                 }
-                GamepadSubmodule.Key.Cancel, GamepadSubmodule.Key.StaticCancel -> if(isPress) {
+                PadKey.Cancel, PadKey.StaticCancel -> if(isPress) {
                     dlg.onDialogButton(false)
                     retval = true
                 }

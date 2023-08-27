@@ -8,6 +8,7 @@ import android.text.TextPaint
 import androidx.annotation.StringRes
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.views.drawText
 import kotlin.collections.ArrayList
 
@@ -86,28 +87,28 @@ class MultifontSpan : ArrayList<MultifontText>() {
                     retval.add(FontCollections.masterFont, s)
                 }else{
                     val keyCode = when(s){
-                        "cross" -> GamepadSubmodule.Key.Cross
-                        "circle" -> GamepadSubmodule.Key.Circle
-                        "square" -> GamepadSubmodule.Key.Square
-                        "triangle" -> GamepadSubmodule.Key.Triangle
-                        "cancel" -> GamepadSubmodule.Key.Cancel
-                        "confirm" -> GamepadSubmodule.Key.Confirm
-                        "u", "up" -> GamepadSubmodule.Key.PadU
-                        "d", "down" -> GamepadSubmodule.Key.PadD
-                        "l", "left" -> GamepadSubmodule.Key.PadL
-                        "r", "right" -> GamepadSubmodule.Key.PadR
-                        "start" -> GamepadSubmodule.Key.Start
-                        "select" -> GamepadSubmodule.Key.Select
-                        "ps" -> GamepadSubmodule.Key.PS
-                        "l1" -> GamepadSubmodule.Key.L1
-                        "l2" -> GamepadSubmodule.Key.L2
-                        "l3" -> GamepadSubmodule.Key.L3
-                        "r1" -> GamepadSubmodule.Key.R1
-                        "r2" -> GamepadSubmodule.Key.R2
-                        "r3" -> GamepadSubmodule.Key.R3
-                        else -> GamepadSubmodule.Key.None
+                        "cross" -> PadKey.Cross
+                        "circle" -> PadKey.Circle
+                        "square" -> PadKey.Square
+                        "triangle" -> PadKey.Triangle
+                        "cancel" -> PadKey.Cancel
+                        "confirm" -> PadKey.Confirm
+                        "u", "up" -> PadKey.PadU
+                        "d", "down" -> PadKey.PadD
+                        "l", "left" -> PadKey.PadL
+                        "r", "right" -> PadKey.PadR
+                        "start" -> PadKey.Start
+                        "select" -> PadKey.Select
+                        "ps" -> PadKey.PS
+                        "l1" -> PadKey.L1
+                        "l2" -> PadKey.L2
+                        "l3" -> PadKey.L3
+                        "r1" -> PadKey.R1
+                        "r2" -> PadKey.R2
+                        "r3" -> PadKey.R3
+                        else -> PadKey.None
                     }
-                    if(keyCode != GamepadSubmodule.Key.None){
+                    if(keyCode != PadKey.None){
                         retval.add(vsh, keyCode)
                     }
                 }
@@ -120,8 +121,8 @@ class MultifontSpan : ArrayList<MultifontText>() {
         this.add(MultifontText(font, text))
         return this
     }
-    fun add(vsh: VSH, k:GamepadSubmodule.Key) : MultifontSpan{
-        this.add(MultifontText(FontCollections.buttonFont, vsh._gamepadUi.getGamepadChar(k).toString()))
+    fun add(vsh: VSH, k:PadKey) : MultifontSpan{
+        this.add(MultifontText(FontCollections.buttonFont, vsh.M.gamepadUi.getGamepadChar(k).toString()))
         return this
     }
 }

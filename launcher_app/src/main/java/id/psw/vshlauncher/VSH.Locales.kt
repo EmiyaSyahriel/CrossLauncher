@@ -41,7 +41,7 @@ fun VSH.setActiveLocale(locale:Locale?){
     }
     resources.updateConfiguration(cfg, resources.displayMetrics)
 
-    pref.edit().putString(PrefEntry.SYSTEM_LANGUAGE, createSerializedLocale(locale)).apply()
+    M.pref.set(PrefEntry.SYSTEM_LANGUAGE, createSerializedLocale(locale))
 }
 
 fun VSH.getStringLocale(locale:Locale, @StringRes resId:Int, vararg fmt:Any) : String {

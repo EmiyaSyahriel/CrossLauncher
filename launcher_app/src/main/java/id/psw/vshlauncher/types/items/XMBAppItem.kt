@@ -10,6 +10,7 @@ import android.content.pm.ResolveInfo
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Build
+import android.os.Build.VERSION_CODES.M
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.types.INIFile
 import id.psw.vshlauncher.types.XMBItem
@@ -491,7 +492,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
             try{
                 val launchInfo = vsh.packageManager.getLaunchIntentForPackage(resInfo.activityInfo.packageName)
                 vsh.startActivity(launchInfo)
-                vsh.preventPlayMedia = true
+                vsh.M.audio.preventPlayMedia = true
             }catch(e:Exception){
                 vsh.postNotification(null, "Launch failed","Unable to launch this app, most likely due to this app is not available on the device", 10.0f)
             }

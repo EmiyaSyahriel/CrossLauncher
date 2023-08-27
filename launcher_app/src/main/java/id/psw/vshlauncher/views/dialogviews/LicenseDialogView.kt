@@ -15,7 +15,7 @@ import id.psw.vshlauncher.R
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.submodules.BitmapRef
-import id.psw.vshlauncher.submodules.GamepadSubmodule.Key
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
@@ -156,30 +156,30 @@ class LicenseDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
         }
     }
 
-    override fun onGamepad(key: Key, isPress: Boolean): Boolean {
+    override fun onGamepad(key: PadKey, isPress: Boolean): Boolean {
         return if(isPress)  when(key){
-                Key.L1 -> {
-                    // Switch Tab --
-                    switchTab(true)
-                    true
-                }
-                Key.R1 -> {
-                    // Switch Tab ++
-                    switchTab(false)
-                    true
-                }
-                Key.PadD -> {
-                    // Scroll Down
-                    scroll(20.0f)
-                    true
-                }
-                Key.PadU -> {
-                    // Scroll Up
-                    scroll(-20.0f)
-                    true
-                }
-                else -> false
+            PadKey.L1 -> {
+                // Switch Tab --
+                switchTab(true)
+                true
             }
+            PadKey.R1 -> {
+                // Switch Tab ++
+                switchTab(false)
+                true
+            }
+            PadKey.PadD -> {
+                // Scroll Down
+                scroll(20.0f)
+                true
+            }
+            PadKey.PadU -> {
+                // Scroll Up
+                scroll(-20.0f)
+                true
+            }
+            else -> false
+        }
         else false
     }
 

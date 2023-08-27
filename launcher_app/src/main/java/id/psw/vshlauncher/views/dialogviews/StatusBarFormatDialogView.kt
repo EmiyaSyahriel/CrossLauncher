@@ -7,6 +7,7 @@ import androidx.core.graphics.minus
 import androidx.core.graphics.withClip
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.*
 import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
@@ -34,8 +35,7 @@ class StatusBarFormatDialogView(val vsh: VSH) : XmbDialogSubview(vsh) {
     private val editBtnRect = RectF()
 
     override fun onStart() {
-        textContent = vsh.pref.getString(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, vsh.xmbView?.state?.crossMenu?.dateTimeFormat ?: textContent)
-                    ?: textContent
+        textContent = vsh.M.pref.get(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, vsh.xmbView?.state?.crossMenu?.dateTimeFormat ?: textContent)
     }
 
     override fun onDraw(ctx: Canvas, drawBound: RectF, deltaTime: Float) {
@@ -95,7 +95,7 @@ class StatusBarFormatDialogView(val vsh: VSH) : XmbDialogSubview(vsh) {
 
     private fun save(){
         vsh.xmbView?.state?.crossMenu?.dateTimeFormat = textContent
-        vsh.pref.edit().putString(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, textContent).apply()
+        vsh.M.pref.set(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, textContent)
         finish(VshViewPage.MainMenu)
     }
 
@@ -112,21 +112,21 @@ class StatusBarFormatDialogView(val vsh: VSH) : XmbDialogSubview(vsh) {
         }
     }
 
-    override fun onGamepad(key: GamepadSubmodule.Key, isPress: Boolean): Boolean {
+    override fun onGamepad(key: PadKey, isPress: Boolean): Boolean {
         return when(key){
-            GamepadSubmodule.Key.PadU -> {
+            PadKey.PadU -> {
                 if(isPress){
                     scrollOffset -= 1.0f
                     true
                 }else false
             }
-            GamepadSubmodule.Key.PadD -> {
+            PadKey.PadD -> {
                 if(isPress){
                     scrollOffset += 1.0f
                     true
                 }else false
             }
-            GamepadSubmodule.Key.PadL, GamepadSubmodule.Key.PadR -> {
+            PadKey.PadL, PadKey.PadR -> {
                 if(isPress){
                     isTextBarSelect = !isTextBarSelect
                     true

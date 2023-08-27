@@ -3,14 +3,9 @@ package id.psw.vshlauncher
 import android.app.ActivityManager
 import android.app.Application
 import android.content.*
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Typeface
-import android.media.AudioAttributes
-import android.media.AudioManager
-import android.media.MediaPlayer
-import android.media.SoundPool
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
@@ -56,12 +51,7 @@ class VSH : Application() {
         val actMemInfo = ActivityManager.MemoryInfo()
     }
 
-    lateinit var _gamepad : GamepadSubmodule
     var showDebuggerCount = 0
-    var _gamepadUi : GamepadUISubmodule = GamepadUISubmodule()
-    lateinit var pluginManager : PluginManager
-    lateinit var iconAdapter : XMBAdaptiveIconRenderer
-    lateinit var network : NetworkSubmodule
 
     private var appUserUid = 0
     /** Used as user's identifier when using an external storage */
@@ -120,7 +110,6 @@ class VSH : Application() {
 
     var selectedCategoryId = ITEM_CATEGORY_APPS
     var selectedItemId = ""
-    lateinit var pref : SharedPreferences
 
     val itemCursorX get() = categories.visibleItems.indexOfFirst { it.id == selectedCategoryId }
     val itemCursorY get() = (items?.visibleItems?.filterBySearch(this)?.indexOfFirst { it.id == selectedItemId } ?: -1).coerceAtLeast(0)
@@ -129,107 +118,40 @@ class VSH : Application() {
     var itemBackdropAlphaTime = 0.0f
 
     val isInRoot : Boolean get() = selectStack.size == 0
-    var preventPlayMedia = true
     var notificationLastCheckTime = 0L
     val notifications = arrayListOf<XMBNotification>()
     val threadPool: ExecutorService = Executors.newFixedThreadPool(8)
     val loadingHandles = arrayListOf<XMBLoadingHandle>()
     val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
 
-    val volume = VolumeManager()
-    val bgmPlayer = MediaPlayer()
-    val systemBgmPlayer = MediaPlayer()
-    lateinit var bgmPlayerActiveSrc : File
-    var bgmPlayerDoNotAutoPlay = false
-    lateinit var sfxPlayer : SoundPool
-    val sfxIds = mutableMapOf<SFXType, Int>()
+    val M = SubmoduleManager(this)
     var shouldShowExitOption = false
 
     var useInternalWave = true
 
-    fun reloadPreference() {
-        pref = getSharedPreferences("xRegistry.sys", Context.MODE_PRIVATE)
-        volume.pref = pref
-        setActiveLocale(readSerializedLocale(pref.getString(PrefEntry.SYSTEM_LANGUAGE, "") ?: ""))
-        showLauncherFPS = pref.getInt(PrefEntry.SHOW_LAUNCHER_FPS, 0) == 1
-        CIFLoader.disableAnimatedIcon = pref.getInt(PrefEntry.DISABLE_VIDEO_ICON, 0) != 0
-        val o = pref.getInt(PrefEntry.SYSTEM_VISIBLE_APP_DESC, XMBAppItem.DescriptionDisplay.PackageName.ordinal)
+    private fun reloadPreference() {
+        setActiveLocale(readSerializedLocale(M.pref.get(PrefEntry.SYSTEM_LANGUAGE, "")))
+        showLauncherFPS = M.pref.get(PrefEntry.SHOW_LAUNCHER_FPS, 0) == 1
+        CIFLoader.disableAnimatedIcon = M.pref.get(PrefEntry.DISABLE_VIDEO_ICON, 0) != 0
+        val o = M.pref.get(PrefEntry.SYSTEM_VISIBLE_APP_DESC, XMBAppItem.DescriptionDisplay.PackageName.ordinal)
         XMBAppItem.descriptionDisplay = enumFromInt(o)
         XMBAdaptiveIconRenderer.Companion.AdaptiveRenderSetting.iconPriority =
-            vsh.pref.getInt(PrefEntry.ICON_RENDERER_PRIORITY, 0b01111000)
-    }
-
-    private fun updateVolume(channel: VolumeManager.Channel, vol : Float){
-        Logger.d(TAG, "VolChange :: $channel @ $vol")
-        when(channel){
-            VolumeManager.Channel.Sfx -> {
-                sfxIds.forEach { i ->
-                    sfxPlayer.setVolume(i.value, vol, vol)
-                }
-
-            }
-            VolumeManager.Channel.Bgm -> {
-                bgmPlayer.setVolume(vol, vol)
-            }
-            VolumeManager.Channel.SystemBgm -> {
-                systemBgmPlayer.setVolume(vol, vol)
-            }
-            else -> {
-                updateVolume(VolumeManager.Channel.Sfx, volume.sfx * volume.master)
-                updateVolume(VolumeManager.Channel.Bgm, volume.bgm * volume.master)
-                updateVolume(VolumeManager.Channel.SystemBgm, volume.systemBgm * volume.master)
-            }
-        }
+            M.pref.get(PrefEntry.ICON_RENDERER_PRIORITY, 0b01111000)
     }
 
     override fun onCreate() {
         Logger.init(this)
-        BitmapManager.instance = BitmapManager().apply { init(vsh) }
-        pluginManager = PluginManager(this)
-        pluginManager.reloadPluginList()
+        M.onCreate()
         reloadPreference()
-        if(sdkAtLeast(21)){
-            val attr =AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-
-            if(sdkAtLeast(29)){
-                attr.setAllowedCapturePolicy(AudioAttributes.ALLOW_CAPTURE_BY_ALL)
-            }
-
-            sfxPlayer = SoundPool.Builder()
-                .setMaxStreams(6)
-                .setAudioAttributes(attr.build())
-                .build()
-        }else{
-            sfxPlayer = SoundPool(6, AudioManager.STREAM_MUSIC, 0)
-        }
-        volume.onVolumeChange = {a,b -> updateVolume(a, b)}
-        volume.readPreferences()
         FontCollections.init(this)
-        preparePlaceholderAudio()
-        bgmPlayer.setOnPreparedListener {
-            it.isLooping = true
-            if(!bgmPlayerDoNotAutoPlay) it.start()
-        }
-        systemBgmPlayer.setOnPreparedListener {
-            it.isLooping = false
-            it.start()
-        }
-
         // Fresco.initialize(this)
         notificationLastCheckTime = SystemClock.uptimeMillis()
-        _gamepad = GamepadSubmodule(this)
-        iconAdapter = XMBAdaptiveIconRenderer(this)
-        network = NetworkSubmodule(this)
         registerInternalCategory()
         reloadAppList()
         reloadShortcutList()
         fillSettingsCategory()
-        loadSfxData()
         addHomeScreen()
         installBroadcastReceivers()
-
         super.onCreate()
     }
 
@@ -276,7 +198,7 @@ class VSH : Application() {
     fun moveCursorX(right:Boolean){
         val items = categories.visibleItems
         if(items.isNotEmpty()){
-            preventPlayMedia = false
+            M.audio.preventPlayMedia = false
             var cIdx = items.indexOfFirst { it.id == selectedCategoryId }
             val oldIdx = cIdx
             items[cIdx].lastSelectedItemId = selectedItemId // Save last category item id
@@ -291,7 +213,7 @@ class VSH : Application() {
             items[cIdx].content?.forEach { it.isHovered = it.id == selectedItemId }
             selectedCategoryId = items[cIdx].id
             xmbView?.state?.itemMenu?.selectedIndex = 0
-            vsh.playSfx(SFXType.Selection)
+            M.audio.playSfx(SfxType.Selection)
 
             xmbView?.state?.crossMenu?.verticalMenu?.nameTextXOffset = 0.0f
             xmbView?.state?.crossMenu?.verticalMenu?.descTextXOffset = 0.0f
@@ -341,7 +263,7 @@ class VSH : Application() {
         try{
             val items = items?.visibleItems?.filterBySearch(this)
             if(items != null){
-                preventPlayMedia = false
+                M.audio.preventPlayMedia = false
                 if(items.isNotEmpty()){
                     var cIdx = items.indexOfFirst { it.id == selectedItemId }
 
@@ -368,7 +290,7 @@ class VSH : Application() {
                     it.isHovered = it.id == selectedItemId
                 }
                 xmbView?.state?.itemMenu?.selectedIndex = 0
-                vsh.playSfx(SFXType.Selection)
+                M.audio.playSfx(SfxType.Selection)
             }
         }catch (e:ArrayIndexOutOfBoundsException){
             //
@@ -391,7 +313,7 @@ class VSH : Application() {
         val item = hoveredItem
         if(item != null){
             if(item.hasContent){
-                preventPlayMedia = false
+                M.audio.preventPlayMedia = false
                 Logger.d(TAG, "Found content in item ${item.id}, pushing to content stack...")
                 if(isInRoot){
                     categories.find { it.id == selectedCategoryId }?.lastSelectedItemId = selectedItemId
@@ -402,9 +324,9 @@ class VSH : Application() {
                 selectedItemId = item.lastSelectedItemId
                 selectStack.push(item.id)
                 itemOffsetX = 1.0f
-                vsh.playSfx(SFXType.Confirm)
+                M.audio.playSfx(SfxType.Confirm)
             }else{
-                preventPlayMedia = true
+                M.audio.preventPlayMedia = true
                 item.launch()
             }
         }
@@ -412,22 +334,17 @@ class VSH : Application() {
 
     fun backStep(){
         if(selectStack.size > 0){
-            preventPlayMedia = false
+            M.audio.preventPlayMedia = false
             selectStack.pull()
             val lastItem = selectedItemId
             selectedItemId = if(selectStack.size == 0) categories.find {it.id == selectedCategoryId}?.lastSelectedItemId ?: "" else selectStack.peek()
             hoveredItem?.lastSelectedItemId =lastItem
             itemOffsetX = -1.0f
-            vsh.playSfx(SFXType.Cancel)
+            M.audio.playSfx(SfxType.Cancel)
         }
     }
 
     fun isCategoryHidden(id:String) : Boolean = hiddenCategories.find { it == id } != null
-
-    private fun testLoading(){
-        val loadHandle = addLoadHandle()
-        Handler(Looper.getMainLooper()).postDelayed({ setLoadingFinished(loadHandle) }, 10000L)
-    }
 
     private fun registerInternalCategory(){
         try {
@@ -456,6 +373,7 @@ class VSH : Application() {
     }
 
     override fun onTerminate() {
+        M.onDestroy()
         VulkanisirSubmodule.close()
         NativeGL.destroy()
         super.onTerminate()

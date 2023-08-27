@@ -5,6 +5,7 @@ import android.app.WallpaperManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.*
+import android.os.Build.VERSION_CODES.M
 import android.text.TextPaint
 import android.view.MotionEvent
 import androidx.core.graphics.minus
@@ -14,6 +15,7 @@ import id.psw.vshlauncher.R
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.typography.drawText
 import id.psw.vshlauncher.typography.getButtonedString
@@ -94,7 +96,7 @@ class XMBWaveSettingSubDialog(private val vsh: VSH) : XmbDialogSubview(vsh) {
     private fun checkActiveWallpaper(){
         val ws = vsh.getSystemService(Context.WALLPAPER_SERVICE) as WallpaperManager
         val asWallpaper = ws.wallpaperInfo?.packageName == vsh.packageName
-        val asLayer = vsh.pref.getBoolean(PrefEntry.USES_INTERNAL_WAVE_LAYER, false)
+        val asLayer = vsh.M.pref.get(PrefEntry.USES_INTERNAL_WAVE_LAYER, false)
         isLiveWallpaperActive = asWallpaper || asLayer
     }
 
@@ -442,16 +444,16 @@ class XMBWaveSettingSubDialog(private val vsh: VSH) : XmbDialogSubview(vsh) {
             .commit() // We need this to be synchronous
     }
 
-    override fun onGamepad(key: GamepadSubmodule.Key, isPress: Boolean): Boolean {
+    override fun onGamepad(key: PadKey, isPress: Boolean): Boolean {
         var handled = false
         if(isPress){
             val pageNum = pageNumber
             val itemNum = selectedItemIndices[pageNum]
             val canChangePage = lrChangePageAtOptionNum.find { it -> it.x == pageNum && it.y == itemNum } != null
-            val isTen = key == GamepadSubmodule.Key.L1 || key == GamepadSubmodule.Key.R1
+            val isTen = key == PadKey.L1 || key == PadKey.R1
 
             when(key){
-                GamepadSubmodule.Key.PadL, GamepadSubmodule.Key.L1 -> {
+                PadKey.PadL, PadKey.L1 -> {
                     if(canChangePage){
                         changePage(false)
                     }else{
@@ -459,7 +461,7 @@ class XMBWaveSettingSubDialog(private val vsh: VSH) : XmbDialogSubview(vsh) {
                     }
                     handled = true
                 }
-                GamepadSubmodule.Key.PadR, GamepadSubmodule.Key.R1 -> {
+                PadKey.PadR, PadKey.R1 -> {
                     if(canChangePage) {
                         changePage(true)
                     }else{
@@ -467,11 +469,11 @@ class XMBWaveSettingSubDialog(private val vsh: VSH) : XmbDialogSubview(vsh) {
                     }
                     handled = true
                 }
-                GamepadSubmodule.Key.PadU ->{
+                PadKey.PadU ->{
                     changeItemIndex(false)
                     handled = true
                 }
-                GamepadSubmodule.Key.PadD ->{
+                PadKey.PadD ->{
                     changeItemIndex(true)
                     handled = true
                 }

@@ -11,6 +11,7 @@ import androidx.core.graphics.minus
 import androidx.core.graphics.withRotation
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBAppItem
 import id.psw.vshlauncher.typography.FontCollections
@@ -183,16 +184,16 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
         ctx.drawText(vsh.getString(R.string.app_info_by_system), drawBound.centerX(), sY + 20.0f, tPaint)
     }
 
-    override fun onGamepad(key: GamepadSubmodule.Key, isPress: Boolean): Boolean {
+    override fun onGamepad(key: PadKey, isPress: Boolean): Boolean {
         when(key){
-            GamepadSubmodule.Key.PadU -> {
+            PadKey.PadU -> {
                 if(isPress){
                     cursorPos--
                     cursorPos = cursorPos.coerceIn(0, validSelections.size-1)
                     return true
                 }
             }
-            GamepadSubmodule.Key.PadD -> {
+            PadKey.PadD -> {
                 if(isPress){
                     cursorPos ++
                     cursorPos = cursorPos.coerceIn(0, validSelections.size-1)

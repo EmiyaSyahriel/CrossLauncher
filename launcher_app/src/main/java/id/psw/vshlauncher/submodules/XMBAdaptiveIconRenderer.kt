@@ -1,6 +1,7 @@
 package id.psw.vshlauncher.submodules
 
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.*
@@ -14,7 +15,7 @@ import id.psw.vshlauncher.types.Ref
 import java.io.File
 import java.lang.Exception
 
-class XMBAdaptiveIconRenderer(private val ctx: VSH) {
+class XMBAdaptiveIconRenderer(private val ctx: VSH) : IVshSubmodule {
 
     companion object {
         private const val TAG = "XMBIconGen"
@@ -65,12 +66,14 @@ class XMBAdaptiveIconRenderer(private val ctx: VSH) {
         }
     }
 
-    private val pm = ctx.packageManager
+    private lateinit var pm : PackageManager
     private val fileRoots = ArrayList<File>()
     private val materialYouColor = Ref(0)
-    private var supportsMaterialYou = getMaterialYouColor(ctx, 0, 0, materialYouColor)
+    private var supportsMaterialYou = false
 
-    init {
+    override fun onCreate() {
+        pm = ctx.packageManager
+        supportsMaterialYou = getMaterialYouColor(ctx, 0, 0, materialYouColor)
         val d = ctx.resources.displayMetrics.density
         WIDTH = (BaseWidth * d).toInt()
         HEIGHT = (BaseHeight * d).toInt()
@@ -87,10 +90,14 @@ class XMBAdaptiveIconRenderer(private val ctx: VSH) {
         readPreferences()
     }
 
+    override fun onDestroy() {
+        // TODO: Do memory cleanup
+    }
+
     fun readPreferences(){
-        AdaptiveRenderSetting.legacyBg = ctx.pref.getInt(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, 0)
-        AdaptiveRenderSetting.legacyBgColor = ctx.pref.getInt(PrefEntry.ICON_RENDERER_LEGACY_BACK_COLOR, 0x7FFFFFFF)
-        val you = ctx.pref.getInt(PrefEntry.ICON_RENDERER_LEGACY_BACK_MATERIAL_YOU, 0)
+        AdaptiveRenderSetting.legacyBg = ctx.M.pref.get(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, 0)
+        AdaptiveRenderSetting.legacyBgColor = ctx.M.pref.get(PrefEntry.ICON_RENDERER_LEGACY_BACK_COLOR, 0x7FFFFFFF)
+        val you = ctx.M.pref.get(PrefEntry.ICON_RENDERER_LEGACY_BACK_MATERIAL_YOU, 0)
         AdaptiveRenderSetting.legacyBgYouA = you / 100
         AdaptiveRenderSetting.legacyBgYouB = you % 100
     }

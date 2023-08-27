@@ -10,6 +10,7 @@ import id.psw.vshlauncher.R
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.*
@@ -234,12 +235,12 @@ class CustomAspectRatioDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) 
         super.onTouch(a, b, act)
     }
 
-    override fun onGamepad(key: GamepadSubmodule.Key, isPress: Boolean): Boolean {
+    override fun onGamepad(key: PadKey, isPress: Boolean): Boolean {
         if(isPress){
             val limit = isCustom.select(3, presetSize.size)
             return when(key){
-                GamepadSubmodule.Key.PadU -> { selection = (selection - 1).coerceIn(0, limit); true; }
-                GamepadSubmodule.Key.PadD -> { selection = (selection + 1).coerceIn(0, limit); true; }
+                PadKey.PadU -> { selection = (selection - 1).coerceIn(0, limit); true; }
+                PadKey.PadD -> { selection = (selection + 1).coerceIn(0, limit); true; }
                 else -> true
             }
         }

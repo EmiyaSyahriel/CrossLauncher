@@ -3,8 +3,10 @@ package id.psw.vshlauncher.views
 import android.graphics.*
 import android.os.Build
 import id.psw.vshlauncher.FittingMode
+import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.toLerp
+import id.psw.vshlauncher.vsh
 import kotlin.math.floor
 
 private val drawBitmapFitRectFBuffer = RectF()
@@ -139,3 +141,6 @@ fun Paint.withTextAlignment(align : Paint.Align, fn : () -> Unit){
     fn()
     this.textAlign = p
 }
+
+val XmbView.M get() = context.vsh.M
+val XMB.M get() = vsh.M

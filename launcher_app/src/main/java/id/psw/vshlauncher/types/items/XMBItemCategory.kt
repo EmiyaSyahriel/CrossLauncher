@@ -44,7 +44,7 @@ class XMBItemCategory(
         get() = _sortIndex
         set(value) {
             _sortIndex = value
-            vsh.pref.edit().putInt(pkSortIndex, _sortIndex).apply()
+            vsh.M.pref.set(pkSortIndex, _sortIndex)
         }
 
     private fun makeCustomResName(name:String) : String{
@@ -54,7 +54,7 @@ class XMBItemCategory(
     }
 
     init {
-        _sortIndex = vsh.pref.getInt(pkSortIndex, defaultSortIndex)
+        _sortIndex = vsh.M.pref.get(pkSortIndex, defaultSortIndex)
         vsh.threadPool.execute {
             _isLoadingIcon = true
             _icon = BitmapRef("icon_category_$id", {

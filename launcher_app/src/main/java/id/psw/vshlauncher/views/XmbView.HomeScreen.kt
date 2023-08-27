@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.PointF
 import android.view.MotionEvent
 import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.submodules.PadKey
 
 class HomeScreenState {
     var lastTap = 0L
@@ -25,10 +26,10 @@ fun XmbView.homeOnTouchScreen(a: PointF, b:PointF, act:Int){
     }
 }
 
-fun XmbView.homeOnGamepad(k:GamepadSubmodule.Key, isDown:Boolean) : Boolean
+fun XmbView.homeOnGamepad(k: PadKey, isDown:Boolean) : Boolean
 {
     if(
-        (GamepadSubmodule.Key.isConfirm(k) || k == GamepadSubmodule.Key.Start) && isDown
+        (PadKey.isConfirm(k) || k == PadKey.Start) && isDown
     ){
         switchPage(VshViewPage.MainMenu)
         return true
