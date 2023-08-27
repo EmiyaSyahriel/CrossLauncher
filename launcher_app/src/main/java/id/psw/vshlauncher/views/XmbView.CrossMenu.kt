@@ -24,7 +24,6 @@ import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.typography.parseEncapsulatedBracket
 import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
-import junit.runner.Version.id
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.ConcurrentModificationException
