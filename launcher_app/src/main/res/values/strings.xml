@@ -403,6 +403,6 @@
   <string name="error_pkgi_no_media">No writable media found</string>
   <string name="setting_license_name">Open-Source Licenses</string>
   <string name="setting_license_desc">Show all open-source components used by this launcher</string>
-    <string name="settings_system_prioritize_tv_intent_name">Prioritize TV Intent</string>
-  <string name="settings_system_prioritize_tv_intent_desc">Launch TV/Leanback intent first and fallback to phone if not found</string>
+  <string name="settings_system_prioritize_tv_intent_name">Prioritize TV Intent</string>
+  <string name="settings_system_prioritize_tv_intent_desc">On TV, Launch TV/Leanback intent and fallback to phone if not found</string>
 </resources>
