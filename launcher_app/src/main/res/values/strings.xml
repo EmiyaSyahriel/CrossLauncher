@@ -405,4 +405,9 @@
   <string name="setting_license_desc">Show all open-source components used by this launcher</string>
   <string name="settings_system_prioritize_tv_intent_name">Prioritize TV Intent</string>
   <string name="settings_system_prioritize_tv_intent_desc">On TV, Launch TV/Leanback intent and fallback to phone if not found</string>
+    <string name="shortcut_launch">Launch</string>
+  <string name="shortcut_remove">Remove</string>
+    <string name="dlg_confirm_confirm">Confirm</string>
+  <string name="dlg_confirm_cancel">Cancel</string>
+    <string name="shortcut_remove_confirm_text">Would you like to delete this shorctut?\n\n%s</string>
 </resources>
