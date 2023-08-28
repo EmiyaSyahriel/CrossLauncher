@@ -16,6 +16,7 @@ import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.XMBShortcutInfo
 import id.psw.vshlauncher.types.sequentialimages.XMBFrameAnimation
 import id.psw.vshlauncher.views.dialogviews.ConfirmDialogView
+import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
 import id.psw.vshlauncher.views.showDialog
 import java.io.File
 
@@ -75,10 +76,25 @@ class XMBShortcutItem(val vsh: VSH, private val file: File) : XMBItem(vsh) {
         ){
             launch(that)
         })
+
+        add(XMBMenuItem.XMBMenuItemLambda(
+            { vsh.getString(R.string.shortcut_rename) },
+            { false },
+            1
+        ){
+            NativeEditTextDialog(vsh)
+                .setTitle(vsh.getString(R.string.dlg_info_rename))
+                .setValue(shortcut.name)
+                .setOnFinish {
+                    shortcut.name = it
+                    shortcut.write(file)
+                }
+                .show()
+        })
         add(XMBMenuItem.XMBMenuItemLambda(
             { vsh.getString(R.string.shortcut_remove) },
             { false },
-            1
+            2
         ){
             deleteItem()
 
