@@ -1,0 +1,4 @@
+-keep class id.psw.crosslauncher.xlib.XMBPlugin { public *; }
+-keep class id.psw.crosslauncher.xlib.PluginType { public *; }
+-keep class id.psw.crosslauncher.xlib.PluginErrorReason { public *; }
+-keep class id.psw.crosslauncher.xlib.XMBStatusTextPlugin { public *; }
