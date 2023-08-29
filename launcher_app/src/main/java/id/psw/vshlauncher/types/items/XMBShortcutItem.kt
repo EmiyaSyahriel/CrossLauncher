@@ -45,27 +45,21 @@ class XMBShortcutItem(val vsh: VSH, private val file: File) : XMBItem(vsh) {
         shortcut.longName
     }
 
-    override val displayName: String
-        get() = shortcut.name
-
-    override val hasDescription: Boolean
-        get() = true
-
-
+    override val displayName: String get() = shortcut.name
+    override val hasDescription: Boolean get() = true
     override val icon: Bitmap get() = cif.icon.bitmap
     override val hasIcon: Boolean  get() = true
     override val isIconLoaded: Boolean get() = cif.hasIconLoaded
     override val animatedIcon: XMBFrameAnimation get() = cif.animIcon
     override val hasAnimatedIcon: Boolean get() = cif.hasAnimatedIcon
     override val isAnimatedIconLoaded: Boolean get() = cif.hasAnimIconLoaded
-
     override val hasBackSound: Boolean get()= cif.hasBackSound
-
-    override val backSound: File
-        get() = cif.backSound
-
-    override val hasMenu: Boolean
-        get() = true
+    override val backSound: File get() = cif.backSound
+    override val hasMenu: Boolean get() = true
+    override val menuItems: ArrayList<XMBMenuItem> get() = menus
+    override val description: String get() = sourceAppName
+    override val id: String get() = shortcut.idInLauncher
+    val category : String get() = shortcut.category
 
     private val menus = arrayListOf<XMBMenuItem>().apply {
         val that = this@XMBShortcutItem
@@ -97,7 +91,6 @@ class XMBShortcutItem(val vsh: VSH, private val file: File) : XMBItem(vsh) {
             2
         ){
             deleteItem()
-
         })
     }
 
@@ -113,16 +106,6 @@ class XMBShortcutItem(val vsh: VSH, private val file: File) : XMBItem(vsh) {
         })
     }
 
-    override val menuItems: ArrayList<XMBMenuItem>
-        get() = menus
-
-    override val description: String
-        get() = sourceAppName
-
-    override val id: String
-        get() = shortcut.idInLauncher
-
-    val category : String get() = shortcut.category
 
     private fun launch(x:XMBItem){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
@@ -140,9 +123,5 @@ class XMBShortcutItem(val vsh: VSH, private val file: File) : XMBItem(vsh) {
                     vsh.getString(R.string.shortcut_failed_to_launch_desc).format(shortcut.packageName))
             }
         }
-    }
-
-    init {
-
     }
 }

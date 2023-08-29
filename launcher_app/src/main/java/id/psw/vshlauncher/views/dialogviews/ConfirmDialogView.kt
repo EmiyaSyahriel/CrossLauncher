@@ -39,10 +39,9 @@ class ConfirmDialogView(val vsh: VSH, override val title: String, val iconId:Int
 
     override fun onDraw(ctx: Canvas, drawBound: RectF, deltaTime: Float) {
         val txtLines = paint.wrapText(text, 800.0f).lines()
-        var top = drawBound.centerY() - (txtLines.size /2) * paint.textSize
+        val top = drawBound.centerY() - (txtLines.size /2) * paint.textSize
         txtLines.forEachIndexed { i, line ->
-            ctx.drawText(line, drawBound.centerX(), top, paint)
-            top += paint.textSize
+            ctx.drawText(line, drawBound.centerX(), top + (i * paint.textSize), paint)
         }
         super.onDraw(ctx, drawBound, deltaTime)
     }

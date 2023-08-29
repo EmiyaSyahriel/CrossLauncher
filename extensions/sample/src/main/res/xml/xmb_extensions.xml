@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cxl:extensions apiVersion="0.1" xmlns:cxl="https://raw.githubusercontent.com/EmiyaSyahriel/CrossLauncher/master/launcher_xlib/XMLScheme.xsd">
+    <cxl:extension className="id.psw.crosslauncher.xlib.sample.InfoTextSampleExtension" displayName="@string/app_name"/>
+</cxl:extensions>
