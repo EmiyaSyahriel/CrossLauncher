@@ -59,6 +59,8 @@ to include the change to the source code since these files were all embedded int
 ## Contribution
 Translations and fixes are welcome.
 
+There is also an Extension System planned, so anyone can develop a plugin to provide additional feature to CrossLauncher.
+
 ## License
 The main project is licensed under MIT License.
 Some build-helper tool files is licensed under CC0 Public Domain.
