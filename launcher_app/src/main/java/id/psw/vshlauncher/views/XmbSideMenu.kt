@@ -1,11 +1,12 @@
 package id.psw.vshlauncher.views
 
+import android.graphics.Canvas
 import android.graphics.Paint
 import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.makeTextPaint
 import id.psw.vshlauncher.select
 
-class XmbSideMenu(ctx:VSH) {
+class XmbSideMenu(val vsh:VSH) {
     data class Item(val name:String, val action: () -> Unit, val close : Boolean = true)
 
     // Display
@@ -17,7 +18,7 @@ class XmbSideMenu(ctx:VSH) {
     var items = arrayListOf<Item?>()
 
     // UI
-    val menuTextPaint = ctx.makeTextPaint(
+    val menuTextPaint = vsh.makeTextPaint(
         size = 10.0f,
         align = Paint.Align.LEFT
     )
@@ -37,6 +38,10 @@ class XmbSideMenu(ctx:VSH) {
         while(activeIndex > 0 && activeIndex < items.size - 1 && items[activeIndex + i] == null){
             activeIndex += i
         }
+    }
+
+    fun render(xmb:XmbView, ctx: Canvas){
+
     }
 
     fun execute(){
