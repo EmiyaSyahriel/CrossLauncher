@@ -67,7 +67,6 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     }
 
     private var _customAppDesc: String =""
-    private var _icon = TRANSPARENT_BITMAP
 
     private val iconId : String = "${resInfo.activityInfo.processName}::${resInfo.activityInfo.packageName}"
     private var appLabel = ""
@@ -85,7 +84,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
 
     private val cif = CIFLoader(vsh, resInfo, FileQuery(VshBaseDirs.APPS_DIR).withNames(resInfo.uniqueActivityName).execute(vsh))
 
-    override val isIconLoaded: Boolean get()= cif.hasIconLoaded
+    override val isIconLoaded: Boolean get()= cif.icon.isLoaded
     override val isAnimatedIconLoaded: Boolean get() = cif.hasAnimIconLoaded
     override val isBackSoundLoaded: Boolean get() = cif.hasBackSoundLoaded
     override val isBackdropLoaded: Boolean get() = cif.hasBackdropLoaded
@@ -390,6 +389,10 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
                     vsh.doCategorySorting()
                 }
             )
+
+            // TODO: Create Real BitmapRef at start, this is just a patch
+            cif.loadIcon()
+            cif.unloadIcon()
         }
     }
 
@@ -451,7 +454,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     private fun pOnScreenVisible(i : XMBItem){
         vsh.threadPool.execute {
             appLabel = resInfo.loadLabel(vsh.packageManager).toString()
-            if(_icon == TRANSPARENT_BITMAP){
+            if(!cif.icon.isLoaded){
                 cif.loadIcon()
             }
         }
@@ -461,7 +464,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
         // Destroy icon, Unload it from memory
         vsh.threadPool.execute {
             if(vsh.aggressiveUnloading){
-                if(_icon != TRANSPARENT_BITMAP){
+                if(cif.icon.isLoaded){
                     cif.unloadIcon()
                 }
             }
