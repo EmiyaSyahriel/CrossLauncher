@@ -186,7 +186,6 @@ class CIFLoader {
     fun unloadIcon(){
 
         if(_icon.id != default_bitmap.id) _icon.release()
-        _icon = default_bitmap
 
         synchronized(_animIconSync){
             if(_hasAnimIconLoaded || !_animIcon.hasRecycled){

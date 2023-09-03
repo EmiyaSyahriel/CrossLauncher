@@ -142,7 +142,8 @@ class XMBAdaptiveIconRenderer(private val ctx: VSH) : IVshSubmodule {
             }
 
             for(i in 0 .. 3){
-                when(getIconPriorityAt(i)){
+                val prio = getIconPriorityAt(i)
+                when(prio){
                     ICON_PRIORITY_TYPE_APP_ICON_ADAPTIVE -> {
                         if(icon is AdaptiveIconDrawable){
                             drawFittedBitmap(ctx, icon.background, BackScale, BackXAnchor, BackYAnchor, drawRect)
