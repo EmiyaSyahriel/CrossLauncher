@@ -11,6 +11,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withRotation
 import androidx.core.graphics.withScale
 import androidx.core.graphics.withTranslation
+import androidx.core.os.postDelayed
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.livewallpaper.NativeGL
@@ -27,6 +28,7 @@ import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.ConcurrentModificationException
+import kotlin.concurrent.timer
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -135,6 +137,11 @@ class VshViewMainMenuState {
     val menuHorizontalIconPaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         alpha = 255
     }
+
+    /** Is **Open Menu Hold** enabled. */
+    var isOpenMenuOnHold = true
+    var isOpenMenuHeld = false
+    var isOpenMenuDisableMenuExec = true
 }
 
 fun XmbView.menuStart(){
@@ -1047,6 +1054,20 @@ fun XmbView.menuOpenSearchQuery(){
     }
 }
 
+fun XmbView.menuOpenMenuOnHoldAction(){
+    val vsh = context.vsh
+    val item = vsh.hoveredItem
+
+    if(!state.crossMenu.isOpenMenuHeld) return
+
+    if(item != null){
+        if(item.hasMenu){
+            state.itemMenu.isDisplayed = true
+        }
+    }
+    state.crossMenu.isOpenMenuHeld = false
+}
+
 fun XmbView.menuOnGamepad(key: PadKey, isPressing: Boolean) : Boolean {
     var retval = false
     val vsh = context.vsh
@@ -1115,10 +1136,19 @@ fun XmbView.menuOnGamepad(key: PadKey, isPressing: Boolean) : Boolean {
             }
             PadKey.Confirm, PadKey.StaticConfirm -> {
                 if(inMenu) {
-                    menuStartItemMenu()
-                    state.itemMenu.isDisplayed = false
+                    if(!state.crossMenu.isOpenMenuDisableMenuExec){
+                        menuStartItemMenu()
+                        state.itemMenu.isDisplayed = false
+                    }
                 }else{
-                    vsh.launchActiveItem()
+                    // Start Timer
+                    if(state.crossMenu.isOpenMenuOnHold){
+                        vsh.mainHandle.postDelayed(::menuOpenMenuOnHoldAction, 500L)
+                        state.crossMenu.isOpenMenuHeld = true
+                        state.crossMenu.isOpenMenuDisableMenuExec = true
+                    }else{
+                        vsh.launchActiveItem()
+                    }
                 }
                 retval = true
             }
@@ -1131,6 +1161,25 @@ fun XmbView.menuOnGamepad(key: PadKey, isPressing: Boolean) : Boolean {
                 retval = true
             }
             else -> {  }
+        }
+    }else{
+        when(key){
+            PadKey.Confirm, PadKey.StaticConfirm -> {
+                if(state.crossMenu.isOpenMenuOnHold){
+                    if(state.crossMenu.isOpenMenuHeld){
+                        vsh.mainHandle.removeCallbacks(::menuOpenMenuOnHoldAction)
+                        vsh.launchActiveItem()
+                        state.crossMenu.isOpenMenuHeld = false
+                        retval = true
+                    }else{
+                        retval = false
+                    }
+                    state.crossMenu.isOpenMenuDisableMenuExec = false
+                }else{
+                    retval = false
+                }
+            }
+            else -> {}
         }
     }
     return retval

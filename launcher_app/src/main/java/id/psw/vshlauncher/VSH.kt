@@ -64,6 +64,7 @@ class VSH : Application() {
     var xmbView : XmbView? = null
     var playAnimatedIcon = true
     var mediaListingStarted = false
+    lateinit var mainHandle : Handler
 
     val categories = arrayListOf<XMBItemCategory>()
     /** Return all item in current selected category or current active item, including the hidden ones */
@@ -146,7 +147,7 @@ class VSH : Application() {
 
     override fun onCreate() {
         Logger.init(this)
-
+        mainHandle = Handler(mainLooper)
         isTv = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
         }else{
