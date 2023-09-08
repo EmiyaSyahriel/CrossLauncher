@@ -11,8 +11,11 @@ import android.telephony.TelephonyManager
 import androidx.core.app.ActivityCompat
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.VSH
-import id.psw.vshlauncher.vsh
-import kotlin.concurrent.timer
+import id.psw.vshlauncher.sdkAtLeast
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NetworkSubmodule(private val ctx: VSH) : IVshSubmodule {
     private var isNetworkConnected = false
@@ -25,16 +28,31 @@ class NetworkSubmodule(private val ctx: VSH) : IVshSubmodule {
     private var wifiName = ""
     private var isQueryingStr = "..."
     private var noInternet = " ... "
+    private var keepUpdateCoroutineRunning = true
+    private var hasSubscriptionManager = false
+    private lateinit var subscriptMan : SubscriptionManager
 
     override fun onCreate() {
         noInternet = ctx.getString(R.string.nettype_no_connection)
-        timer("vsh_mobile_net_update", false, 0L, 1000L){
-            updateNetworkName(ctx)
+        if (sdkAtLeast(Build.VERSION_CODES.LOLLIPOP_MR1)) {
+            subscriptMan = ctx.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
+            hasSubscriptionManager = true
+        }
+        ctx.lifeScope.launch {
+            keepUpdateCoroutineRunning = true
+            withContext(Dispatchers.IO){
+                while(keepUpdateCoroutineRunning){
+                    try {
+                        updateNetworkName(ctx)
+                    }catch(_:Exception) {}
+                    delay(1000L)
+                }
+            }
         }
     }
 
     override fun onDestroy() {
-        // TODO : Nothing, stop the timer maybe?
+        keepUpdateCoroutineRunning = false
     }
 
     val operatorName : String get() {
@@ -52,6 +70,9 @@ class NetworkSubmodule(private val ctx: VSH) : IVshSubmodule {
         }
     }
 
+    // Still using deprecated API, if there is newer API that can be used without library
+    // Then please edit this code
+    @Suppress("DEPRECATION")
     private fun updateNetworkName(ctx:VSH){
         isQueryingStr = operatorName
         isQuerying= true
@@ -74,7 +95,7 @@ class NetworkSubmodule(private val ctx: VSH) : IVshSubmodule {
             }
         }
 
-        fun useLan(netMan : ConnectivityManager){
+        fun useLan(){
             etherName = ctx.getString(R.string.nettype_ethernet)
             isEthernet = true
         }
@@ -87,9 +108,8 @@ class NetworkSubmodule(private val ctx: VSH) : IVshSubmodule {
 
         fun useMobile(){
             isMobile = true
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1){
+            if(sdkAtLeast(Build.VERSION_CODES.LOLLIPOP_MR1) && hasSubscriptionManager){
                 if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-                    val subscriptMan = ctx.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as SubscriptionManager
                     val count = subscriptMan.activeSubscriptionInfoCount
                     if(count > 1){
                         for(i in 0 until count){
@@ -98,7 +118,7 @@ class NetworkSubmodule(private val ctx: VSH) : IVshSubmodule {
                                 val subInfo = subscriptMan.getActiveSubscriptionInfo(i)
                                 sb.append(subInfo.displayName)
                                 if(!isLast) sb.append(" | ")
-                            }catch(e:Exception){ }
+                            }catch(_:Exception){ }
                         }
                     }else{
                         useSingleSim()
@@ -121,7 +141,7 @@ class NetworkSubmodule(private val ctx: VSH) : IVshSubmodule {
                     when(netInfo.type){
                         ConnectivityManager.TYPE_WIFI -> useWifi()
                         ConnectivityManager.TYPE_MOBILE -> useMobile()
-                        ConnectivityManager.TYPE_ETHERNET -> useLan(connectMan)
+                        ConnectivityManager.TYPE_ETHERNET -> useLan()
                     }
                 }
             }else{

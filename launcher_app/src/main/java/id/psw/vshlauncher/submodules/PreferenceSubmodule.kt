@@ -4,8 +4,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import id.psw.vshlauncher.Logger
 import id.psw.vshlauncher.VSH
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
-import kotlin.concurrent.thread
+import kotlinx.coroutines.withContext
 
 typealias PreferenceChangeCallback = (key:String, isNew:Boolean, prevValue:Any, newValue:Any) -> Unit
 
@@ -22,20 +25,21 @@ class PreferenceSubmodule(private val ctx: VSH) : IVshSubmodule {
     private val onChanges = arrayListOf<PreferenceChangeCallback>()
     private var hasChange = false
     private val mutex = Mutex(false)
-    private lateinit var pusherThread : Thread
     private var pushCheckDelay = 0L
     private var keepPusherThread = true
 
     override fun onCreate() {
         pref = ctx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         edit = pref.edit()
-        pusherThread = thread(start= true, name = "Preference Push Service") {
+        ctx.lifeScope.launch {
             keepPusherThread = true
-            while(keepPusherThread){
-                Thread.sleep(PREF_PUSH_CHECK_EVERY)
-                if(pushCheckDelay > 0){
-                    pushCheckDelay -= PREF_PUSH_CHECK_EVERY
-                    if(pushCheckDelay <= 0)  push()
+            withContext(Dispatchers.IO) {
+                while(keepPusherThread){
+                    delay(PREF_PUSH_CHECK_EVERY)
+                    if(pushCheckDelay > 0){
+                        pushCheckDelay -= PREF_PUSH_CHECK_EVERY
+                        if(pushCheckDelay <= 0)  push()
+                    }
                 }
             }
         }
@@ -88,7 +92,7 @@ class PreferenceSubmodule(private val ctx: VSH) : IVshSubmodule {
         return this
     }
 
-    private fun push(){
+    fun push(){
         synchronized(mutex){
             if(hasChange){
                 edit.apply()

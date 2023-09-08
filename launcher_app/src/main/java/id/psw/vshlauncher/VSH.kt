@@ -14,8 +14,10 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import id.psw.vshlauncher.livewallpaper.NativeGL
-// import com.facebook.drawee.backends.pipeline.Fresco
 import id.psw.vshlauncher.submodules.*
 import id.psw.vshlauncher.types.*
 import id.psw.vshlauncher.types.Stack
@@ -132,6 +134,7 @@ class VSH : Application() {
     var shouldShowExitOption = false
 
     var useInternalWave = true
+    var lifeScope : LifecycleCoroutineScope = ProcessLifecycleOwner.get().lifecycleScope
 
     private fun reloadPreference() {
         setActiveLocale(readSerializedLocale(M.pref.get(PrefEntry.SYSTEM_LANGUAGE, "")))

@@ -6,6 +6,9 @@ import android.os.Build
 import id.psw.vshlauncher.VSH.Companion.ITEM_CATEGORY_SHORTCUT
 import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.types.items.XMBShortcutItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
@@ -36,35 +39,37 @@ fun VSH.reloadShortcutList(){
         // TODO("VERSION.SDK_INT < Q")
     }
 
-    threadPool.execute {
-        val h = addLoadHandle()
-        val c = categories.find { it.id == ITEM_CATEGORY_SHORTCUT }!!
+    vsh.lifeScope.launch {
+        withContext(Dispatchers.IO){
+            val h = addLoadHandle()
+            val c = categories.find { it.id == ITEM_CATEGORY_SHORTCUT }!!
 
-        c.content.clear()
-        System.gc()
+            c.content.clear()
+            System.gc()
 
-        val paths = FileQuery(VshBaseDirs.SHORTCUTS_DIR).execute(this)
-        for(path in paths){
-            if(path.isDirectory){
-                val scDirs = path.listFiles { dir, _ -> dir.isDirectory } ?: continue
-                for(sc in scDirs){
-                    val ini = File(sc, "SHORTCUT.INI")
-                    if(ini.exists() || ini.isFile){
-                        val app = XMBShortcutItem(vsh, ini)
-                        addToCategory(ITEM_CATEGORY_SHORTCUT, app)
+            val paths = FileQuery(VshBaseDirs.SHORTCUTS_DIR).execute(vsh)
+            for(path in paths){
+                if(path.isDirectory){
+                    val scDirs = path.listFiles { dir, _ -> dir.isDirectory } ?: continue
+                    for(sc in scDirs){
+                        val ini = File(sc, "SHORTCUT.INI")
+                        if(ini.exists() || ini.isFile){
+                            val app = XMBShortcutItem(vsh, ini)
+                            addToCategory(ITEM_CATEGORY_SHORTCUT, app)
+                        }
                     }
                 }
             }
-        }
 
-        if(c.content.isNotEmpty()){
-            if(hiddenCategories.contains(ITEM_CATEGORY_SHORTCUT)){
-                hiddenCategories.remove(ITEM_CATEGORY_SHORTCUT)
+            if(c.content.isNotEmpty()){
+                if(hiddenCategories.contains(ITEM_CATEGORY_SHORTCUT)){
+                    hiddenCategories.remove(ITEM_CATEGORY_SHORTCUT)
+                }
+            }else{
+                hiddenCategories.add(ITEM_CATEGORY_SHORTCUT)
             }
-        }else{
-            hiddenCategories.add(ITEM_CATEGORY_SHORTCUT)
-        }
 
-        setLoadingFinished(h)
+            setLoadingFinished(h)
+        }
     }
 }
