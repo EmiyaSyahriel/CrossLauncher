@@ -220,8 +220,6 @@ class XMB : AppCompatActivity() {
                 MotionEvent.AXIS_X,
                 MotionEvent.AXIS_Y,
                 MotionEvent.AXIS_Z,
-                MotionEvent.AXIS_HAT_X,
-                MotionEvent.AXIS_HAT_Y,
                 MotionEvent.AXIS_RX,
                 MotionEvent.AXIS_RY,
                 MotionEvent.AXIS_RZ,
@@ -230,7 +228,7 @@ class XMB : AppCompatActivity() {
                 if(abs(value) > 0.1f){
                     val k = M.gamepad.translateAxis(it, value, event.device.vendorId, event.device.productId)
                     if(k != PadKey.None){
-                        retval = xmbView.onGamepadInput(k, true)
+                        retval = xmbView.onGamepadInput(k, event.actionMasked == MotionEvent.ACTION_DOWN)
                     }
                 }
             }
