@@ -427,30 +427,6 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
         }.execute(vsh)
     }
 
-    private fun pIconLoad(){
-        cif.loadIcon()
-    }
-
-    private fun pIconUnload(){
-        cif.unloadIcon()
-    }
-
-    private fun pBackdropLoad(){
-        cif.loadBackdrop()
-    }
-
-    private fun pBackdropUnload(){
-        cif.unloadBackdrop()
-    }
-
-    private fun pSoundLoad(){
-        cif.loadSound()
-    }
-
-    private fun pSoundUnload(){
-        cif.unloadSound()
-    }
-
     private fun pOnScreenVisible(i : XMBItem){
         vsh.threadPool.execute {
             appLabel = resInfo.loadLabel(vsh.packageManager).toString()

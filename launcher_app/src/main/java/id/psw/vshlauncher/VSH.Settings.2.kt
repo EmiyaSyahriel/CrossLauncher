@@ -18,6 +18,10 @@ import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.dialogviews.LegacyIconBackgroundDialogView
 import id.psw.vshlauncher.views.dialogviews.TextDialogView
 import id.psw.vshlauncher.views.showDialog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 private var settingWaveCurrentWaveStyle = XMBWaveRenderer.WAVE_TYPE_PS3_NORMAL
@@ -84,8 +88,17 @@ fun VSH.createCategoryWaveSetting(): XMBSettingsCategory {
                     getString(R.string.settings_wave_apply_as_layer_dlg_text_main))
                     .setPositive(getString(R.string.common_reboot)){_ ->
                         // Commit instead of apply, allow the app to save the preference before restarting
-                        M.pref.set(PrefEntry.USES_INTERNAL_WAVE_LAYER, !vsh.useInternalWave)
-                        vsh.restart()
+                        M.pref
+                            .set(PrefEntry.USES_INTERNAL_WAVE_LAYER, !vsh.useInternalWave)
+                            .push()
+
+                        vsh.lifeScope.launch {
+                            withContext(Dispatchers.Default){
+                                delay(1000L)
+                                vsh.restart()
+                            }
+                        }
+
                     }
                     .setNegative(getString(android.R.string.cancel)){dlg -> dlg.finish(VshViewPage.MainMenu) }
             )

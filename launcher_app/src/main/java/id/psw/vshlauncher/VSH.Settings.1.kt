@@ -6,8 +6,6 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
-import id.psw.vshlauncher.submodules.GamepadSubmodule
-import id.psw.vshlauncher.submodules.GamepadUISubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.submodules.PadType
 import id.psw.vshlauncher.submodules.XMBAdaptiveIconRenderer
@@ -17,6 +15,7 @@ import id.psw.vshlauncher.views.XMBLayoutType
 import id.psw.vshlauncher.views.dialogviews.*
 import id.psw.vshlauncher.views.formatStatusBar
 import id.psw.vshlauncher.views.showDialog
+import kotlinx.coroutines.*
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
@@ -32,14 +31,13 @@ object SettingsCategoryID {
 }
 
 fun VSH.fillSettingsCategory(){
-    threadPool.execute {
+    vsh.lifeScope.launch {
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryDisplay())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryAudio())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategorySystem())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryAndroidSetting())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryDebug())
         addToCategory(VSH.ITEM_CATEGORY_SETTINGS, settingsAddInstallPackage())
-
     }
 }
 

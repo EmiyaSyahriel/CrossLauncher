@@ -14,8 +14,10 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import id.psw.vshlauncher.livewallpaper.NativeGL
-// import com.facebook.drawee.backends.pipeline.Fresco
 import id.psw.vshlauncher.submodules.*
 import id.psw.vshlauncher.types.*
 import id.psw.vshlauncher.types.Stack
@@ -64,6 +66,7 @@ class VSH : Application() {
     var xmbView : XmbView? = null
     var playAnimatedIcon = true
     var mediaListingStarted = false
+    lateinit var mainHandle : Handler
 
     val categories = arrayListOf<XMBItemCategory>()
     /** Return all item in current selected category or current active item, including the hidden ones */
@@ -131,6 +134,7 @@ class VSH : Application() {
     var shouldShowExitOption = false
 
     var useInternalWave = true
+    var lifeScope : LifecycleCoroutineScope = ProcessLifecycleOwner.get().lifecycleScope
 
     private fun reloadPreference() {
         setActiveLocale(readSerializedLocale(M.pref.get(PrefEntry.SYSTEM_LANGUAGE, "")))
@@ -146,7 +150,7 @@ class VSH : Application() {
 
     override fun onCreate() {
         Logger.init(this)
-
+        mainHandle = Handler(mainLooper)
         isTv = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
         }else{

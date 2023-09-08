@@ -165,16 +165,18 @@ class ArrangeCategoryDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
     }
 
     override fun onGamepad(key: PadKey, isPress: Boolean): Boolean {
-        when(key){
+
+        return if(isPress) when(key){
             PadKey.PadL -> {
                 setActiveIndex(activeIndex - 1)
+                true
             }
             PadKey.PadR -> {
                 setActiveIndex(activeIndex + 1)
+                true
             }
-            else -> { } // Nothing to do
-        }
-        return super.onGamepad(key, isPress)
+            else -> super.onGamepad(key, true)
+        } else super.onGamepad(key, false)
     }
 
     override fun onDialogButton(isPositive: Boolean) {

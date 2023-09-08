@@ -33,9 +33,23 @@ see [Main Project](https://github.com/EmiyaSyahriel/CrossLauncher/projects/1)
 ## Supported customizations
 see [Supported customization](https://github.com/EmiyaSyahriel/CrossLauncher/wiki/Customization)
 
-## Releases
-You can build it yourself, Or go to [Release](https://github.com/EmiyaSyahriel/CrossLauncher/releases)
-page for pre-built packages
+## Download
+There is 2 type of download now:
+- [Action Build](https://github.com/EmiyaSyahriel/CrossLauncher/actions/workflows/android.yml)
+  - Not really stable most of the time
+  - Updated every time a new code is pushed to repository
+  - Debug only, not for everyday use.
+  - How to download
+    - Select latest workflow with green check
+    - Open Summary (opened by default)
+    - Go to lowermost part, where it says *Artifacts*
+    - Download the APK
+- [Stable Release](https://github.com/EmiyaSyahriel/CrossLauncher/releases)
+  - Stable, at least more than Action Build version
+  - Updated less frequently
+  - Have both Release and Debug
+
+Or you can build it yourself, see [Building](#building) section.
 
 ## Building
 ### Prerequisites

@@ -1,7 +1,6 @@
 package id.psw.vshlauncher.views
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.*
 import android.os.Build
 import android.os.Debug
@@ -14,7 +13,6 @@ import androidx.core.graphics.withScale
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.activities.XMB
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.typography.FontCollections
 import java.util.*
