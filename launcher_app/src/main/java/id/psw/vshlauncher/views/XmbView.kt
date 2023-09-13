@@ -191,6 +191,14 @@ class XmbView @JvmOverloads constructor(
         contentDescription = context.getString(R.string.xmb_view_content_description)
         holder.setFormat(PixelFormat.TRANSPARENT)
         DrawExtension.init(context.vsh)
+        activeScreen
+    }
+
+    private var onceStarted = false
+    private fun start(){
+        screens = Screens(this)
+        widgets = Widgets(this)
+        loadPreferences()
     }
 
     private var onceStarted = false

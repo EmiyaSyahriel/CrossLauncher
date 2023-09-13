@@ -262,7 +262,6 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     private fun shouldPlayVideo(item:XmbItem, isSelected : Boolean) : Boolean {
         val byIcon = item.hasAnimatedIcon && item.isAnimatedIconLoaded
         return when(CifLoader.videoIconMode){
-            VideoIconMode.Disabled -> false
             VideoIconMode.AllTime -> byIcon
             VideoIconMode.SelectedOnly -> byIcon && isSelected
         }
@@ -270,8 +269,6 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
 
     private fun drawVerticalMenu(ctx:Canvas){
         val items = vsh.items?.visibleItems?.filterBySearch(context.vsh)
-
-        val loadIcon = loadingIconBitmap
         val isPSP = layoutMode == XmbLayoutType.PSP
         val menuDispT = widgets.sideMenu.showMenuDisplayFactor
         val isLand = view.width > view.height
@@ -789,7 +786,6 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                 widgets.searchQuery.render(ctx)
                 widgets.statusBar.render(ctx)
                 drawSortHeaderDisplay(ctx)
-
             }catch(_:ConcurrentModificationException){}
         }
     }
