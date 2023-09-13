@@ -5,12 +5,10 @@ import android.view.MotionEvent
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withScale
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.typography.FontCollections
 import java.io.File
-import java.nio.file.Files.exists
 
 class VshViewGameBootState {
     var currentTime : Float = 0.0f
@@ -100,7 +98,7 @@ private fun XmbView.gbEnsureImageLoaded(){
 fun XmbView.bootInto(skip:Boolean, bootFunc : () -> Unit){
     state.gameBoot.skip = skip
     state.gameBoot.onBoot = bootFunc
-    switchPage(VshViewPage.GameBoot)
+    switchScreen(VshViewPage.GameBoot)
     M.audio.removeAudioSource()
 }
 

@@ -1,7 +1,5 @@
 package id.psw.vshlauncher
 
-import android.content.Intent
-import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBSettingsItem
 import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.dialogviews.TextDialogView
@@ -12,7 +10,7 @@ fun VSH.addHomeScreen(){
     addToCategory(VSH.ITEM_CATEGORY_HOME, XMBSettingsItem(this, "show_home_screen", R.string.app_hide_menu, R.string.app_hide_menu_desc,
         R.drawable.icon_hide_menu,{ "" }
     ){
-        xmbView?.switchPage(VshViewPage.HomeScreen)
+        xmbView?.switchScreen(VshViewPage.HomeScreen)
     })
 
     addToCategory(VSH.ITEM_CATEGORY_HOME, XMBSettingsItem(this, "home_screen_exit_app",

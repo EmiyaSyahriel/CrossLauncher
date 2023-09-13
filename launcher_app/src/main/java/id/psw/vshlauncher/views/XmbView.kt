@@ -3,7 +3,6 @@ package id.psw.vshlauncher.views
 import android.content.Context
 import android.graphics.*
 import android.os.Build
-import android.os.Debug
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.*
@@ -12,13 +11,13 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withScale
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.typography.FontCollections
+import id.psw.vshlauncher.views.screens.*
+import id.psw.vshlauncher.views.widgets.*
 import java.util.*
 import kotlin.ConcurrentModificationException
 import kotlin.concurrent.thread
-import kotlin.math.roundToInt
 
 class XmbView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -45,9 +44,7 @@ class XmbView @JvmOverloads constructor(
         val target : RectF get() = (screen.width() > screen.height()).select(landTarget, portTarget)
     }
 
-    var time = VshViewTimeData()
-    var currentPage = VshViewPage.ColdBoot
-    var state = VshViewStates()
+    var time = TimeData()
     var scaling = ScaleInfo()
     var tempRect = RectF()
     var isHWAccelerated = false
@@ -64,7 +61,27 @@ class XmbView @JvmOverloads constructor(
     private var shouldKeepRenderThreadRunning = true
     private var isRenderThreadRunning = false
     internal var showDetailedMemory = false
+
     private fun doNothing(){}
+
+    class Screens(v:XmbView) {
+        val mainMenu = XmbMainMenu(v)
+        val coldBoot = XmbColdboot(v)
+        val gameBoot = XmbGameboot(v)
+        val dialog = XmbDialog(v)
+    }
+
+    class Widgets(v:XmbView){
+        val sideMenu = XmbSideMenu(v)
+        val debugInfo = XmbDebugInfo(v)
+        val debugTouch = XmbDebugTouch(v)
+        val analogClock = XmbAnalogClock(v)
+        val statusBar = XmbStatusBar(v)
+        val searchQuery = XmbSearchQuery(v)
+    }
+
+    lateinit var screens : Screens
+    lateinit var widgets : Widgets
 
     private fun drawThreadFunc(){
         if(!isRenderThreadRunning){
@@ -126,7 +143,7 @@ class XmbView @JvmOverloads constructor(
         val vsh = context.vsh
         val pref = vsh.M.pref
 
-        state.crossMenu.layoutMode = when(pref.get(PrefEntry.MENU_LAYOUT, 0)){
+        screens.mainMenu.layoutMode = when(pref.get(PrefEntry.MENU_LAYOUT, 0)){
             0 -> XMBLayoutType.PS3
             1 -> XMBLayoutType.PSP
             2 -> XMBLayoutType.Bravia
@@ -138,12 +155,12 @@ class XmbView @JvmOverloads constructor(
         val refSize = pref.get(PrefEntry.REFERENCE_RESOLUTION, defSize)
         setReferenceScreenSize(refSize shr 16, refSize and 0xFFFF, false)
 
-        state.coldBoot.hideEpilepsyWarning = pref.get(PrefEntry.DISABLE_EPILEPSY_WARNING, 0) == 1
-        state.crossMenu.dimOpacity = pref.get(PrefEntry.BACKGROUND_DIM_OPACITY, 0)
-        state.crossMenu.dateTimeFormat =
-            pref.get(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, state.crossMenu.dateTimeFormat)
-                ?: state.crossMenu.dateTimeFormat
-        state.gameBoot.defaultSkip = pref.get(PrefEntry.SKIP_GAMEBOOT, 0) != 0
+        screens.coldBoot.hideEpilepsyWarning = pref.get(PrefEntry.DISABLE_EPILEPSY_WARNING, 0) == 1
+        screens.mainMenu.dimOpacity = pref.get(PrefEntry.BACKGROUND_DIM_OPACITY, 0)
+        screens.mainMenu.dateTimeFormat =
+            pref.get(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, screens.mainMenu.dateTimeFormat)
+                ?: screens.mainMenu.dateTimeFormat
+        screens.gameBoot.defaultSkip = pref.get(PrefEntry.SKIP_GAMEBOOT, 0) != 0
         vsh.showLauncherFPS = pref.get(PrefEntry.SHOW_LAUNCHER_FPS, 0) != 0
         showDetailedMemory = pref.get(PrefEntry.SHOW_DETAILED_MEMORY, 0) != 0
     }
@@ -154,8 +171,15 @@ class XmbView @JvmOverloads constructor(
         setZOrderOnTop(true)
         contentDescription = context.getString(R.string.xmb_view_content_description)
         holder.setFormat(PixelFormat.TRANSPARENT)
-        loadPreferences()
         DrawExtension.init(context.vsh)
+        activeScreen
+    }
+
+    private var onceStarted = false
+    private fun start(){
+        screens = Screens(this)
+        widgets = Widgets(this)
+        loadPreferences()
     }
 
     private fun adaptScreenSize(){
@@ -183,29 +207,15 @@ class XmbView @JvmOverloads constructor(
         }
     }
 
-    fun switchPage(view:VshViewPage){
+    public lateinit var activeScreen : XmbScreen
+
+    fun switchScreen(nScreen:XmbScreen){
         System.gc() // Garbage Collect Every Page Change
-        //if(currentPage != view){
-        val nope : () -> Unit = {
 
-        }
+        activeScreen.end()
+        activeScreen = nScreen
+        activeScreen.start()
 
-        when(currentPage){
-            VshViewPage.ColdBoot -> cbEnd()
-            VshViewPage.MainMenu -> menuEnd()
-            VshViewPage.GameBoot -> gbEnd()
-            VshViewPage.Dialog -> dlgEnd()
-            else -> nope()
-        }
-        currentPage = view
-        when(currentPage){
-            VshViewPage.ColdBoot -> cbStart()
-            VshViewPage.MainMenu -> menuStart()
-            VshViewPage.GameBoot -> gbStart()
-            VshViewPage.Dialog -> dlgStart()
-            else -> nope()
-        }
-        //}
         System.gc() // Garbage Collect Every Page Change
     }
 
@@ -231,9 +241,8 @@ class XmbView @JvmOverloads constructor(
     private val notificationRectBuffer = RectF()
 
     fun openItemMenu(open: Boolean = true) {
-        state.itemMenu.isDisplayed = open
-        state.itemMenu.selectedIndex = context.vsh.hoveredItem?.setMenuOpened(open) ?: 0
-
+        widgets.sideMenu.isDisplayed = open
+        widgets.sideMenu.selectedIndex = context.vsh.hoveredItem?.setMenuOpened(open) ?: 0
     }
 
     fun drawNotifications(ctx:Canvas){
@@ -285,28 +294,11 @@ class XmbView @JvmOverloads constructor(
         touchStartPointF.set(start)
         touchCurrentPointF.set(current)
         lastTouchAction = action
-        val call : (PointF, PointF, Int) -> Unit = when(currentPage){
-            VshViewPage.MainMenu -> ::menuOnTouchScreen
-            VshViewPage.Dialog -> ::dlgOnTouchScreen
-            VshViewPage.GameBoot -> ::cbOnTouchScreen
-            VshViewPage.ColdBoot -> ::gbOnTouchScreen
-            VshViewPage.HomeScreen -> ::homeOnTouchScreen
-        }
-        call(start, current, action)
+        activeScreen.onTouchScreen(start, current, action)
     }
 
     fun onGamepadInput(key: PadKey, isDown:Boolean) : Boolean{
-        return when(currentPage){
-            VshViewPage.MainMenu -> ::menuOnGamepad
-            VshViewPage.Dialog -> ::dlgOnGamepad
-            VshViewPage.ColdBoot -> ::cbOnGamepad
-            VshViewPage.GameBoot -> ::gbOnGamepad
-            VshViewPage.HomeScreen -> ::homeOnGamepad
-        }(key, isDown)
-    }
-
-    fun onCharacterInput(ch:Char){
-
+        return activeScreen.onGamepadInput(key, isDown)
     }
 
     fun onUpdate(){
@@ -315,103 +307,28 @@ class XmbView @JvmOverloads constructor(
         context.vsh.updateBatteryInfo()
     }
 
-    private val fpsRect = Rect()
-    private val fpsRectF = RectF()
-    private val memFmtSb = StringBuilder()
-    private val memFmtNames = arrayOf("PSS", "PD", "SD", "PC", "SC", "??", "E", "??", "E", "??", "E", "??")
-    private val memInfo = Debug.MemoryInfo()
-    private var memInfoThreadKeepRunning = false
-
-    private fun memFmt(name:String, vararg names:Int) : String {
-        memFmtSb.clear()
-        memFmtSb.append(name).append(" - ")
-        names.forEachIndexed { i, v ->
-            memFmtSb.append(memFmtNames[i]).append(":").append((v * 1000L).asBytes()).append(" | ")
-        }
-        return memFmtSb.toString()
-    }
-
-    private val memInfoThread = Thread {
-        memInfoThreadKeepRunning = true
-        while(memInfoThreadKeepRunning){
-            Debug.getMemoryInfo(memInfo)
-            Thread.sleep(30L)
-        }
-    }
-
-    private fun drawFPS(ctx:Canvas){
-        val fps = (1.0f / time.deltaTime).roundToInt()
-        val fpsTxt = "[FPS] $fps FPS | ${(time.deltaTime * 1000).roundToInt()} ms"
-        dummyPaint.color = Color.GREEN
-        dummyPaint.style = Paint.Style.FILL
-        dummyPaint.setShadowLayer(2.0f, 2.0f, 2.0f, Color.BLACK)
-
-        val isTvTxt = context.vsh.isTv.select("Device : TV","")
-
-        val nMemSz = "ANDROID NATIVE MEM - TOTAL:${Debug.getNativeHeapSize().asBytes()} | USED:${Debug.getNativeHeapAllocatedSize().asBytes()} | FREE:${Debug.getNativeHeapFreeSize().asBytes()}"
-
-        val arr = arrayListOf<String>()
-        arr.add(fpsTxt)
-        arr.add(nMemSz)
-
-        if(showDetailedMemory){
-            if(!memInfoThreadKeepRunning){
-                memInfoThread.start()
-            }
-
-            val jdMemSz = memFmt("JVM RUNTIME MEM", memInfo.dalvikPss, memInfo.dalvikPrivateDirty, memInfo.dalvikSharedDirty)
-            val jnMemSz = memFmt("JVM NATIVE MEM", memInfo.nativePss, memInfo.nativePrivateDirty, memInfo.nativeSharedDirty)
-            val joMemSz = memFmt("JVM OTHER MEM", memInfo.otherPss, memInfo.otherPrivateDirty ,memInfo.otherSharedDirty)
-            val jtMemSz = memFmt("JVM TOTAL MEM", memInfo.totalPss, memInfo.totalPrivateDirty, memInfo.totalSharedDirty, memInfo.totalPrivateClean, memInfo.totalSharedClean)
-
-            arr.add(jdMemSz)
-            arr.add(jnMemSz)
-            arr.add(joMemSz)
-            arr.add(jtMemSz)
-        }
-        arr.add(isTvTxt)
-
-        arr.forEachIndexed { i, it ->
-            ctx.drawText(it, 20f, 50f + (i * (dummyPaint.textSize * 1.25f)), dummyPaint, 1.0f)
-        }
-
-        dummyPaint.removeShadowLayer()
-    }
-
     override fun onDetachedFromWindow() {
-        memInfoThreadKeepRunning = false
+        widgets.debugInfo.memInfoThreadKeepRunning = false
         super.onDetachedFromWindow()
     }
 
     fun xmbOnDraw(canvas: Canvas?) {
+        if(!onceStarted){
+            onceStarted = true
+            start()
+        }
+
         adaptScreenSize()
-        tickTime()
+        time.tickTime(this)
         onUpdate()
-        if(canvas != null) {
-            if(useInternalWallpaper){
+        canvas?.withScale(scaling.fitScale, scaling.fitScale, 0.0f, 0.0f) {
+            canvas.withTranslation(-scaling.viewport.left, -scaling.viewport.top){
+                activeScreen.render(canvas)
 
-            }
-
-            if(currentPage != VshViewPage.HomeScreen){
-                val dimAlpha = ((state.crossMenu.dimOpacity / 10.0f) * 255).toInt()
-                canvas.drawARGB(dimAlpha, 0,0,0)
-            }
-
-            canvas.withScale(scaling.fitScale, scaling.fitScale, 0.0f, 0.0f) {
-                canvas.withTranslation(-scaling.viewport.left, -scaling.viewport.top){
-                    when(currentPage){
-                        VshViewPage.ColdBoot -> ::cbRender
-                        VshViewPage.MainMenu -> ::menuRender
-                        VshViewPage.GameBoot -> ::gbRender
-                        VshViewPage.Dialog -> ::dlgRender
-                        VshViewPage.HomeScreen -> ::homeRender
-                    }(canvas)
-
-                    drawDebugLocation(canvas, context.xmb)
-                    drawKeygen(canvas)
-                    drawNotifications(canvas)
-                    if(context.vsh.showLauncherFPS) drawFPS(canvas)
-                }
+                widgets.debugTouch.render(canvas)
+                drawKeygen(canvas)
+                drawNotifications(canvas)
+                widgets.debugInfo.render(canvas)
             }
         }
     }
@@ -437,23 +354,6 @@ class XmbView @JvmOverloads constructor(
             dummyPaint.alpha = 255
             dummyPaint.textSize = 15.0f
         }
-    }
-
-    private fun drawDebugLocation(ctx: Canvas, xmb: XMB) {
-        if(lastTouchAction == MotionEvent.ACTION_DOWN || lastTouchAction == MotionEvent.ACTION_MOVE){
-            dummyPaint.style= Paint.Style.FILL
-            dummyPaint.color = Color.argb(128,255,255,255)
-            ctx.drawCircle(touchCurrentPointF.x, touchCurrentPointF.y, 10.0f, dummyPaint)
-            ctx.drawCircle(touchStartPointF.x, touchStartPointF.y, 10.0f, dummyPaint)
-        }
-    }
-
-    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
-        return super.onKeyUp(keyCode, event)
-    }
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        return super.onKeyDown(keyCode, event)
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {

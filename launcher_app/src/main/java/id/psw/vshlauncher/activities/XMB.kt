@@ -11,12 +11,9 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log.i
 import android.view.*
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowInsetsCompat
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.items.XMBAppItem
 import id.psw.vshlauncher.views.M
@@ -57,7 +54,7 @@ class XMB : AppCompatActivity() {
         sysBarTranslucent()
         updateSystemBarVisibility()
 
-        xmbView.switchPage(skipColdBoot.select(VshViewPage.MainMenu, VshViewPage.ColdBoot))
+        xmbView.switchScreen(skipColdBoot.select(VshViewPage.MainMenu, VshViewPage.ColdBoot))
 
         _lastOrientation = resources.configuration.orientation
 

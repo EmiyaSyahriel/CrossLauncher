@@ -3,7 +3,6 @@ package id.psw.vshlauncher.views
 import android.graphics.Canvas
 import android.graphics.PointF
 import android.view.MotionEvent
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 
 class HomeScreenState {
@@ -31,7 +30,7 @@ fun XmbView.homeOnGamepad(k: PadKey, isDown:Boolean) : Boolean
     if(
         (PadKey.isConfirm(k) || k == PadKey.Start) && isDown
     ){
-        switchPage(VshViewPage.MainMenu)
+        switchScreen(VshViewPage.MainMenu)
         return true
     }
     return false

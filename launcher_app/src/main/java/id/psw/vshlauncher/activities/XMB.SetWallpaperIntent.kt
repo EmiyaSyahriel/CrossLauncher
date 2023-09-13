@@ -9,7 +9,6 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.core.app.ActivityCompat
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.typography.FontCollections
@@ -136,6 +135,6 @@ fun XMB.showShareIntentDialog(intent:Intent) {
         xmbView.showDialog(SetWallpaperDialog(vsh, this, intent))
     }catch(e:Exception) {
         vsh.postNotification(null, "Failed to Set Wallpaper",e.toString(), 5.0f)
-        xmbView.switchPage(VshViewPage.MainMenu)
+        xmbView.switchScreen(VshViewPage.MainMenu)
     }
 }

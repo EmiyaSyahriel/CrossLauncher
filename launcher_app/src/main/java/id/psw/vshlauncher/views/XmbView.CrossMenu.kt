@@ -33,13 +33,6 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-enum class DirectionLock {
-    None,
-    Vertical,
-    Horizontal
-}
-
-
 
 class VshViewMainMenuState {
     var sortHeaderDisplay: Float = 0.0f
@@ -171,52 +164,6 @@ private var tmpPointFB = PointF()
 
 fun XmbView.drawClock(ctx:Canvas, calendar:Calendar, top:Float){
     with(state.crossMenu){
-        val hh = calendar.get(Calendar.HOUR)
-        val mm = calendar.get(Calendar.MINUTE)
-        val ss = calendar.get(Calendar.SECOND)
-        statusOutlinePaint.strokeWidth = 3.0f
-        tmpPointFB.x = scaling.target.right - 85.0f
-        tmpPointFB.y = top
-
-        val tFactor = context.vsh.hasConcurrentLoading.select(1.0f, 0.0f)
-        //clockLoadTransition = (clockLoadTransition + (tFactor * time.deltaTime)).coerceIn(0.0f, 1.0f)
-        clockLoadTransition = (time.deltaTime * 5.0f).toLerp(clockLoadTransition, tFactor)
-
-        fun calcHand(deg:Float, len:Float) : PointF {
-            val tDegree = clockLoadTransition.toLerp(deg, (time.currentTime % 2.0f) / 2.0f)
-            tmpPointFA.x = tmpPointFB.x + (kotlin.math.sin((0.5f - tDegree).nrm2Rad) * len)
-            tmpPointFA.y = tmpPointFB.y + (kotlin.math.cos((0.5f - tDegree).nrm2Rad) * len)
-            return tmpPointFA
-        }
-
-        statusFillPaint.color = FColor.argb(0.5f, 0f, 0f, 0f)
-        ctx.drawCircle(tmpPointFB.x, tmpPointFB.y, 15.0f, statusFillPaint)
-        ctx.drawCircle(tmpPointFB.x, tmpPointFB.y, 15.0f, statusOutlinePaint)
-
-        if(context.vsh.hasConcurrentLoading){
-            for(off in 0 until 2){
-                val radTime = (((time.currentTime + (off * 1.5f)) % 3.0f) / 3.0f) * 20.0f
-                val alphaTime = 1.0f - ((radTime - 20.0f) / 10.0f).coerceIn(0.0f, 1.0f)
-                statusOutlinePaint.color = FColor.setAlpha(Color.WHITE, alphaTime)
-                ctx.drawCircle(tmpPointFB.x, tmpPointFB.y, radTime, statusOutlinePaint)
-            }
-        }
-
-        statusOutlinePaint.color = Color.WHITE
-        val fss = ss / 60.0f
-        val fmm = (mm + fss) / 60.0f
-        val fhh = (hh + fmm) / 12.0f
-        var handPt : PointF = tmpPointFA
-        if(statusBar.secondOnAnalog){
-            statusOutlinePaint.color = Color.RED
-            handPt = calcHand(fss, 15.0f)
-            ctx.drawLine(tmpPointFB.x, tmpPointFB.y, handPt.x, handPt.y, statusOutlinePaint)
-        }
-        statusOutlinePaint.color = Color.WHITE
-        handPt = calcHand(fmm, 15.0f)
-        ctx.drawLine(tmpPointFB.x, tmpPointFB.y, handPt.x, handPt.y, statusOutlinePaint)
-        handPt = calcHand(fhh, 7.0f)
-        ctx.drawLine(tmpPointFB.x, tmpPointFB.y, handPt.x, handPt.y, statusOutlinePaint)
     }
 }
 
