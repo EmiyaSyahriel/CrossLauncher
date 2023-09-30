@@ -49,10 +49,6 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     var layoutMode : XmbLayoutType = XmbLayoutType.PS3
     lateinit var arrowBitmap : Bitmap
     var arrowBitmapLoaded = false
-    var bgOverlayColorA : Int = 0x88FF0000u.toInt()
-    var bgOverlayColorB : Int = 0x8800FF00u.toInt()
-    var isFocused : Boolean = false
-    var clockLoadTransition : Float = 1.0f
     var menuScaleTime : Float = 0.0f
     var loadingIconBitmap : Bitmap? = null
     var playVideoIcon = true

@@ -326,6 +326,12 @@ class XmbView @JvmOverloads constructor(
         onUpdate()
         canvas?.withScale(scaling.fitScale, scaling.fitScale, 0.0f, 0.0f) {
             canvas.withTranslation(-scaling.viewport.left, -scaling.viewport.top){
+
+                if(activeScreen != screens.idle){
+                    val dimAlpha = ((screens.mainMenu.dimOpacity / 10.0f) * 255).toInt()
+                    canvas.drawARGB(dimAlpha, 0,0,0)
+                }
+
                 activeScreen.render(canvas)
 
                 drawNotifications(canvas)
