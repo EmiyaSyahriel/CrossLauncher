@@ -1,11 +1,9 @@
 package id.psw.vshlauncher.views.dialogviews
 
 import android.graphics.*
-import android.os.Build.VERSION_CODES.M
 import android.text.TextPaint
 import androidx.core.graphics.minus
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.types.XMBItem
@@ -13,7 +11,7 @@ import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.*
 import kotlin.math.abs
 
-class LegacyIconBackgroundDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
+class LegacyIconBackgroundDialogView(v: XmbView) : XmbDialogSubview(v) {
     override val title: String get() = vsh.getString(R.string.dlg_legacyicon_title)
     override val hasNegativeButton: Boolean get() = true
     override val hasPositiveButton: Boolean get() = true
@@ -66,7 +64,7 @@ class LegacyIconBackgroundDialogView(private val vsh: VSH) : XmbDialogSubview(vs
 
             vsh.M.icons.readPreferences()
         }
-        finish(VshViewPage.MainMenu)
+        finish(view.screens.mainMenu)
     }
 
     override fun onTouch(a: PointF, b: PointF, act: Int) {

@@ -1,10 +1,9 @@
 package id.psw.vshlauncher.submodules
 
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.postNotification
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.reflect.Parameter
 import java.util.zip.ZipEntry
@@ -31,7 +30,7 @@ class CustomizerPackageSubmodule {
         val PACKAGE_BACK_SOUND_FILENAMES = arrayOf("SND0.AAC","SND0.MP3")
     }
 
-    fun readPackageInfo(vsh: VSH, file: File, param: Parameter) : Boolean{
+    fun readPackageInfo(vsh: Vsh, file: File, param: Parameter) : Boolean{
         var retval = false
         try {
             ZipInputStream(file.inputStream()).use { zip ->

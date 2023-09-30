@@ -4,15 +4,14 @@ import android.content.Intent
 import android.graphics.Bitmap
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.types.XMBItem
 
 class XMBAndroidSettingShortcutItem(
-    val vsh: VSH,
+    val vsh: Vsh,
     @DrawableRes private val iconId:Int,
     @StringRes private val nameId:Int,
     @StringRes private val descId: Int,

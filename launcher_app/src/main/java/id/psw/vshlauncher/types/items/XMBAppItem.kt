@@ -15,9 +15,7 @@ import id.psw.vshlauncher.*
 import id.psw.vshlauncher.types.INIFile
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.sequentialimages.*
-import id.psw.vshlauncher.views.bootInto
 import id.psw.vshlauncher.views.dialogviews.AppInfoDialogView
-import id.psw.vshlauncher.views.showDialog
 import java.io.File
 import java.lang.StringBuilder
 import android.text.format.DateFormat
@@ -28,7 +26,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh) {
+class XMBAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XMBItem(vsh) {
     enum class DescriptionDisplay(val v : Int) {
         /** No description is displayed */
         None(0),
@@ -349,7 +347,8 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
             menuItems.add(
                 XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.menu_app_info) },
                     { false },1){
-                    vsh.xmbView?.showDialog(AppInfoDialogView(vsh, this))
+                    val xv = vsh.xmbView
+                    xv?.showDialog(AppInfoDialogView(xv, this))
                 }
             )
 
@@ -467,7 +466,7 @@ class XMBAppItem(private val vsh: VSH, val resInfo : ResolveInfo) : XMBItem(vsh)
     override val onUnHovered: (XMBItem) -> Unit get() = ::pOnUnHovered
 
     private fun _launch(i: XMBItem){
-        vsh.xmbView?.bootInto(false){
+        vsh.xmbView?.screens?.gameBoot?.bootInto(false){
             try{
                 val intents = arrayListOf<Intent?>()
                 val phone = vsh.packageManager.getLaunchIntentForPackage(resInfo.activityInfo.packageName)

@@ -7,9 +7,8 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.minus
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.select
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.typography.FontCollections
@@ -20,7 +19,7 @@ import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
 
-class CustomAspectRatioDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
+class CustomAspectRatioDialogView(v: XmbView) : XmbDialogSubview(v) {
     private data class PresetSize(val w : Int, val h : Int )
 
     private var targetW = 1280
@@ -282,7 +281,7 @@ class CustomAspectRatioDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) 
                 }
             }
         }else{
-            finish(VshViewPage.MainMenu)
+            finish(view.screens.mainMenu)
         }
     }
 }

@@ -5,18 +5,16 @@ import android.text.TextPaint
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.minus
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.submodules.XMBAdaptiveIconRenderer
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.DrawExtension
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
+import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.wrapText
-import kotlinx.coroutines.NonCancellable.cancel
 import kotlin.math.abs
 
-class IconPriorityDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
+class IconPriorityDialogView(v: XmbView) : XmbDialogSubview(v) {
     companion object {
         const val TAG = "iconldr.sys"
         val iconTypeToStrId = arrayOf(
@@ -92,7 +90,7 @@ class IconPriorityDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
             if(isSelecting){
                 isSelecting = false
             }else{
-                finish(VshViewPage.MainMenu)
+                finish(view.screens.mainMenu)
             }
         }
     }

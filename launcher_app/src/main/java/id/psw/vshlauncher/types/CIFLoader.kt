@@ -4,7 +4,7 @@ import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.VshResTypes
 import id.psw.vshlauncher.delayedExistenceCheck
 import id.psw.vshlauncher.getOrMake
@@ -41,12 +41,12 @@ class CIFLoader {
     private val _backdropSync = Object()
     private val _portBackdropSync = Object()
     private val _backSoundSync = Object()
-    private lateinit var vsh : VSH
+    private lateinit var vsh : Vsh
     private var root = ArrayList<File>()
     private var resInfo : ResolveInfo? = null
     private var itemId = ""
 
-    constructor(vsh : VSH, resInfo : ResolveInfo, root : ArrayList<File>){
+    constructor(vsh : Vsh, resInfo : ResolveInfo, root : ArrayList<File>){
         this.vsh = vsh
         this.root.addAll(root)
         this.resInfo = resInfo
@@ -55,7 +55,7 @@ class CIFLoader {
         listCustomFiles()
     }
 
-    constructor(vsh : VSH, id:String, directory : File){
+    constructor(vsh : Vsh, id:String, directory : File){
         this.vsh = vsh
         itemId = id
         root.add(directory)

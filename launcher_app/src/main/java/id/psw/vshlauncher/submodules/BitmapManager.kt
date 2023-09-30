@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
 import id.psw.vshlauncher.Logger
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.sdkAtLeast
 import id.psw.vshlauncher.views.asBytes
 import kotlinx.coroutines.delay
@@ -12,7 +12,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class BitmapManager(private val ctx: VSH) : IVshSubmodule {
+class BitmapManager(private val ctx: Vsh) : IVshSubmodule {
     companion object {
         lateinit var instance : BitmapManager
         private const val TAG = "Bitman"

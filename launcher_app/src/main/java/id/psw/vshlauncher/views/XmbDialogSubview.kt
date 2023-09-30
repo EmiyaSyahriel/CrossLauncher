@@ -5,13 +5,15 @@ import android.graphics.Canvas
 import android.graphics.PointF
 import android.graphics.RectF
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.submodules.BitmapRef
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.vsh
 
-open class XmbDialogSubview(vsh: VSH) {
+open class XmbDialogSubview(var view : XmbView) {
+
+    val vsh get() = view.context.vsh
 
     var isPSP: Boolean = false
     open val icon : Bitmap = XMBItem.TRANSPARENT_BITMAP
@@ -22,12 +24,12 @@ open class XmbDialogSubview(vsh: VSH) {
     open val positiveButton = vsh.getString(android.R.string.ok)
     open val hasNegativeButton = false
     open val hasPositiveButton = false
-    private var pCloseDialogTo : VshViewPage = VshViewPage.MainMenu
+    private var pCloseDialogTo : XmbScreen = vsh.xmbView?.screens?.mainMenu!!
     private var pShouldClose = false
     val closeDialogTo get() = pCloseDialogTo
     val shouldClose get() = pShouldClose
 
-    fun finish(dialogTo:VshViewPage){
+    fun finish(dialogTo:XmbScreen){
         pCloseDialogTo = dialogTo
         pShouldClose = true
     }

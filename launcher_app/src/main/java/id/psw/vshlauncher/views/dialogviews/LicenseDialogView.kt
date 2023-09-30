@@ -7,22 +7,21 @@ import android.graphics.PointF
 import android.graphics.RectF
 import android.text.TextPaint
 import android.view.MotionEvent
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withClip
 import androidx.core.graphics.withRotation
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.submodules.BitmapRef
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.typography.FontCollections
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
+import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.drawText
 import java.io.InputStreamReader
 
-class LicenseDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
+class LicenseDialogView(v: XmbView) : XmbDialogSubview(v) {
 
     val paint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
         typeface = FontCollections.masterFont
@@ -52,7 +51,7 @@ class LicenseDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
 
     override fun onDialogButton(isPositive: Boolean) {
         if(!isPositive){
-            finish(VshViewPage.MainMenu)
+            finish(view.screens.mainMenu)
         }
     }
 

@@ -3,21 +3,14 @@ package id.psw.vshlauncher.types
 import android.content.Context
 import android.content.Intent
 import android.content.pm.LauncherApps
-import android.content.pm.ShortcutInfo
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Parcel
 import android.os.UserHandle
 import android.util.Base64
 import androidx.core.graphics.drawable.toBitmap
-import id.psw.vshlauncher.VSH
-import id.psw.vshlauncher.asHexToByteArray
-import id.psw.vshlauncher.fromByteArray
-import id.psw.vshlauncher.sdkAtLeast
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.select
-import id.psw.vshlauncher.toByteArray
-import id.psw.vshlauncher.toHex
 import java.io.File
 
 class XMBShortcutInfo {
@@ -60,7 +53,7 @@ class XMBShortcutInfo {
 
     private val ini = INIFile()
 
-    constructor(vsh: VSH, intent: Intent){
+    constructor(vsh: Vsh, intent: Intent){
         var isNextGen = false
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
@@ -106,7 +99,7 @@ class XMBShortcutInfo {
         icon.compress(Bitmap.CompressFormat.PNG, 100, outStream)
     }
 
-    constructor(vsh:VSH, iniPath: File){
+    constructor(vsh:Vsh, iniPath: File){
         ini.parseFile(iniPath.absolutePath)
         id = ini[INI_TYPE, INI_ID] ?: DEF_ID
         idInLauncher = ini[INI_TYPE, INI_CXL_ID] ?: DEF_CXL_ID

@@ -12,7 +12,7 @@ import id.psw.vshlauncher.select
 import id.psw.vshlauncher.submodules.SfxType
 import id.psw.vshlauncher.toLerp
 import id.psw.vshlauncher.typography.FontCollections
-import id.psw.vshlauncher.views.XMBLayoutType
+import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.XmbWidget
 import id.psw.vshlauncher.views.drawText
@@ -67,7 +67,7 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
     }
 
     override fun render(ctx: Canvas) {
-        val isPSP = view.screens.mainMenu.layoutMode == XMBLayoutType.PSP
+        val isPSP = view.screens.mainMenu.layoutMode == XmbLayoutType.PSP
 
         val item = vsh.hoveredItem
         if(item != null){
@@ -136,7 +136,7 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
         }
     }
 
-    fun execute(){
+    fun executeSelected(){
         try{
             val item = vsh.hoveredItem
             if(item != null){

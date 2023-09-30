@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private const val TAG = "GameCustomMigrate"
-fun VSH.isAGame(rInfo: ResolveInfo): Boolean {
+fun Vsh.isAGame(rInfo: ResolveInfo): Boolean {
     val appInfo = packageManager.getApplicationInfo(rInfo.activityInfo.packageName, 0)
     var retval = false
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -25,7 +25,7 @@ fun VSH.isAGame(rInfo: ResolveInfo): Boolean {
     return retval
 }
 
-fun VSH.appCategorySorting(it: XMBItemCategory) {
+fun Vsh.appCategorySorting(it: XMBItemCategory) {
     val newSort = when(it.getProperty(Consts.XMB_KEY_APP_SORT_MODE, AppItemSorting.FileSize)){
             AppItemSorting.Name -> AppItemSorting.PackageName
             AppItemSorting.PackageName -> AppItemSorting.FileSize
@@ -36,7 +36,7 @@ fun VSH.appCategorySorting(it: XMBItemCategory) {
     it.setProperty(Consts.XMB_KEY_APP_SORT_MODE, newSort)
 }
 
-fun VSH.appCategorySetSorting(it:XMBItemCategory, newSort:Any){
+fun Vsh.appCategorySetSorting(it:XMBItemCategory, newSort:Any){
     if(newSort is AppItemSorting){
         it.content.sortBy { item ->
             if(item is XMBAppItem){
@@ -55,7 +55,7 @@ fun VSH.appCategorySetSorting(it:XMBItemCategory, newSort:Any){
     }
 }
 
-fun VSH.appCategorySortingName(it : XMBItemCategory) : String{
+fun Vsh.appCategorySortingName(it : XMBItemCategory) : String{
     return when(it.getProperty(Consts.XMB_KEY_APP_SORT_MODE, AppItemSorting.Name)){
         AppItemSorting.Name -> vsh.getString(R.string.app_sorting_name)
         AppItemSorting.UpdateTime -> vsh.getString(R.string.app_sorting_updtime)
@@ -64,7 +64,7 @@ fun VSH.appCategorySortingName(it : XMBItemCategory) : String{
     }
 }
 
-fun VSH.tryMigrateOldGameDirectory(){
+fun Vsh.tryMigrateOldGameDirectory(){
     if(!runtimeTriageCheck(TAG)) return
 
     val storages = getExternalFilesDirs(null)
@@ -90,11 +90,11 @@ fun VSH.tryMigrateOldGameDirectory(){
     }
 }
 
-fun VSH.reloadAppList(){
+fun Vsh.reloadAppList(){
     vsh.lifeScope.launch {
         withContext(Dispatchers.Main){
             XMBAppItem.showHiddenByConfig = false
-            val gameCat = categories.find {it.id == VSH.ITEM_CATEGORY_GAME }
+            val gameCat = categories.find {it.id == Vsh.ITEM_CATEGORY_GAME }
             if(gameCat != null){
                 synchronized(gameCat){
                     gameCat.onSetSortFunc = { it, sort ->  appCategorySetSorting(it, sort) }
@@ -102,7 +102,7 @@ fun VSH.reloadAppList(){
                     gameCat.getSortModeNameFunc = { appCategorySortingName(it) }
                 }
             }
-            val appCat = categories.find{ it.id == VSH.ITEM_CATEGORY_APPS }
+            val appCat = categories.find{ it.id == Vsh.ITEM_CATEGORY_APPS }
             if(appCat != null){
                 synchronized(appCat){
                     appCat.onSetSortFunc = { it, sort -> appCategorySetSorting(it, sort) }
@@ -122,7 +122,7 @@ fun VSH.reloadAppList(){
             }.forEach {
                 val item = XMBAppItem(vsh, it)
                 val isGame = isAGame(it)
-                addToCategory(isGame.select(VSH.ITEM_CATEGORY_GAME, VSH.ITEM_CATEGORY_APPS), item)
+                addToCategory(isGame.select(Vsh.ITEM_CATEGORY_GAME, Vsh.ITEM_CATEGORY_APPS), item)
                 isGame.select(gameCat, appCat)?.setSort(AppItemSorting.Name)
             }
 

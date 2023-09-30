@@ -2,28 +2,28 @@ package id.psw.vshlauncher.views.widgets
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import id.psw.vshlauncher.Consts
 import id.psw.vshlauncher.R
+import id.psw.vshlauncher.makeTextPaint
+import id.psw.vshlauncher.select
 import id.psw.vshlauncher.types.XMBItem
-import id.psw.vshlauncher.views.XMBLayoutType
+import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.XmbWidget
 import id.psw.vshlauncher.views.drawText
 
 class XmbSearchQuery(view: XmbView) : XmbWidget(view) {
     var searchIcon: Bitmap? = null
-    val iconPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val iconPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-    private fun drawSearchQuery(ctx: Canvas){
-        if(widgets.statusBar.disabled) return
-        when(screens.mainMenu.layoutMode){
-            XMBLayoutType.PS3 -> drawSearchQueryPS3(ctx)
-            XMBLayoutType.PSP -> drawSearchQueryPSP(ctx)
-            else -> drawSearchQueryPSP(ctx)
-        }
+    private val statusTextPaint = vsh.makeTextPaint(size = 10.0f, color = Color.WHITE).apply {
+        style = Paint.Style.FILL
+        strokeWidth = 3.0f
     }
+
     private fun drawSearchQueryPS3(ctx: Canvas){
         val cat = vsh.activeParent
         if(cat != null){
@@ -49,10 +49,11 @@ class XmbSearchQuery(view: XmbView) : XmbWidget(view) {
             }
         }
     }
+
     private fun drawSearchQueryPSP(ctx: Canvas){
         val cat = vsh.activeParent
         if(cat != null){
-            val y = scaling.target.top + screens.mainMenu.padPSPStatusBar.select(48.0f, 10.0f)
+            val y = scaling.target.top + widgets.statusBar.pspPadStatusBar.select(48.0f, 10.0f)
             val x = scaling.target.left + 10.0f
             val q = cat.getProperty(Consts.XMB_ACTIVE_SEARCH_QUERY, "")
             if(q.isNotEmpty()){
@@ -75,6 +76,11 @@ class XmbSearchQuery(view: XmbView) : XmbWidget(view) {
     }
 
     override fun render(ctx: Canvas) {
-        super.render(ctx)
+        if(widgets.statusBar.disabled) return
+        when(screens.mainMenu.layoutMode){
+            XmbLayoutType.PS3 -> drawSearchQueryPS3(ctx)
+            XmbLayoutType.PSP -> drawSearchQueryPSP(ctx)
+            else -> drawSearchQueryPSP(ctx)
+        }
     }
 }

@@ -22,7 +22,6 @@ import id.psw.vshlauncher.toLerp
 import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.GameBootParticleSystem
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbScreen
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.drawBitmap
@@ -111,14 +110,14 @@ class XmbGameboot (view : XmbView) : XmbScreen(view) {
     fun bootInto(skip:Boolean, bootFunc : () -> Unit){
         this.skip = skip
         onBoot = bootFunc
-        view.switchScreen(VshViewPage.GameBoot)
+        view.switchScreen(view.screens.gameBoot)
         M.audio.removeAudioSource()
     }
 
     private fun bootDirectly(){
         onBoot?.invoke()
         onBoot = null
-        view.switchScreen(VshViewPage.MainMenu)
+        view.switchScreen(view.screens.mainMenu)
     }
 
     private fun drawParticle(ctx: Canvas){
@@ -208,7 +207,7 @@ class XmbGameboot (view : XmbView) : XmbScreen(view) {
         var retval =false
 
         if(isDown && (key == PadKey.Cancel || key == PadKey.StaticCancel)){
-            view.switchScreen(VshViewPage.MainMenu)
+            view.switchScreen(view.screens.mainMenu)
             retval = true
         }
         return retval

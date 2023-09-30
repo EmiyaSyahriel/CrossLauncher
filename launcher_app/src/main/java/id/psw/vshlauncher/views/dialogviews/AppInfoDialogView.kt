@@ -1,27 +1,23 @@
 package id.psw.vshlauncher.views.dialogviews
 
-import android.app.ProgressDialog.show
 import android.graphics.*
-import android.os.Build
 import android.text.TextPaint
 import android.view.MotionEvent
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.minus
 import androidx.core.graphics.withRotation
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBAppItem
 import id.psw.vshlauncher.typography.FontCollections
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
+import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.drawBitmap
 import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
 import kotlin.math.abs
 
-class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : XmbDialogSubview(vsh) {
+class AppInfoDialogView(v: XmbView, private val app : XMBAppItem) : XmbDialogSubview(v) {
     companion object {
         const val POS_NAME = 0
         const val POS_DESC = 2
@@ -293,6 +289,6 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
             }
         }
 
-        if(!isPositive) finish(VshViewPage.MainMenu)
+        if(!isPositive) finish(view.screens.mainMenu)
     }
 }

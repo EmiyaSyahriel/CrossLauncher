@@ -5,14 +5,14 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.Consts
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.types.items.XMBMenuItem
 import id.psw.vshlauncher.types.sequentialimages.XMBAnimBitmap
 import id.psw.vshlauncher.types.sequentialimages.XMBFrameAnimation
 import java.io.File
 
-open class XMBItem(private val vsh: VSH) {
+open class XMBItem(private val vsh: Vsh) {
     companion object {
         val WHITE_BITMAP : Bitmap = ColorDrawable(Color.WHITE).toBitmap(1,1)
         val TRANSPARENT_BITMAP : Bitmap = ColorDrawable(Color.TRANSPARENT).toBitmap(1,1)

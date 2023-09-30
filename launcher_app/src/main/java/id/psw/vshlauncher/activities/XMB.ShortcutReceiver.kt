@@ -1,18 +1,12 @@
 package id.psw.vshlauncher.activities
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.LauncherApps
-import android.content.pm.ShortcutManager
-import android.graphics.Bitmap
 import android.os.Build
-import androidx.core.graphics.drawable.toBitmap
-import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.views.dialogviews.InstallShortcutDialogView
-import id.psw.vshlauncher.views.showDialog
 import id.psw.vshlauncher.vsh
 
-fun XMB.isCreateShortcutIntent(intent: Intent?) : Boolean{
+fun Xmb.isCreateShortcutIntent(intent: Intent?) : Boolean{
     if(intent != null){
         var retval = intent.action?.contentEquals(Intent.ACTION_CREATE_SHORTCUT) == true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -23,8 +17,8 @@ fun XMB.isCreateShortcutIntent(intent: Intent?) : Boolean{
     return false
 }
 
-fun XMB.showShortcutCreationDialog(intent:Intent?){
+fun Xmb.showShortcutCreationDialog(intent:Intent?){
     if(intent != null){
-        xmbView.showDialog(InstallShortcutDialogView(vsh, intent))
+        xmbView.showDialog(InstallShortcutDialogView(xmbView, intent))
     }
 }

@@ -2,19 +2,18 @@ package id.psw.vshlauncher.views.dialogviews
 
 import android.graphics.*
 import android.os.Build
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.postNotification
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.typography.drawText
 import id.psw.vshlauncher.typography.toButtonSpan
 import id.psw.vshlauncher.views.DrawExtension
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
+import id.psw.vshlauncher.views.XmbView
 import kotlin.random.Random
 
-class UITestDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
+class UITestDialogView(v: XmbView) : XmbDialogSubview(v) {
     override val title: String = "::TEST::"
 
     override val hasNegativeButton: Boolean = true
@@ -22,7 +21,7 @@ class UITestDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
     override val negativeButton: String = "Back"
 
     override fun onDialogButton(isPositive: Boolean) {
-        finish(VshViewPage.MainMenu)
+        finish(view.screens.mainMenu)
     }
     private var testBarValue = 50.0f
     private var testVScrollPc = 0.5f
@@ -119,8 +118,8 @@ class UITestDialogView(private val vsh: VSH) : XmbDialogSubview(vsh) {
             if( isDown(PadKey.Square) &&
                 isDown(PadKey.R2) &&
                 isDown(PadKey.L2)){
-                    val rapCount = vsh.categories.find { it.id == VSH.ITEM_CATEGORY_APPS }?.contentCount ?: (Random.nextInt() % 128)
-                    val edatCount = vsh.categories.find { it.id == VSH.ITEM_CATEGORY_GAME }?.contentCount ?: (Random.nextInt() % 72)
+                    val rapCount = vsh.categories.find { it.id == Vsh.ITEM_CATEGORY_APPS }?.contentCount ?: (Random.nextInt() % 128)
+                    val edatCount = vsh.categories.find { it.id == Vsh.ITEM_CATEGORY_GAME }?.contentCount ?: (Random.nextInt() % 72)
                 vsh.postNotification(null, "reActPSW v1.35.23","CFW : JKSEMBUG ${Build.VERSION.RELEASE}.1, WELING 4.84, " +
                         "activated : $rapCount RAPs, $edatCount EDATs", 10.0f)
             }

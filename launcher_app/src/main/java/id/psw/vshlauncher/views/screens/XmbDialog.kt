@@ -17,12 +17,11 @@ import id.psw.vshlauncher.toLerp
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.typography.drawText
 import id.psw.vshlauncher.typography.toButtonSpan
-import id.psw.vshlauncher.views.XMBLayoutType
+import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.XmbScreen
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.drawBitmap
-import id.psw.vshlauncher.views.drawClock
 import id.psw.vshlauncher.views.drawText
 import id.psw.vshlauncher.vsh
 import java.util.Calendar
@@ -59,7 +58,7 @@ class XmbDialog(view : XmbView) : XmbScreen(view) {
 
     override fun render(ctx: Canvas) {
         val ctxState = ctx.save()
-        val isPSP = screens.mainMenu.layoutMode == XMBLayoutType.PSP
+        val isPSP = screens.mainMenu.layoutMode == XmbLayoutType.PSP
 
         val dlg = activeDialog
         if(dlg != null){
@@ -81,7 +80,7 @@ class XmbDialog(view : XmbView) : XmbScreen(view) {
             }
 
             if(context.vsh.hasConcurrentLoading){
-                view.drawClock(ctx, Calendar.getInstance(), 65f)
+                view.widgets.analogClock.render(ctx)
             }
 
             if(dlg.shouldClose){

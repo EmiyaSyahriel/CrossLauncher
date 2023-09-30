@@ -6,8 +6,6 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Debug
-import android.view.MotionEvent
-import id.psw.vshlauncher.activities.XMB
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.XmbWidget

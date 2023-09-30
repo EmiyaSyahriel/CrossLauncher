@@ -7,7 +7,7 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.UserHandle
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.reloadShortcutList
 import id.psw.vshlauncher.sdkAtLeast
@@ -17,10 +17,9 @@ import id.psw.vshlauncher.types.XMBShortcutInfo
 import id.psw.vshlauncher.types.sequentialimages.XMBFrameAnimation
 import id.psw.vshlauncher.views.dialogviews.ConfirmDialogView
 import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
-import id.psw.vshlauncher.views.showDialog
 import java.io.File
 
-class XMBShortcutItem(val vsh: VSH, private val file: File) : XMBItem(vsh) {
+class XMBShortcutItem(val vsh: Vsh, private val file: File) : XMBItem(vsh) {
 
     private val shortcut = XMBShortcutInfo(vsh, file)
 
@@ -95,7 +94,8 @@ class XMBShortcutItem(val vsh: VSH, private val file: File) : XMBItem(vsh) {
     }
 
     private fun deleteItem(){
-        vsh.xmbView?.showDialog(ConfirmDialogView(vsh, vsh.getString(R.string.shortcut_remove),
+        val xv = vsh.xmbView
+        xv?.showDialog(ConfirmDialogView(xv, vsh.getString(R.string.shortcut_remove),
             R.drawable.ic_error, // TODO: Use trash icon
             vsh.getString(R.string.shortcut_remove_confirm_text).format(displayName)
         ){confirmed ->

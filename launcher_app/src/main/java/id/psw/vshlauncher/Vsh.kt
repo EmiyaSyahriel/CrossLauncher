@@ -34,7 +34,7 @@ import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 import kotlin.system.exitProcess
 
-class VSH : Application() {
+class Vsh : Application() {
 
     companion object {
         private lateinit var _appFont : Typeface
@@ -64,6 +64,10 @@ class VSH : Application() {
     var aggressiveUnloading = true
     val runtimeTriageList = ArrayList<String>()
     var xmbView : XmbView? = null
+
+    val haveXmbView get() = xmbView != null
+    val safeXmbView get()= xmbView!!
+
     var playAnimatedIcon = true
     var mediaListingStarted = false
     lateinit var mainHandle : Handler
@@ -228,11 +232,11 @@ class VSH : Application() {
             selectedItemId = items[cIdx].lastSelectedItemId // Load new category item id
             items[cIdx].content?.forEach { it.isHovered = it.id == selectedItemId }
             selectedCategoryId = items[cIdx].id
-            xmbView?.state?.itemMenu?.selectedIndex = 0
+            xmbView?.widgets?.sideMenu?.selectedIndex = 0
             M.audio.playSfx(SfxType.Selection)
 
-            xmbView?.state?.crossMenu?.verticalMenu?.nameTextXOffset = 0.0f
-            xmbView?.state?.crossMenu?.verticalMenu?.descTextXOffset = 0.0f
+            xmbView?.screens?.mainMenu?.verticalMenu?.nameTextXOffset = 0.0f
+            xmbView?.screens?.mainMenu?.verticalMenu?.descTextXOffset = 0.0f
         }
     }
 
@@ -243,7 +247,7 @@ class VSH : Application() {
     }
     fun loadTexture(@DrawableRes d : Int, whiteFallback:Boolean = false ) : Bitmap {
         val dwb =ResourcesCompat.getDrawable(resources, d, null)
-        return dwb?.toBitmap(dwb.intrinsicWidth ?: 1, dwb.intrinsicHeight?: 1) ?: whiteFallback.select(XMBItem.WHITE_BITMAP, XMBItem.TRANSPARENT_BITMAP)
+        return dwb?.toBitmap(dwb.intrinsicWidth, dwb.intrinsicHeight?: 1) ?: whiteFallback.select(XMBItem.WHITE_BITMAP, XMBItem.TRANSPARENT_BITMAP)
     }
     fun loadTexture(@DrawableRes d: Int, customId:String, w:Int, h:Int, whiteFallback: Boolean) : Bitmap{
         var retval : Bitmap? = null
@@ -298,14 +302,14 @@ class VSH : Application() {
                     selectedItemId = items[cIdx].id
                 }
 
-                xmbView?.state?.crossMenu?.verticalMenu?.nameTextXOffset = 0.0f
-                xmbView?.state?.crossMenu?.verticalMenu?.descTextXOffset = 0.0f
+                xmbView?.screens?.mainMenu?.verticalMenu?.nameTextXOffset = 0.0f
+                xmbView?.screens?.mainMenu?.verticalMenu?.descTextXOffset = 0.0f
 
                 // Update hovering
                 items.forEach {
                     it.isHovered = it.id == selectedItemId
                 }
-                xmbView?.state?.itemMenu?.selectedIndex = 0
+                xmbView?.widgets?.sideMenu?.selectedIndex = 0
                 M.audio.playSfx(SfxType.Selection)
             }
         }catch (e:ArrayIndexOutOfBoundsException){
@@ -319,7 +323,7 @@ class VSH : Application() {
             if(cat is XMBItemCategory){
                 if(cat.sortable){
                     cat.onSwitchSort()
-                    xmbView?.state?.crossMenu?.sortHeaderDisplay = 5.25f
+                    xmbView?.screens?.mainMenu?.sortHeaderDisplay = 5.25f
                 }
             }
         }

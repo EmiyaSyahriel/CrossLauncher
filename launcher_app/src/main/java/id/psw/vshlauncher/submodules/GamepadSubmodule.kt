@@ -3,13 +3,11 @@ package id.psw.vshlauncher.submodules
 import android.os.Build
 import android.view.KeyEvent.*
 import android.view.MotionEvent
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.VshBaseDirs
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.types.FileQuery
 import java.lang.Math.abs
-import java.nio.file.Files.exists
-import java.nio.file.Files.isDirectory
 
 /**
  * ## Keymapping Format
@@ -52,7 +50,7 @@ import java.nio.file.Files.isDirectory
  * - `R3, RAnalog, RS, RStick` -> R3 / Right Analog Click
  * */
 
-class GamepadSubmodule(private val ctx: VSH) : IVshSubmodule {
+class GamepadSubmodule(private val ctx: Vsh) : IVshSubmodule {
     data class AxisInfo(
         val negative:PadKey,
         val positive:PadKey

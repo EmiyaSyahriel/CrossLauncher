@@ -5,11 +5,11 @@ import android.content.Context
 import android.content.Intent
 import id.psw.crosslauncher.xlib.ExtensionErrorReason
 import id.psw.crosslauncher.xlib.XmbExtension
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import org.xmlpull.v1.XmlPullParser
 import java.security.InvalidParameterException
 
-class PluginManager(private val vsh : VSH) {
+class PluginManager(private val vsh : Vsh) {
     data class PluginInfo(
         val context : Context?,
         val err : ExtensionErrorReason,

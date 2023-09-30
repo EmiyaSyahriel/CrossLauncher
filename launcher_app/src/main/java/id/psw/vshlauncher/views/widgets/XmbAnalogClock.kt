@@ -21,7 +21,7 @@ class XmbAnalogClock(view: XmbView) : XmbWidget(view) {
     private val tmpPointFB = PointF()
     private val tmpPointFA = PointF()
     private val calendar = Calendar.getInstance()
-    var secondOnAnalog = false
+    var showSecondHand = false
     private var clockLoadTransition = 0.0f
 
     override fun render(ctx: Canvas) {
@@ -61,7 +61,7 @@ class XmbAnalogClock(view: XmbView) : XmbWidget(view) {
         val fmm = (mm + fss) / 60.0f
         val fhh = (hh + fmm) / 12.0f
         var handPt : PointF = tmpPointFA
-        if(secondOnAnalog){
+        if(showSecondHand){
             statusOutlinePaint.color = Color.RED
             handPt = calcHand(fss, 15.0f)
             ctx.drawLine(tmpPointFB.x, tmpPointFB.y, handPt.x, handPt.y, statusOutlinePaint)

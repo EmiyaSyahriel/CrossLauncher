@@ -1,16 +1,12 @@
 package id.psw.vshlauncher
 
 import android.Manifest
-import android.app.job.JobParameters
-import android.app.job.JobService
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import androidx.activity.result.contract.ActivityResultContract
-import androidx.annotation.RequiresApi
 
-fun VSH.mediaListingStart(){
+fun Vsh.mediaListingStart(){
     // Return directly if media started
     if(mediaListingStarted) return
 
@@ -57,7 +53,7 @@ fun VSH.mediaListingStart(){
 
 var isMediaListingUpdaterRegistered = false
 
-fun VSH.mediaListingRegisterUpdater(){
+fun Vsh.mediaListingRegisterUpdater(){
     if(isMediaListingUpdaterRegistered) return
 
     if(sdkAtLeast(Build.VERSION_CODES.N))
@@ -66,6 +62,6 @@ fun VSH.mediaListingRegisterUpdater(){
     isMediaListingUpdaterRegistered = true
 }
 
-fun VSH.mediaListingAdd(uri: Uri){
+fun Vsh.mediaListingAdd(uri: Uri){
 
 }

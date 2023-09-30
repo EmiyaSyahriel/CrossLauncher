@@ -3,16 +3,15 @@ package id.psw.vshlauncher.views.dialogviews
 import android.graphics.*
 import android.view.KeyEvent.ACTION_DOWN
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.items.XMBItemCategory
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.DrawExtension
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
+import id.psw.vshlauncher.views.XmbView
 import kotlin.math.abs
 
-class ArrangeCategoryDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
+class ArrangeCategoryDialogView(v: XmbView) : XmbDialogSubview(v) {
     private var activeIndex = 0
     private var activeIndexF = 0.0f
     private var liftOffset = 0.0f
@@ -184,7 +183,7 @@ class ArrangeCategoryDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
             endLifting(!isPositive)
         }else{
             if(isPositive) startLifting()
-            else finish(VshViewPage.Dialog)
+            else finish(view.screens.mainMenu)
         }
     }
 }

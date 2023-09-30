@@ -24,7 +24,7 @@ import kotlin.math.min
 
 
 @SuppressLint("UseCompatLoadingForDrawables")
-class InstallPackageDialogView(private val vsh: VSH, private val intent: Intent) : XmbDialogSubview(vsh) {
+class InstallPackageDialogView(v: XmbView,private val intent: Intent) : XmbDialogSubview(v)  {
 
     companion object {
         var storageDestination = File("")
@@ -204,8 +204,8 @@ class InstallPackageDialogView(private val vsh: VSH, private val intent: Intent)
 
                         val req = ppkg.checkInstalls.split(";")
                         val callback = arrayListOf<XMBItem>()
-                        val apps = vsh.categories.find { it.id == VSH.ITEM_CATEGORY_APPS }?.content ?: callback
-                        val game = vsh.categories.find { it.id == VSH.ITEM_CATEGORY_GAME }?.content ?: callback
+                        val apps = vsh.categories.find { it.id == Vsh.ITEM_CATEGORY_APPS }?.content ?: callback
+                        val game = vsh.categories.find { it.id == Vsh.ITEM_CATEGORY_GAME }?.content ?: callback
                         val list = arrayListOf<XMBItem>().apply { addAll(apps); addAll(game) }
                         val canInstall = list.indexOfFirst {
                             val e = it as XMBAppItem?
@@ -490,7 +490,7 @@ class InstallPackageDialogView(private val vsh: VSH, private val intent: Intent)
                     installData()
                 }
             }else{
-                finish(VshViewPage.MainMenu)
+                finish(view.screens.mainMenu)
             }
         }
     }

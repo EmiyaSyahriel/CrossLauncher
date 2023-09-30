@@ -2,10 +2,13 @@ package id.psw.vshlauncher.views
 
 import android.graphics.*
 import android.os.Build
+import id.psw.vshlauncher.Consts
 import id.psw.vshlauncher.FittingMode
-import id.psw.vshlauncher.activities.XMB
+import id.psw.vshlauncher.Vsh
+import id.psw.vshlauncher.activities.Xmb
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.toLerp
+import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.vsh
 import kotlin.math.floor
 
@@ -36,6 +39,11 @@ fun Canvas.drawBitmap(bm:Bitmap, src: Rect?, dst: RectF, paint: Paint?, fitMode:
             drawBitmap(bm, src, drawBitmapFitRectFBuffer, paint)
         }
     }
+}
+
+fun List<XMBItem>.filterBySearch(vsh: Vsh): List<XMBItem> {
+    val q = vsh.activeParent?.getProperty(Consts.XMB_ACTIVE_SEARCH_QUERY, "") ?: ""
+    return this.filter { it.displayName.contains(q, true) }
 }
 
 fun Paint.removeShadowLayer() = setShadowLayer(0.0f, 0.0f, 0.0f, Color.TRANSPARENT)
@@ -143,4 +151,4 @@ fun Paint.withTextAlignment(align : Paint.Align, fn : () -> Unit){
 }
 
 val XmbView.M get() = context.vsh.M
-val XMB.M get() = vsh.M
+val Xmb.M get() = vsh.M

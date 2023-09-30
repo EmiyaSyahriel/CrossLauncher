@@ -5,30 +5,28 @@ import android.app.WallpaperManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.*
-import android.os.Build.VERSION_CODES.M
 import android.text.TextPaint
 import android.view.MotionEvent
 import androidx.core.graphics.minus
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.PrefEntry
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.select
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.typography.drawText
 import id.psw.vshlauncher.typography.getButtonedString
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.DrawExtension
+import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.drawText
 import id.psw.vshlauncher.views.wrapText
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.abs
 
-class XMBWaveSettingSubDialog(private val vsh: VSH) : XmbDialogSubview(vsh) {
+class XMBWaveSettingSubDialog(v : XmbView) : XmbDialogSubview(v) {
     /*
     * Pages:
     * - 0 : Style / Speed
@@ -416,14 +414,14 @@ class XMBWaveSettingSubDialog(private val vsh: VSH) : XmbDialogSubview(vsh) {
             if(pageNumber == 2){
                 // Save
                 saveStateToWavePreferences()
-                finish(VshViewPage.MainMenu)
+                finish(view.screens.mainMenu)
             }else{
                 changePage(true)
             }
         }else{
             if(pageNumber == 0){
 
-                finish(VshViewPage.MainMenu)
+                finish(view.screens.mainMenu)
             }else{
                 changePage(false)
             }

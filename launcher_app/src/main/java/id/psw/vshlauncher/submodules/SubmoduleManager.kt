@@ -1,8 +1,8 @@
 package id.psw.vshlauncher.submodules
 
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 
-class SubmoduleManager(ctx: VSH) {
+class SubmoduleManager(ctx: Vsh) {
     val pref = PreferenceSubmodule(ctx)
     val bmp = BitmapManager(ctx)
     val customizer = CustomizerPackageSubmodule()

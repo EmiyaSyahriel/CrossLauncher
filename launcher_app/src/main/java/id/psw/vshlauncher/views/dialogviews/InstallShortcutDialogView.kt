@@ -10,14 +10,14 @@ import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.XMBShortcutInfo
 import id.psw.vshlauncher.typography.FontCollections
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
+import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.drawBitmap
 import id.psw.vshlauncher.views.drawText
 import java.io.File
 import kotlin.random.Random
 
-class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent) : XmbDialogSubview(vsh) {
+class InstallShortcutDialogView(v: XmbView, private val intent: Intent) : XmbDialogSubview(v) {
     companion object {
         private val rng = Random(System.nanoTime())
     }
@@ -97,7 +97,7 @@ class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent
                 vsh.reloadShortcutList()
             }
         }
-        finish(VshViewPage.MainMenu)
+        finish(view.screens.mainMenu)
     }
 
     private val tmpRectF = RectF()

@@ -2,26 +2,24 @@ package id.psw.vshlauncher.views.dialogviews
 
 import android.app.ActivityManager
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.*
 import android.os.Build
 import android.os.Environment
 import android.os.StatFs
 import android.text.format.Formatter
-import androidx.core.app.ActivityManagerCompat.isLowRamDevice
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.BuildConfig
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.submodules.VulkanisirSubmodule
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.typography.FontCollections
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
+import id.psw.vshlauncher.views.XmbView
 
-class AboutDeviceDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
+class AboutDeviceDialogView(v: XmbView) : XmbDialogSubview(v) {
     override val hasNegativeButton: Boolean = true
     override val hasPositiveButton: Boolean = false
     override val negativeButton: String = vsh.getString(R.string.common_back)
@@ -79,7 +77,7 @@ class AboutDeviceDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
 
     override fun onDialogButton(isPositive: Boolean) {
         if(!isPositive){
-            finish(VshViewPage.MainMenu)
+            finish(view.screens.mainMenu)
         }
     }
 

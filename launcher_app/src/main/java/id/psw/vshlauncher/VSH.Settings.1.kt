@@ -11,10 +11,8 @@ import id.psw.vshlauncher.submodules.PadType
 import id.psw.vshlauncher.submodules.XMBAdaptiveIconRenderer
 import id.psw.vshlauncher.types.CIFLoader
 import id.psw.vshlauncher.types.items.*
-import id.psw.vshlauncher.views.XMBLayoutType
+import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.dialogviews.*
-import id.psw.vshlauncher.views.formatStatusBar
-import id.psw.vshlauncher.views.showDialog
 import kotlinx.coroutines.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -30,18 +28,18 @@ object SettingsCategoryID {
     const val CATEGORY_SETTINGS_SYSTEM = "settings_category_system"
 }
 
-fun VSH.fillSettingsCategory(){
+fun Vsh.fillSettingsCategory(){
     vsh.lifeScope.launch {
-        addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryDisplay())
-        addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryAudio())
-        addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategorySystem())
-        addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryAndroidSetting())
-        addToCategory(VSH.ITEM_CATEGORY_SETTINGS, createCategoryDebug())
-        addToCategory(VSH.ITEM_CATEGORY_SETTINGS, settingsAddInstallPackage())
+        addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, createCategoryDisplay())
+        addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, createCategoryAudio())
+        addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, createCategorySystem())
+        addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, createCategoryAndroidSetting())
+        addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, createCategoryDebug())
+        addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, settingsAddInstallPackage())
     }
 }
 
-private fun VSH.getCurrentLocaleName() : String {
+private fun Vsh.getCurrentLocaleName() : String {
     return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
         resources.configuration.locales[0].displayName
     }else{
@@ -49,14 +47,14 @@ private fun VSH.getCurrentLocaleName() : String {
     }
 }
 
-private fun VSH.makeVolume(setting: XMBSettingsItem, volume : (Float) -> Unit ){
+private fun Vsh.makeVolume(setting: XMBSettingsItem, volume : (Float) -> Unit ){
     setting.hasMenu = true
     val v = arrayListOf<XMBMenuItem>()
     for(i in 10 downTo 0)
     {
         v.add(XMBMenuItem.XMBMenuItemLambda({ i.toString() }, {false}, (10 - i) - 5){
             volume.invoke(i / 10.0f)
-            vsh.xmbView?.state?.itemMenu?.isDisplayed = false
+            xmbView?.showSideMenu(false)
         })
     }
     setting.menuItems = v
@@ -64,7 +62,7 @@ private fun VSH.makeVolume(setting: XMBSettingsItem, volume : (Float) -> Unit ){
 
 private fun volumeToString(v: Float) : String = (v * 10).roundToInt().toString()
 
-private fun VSH.createCategoryAudio(): XMBSettingsCategory{
+private fun Vsh.createCategoryAudio(): XMBSettingsCategory{
     val vsh = this
     return XMBSettingsCategory(this, SettingsCategoryID.CATEGORY_SETTINGS_AUDIO,
         R.drawable.icon_volume,
@@ -75,7 +73,7 @@ private fun VSH.createCategoryAudio(): XMBSettingsCategory{
             R.string.settings_audio_master_volume_desc,
             R.drawable.icon_volume, { volumeToString(M.audio.master) }
         ){
-            vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+            xmbView?.showSideMenu(true)
         }.apply {
             makeVolume( this) { M.audio.master = it }
         })
@@ -85,7 +83,7 @@ private fun VSH.createCategoryAudio(): XMBSettingsCategory{
             R.string.settings_audio_bgm_volume_desc,
             R.drawable.category_music, { volumeToString(M.audio.bgm) }
         ){
-            vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+            xmbView?.showSideMenu(true)
         }.apply {
             makeVolume( this) { M.audio.bgm = it }
         })
@@ -95,7 +93,7 @@ private fun VSH.createCategoryAudio(): XMBSettingsCategory{
             R.string.settings_audio_sysbgm_volume_desc,
             R.drawable.ic_component_audio, { volumeToString(M.audio.systemBgm) }
         ){
-            vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+            xmbView?.showSideMenu(true)
         }.apply {
             makeVolume( this) { M.audio.systemBgm = it }
         })
@@ -105,7 +103,7 @@ private fun VSH.createCategoryAudio(): XMBSettingsCategory{
             R.string.settings_audio_sfx_volume_desc,
             R.drawable.ic_speaker_phone, { volumeToString(M.audio.sfx) }
         ){
-            vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+            xmbView?.showSideMenu(true)
         }.apply {
             makeVolume( this) { M.audio.sfx = it }
         })
@@ -119,7 +117,7 @@ private fun VSH.createCategoryAudio(): XMBSettingsCategory{
     }
 }
 
-private fun VSH.createCategorySystem() : XMBSettingsCategory{
+private fun Vsh.createCategorySystem() : XMBSettingsCategory{
     val vsh = this
     return XMBSettingsCategory(this,
         SettingsCategoryID.CATEGORY_SETTINGS_SYSTEM,
@@ -162,7 +160,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 R.string.settings_system_rearrange_category_desc,
                 R.drawable.category_setting, { "" }
             ){
-                vsh.xmbView?.showDialog(ArrangeCategoryDialogView(vsh))
+                if(vsh.haveXmbView) vsh.safeXmbView.showDialog(ArrangeCategoryDialogView(vsh.safeXmbView))
             }
         )
 
@@ -176,7 +174,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                     vsh.getString(R.string.settings_system_reorder_icon_loading_value).format(vsh.getString(id))
                 }
             ){
-                vsh.xmbView?.showDialog(IconPriorityDialogView(vsh))
+                if(vsh.haveXmbView) vsh.safeXmbView.showDialog(IconPriorityDialogView(vsh.safeXmbView))
             }
         )
 
@@ -241,17 +239,17 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
             R.string.settings_system_disable_splash_message_title,
             R.string.settings_system_disable_splash_message_desc,
             R.drawable.icon_info, {
-                getString(xmbView?.state?.coldBoot?.hideEpilepsyWarning?.select(
+                getString(xmbView?.screens?.coldBoot?.hideEpilepsyWarning?.select(
                     R.string.common_yes, R.string.common_no
                 ) ?: R.string.unknown)
             })
         {
             val xv = xmbView
             if(xv != null){
-                xv.state.coldBoot.hideEpilepsyWarning = !xv.state.coldBoot.hideEpilepsyWarning
+                xv.screens.coldBoot.hideEpilepsyWarning = !xv.screens.coldBoot.hideEpilepsyWarning
                 M.pref.set(
                         PrefEntry.DISABLE_EPILEPSY_WARNING,
-                        xv.state.coldBoot.hideEpilepsyWarning.select(1,0)
+                        xv.screens.coldBoot.hideEpilepsyWarning.select(1,0)
                     )
             }
         }
@@ -294,7 +292,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                     )
                 }
             ){
-                vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+                vsh.xmbView?.showSideMenu(true)
             }.apply {
                 hasMenu = true
                 val menu = arrayListOf<XMBMenuItem>()
@@ -303,7 +301,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                     menu.add(XMBMenuItem.XMBMenuItemLambda( { getString(m) }, {false}, i++){
                         XMBAppItem.descriptionDisplay = k
                         M.pref.set(PrefEntry.SYSTEM_VISIBLE_APP_DESC, k.ordinal)
-                        vsh.xmbView?.state?.itemMenu?.isDisplayed = false
+                        vsh.xmbView?.showSideMenu(false)
                     })
                 }
                 menuItems= menu
@@ -315,16 +313,16 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 R.string.setting_show_gameboot_name,
                 R.string.setting_show_gameboot_desc,
                 R.drawable.icon_dynamic_theme_effect, {
-                    val i = xmbView?.state?.gameBoot?.defaultSkip?.select(
+                    val i = xmbView?.screens?.gameBoot?.defaultSkip?.select(
                         R.string.common_no,
                         R.string.common_yes
                     ) ?: R.string.empty_string
                     getString(i)
                 }
             ){
-                xmbView?.state?.gameBoot?.defaultSkip = !(xmbView?.state?.gameBoot?.defaultSkip ?: true)
+                xmbView?.screens?.gameBoot?.defaultSkip = !(xmbView?.screens?.gameBoot?.defaultSkip ?: true)
                 M.pref.set(PrefEntry.SKIP_GAMEBOOT,
-                    xmbView?.state?.gameBoot?.defaultSkip?.select(1, 0) ?: 0
+                    xmbView?.screens?.gameBoot?.defaultSkip?.select(1, 0) ?: 0
                 )
             }
         )
@@ -367,7 +365,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 R.string.setting_systeminfo_desc,
                 R.drawable.icon_info, { "" }
             ){
-                vsh.xmbView?.showDialog(AboutDeviceDialogView(vsh))
+                if(vsh.haveXmbView) vsh.safeXmbView.showDialog(AboutDeviceDialogView(vsh.safeXmbView))
             }
         )
 
@@ -377,7 +375,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
                 R.string.setting_license_desc,
                 R.drawable.icon_info, { "" }
             ){
-                vsh.xmbView?.showDialog(LicenseDialogView(vsh))
+                if(vsh.haveXmbView) vsh.safeXmbView.showDialog(LicenseDialogView(vsh.safeXmbView))
             }
         )
 
@@ -402,7 +400,7 @@ private fun VSH.createCategorySystem() : XMBSettingsCategory{
     }
 }
 
-private fun VSH.createCategoryDebug() : XMBSettingsCategory{
+private fun Vsh.createCategoryDebug() : XMBSettingsCategory{
     val vsh = this
     return XMBSettingsCategory(this,
         SettingsCategoryID.CATEGORY_SETTINGS_DEBUG,
@@ -415,11 +413,11 @@ private fun VSH.createCategoryDebug() : XMBSettingsCategory{
 
         content.add(XMBSettingsItem(vsh, "dbg_launch_dialog_test",
             R.string.dbg_launch_dialog_test, R.string.empty_string, R.drawable.category_debug, {""}){
-            xmbView?.showDialog(TestDialogView(vsh))
+            if(vsh.haveXmbView) vsh.safeXmbView.showDialog(TestDialogView(vsh.safeXmbView))
         })
         content.add(XMBSettingsItem(vsh, "dbg_launch_dialog_test_ui",
             R.string.dbg_launch_dialog_ui_test, R.string.empty_string, R.drawable.category_debug, {""}){
-            xmbView?.showDialog(UITestDialogView(vsh))
+            if(vsh.haveXmbView) vsh.safeXmbView.showDialog(UITestDialogView(vsh.safeXmbView))
         })
 
         content.add(
@@ -428,7 +426,7 @@ private fun VSH.createCategoryDebug() : XMBSettingsCategory{
                 R.string.empty_string,
                 R.drawable.ic_short_line, { "" }
             ){
-                vsh.xmbView?.showDialog(CustomResourceListDialogView(vsh))
+                if(vsh.haveXmbView) vsh.safeXmbView.showDialog(CustomResourceListDialogView(vsh.safeXmbView))
             }
         )
 
@@ -450,7 +448,7 @@ private fun VSH.createCategoryDebug() : XMBSettingsCategory{
                     R.string.dbg_bitman_info, R.string.empty_string,
                     R.drawable.settings_category_display, {""})
                 {
-                    vsh.xmbView?.showDialog(BitManDlgView(vsh))
+                    if(vsh.haveXmbView) vsh.safeXmbView.showDialog(BitManDlgView(vsh.safeXmbView))
                 }
             )
         }
@@ -459,7 +457,7 @@ private fun VSH.createCategoryDebug() : XMBSettingsCategory{
             R.string.settings_system_language, R.string.settings_system_language_description,
             R.drawable.icon_language, { getCurrentLocaleName() }
         ) {
-            vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+            vsh.xmbView?.showSideMenu(true)
         }.apply {
             hasMenu = true
             val dMenuItems = arrayListOf<XMBMenuItem>()
@@ -478,7 +476,7 @@ private fun VSH.createCategoryDebug() : XMBSettingsCategory{
     }
 }
 
-private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
+private fun Vsh.createCategoryDisplay() : XMBSettingsCategory {
     val vsh = this
     return XMBSettingsCategory(this,
         SettingsCategoryID.CATEGORY_SETTINGS_DISPLAY,
@@ -494,21 +492,21 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 R.string.setting_display_layout_type_desc,
                 R.drawable.icon_orientation,
                 {
-                    when(xmbView?.state?.crossMenu?.layoutMode){
-                        XMBLayoutType.PSP -> "PlayStation Portable"
-                        XMBLayoutType.PS3 -> "PlayStation 3"
-                        XMBLayoutType.PSX -> "PSX DVR"
-                        XMBLayoutType.Bravia -> "Bravia TV"
+                    when(xmbView?.screens?.mainMenu?.layoutMode){
+                        XmbLayoutType.PSP -> "PlayStation Portable"
+                        XmbLayoutType.PS3 -> "PlayStation 3"
+                        XmbLayoutType.PSX -> "PSX DVR"
+                        XmbLayoutType.Bravia -> "Bravia TV"
                         else -> getString(R.string.unknown)
                     }
                 },
             ) {
                 val view = xmbView
                 if(view != null){
-                    view.state.crossMenu.layoutMode = when(view.state.crossMenu.layoutMode){
-                        XMBLayoutType.PSP -> XMBLayoutType.PS3
-                        XMBLayoutType.PS3 -> XMBLayoutType.PSP
-                        else -> XMBLayoutType.PS3
+                    view.screens.mainMenu.layoutMode = when(view.screens.mainMenu.layoutMode){
+                        XmbLayoutType.PSP -> XmbLayoutType.PS3
+                        XmbLayoutType.PS3 -> XmbLayoutType.PSP
+                        else -> XmbLayoutType.PS3
                     }
                     saveLayoutSetting()
                 }
@@ -519,13 +517,13 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 dMenu.add(XMBMenuItem.XMBMenuItemLambda(
                     {"PlayStation Portable"}, {false}, 1)
                 {
-                    xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PSP
+                    xmbView?.screens?.mainMenu?.layoutMode = XmbLayoutType.PSP
                     saveLayoutSetting()
                 })
                 dMenu.add(XMBMenuItem.XMBMenuItemLambda(
                     {"PlayStation 3"}, {false}, 0)
                 {
-                    xmbView?.state?.crossMenu?.layoutMode = XMBLayoutType.PS3
+                    xmbView?.screens?.mainMenu?.layoutMode = XmbLayoutType.PS3
                     saveLayoutSetting()
                 })
                 menuItems = dMenu
@@ -538,13 +536,13 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
             R.string.settings_display_hide_statusbar_name,
             R.string.settings_display_hide_statusbar_desc,
             R.drawable.icon_hidden, {
-                val id = (xmbView?.state?.crossMenu?.statusBar?.disabled == true).select(R.string.common_yes, R.string.common_no)
+                val id = (xmbView?.widgets?.statusBar?.disabled == true).select(R.string.common_yes, R.string.common_no)
                 vsh.getString(id)
             }){
             val x = xmbView
             if(x != null){
-                x.state.crossMenu.statusBar.disabled = !x.state.crossMenu.statusBar.disabled
-                M.pref.set(PrefEntry.DISPLAY_DISABLE_STATUS_BAR, x.state.crossMenu.statusBar.disabled.select(1, 0))
+                x.widgets.statusBar.disabled = !x.widgets.statusBar.disabled
+                M.pref.set(PrefEntry.DISPLAY_DISABLE_STATUS_BAR, x.widgets.statusBar.disabled.select(1, 0))
             }
         })
 
@@ -575,7 +573,7 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
 //                    else -> GamepadUISubmodule.PadType.PlayStation
 //                }
 //                saveButtonDisplaySetting()
-                vsh.xmbView?.state?.itemMenu?.isDisplayed = true
+                vsh.xmbView?.showSideMenu(true)
             }.apply {
 
                 hasMenu = true
@@ -615,12 +613,12 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 R.string.settings_display_clock_second_analog_name,
                 R.string.settings_display_clock_second_analog_desc,
                 R.drawable.icon_clock,
-                { (xmbView?.state?.crossMenu?.statusBar?.secondOnAnalog == true).select(vsh.getString(R.string.common_yes),vsh.getString(R.string.common_no))  }
+                { (xmbView?.widgets?.analogClock?.showSecondHand == true).select(vsh.getString(R.string.common_yes),vsh.getString(R.string.common_no))  }
             ){
                 val x = xmbView
                 if(x != null){
-                    x.state.crossMenu.statusBar.secondOnAnalog = !x.state.crossMenu.statusBar.secondOnAnalog
-                    M.pref.set(PrefEntry.DISPLAY_SHOW_CLOCK_SECOND, x.state.crossMenu.statusBar.secondOnAnalog.select(1, 0))
+                    x.widgets.analogClock.showSecondHand = !x.widgets.analogClock.showSecondHand
+                    M.pref.set(PrefEntry.DISPLAY_SHOW_CLOCK_SECOND, x.widgets.analogClock.showSecondHand.select(1, 0))
 
                 }
             }
@@ -634,10 +632,11 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
             R.drawable.icon_clock,
                 {
                     val xmb = vsh.xmbView
-                    xmb?.formatStatusBar(xmb.state.crossMenu.dateTimeFormat) ?: ""
+                    xmb?.widgets?.statusBar?.format(xmb.widgets.statusBar.dateTimeFormat) ?: ""
                 }
         ){
-                vsh.xmbView?.showDialog(StatusBarFormatDialogView(vsh))
+                val xmb = vsh.xmbView
+                xmb?.showDialog(StatusBarFormatDialogView(xmb))
             }
         )
         // endregion
@@ -647,11 +646,11 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 R.string.settings_display_show_operator_name,
                 R.string.settings_display_show_operator_desc,
                 R.drawable.icon_network,
-                { (xmbView?.state?.crossMenu?.statusBar?.showMobileOperator == true).select(vsh.getString(R.string.common_yes),vsh.getString(R.string.common_no))  }
+                { (xmbView?.widgets?.statusBar?.showMobileOperator == true).select(vsh.getString(R.string.common_yes),vsh.getString(R.string.common_no))  }
             ){
                 val x = xmbView
                 if(x != null){
-                    val v = x.state.crossMenu.statusBar.showMobileOperator
+                    val v = x.widgets.statusBar.showMobileOperator
 
                     if(!v){
                         if(Build.VERSION.SDK_INT >= 23){
@@ -659,7 +658,7 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                                 vsh.checkSelfPermission(android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED ||
                                 vsh.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                             ){
-                                x.state.crossMenu.statusBar.showMobileOperator = true
+                                x.widgets.statusBar.showMobileOperator = true
                             }else{
                                 ActivityCompat.requestPermissions(x.context as Activity, arrayOf(
                                     android.Manifest.permission.READ_PHONE_STATE,
@@ -667,11 +666,10 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                                 ), 1999)
                             }
                         }else{
-                            x.state.crossMenu.statusBar.showMobileOperator = true
+                            x.widgets.statusBar.showMobileOperator = true
                         }
-
                     }else{
-                        x.state.crossMenu.statusBar.showMobileOperator = false
+                        x.widgets.statusBar.showMobileOperator = false
                     }
 
                 }
@@ -693,7 +691,8 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 r
             }
         ){
-            xmbView?.showDialog(CustomAspectRatioDialogView(vsh))
+            val xv = xmbView
+            xv?.showDialog(CustomAspectRatioDialogView(xv))
         }
 
         content.add(scRef)
@@ -704,10 +703,10 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
         R.string.settings_display_background_dim_name,
         R.string.settings_display_background_dim_desc,
             R.drawable.icon_brightness,{
-                (xmbView?.state?.crossMenu?.dimOpacity?: 0).toString()
+                (xmbView?.screens?.mainMenu?.dimOpacity?: 0).toString()
             }
         ){
-            xmbView?.state?.itemMenu?.isDisplayed = true
+            xmbView?.showSideMenu(true)
         }.apply {
             hasMenu = true
             val dMenu = arrayListOf<XMBMenuItem>()
@@ -715,8 +714,8 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
                 dMenu.add(XMBMenuItem.XMBMenuItemLambda(
                     { i.toString() }, {false}, i)
                 {
-                    xmbView?.state?.crossMenu?.dimOpacity = i
-                    M.pref.set(PrefEntry.BACKGROUND_DIM_OPACITY, xmbView?.state?.crossMenu?.dimOpacity?: 0)
+                    xmbView?.screens?.mainMenu?.dimOpacity = i
+                    M.pref.set(PrefEntry.BACKGROUND_DIM_OPACITY, xmbView?.screens?.mainMenu?.dimOpacity ?: 0)
                 })
             }
             menuItems = dMenu
@@ -727,21 +726,21 @@ private fun VSH.createCategoryDisplay() : XMBSettingsCategory {
     }
 }
 
-fun VSH.saveLayoutSetting() {
+fun Vsh.saveLayoutSetting() {
     val view = xmbView
     if(view != null) {
-        val srlzLayout = when (view.state.crossMenu.layoutMode) {
-            XMBLayoutType.PS3 -> 0
-            XMBLayoutType.PSP -> 1
-            XMBLayoutType.Bravia -> 2
-            XMBLayoutType.PSX -> 3
+        val srlzLayout = when (view.screens.mainMenu.layoutMode) {
+            XmbLayoutType.PS3 -> 0
+            XmbLayoutType.PSP -> 1
+            XmbLayoutType.Bravia -> 2
+            XmbLayoutType.PSX -> 3
             else -> 0
         }
         M.pref.set(PrefEntry.MENU_LAYOUT, srlzLayout)
     }
 }
 
-fun VSH.saveButtonDisplaySetting() {
+fun Vsh.saveButtonDisplaySetting() {
     val view = xmbView
     if(view != null) {
         val srlzButton = when (M.gamepadUi.activeGamepad) {
@@ -755,7 +754,7 @@ fun VSH.saveButtonDisplaySetting() {
     }
 }
 
-private fun VSH.createCategoryAndroidSetting() : XMBSettingsCategory{
+private fun Vsh.createCategoryAndroidSetting() : XMBSettingsCategory{
     val vsh = this
     return XMBSettingsCategory(this,
         SettingsCategoryID.CATEGORY_SETTINGS_ANDROID,

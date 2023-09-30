@@ -69,6 +69,7 @@ class XmbView @JvmOverloads constructor(
         val coldBoot = XmbColdboot(v)
         val gameBoot = XmbGameboot(v)
         val dialog = XmbDialog(v)
+        val idle = XmbIdleScreen(v)
     }
 
     class Widgets(v:XmbView){
@@ -144,11 +145,11 @@ class XmbView @JvmOverloads constructor(
         val pref = vsh.M.pref
 
         screens.mainMenu.layoutMode = when(pref.get(PrefEntry.MENU_LAYOUT, 0)){
-            0 -> XMBLayoutType.PS3
-            1 -> XMBLayoutType.PSP
-            2 -> XMBLayoutType.Bravia
-            3 -> XMBLayoutType.PSX
-            else -> XMBLayoutType.PS3
+            0 -> XmbLayoutType.PS3
+            1 -> XmbLayoutType.PSP
+            2 -> XmbLayoutType.Bravia
+            3 -> XmbLayoutType.PSX
+            else -> XmbLayoutType.PS3
         }
 
         val defSize = (1280 shl 16) or 720
@@ -157,9 +158,8 @@ class XmbView @JvmOverloads constructor(
 
         screens.coldBoot.hideEpilepsyWarning = pref.get(PrefEntry.DISABLE_EPILEPSY_WARNING, 0) == 1
         screens.mainMenu.dimOpacity = pref.get(PrefEntry.BACKGROUND_DIM_OPACITY, 0)
-        screens.mainMenu.dateTimeFormat =
-            pref.get(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, screens.mainMenu.dateTimeFormat)
-                ?: screens.mainMenu.dateTimeFormat
+        widgets.statusBar.dateTimeFormat =
+            pref.get(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, widgets.statusBar.dateTimeFormat)
         screens.gameBoot.defaultSkip = pref.get(PrefEntry.SKIP_GAMEBOOT, 0) != 0
         vsh.showLauncherFPS = pref.get(PrefEntry.SHOW_LAUNCHER_FPS, 0) != 0
         showDetailedMemory = pref.get(PrefEntry.SHOW_DETAILED_MEMORY, 0) != 0
@@ -172,13 +172,16 @@ class XmbView @JvmOverloads constructor(
         contentDescription = context.getString(R.string.xmb_view_content_description)
         holder.setFormat(PixelFormat.TRANSPARENT)
         DrawExtension.init(context.vsh)
-        activeScreen
     }
 
     private var onceStarted = false
     private fun start(){
         screens = Screens(this)
         widgets = Widgets(this)
+
+        activeScreen = screens.idle
+        switchScreen(context.xmb.skipColdBoot.select(screens.mainMenu, screens.coldBoot))
+
         loadPreferences()
     }
 
@@ -207,7 +210,7 @@ class XmbView @JvmOverloads constructor(
         }
     }
 
-    public lateinit var activeScreen : XmbScreen
+    lateinit var activeScreen : XmbScreen
 
     fun switchScreen(nScreen:XmbScreen){
         System.gc() // Garbage Collect Every Page Change
@@ -240,7 +243,7 @@ class XmbView @JvmOverloads constructor(
 
     private val notificationRectBuffer = RectF()
 
-    fun openItemMenu(open: Boolean = true) {
+    fun showSideMenu(open: Boolean = true) {
         widgets.sideMenu.isDisplayed = open
         widgets.sideMenu.selectedIndex = context.vsh.hoveredItem?.setMenuOpened(open) ?: 0
     }
@@ -331,6 +334,11 @@ class XmbView @JvmOverloads constructor(
                 widgets.debugInfo.render(canvas)
             }
         }
+    }
+
+    /** Shortcut to [XmbDialog.showDialog] */
+    fun showDialog(dlg : XmbDialogSubview){
+        screens.dialog.showDialog(dlg)
     }
 
     private fun drawKeygen(ctx: Canvas) {

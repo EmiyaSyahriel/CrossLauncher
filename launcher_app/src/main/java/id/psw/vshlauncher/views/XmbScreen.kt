@@ -1,12 +1,8 @@
 package id.psw.vshlauncher.views
 
-import android.content.Context
 import android.graphics.Canvas
 import android.graphics.PointF
-import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.submodules.PadKey
-import id.psw.vshlauncher.submodules.SubmoduleManager
-import id.psw.vshlauncher.vsh
 
 open class XmbScreen(view : XmbView) : XmbSubview(view){
     var currentTime = 0.0f

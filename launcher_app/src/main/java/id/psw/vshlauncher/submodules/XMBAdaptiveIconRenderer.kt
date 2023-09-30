@@ -15,7 +15,7 @@ import id.psw.vshlauncher.types.Ref
 import java.io.File
 import java.lang.Exception
 
-class XMBAdaptiveIconRenderer(private val ctx: VSH) : IVshSubmodule {
+class XMBAdaptiveIconRenderer(private val ctx: Vsh) : IVshSubmodule {
 
     companion object {
         private const val TAG = "XMBIconGen"
@@ -212,7 +212,7 @@ class XMBAdaptiveIconRenderer(private val ctx: VSH) : IVshSubmodule {
         return null
     }
 
-    fun create(act:ActivityInfo, vsh:VSH) : Bitmap {
+    fun create(act:ActivityInfo, vsh:Vsh) : Bitmap {
         val bitmap = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.ARGB_8888);
         val canvas = Canvas(bitmap)
         val custom = loadCustomIcon(act)
@@ -247,7 +247,7 @@ class XMBAdaptiveIconRenderer(private val ctx: VSH) : IVshSubmodule {
      * Developer may add one by putting a drawable with name of "psw_crosslauncher_banner" (R.drawable.psw_crosslauncher_banner)
      * in their app package.
      */
-    private fun hasSpecialRes(act: ActivityInfo, vsh: VSH, spResRef: Ref<Resources>, spResIdRef : Ref<Int>): Boolean {
+    private fun hasSpecialRes(act: ActivityInfo, vsh: Vsh, spResRef: Ref<Resources>, spResIdRef : Ref<Int>): Boolean {
         try{
             spResRef.p = vsh.packageManager.getResourcesForApplication(act.applicationInfo)
             spResIdRef.p = spResRef.p.getIdentifier("psw_crosslauncher_banner", "drawable", act.packageName)

@@ -11,7 +11,7 @@ class VSHSystemInfo {
 
 private val vshSystemInfo = VSHSystemInfo()
 
-fun VSH.updateBatteryInfo(){
+fun Vsh.updateBatteryInfo(){
     // TODO : Old API, change to Listener one
     val intentFilter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
     val bStat = registerReceiver(null, intentFilter)
@@ -22,5 +22,5 @@ fun VSH.updateBatteryInfo(){
     vshSystemInfo.batteryLevel = level.toFloat() / scale.toFloat()
 }
 
-fun VSH.getBatteryLevel() : Float = vshSystemInfo.batteryLevel
-fun VSH.isBatteryCharging() : Boolean = vshSystemInfo.isCharging
+fun Vsh.getBatteryLevel() : Float = vshSystemInfo.batteryLevel
+fun Vsh.isBatteryCharging() : Boolean = vshSystemInfo.isCharging

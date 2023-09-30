@@ -1,13 +1,12 @@
 package id.psw.vshlauncher.types.items
 
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.types.XMBItem
 
 class XMBSettingsItem(
-    private val vsh: VSH,
+    private val vsh: Vsh,
     override val id : String,
     private val r_title : Int,
     private val r_desc : Int,

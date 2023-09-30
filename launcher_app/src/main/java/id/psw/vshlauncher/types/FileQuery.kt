@@ -1,6 +1,6 @@
 package id.psw.vshlauncher.types
 
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.select
 import java.io.File
 
@@ -62,7 +62,7 @@ class FileQuery {
         return this
     }
 
-    fun execute(vsh:VSH) : ArrayList<File>{
+    fun execute(vsh:Vsh) : ArrayList<File>{
         val files = arrayListOf<File>()
 
         val bStorages = arrayListOf<File>()

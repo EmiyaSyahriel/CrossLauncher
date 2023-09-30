@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PointF
 import android.view.MotionEvent
-import id.psw.vshlauncher.activities.XMB
+import id.psw.vshlauncher.activities.Xmb
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.XmbWidget
 
@@ -16,7 +16,7 @@ class XmbDebugTouch(view: XmbView) : XmbWidget(view) {
     var touchStartPointF = PointF()
     var lastTouchAction : Int = 0
 
-    private fun drawDebugLocation(ctx: Canvas, xmb: XMB) {
+    private fun drawDebugLocation(ctx: Canvas, xmb: Xmb) {
         if(lastTouchAction == MotionEvent.ACTION_DOWN || lastTouchAction == MotionEvent.ACTION_MOVE){
             dummyPaint.style= Paint.Style.FILL
             dummyPaint.color = Color.argb(128,255,255,255)

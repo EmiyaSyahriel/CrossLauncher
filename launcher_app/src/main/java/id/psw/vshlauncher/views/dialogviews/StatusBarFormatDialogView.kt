@@ -6,14 +6,13 @@ import androidx.core.graphics.contains
 import androidx.core.graphics.minus
 import androidx.core.graphics.withClip
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.*
 import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
 import kotlin.math.abs
 
-class StatusBarFormatDialogView(val vsh: VSH) : XmbDialogSubview(vsh) {
+class StatusBarFormatDialogView(v: XmbView) : XmbDialogSubview(v)  {
     override val hasNegativeButton: Boolean = true
     override val hasPositiveButton: Boolean = true
 
@@ -26,6 +25,7 @@ class StatusBarFormatDialogView(val vsh: VSH) : XmbDialogSubview(vsh) {
         textSize = 20.0f
         color = Color.WHITE
     }
+
     override val positiveButton: String
         get() = vsh.getString(isTextBarSelect.select(R.string.common_edit, R.string.common_save))
 
@@ -35,7 +35,7 @@ class StatusBarFormatDialogView(val vsh: VSH) : XmbDialogSubview(vsh) {
     private val editBtnRect = RectF()
 
     override fun onStart() {
-        textContent = vsh.M.pref.get(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, vsh.xmbView?.state?.crossMenu?.dateTimeFormat ?: textContent)
+        textContent = vsh.M.pref.get(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, view.widgets.statusBar.dateTimeFormat)
     }
 
     override fun onDraw(ctx: Canvas, drawBound: RectF, deltaTime: Float) {
@@ -70,7 +70,7 @@ class StatusBarFormatDialogView(val vsh: VSH) : XmbDialogSubview(vsh) {
 
         var formatted = "ERR_FORMAT_STRUCTURE"
         try{
-            formatted = vsh.xmbView?.formatStatusBar(textContent) ?: "ERR_XMBVIEW_NOT_INIT"
+            formatted = view.widgets.statusBar.format(textContent) ?: "ERR_XMBVIEW_NOT_INIT"
         }catch(e:Exception){ }
 
         ctx.drawText(formatted, tmpRectF1.left + 10.0f, tmpRectF1.bottom + lineSz, tPaint, 0.5f)
@@ -94,9 +94,10 @@ class StatusBarFormatDialogView(val vsh: VSH) : XmbDialogSubview(vsh) {
     }
 
     private fun save(){
-        vsh.xmbView?.state?.crossMenu?.dateTimeFormat = textContent
+        val v = vsh.xmbView ?: return
+        v.widgets.statusBar.dateTimeFormat = textContent
         vsh.M.pref.set(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, textContent)
-        finish(VshViewPage.MainMenu)
+        finish(v.screens.mainMenu)
     }
 
     override fun onDialogButton(isPositive: Boolean) {
@@ -108,7 +109,7 @@ class StatusBarFormatDialogView(val vsh: VSH) : XmbDialogSubview(vsh) {
                 save()
             }
         }else{
-            finish(VshViewPage.MainMenu)
+            finish(view.screens.mainMenu)
         }
     }
 

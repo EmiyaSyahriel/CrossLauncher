@@ -39,13 +39,13 @@ android {
         }
     }
 
-    buildTypes{
+    buildTypes {
         val buildDate = "\"${getDate()}\""
-        getByName("release"){
+        release {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
-        getByName("debug"){
+        debug {
             isMinifyEnabled = false
         }
         all {

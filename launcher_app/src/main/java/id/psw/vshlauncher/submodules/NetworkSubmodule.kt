@@ -10,14 +10,14 @@ import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import androidx.core.app.ActivityCompat
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.sdkAtLeast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class NetworkSubmodule(private val ctx: VSH) : IVshSubmodule {
+class NetworkSubmodule(private val ctx: Vsh) : IVshSubmodule {
     private var isNetworkConnected = false
     private var isQuerying = false
     private var isEthernet = false
@@ -73,7 +73,7 @@ class NetworkSubmodule(private val ctx: VSH) : IVshSubmodule {
     // Still using deprecated API, if there is newer API that can be used without library
     // Then please edit this code
     @Suppress("DEPRECATION")
-    private fun updateNetworkName(ctx:VSH){
+    private fun updateNetworkName(ctx:Vsh){
         isQueryingStr = operatorName
         isQuerying= true
         val sb = StringBuilder()

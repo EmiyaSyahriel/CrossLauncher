@@ -19,7 +19,7 @@ import id.psw.vshlauncher.FColor
 import id.psw.vshlauncher.FittingMode
 import id.psw.vshlauncher.PrefEntry
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.lerpFactor
 import id.psw.vshlauncher.livewallpaper.NativeGL
 import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
@@ -30,16 +30,14 @@ import id.psw.vshlauncher.submodules.SfxType
 import id.psw.vshlauncher.toLerp
 import id.psw.vshlauncher.types.XMBItem
 import id.psw.vshlauncher.types.items.XMBItemCategory
-import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.DirectionLock
 import id.psw.vshlauncher.views.DrawExtension
-import id.psw.vshlauncher.views.XMBLayoutType
+import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.XmbScreen
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.drawBitmap
 import id.psw.vshlauncher.views.drawText
-import id.psw.vshlauncher.views.menuMoveItemMenuCursor
-import id.psw.vshlauncher.views.menuStartItemMenu
+import id.psw.vshlauncher.views.filterBySearch
 import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
 import id.psw.vshlauncher.visibleItems
 import id.psw.vshlauncher.vsh
@@ -51,7 +49,7 @@ import kotlin.math.roundToInt
 
 class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     var sortHeaderDisplay: Float = 0.0f
-    var layoutMode : XMBLayoutType = XMBLayoutType.PS3
+    var layoutMode : XmbLayoutType = XmbLayoutType.PS3
     lateinit var arrowBitmap : Bitmap
     var arrowBitmapLoaded = false
     var bgOverlayColorA : Int = 0x88FF0000u.toInt()
@@ -82,18 +80,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
             var descTextXOffset : Float = 0.0f
     )
 
-    class Formatter{
-        var shortMonthName : SimpleDateFormat = SimpleDateFormat("MMM", Locale.getDefault())
-        var fullMonthName : SimpleDateFormat = SimpleDateFormat("MMMM", Locale.getDefault())
-        var shortDayName : SimpleDateFormat = SimpleDateFormat("EEE", Locale.getDefault())
-        var fullDayName : SimpleDateFormat = SimpleDateFormat("EEEE", Locale.getDefault())
-    }
-
-
     // val dateTimeFormat = "dd/M HH:mm a"
-    var dateTimeFormat = "{operator} {sdf:dd/M HH:mm a}"
-    var formatter = Formatter()
-    val statusBar = StatusBarSetting()
     val verticalMenu = VerticalMenu()
     private var directionLock : DirectionLock = DirectionLock.None
     private val backgroundPaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -153,8 +140,8 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
             loadingIconBitmap = ResourcesCompat.getDrawable(context.resources, R.drawable.ic_sync_loading,null)?.toBitmap(256,256)
         }
 
-        statusBar.disabled = M.pref.get(PrefEntry.DISPLAY_DISABLE_STATUS_BAR, 0) == 1
-        statusBar.secondOnAnalog = M.pref.get(PrefEntry.DISPLAY_SHOW_CLOCK_SECOND, 0) == 1
+        widgets.statusBar.disabled = M.pref.get(PrefEntry.DISPLAY_DISABLE_STATUS_BAR, 0) == 1
+        widgets.analogClock.showSecondHand = M.pref.get(PrefEntry.DISPLAY_SHOW_CLOCK_SECOND, 0) == 1
     }
 
     private val ps3MenuIconCenter = PointF(0.30f, 0.25f)
@@ -215,7 +202,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                     }
                 }
             }catch(cme:ConcurrentModificationException){
-
+                cme.printStackTrace()
             }
         }
 
@@ -225,13 +212,13 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     }
 
     private fun drawHorizontalMenu(ctx:Canvas) {
-        val isPSP = layoutMode == XMBLayoutType.PSP
+        val isPSP = layoutMode == XmbLayoutType.PSP
         val center = isPSP.select(pspMenuIconCenter, ps3MenuIconCenter)
         val xPos = (scaling.target.width() * center.x) + context.vsh.isInRoot.select(0f, isPSP.select(
                 pspSelectedIconSize, ps3SelectedIconSize).x * -0.75f)
         val yPos = scaling.target.height() * center.y
         val notHidden = context.vsh.categories.visibleItems
-        val separation = (layoutMode == XMBLayoutType.PSP).select(pspIconSeparation, ps3IconSeparation).x
+        val separation = (layoutMode == XmbLayoutType.PSP).select(pspIconSeparation, ps3IconSeparation).x
         val cursorX = context.vsh.itemCursorX
         for(wx in notHidden.indices){
             val item = notHidden[wx]
@@ -240,7 +227,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
 
             val targetSize =
                     when(layoutMode){
-                        XMBLayoutType.PSP -> selected.select(pspSelectedCategoryIconSize, pspUnselectedCategoryIconSize)
+                        XmbLayoutType.PSP -> selected.select(pspSelectedCategoryIconSize, pspUnselectedCategoryIconSize)
                         else -> selected.select(ps3SelectedCategoryIconSize, ps3UnselectedCategoryIconSize)
                     }
             var size = targetSize
@@ -249,7 +236,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                 val sizeTransition = abs(context.vsh.itemOffsetX)
                 val previousSize =
                         when(layoutMode){
-                            XMBLayoutType.PSP -> selected.select(pspUnselectedCategoryIconSize, pspSelectedCategoryIconSize)
+                            XmbLayoutType.PSP -> selected.select(pspUnselectedCategoryIconSize, pspSelectedCategoryIconSize)
                             else -> selected.select(ps3UnselectedCategoryIconSize, ps3SelectedCategoryIconSize)
                         }
                 tmpPointFA.x = sizeTransition.toLerp(targetSize.x, previousSize.x)
@@ -274,8 +261,8 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                 menuHorizontalIconPaint.alpha = selected.select(255, context.vsh.isInRoot.select(200, 0))
                 ctx.drawBitmap(item.icon, null, horizontalRectF, menuHorizontalIconPaint, FittingMode.FIT, 0.5f, 1.0f)
                 if(selected && context.vsh.isInRoot){
-                    val iconCtrToText = (layoutMode == XMBLayoutType.PSP).select(pspSelectedCategoryIconSize, ps3SelectedCategoryIconSize).y
-                    menuHorizontalNamePaint.textSize = (layoutMode == XMBLayoutType.PSP).select(25f, 15f)
+                    val iconCtrToText = (layoutMode == XmbLayoutType.PSP).select(pspSelectedCategoryIconSize, ps3SelectedCategoryIconSize).y
+                    menuHorizontalNamePaint.textSize = (layoutMode == XmbLayoutType.PSP).select(25f, 15f)
                     ctx.drawText(item.displayName, centerX, yPos + (iconCtrToText / 2.0f), menuHorizontalNamePaint, 1.0f)
                 }
             }
@@ -286,7 +273,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
         val items = vsh.items?.visibleItems?.filterBySearch(context.vsh)
 
         val loadIcon = loadingIconBitmap
-        val isPSP = layoutMode == XMBLayoutType.PSP
+        val isPSP = layoutMode == XmbLayoutType.PSP
         val menuDispT = widgets.sideMenu.showMenuDisplayFactor
         val isLand = view.width > view.height
 
@@ -536,11 +523,6 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     private val touchTestRectF = RectF()
     private val touchTestSearchRectF = RectF()
 
-    private fun List<XMBItem>.filterBySearch(vsh: VSH): List<XMBItem> {
-        val q = vsh.activeParent?.getProperty(Consts.XMB_ACTIVE_SEARCH_QUERY, "") ?: ""
-        return this.filter { it.displayName.contains(q, true) }
-    }
-
     override fun end() {
     }
 
@@ -553,6 +535,19 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                     .setTitle(context.getString(R.string.dlg_set_search_query))
                     .setValue(q)
                     .show()
+        }
+    }
+
+    private fun updateColdbootWaveAnim(){
+        val speed = M.pref.get(XMBWaveSurfaceView.KEY_SPEED, 1.0f)
+        NativeGL.setSpeed( screens.coldBoot.transition.toLerp(speed, 25.0f) )
+        NativeGL.setVerticalScale( screens.coldBoot.transition.toLerp(1.0f, 1.25f) )
+
+        screens.coldBoot.transition -= time.deltaTime * 2.0f
+        if(screens.coldBoot.transition < 0.0f){
+            context.vsh.waveShouldReReadPreferences = true
+            NativeGL.setVerticalScale( 1.0f )
+            NativeGL.setSpeed( 1.0f )
         }
     }
 
@@ -585,7 +580,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                 }
                 PadKey.PadU -> {
                     if(inMenu){
-                        view.menuMoveItemMenuCursor(false)
+                        view.widgets.sideMenu.moveCursor(false)
                     }else{
                         context.vsh.moveCursorY(false)
                     }
@@ -593,7 +588,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                 }
                 PadKey.PadD -> {
                     if(inMenu){
-                        view.menuMoveItemMenuCursor(true)
+                        view.widgets.sideMenu.moveCursor(true)
                     }else{
                         context.vsh.moveCursorY(true)
                     }
@@ -625,7 +620,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                 PadKey.Confirm, PadKey.StaticConfirm -> {
                     if(inMenu) {
                         if(isOpenMenuDisableMenuExec){
-                            view.menuStartItemMenu()
+                            view.widgets.sideMenu.executeSelected()
                             widgets.sideMenu.isDisplayed = false
                         }
                     }else{
@@ -696,18 +691,18 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                             widgets.sideMenu.isDisplayed = false
                         }else{
                             if(current.y < 200.0f){
-                                view.menuMoveItemMenuCursor(false)
+                                view.widgets.sideMenu.moveCursor(false)
                             }else if(current.y > scaling.target.bottom - 200.0f){
-                                view.menuMoveItemMenuCursor(true)
+                                view.widgets.sideMenu.moveCursor(true)
                             }else{
-                                view.menuStartItemMenu()
+                                view.widgets.sideMenu.executeSelected()
                             }
                         }
                     }
                 }
             }
         }else {
-            val isPSP = layoutMode == XMBLayoutType.PSP
+            val isPSP = layoutMode == XmbLayoutType.PSP
 
 
             when (action) {

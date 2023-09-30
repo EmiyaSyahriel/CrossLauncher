@@ -1,11 +1,10 @@
 package id.psw.vshlauncher.views.nativedlg
 
 import android.app.AlertDialog
-import android.text.InputType
 import android.widget.EditText
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 
-class NativeEditTextDialog(val vsh: VSH) {
+class NativeEditTextDialog(val vsh: Vsh) {
     private val internalDlgBld = AlertDialog.Builder(vsh.xmbView?.context)
 
     private var onFinishCallback : (String) -> Unit = { }

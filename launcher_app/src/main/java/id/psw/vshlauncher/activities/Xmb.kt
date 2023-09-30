@@ -17,14 +17,12 @@ import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.items.XMBAppItem
 import id.psw.vshlauncher.views.M
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.dialogviews.InstallPackageDialogView
 import id.psw.vshlauncher.views.dialogviews.UITestDialogView
-import id.psw.vshlauncher.views.showDialog
 import kotlin.math.abs
 
-class XMB : AppCompatActivity() {
+class Xmb : AppCompatActivity() {
 
     companion object{
         const val ACT_REQ_UNINSTALL = 0xDACED0
@@ -53,8 +51,6 @@ class XMB : AppCompatActivity() {
 
         sysBarTranslucent()
         updateSystemBarVisibility()
-
-        xmbView.switchScreen(skipColdBoot.select(VshViewPage.MainMenu, VshViewPage.ColdBoot))
 
         _lastOrientation = resources.configuration.orientation
 
@@ -103,7 +99,7 @@ class XMB : AppCompatActivity() {
             isCreateShortcutIntent(intent) -> {
                 showShortcutCreationDialog(intent)
             }
-            isShareIntent(intent) -> {
+            intent.isShareIntent -> {
                 showShareIntentDialog(intent)
             }
             vsh.isXPKGIntent(intent) -> {
@@ -113,17 +109,19 @@ class XMB : AppCompatActivity() {
                 vsh.showXMBLiveWallpaperWizard()
             }
             intent.action == Consts.ACTION_UI_TEST_DIALOG -> {
-                xmbView.showDialog(UITestDialogView(vsh))
+                xmbView.showDialog(UITestDialogView(xmbView))
             }
         }
 
-        checkIsDefaultHomeIntent(intent)
+        checkIsDefaultHomeIntent()
     }
 
-    private fun checkIsDefaultHomeIntent(intent: Intent) {
+    private fun checkIsDefaultHomeIntent() {
         val i = Intent(Intent.ACTION_MAIN)
         i.addCategory(Intent.CATEGORY_HOME)
-        val ri = packageManager.resolveActivity(i, 0)
+        val ri = if(sdkAtLeast(33))
+            packageManager.resolveActivity(i, PackageManager.ResolveInfoFlags.of(0))
+            else packageManager.resolveActivity(i, 0)
         vsh.shouldShowExitOption = ri?.activityInfo?.packageName != packageName
     }
 
@@ -177,10 +175,10 @@ class XMB : AppCompatActivity() {
                     vsh.reloadAppList()
                 }
             }
-            VSH.ACT_REQ_INSTALL_PACKAGE -> {
+            Vsh.ACT_REQ_INSTALL_PACKAGE -> {
                 if(resultCode == RESULT_OK){
                     if(data != null){
-                        xmbView.showDialog(InstallPackageDialogView(vsh, data))
+                        xmbView.showDialog(InstallPackageDialogView(xmbView, data))
                     }else{
                         vsh.postNotification(
                             R.drawable.ic_folder,

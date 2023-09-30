@@ -11,7 +11,7 @@ import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.types.XMBItem
 
 class XMBItemCategory(
-    private val vsh: VSH, private val cateId:String,
+    private val vsh: Vsh, private val cateId:String,
     private val strId : Int, private val iconId: Int,
     val sortable: Boolean = false, defaultSortIndex : Int
     ) : XMBItem(vsh) {

@@ -41,7 +41,7 @@
     </queries>
 
     <application
-        android:name=".VSH"
+        android:name=".Vsh"
         android:allowAudioPlaybackCapture="true"
         android:allowBackup="true"
         android:banner="@mipmap/ic_launcher"
@@ -58,7 +58,7 @@
             android:name=".test_activity.XMBAdaptiveIconTestActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.XMB"
+            android:name=".activities.Xmb"
             android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
             android:excludeFromRecents="false"
             android:description="@string/app_desc"
