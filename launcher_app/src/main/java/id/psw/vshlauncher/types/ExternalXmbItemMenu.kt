@@ -6,15 +6,15 @@ import id.psw.vshlauncher.readByteBoolean
 import id.psw.vshlauncher.writeByteBoolean
 import java.lang.Exception
 
-class ExternalXMBItemMenu() : Parcelable {
-    companion object CREATOR : Parcelable.Creator<ExternalXMBItemMenu> {
+class ExternalXmbItemMenu() : Parcelable {
+    companion object CREATOR : Parcelable.Creator<ExternalXmbItemMenu> {
         const val XMB_MENU_HEADER = "[:menu:]"
         const val XMB_MENU_METADATA_SEPARATOR = "[:meta:]"
-        override fun createFromParcel(parcel: Parcel): ExternalXMBItemMenu {
-            return ExternalXMBItemMenu(parcel)
+        override fun createFromParcel(parcel: Parcel): ExternalXmbItemMenu {
+            return ExternalXmbItemMenu(parcel)
         }
 
-        override fun newArray(size: Int): Array<ExternalXMBItemMenu?> {
+        override fun newArray(size: Int): Array<ExternalXmbItemMenu?> {
             return arrayOfNulls(size)
         }
     }

@@ -7,19 +7,19 @@ import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.Consts
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.select
-import id.psw.vshlauncher.types.items.XMBMenuItem
-import id.psw.vshlauncher.types.sequentialimages.XMBAnimBitmap
-import id.psw.vshlauncher.types.sequentialimages.XMBFrameAnimation
+import id.psw.vshlauncher.types.items.XmbMenuItem
+import id.psw.vshlauncher.types.sequentialimages.XmbAnimBitmap
+import id.psw.vshlauncher.types.sequentialimages.XmbFrameAnimation
 import java.io.File
 
-open class XMBItem(private val vsh: Vsh) {
+open class XmbItem(private val vsh: Vsh) {
     companion object {
         val WHITE_BITMAP : Bitmap = ColorDrawable(Color.WHITE).toBitmap(1,1)
         val TRANSPARENT_BITMAP : Bitmap = ColorDrawable(Color.TRANSPARENT).toBitmap(1,1)
-        val WHITE_ANIM_BITMAP : XMBFrameAnimation = XMBAnimBitmap(1.0f, WHITE_BITMAP)
-        val TRANSPARENT_ANIM_BITMAP : XMBFrameAnimation = XMBAnimBitmap(1.0f, TRANSPARENT_BITMAP)
+        val WHITE_ANIM_BITMAP : XmbFrameAnimation = XmbAnimBitmap(1.0f, WHITE_BITMAP)
+        val TRANSPARENT_ANIM_BITMAP : XmbFrameAnimation = XmbAnimBitmap(1.0f, TRANSPARENT_BITMAP)
         lateinit var SILENT_AUDIO : File
-        val EmptyLaunchImpl : (XMBItem) -> Unit = { }
+        val EmptyLaunchImpl : (XmbItem) -> Unit = { }
     }
 
     // Metadata
@@ -58,20 +58,20 @@ open class XMBItem(private val vsh: Vsh) {
     open val description : String get() = Consts.XMB_DEFAULT_ITEM_DESCRIPTION
     open val displayName : String get() = Consts.XMB_DEFAULT_ITEM_DISPLAY_NAME
     open val value : String get() = Consts.XMB_DEFAULT_ITEM_VALUE
-    open val icon : Bitmap get() = XMBItem.TRANSPARENT_BITMAP
-    open val animatedIcon : XMBFrameAnimation get() = XMBItem.TRANSPARENT_ANIM_BITMAP
-    open val backdrop : Bitmap get() = XMBItem.TRANSPARENT_BITMAP
-    open val portraitBackdrop : Bitmap get() = XMBItem.TRANSPARENT_BITMAP
+    open val icon : Bitmap get() = XmbItem.TRANSPARENT_BITMAP
+    open val animatedIcon : XmbFrameAnimation get() = XmbItem.TRANSPARENT_ANIM_BITMAP
+    open val backdrop : Bitmap get() = XmbItem.TRANSPARENT_BITMAP
+    open val portraitBackdrop : Bitmap get() = XmbItem.TRANSPARENT_BITMAP
     open val backSound : File get() = SILENT_AUDIO
 
-    open val menuItems : ArrayList<XMBMenuItem>? = null
-    open val content : ArrayList<XMBItem>? = null
+    open val menuItems : ArrayList<XmbMenuItem>? = null
+    open val content : ArrayList<XmbItem>? = null
 
-    open val onLaunch : (XMBItem) -> Unit = EmptyLaunchImpl
-    open val onScreenVisible : (XMBItem) -> Unit = EmptyLaunchImpl
-    open val onScreenInvisible : (XMBItem) -> Unit = EmptyLaunchImpl
-    open val onHovered : (XMBItem) -> Unit = EmptyLaunchImpl
-    open val onUnHovered : (XMBItem) -> Unit = EmptyLaunchImpl
+    open val onLaunch : (XmbItem) -> Unit = EmptyLaunchImpl
+    open val onScreenVisible : (XmbItem) -> Unit = EmptyLaunchImpl
+    open val onScreenInvisible : (XmbItem) -> Unit = EmptyLaunchImpl
+    open val onHovered : (XmbItem) -> Unit = EmptyLaunchImpl
+    open val onUnHovered : (XmbItem) -> Unit = EmptyLaunchImpl
 
     open val menuItemCount get() = menuItems?.size ?: 0
     open val contentCount get() = content?.size ?: 0

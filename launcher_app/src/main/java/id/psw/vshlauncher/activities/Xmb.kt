@@ -15,7 +15,7 @@ import android.view.*
 import androidx.core.content.ContextCompat
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.PadKey
-import id.psw.vshlauncher.types.items.XMBAppItem
+import id.psw.vshlauncher.types.items.XmbAppItem
 import id.psw.vshlauncher.views.M
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.dialogviews.InstallPackageDialogView
@@ -37,7 +37,7 @@ class Xmb : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         readPreferences()
-        XMBAppItem.showHiddenByConfig = false // To make sure
+        XmbAppItem.showHiddenByConfig = false // To make sure
 
         if(vsh.useInternalWave){
             setContentView(R.layout.layout_xmb)

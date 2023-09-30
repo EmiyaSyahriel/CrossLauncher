@@ -12,9 +12,9 @@ import androidx.core.database.getStringOrNull
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.types.Ref
-import id.psw.vshlauncher.types.XMBItem
-import id.psw.vshlauncher.types.XPKGFile
-import id.psw.vshlauncher.types.items.XMBAppItem
+import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.types.XpkgFile
+import id.psw.vshlauncher.types.items.XmbAppItem
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.*
 import kotlinx.coroutines.sync.Mutex
@@ -112,7 +112,7 @@ class InstallPackageDialogView(v: XmbView,private val intent: Intent) : XmbDialo
     private var valid : Validity = Validity.Loading
     private val xpkgLoadProgress : Float get()= xpkg?.loadProgress ?: 0.0f
     private var xpkgCopyProgress = 0.0f
-    private var xpkg : XPKGFile? = null
+    private var xpkg : XpkgFile? = null
     private lateinit var tmpFile : File
     private var fileSize = 0L
     private var filePath = "/dev_emmc0/packages/mirishita.xpkg"
@@ -185,7 +185,7 @@ class InstallPackageDialogView(v: XmbView,private val intent: Intent) : XmbDialo
                     status = Status.ReadPackage
                     fileSize = tmpFile.length()
                     val zipf = ZipFile(tmpFile, ZipFile.OPEN_READ)
-                    xpkg = XPKGFile(zipf)
+                    xpkg = XpkgFile(zipf)
 
                     status = Status.LoadAsset
                     val ppkg = xpkg
@@ -203,12 +203,12 @@ class InstallPackageDialogView(v: XmbView,private val intent: Intent) : XmbDialo
                         }
 
                         val req = ppkg.checkInstalls.split(";")
-                        val callback = arrayListOf<XMBItem>()
+                        val callback = arrayListOf<XmbItem>()
                         val apps = vsh.categories.find { it.id == Vsh.ITEM_CATEGORY_APPS }?.content ?: callback
                         val game = vsh.categories.find { it.id == Vsh.ITEM_CATEGORY_GAME }?.content ?: callback
-                        val list = arrayListOf<XMBItem>().apply { addAll(apps); addAll(game) }
+                        val list = arrayListOf<XmbItem>().apply { addAll(apps); addAll(game) }
                         val canInstall = list.indexOfFirst {
-                            val e = it as XMBAppItem?
+                            val e = it as XmbAppItem?
                             req.any { itt ->
                                 itt.trim() == e?.packageName
                             }

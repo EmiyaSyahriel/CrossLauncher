@@ -3,7 +3,7 @@ package id.psw.vshlauncher.types
 import android.os.Parcel
 import android.os.Parcelable
 
-class ExternalXMBItemHandle() : Parcelable {
+class ExternalXmbItemHandle() : Parcelable {
 
     var id:Int = 0
     var parentId : Int = 0
@@ -25,12 +25,12 @@ class ExternalXMBItemHandle() : Parcelable {
         parcel.writeString(packageName)
     }
 
-    companion object CREATOR : Parcelable.Creator<ExternalXMBItemHandle> {
-        override fun createFromParcel(parcel: Parcel): ExternalXMBItemHandle {
-            return ExternalXMBItemHandle(parcel)
+    companion object CREATOR : Parcelable.Creator<ExternalXmbItemHandle> {
+        override fun createFromParcel(parcel: Parcel): ExternalXmbItemHandle {
+            return ExternalXmbItemHandle(parcel)
         }
 
-        override fun newArray(size: Int): Array<ExternalXMBItemHandle?> {
+        override fun newArray(size: Int): Array<ExternalXmbItemHandle?> {
             return arrayOfNulls(size)
         }
     }

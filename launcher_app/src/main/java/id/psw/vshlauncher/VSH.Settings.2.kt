@@ -10,10 +10,10 @@ import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
 import id.psw.vshlauncher.livewallpaper.XMBWaveSettingSubDialog
 import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
 import id.psw.vshlauncher.livewallpaper.XMBWaveWallpaperService
-import id.psw.vshlauncher.types.XMBItem
-import id.psw.vshlauncher.types.items.XMBMenuItem
-import id.psw.vshlauncher.types.items.XMBSettingsCategory
-import id.psw.vshlauncher.types.items.XMBSettingsItem
+import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.types.items.XmbMenuItem
+import id.psw.vshlauncher.types.items.XmbSettingsCategory
+import id.psw.vshlauncher.types.items.XmbSettingsItem
 import id.psw.vshlauncher.views.dialogviews.LegacyIconBackgroundDialogView
 import id.psw.vshlauncher.views.dialogviews.TextDialogView
 import kotlinx.coroutines.Dispatchers
@@ -47,15 +47,15 @@ fun Vsh.showXMBLiveWallpaperWizard(){
 }
 
 @SuppressLint("ApplySharedPref")
-fun Vsh.createCategoryWaveSetting(): XMBSettingsCategory {
+fun Vsh.createCategoryWaveSetting(): XmbSettingsCategory {
     val vsh = this
-    return XMBSettingsCategory(this,
+    return XmbSettingsCategory(this,
         SettingsCategoryID.CATEGORY_SETTINGS_WAVE,
         R.drawable.category_shortcut,
         R.string.title_activity_wave_wallpaper_setting,
         R.string.empty_string
     ).apply {
-        content.add(XMBSettingsItem(vsh, "settings_wave_set",
+        content.add(XmbSettingsItem(vsh, "settings_wave_set",
             R.string.settings_wave_set_name, R.string.settings_wave_set_desc,
             R.drawable.category_setting, {""}
         ){
@@ -76,7 +76,7 @@ fun Vsh.createCategoryWaveSetting(): XMBSettingsCategory {
             }
         })
 
-        content.add(XMBSettingsItem(vsh, "settings_wave_make_internal",
+        content.add(XmbSettingsItem(vsh, "settings_wave_make_internal",
             R.string.settings_wave_make_internal_name, R.string.setting_wave_make_internal_desc,
             R.drawable.category_settings_display, {
                 getString(vsh.useInternalWave.select(R.string.common_yes, R.string.common_no))
@@ -104,7 +104,7 @@ fun Vsh.createCategoryWaveSetting(): XMBSettingsCategory {
         })
 
         content.add(
-            XMBSettingsItem(vsh, "settings_wave_theme",
+            XmbSettingsItem(vsh, "settings_wave_theme",
                 R.string.settings_wave_theme_name,
                 R.string.settings_wave_theme_desc,
                 R.drawable.category_setting, { "" }
@@ -116,8 +116,8 @@ fun Vsh.createCategoryWaveSetting(): XMBSettingsCategory {
     }
 }
 
-fun Vsh.settingsAddInstallPackage(): XMBItem {
-    val xi = XMBSettingsItem(this, "settings_install_package", R.string.settings_install_package, R.string.empty_string, R.drawable.ic_folder,{
+fun Vsh.settingsAddInstallPackage(): XmbItem {
+    val xi = XmbSettingsItem(this, "settings_install_package", R.string.settings_install_package, R.string.empty_string, R.drawable.ic_folder,{
         ""
     }){
         val i = Intent(Intent.ACTION_OPEN_DOCUMENT)
@@ -136,8 +136,8 @@ fun Vsh.setSysBarVisibility(i:Int){
     vsh.xmb.updateSystemBarVisibility()
 }
 
-fun Vsh.settingsAddSystemSetting2(cat : XMBSettingsCategory){
-    cat.content.add(XMBSettingsItem(vsh, "settings_system_android_bar",
+fun Vsh.settingsAddSystemSetting2(cat : XmbSettingsCategory){
+    cat.content.add(XmbSettingsItem(vsh, "settings_system_android_bar",
         R.string.settings_system_android_bar_name,
         R.string.settings_system_android_bar_desc,
         R.drawable.icon_hidden,
@@ -160,14 +160,14 @@ fun Vsh.settingsAddSystemSetting2(cat : XMBSettingsCategory){
         }
         setSysBarVisibility(i)
     }.apply {
-        val menu = arrayListOf<XMBMenuItem>()
+        val menu = arrayListOf<XmbMenuItem>()
         arrayListOf(
             R.string.system_bar_visible_all to SysBar.ALL,
             R.string.system_bar_visible_navigation to SysBar.NAVIGATION,
             R.string.system_bar_visible_status to SysBar.STATUS,
             R.string.system_bar_visible_none to SysBar.NONE
         ).forEachIndexed { i, it ->
-            menu.add(XMBMenuItem.XMBMenuItemLambda({ getString(it.first) }, { false }, i){
+            menu.add(XmbMenuItem.XmbMenuItemLambda({ getString(it.first) }, { false }, i){
                 setSysBarVisibility(it.second)
                 xmb.xmbView.widgets.sideMenu.isDisplayed = false
             })
@@ -176,7 +176,7 @@ fun Vsh.settingsAddSystemSetting2(cat : XMBSettingsCategory){
         hasMenu = true
     })
 
-    cat.content.add(XMBSettingsItem(vsh, "settings_system_legacy_icon_bg", R.string.dlg_legacyicon_title, R.string.settings_system_legacy_icon_background_desc, R.drawable.icon_video_anim_icon, {
+    cat.content.add(XmbSettingsItem(vsh, "settings_system_legacy_icon_bg", R.string.dlg_legacyicon_title, R.string.settings_system_legacy_icon_background_desc, R.drawable.icon_video_anim_icon, {
         val mode = M.pref.get(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, 0)
         vsh.getString(when(mode){
             1 -> R.string.common_enabled

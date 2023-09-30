@@ -53,22 +53,22 @@ class XmbColdboot(view : XmbView) : XmbScreen(view) {
         }
 
         FileQuery(VshBaseDirs.VSH_RESOURCES_DIR)
-                .withNames(VshResName.GAMEBOOT)
+                .withNames(*VshResName.COLDBOOT)
                 .withExtensionArray(VshResTypes.SOUNDS)
                 .execute(vsh)
                 .forEach(vshIterator)
     }
 
-
     private fun ensureImageLoaded(){
         if(image == null){
 
             // Load custom coldboot if exists
-            val i = FileQuery(VshBaseDirs.VSH_RESOURCES_DIR)
-                    .withNames(VshResName.GAMEBOOT)
+            val lst = FileQuery(VshBaseDirs.VSH_RESOURCES_DIR)
+                    .withNames(*VshResName.COLDBOOT)
                     .withExtensionArray(VshResTypes.IMAGES)
                     .onlyIncludeExists(true)
-                    .execute(context.vsh).firstOrNull()
+                    .execute(context.vsh)
+            val i = lst.firstOrNull()
             if(i != null) { image = BitmapFactory.decodeFile(i.absolutePath) }
 
             // Load default if no custom coldboot can be loaded

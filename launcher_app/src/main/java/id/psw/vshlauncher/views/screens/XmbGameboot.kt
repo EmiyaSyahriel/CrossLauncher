@@ -73,7 +73,7 @@ class XmbGameboot (view : XmbView) : XmbScreen(view) {
         }
 
         FileQuery(VshBaseDirs.VSH_RESOURCES_DIR)
-                .withNames(VshResName.GAMEBOOT)
+                .withNames(*VshResName.GAMEBOOT)
                 .withExtensionArray(VshResTypes.SOUNDS)
                 .execute(vsh)
                 .forEach(vshIterator)
@@ -84,7 +84,7 @@ class XmbGameboot (view : XmbView) : XmbScreen(view) {
 
             // Load custom gameboot if exists
             val i = FileQuery(VshBaseDirs.VSH_RESOURCES_DIR)
-                    .withNames(VshResName.GAMEBOOT)
+                    .withNames(*VshResName.GAMEBOOT)
                     .withExtensionArray(VshResTypes.IMAGES)
                     .onlyIncludeExists(true)
                     .execute(context.vsh).firstOrNull()

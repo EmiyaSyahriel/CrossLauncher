@@ -15,7 +15,7 @@ import id.psw.vshlauncher.types.Ref
 import java.io.File
 import java.lang.Exception
 
-class XMBAdaptiveIconRenderer(private val ctx: Vsh) : IVshSubmodule {
+class XmbAdaptiveIconRenderer(private val ctx: Vsh) : IVshSubmodule {
 
     companion object {
         private const val TAG = "XMBIconGen"

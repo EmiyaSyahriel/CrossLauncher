@@ -2,9 +2,8 @@ package id.psw.vshlauncher.views.dialogviews
 
 import android.graphics.*
 import android.text.TextPaint
-import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.select
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.XmbView
@@ -24,7 +23,7 @@ class TextDialogView(v: XmbView) : XmbDialogSubview(v) {
     var onPositiveButton : ((TextDialogView) -> Unit)? = null
     var onNegativeButton : ((TextDialogView) -> Unit)? = null
 
-    override var icon: Bitmap = XMBItem.TRANSPARENT_BITMAP
+    override var icon: Bitmap = XmbItem.TRANSPARENT_BITMAP
     override var title: String = "Dialog"
 
     var content = ""
@@ -64,7 +63,7 @@ class TextDialogView(v: XmbView) : XmbDialogSubview(v) {
         return this
     }
     fun setData(icon:Bitmap?, title:String, content:String): TextDialogView {
-        this.icon = icon?: XMBItem.TRANSPARENT_BITMAP
+        this.icon = icon?: XmbItem.TRANSPARENT_BITMAP
         this.title = title
         this.content = content
         return this

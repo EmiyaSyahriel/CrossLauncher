@@ -9,7 +9,7 @@ import id.psw.vshlauncher.Consts
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.makeTextPaint
 import id.psw.vshlauncher.select
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.XmbWidget
@@ -34,7 +34,7 @@ class XmbSearchQuery(view: XmbView) : XmbWidget(view) {
                 if(searchIcon == null){
                     searchIcon = vsh.loadTexture(R.drawable.ic_search, "icon_search", 32, 32, true)
                 }
-                val icon = searchIcon ?: XMBItem.WHITE_BITMAP
+                val icon = searchIcon ?: XmbItem.WHITE_BITMAP
                 val hSize = 40.0f / 2.0f
 
                 ctx.drawBitmap(icon,
@@ -60,7 +60,7 @@ class XmbSearchQuery(view: XmbView) : XmbWidget(view) {
                 if(searchIcon == null){
                     searchIcon = vsh.loadTexture(R.drawable.ic_search, "icon_search", 32, 32, true)
                 }
-                val icon = searchIcon ?: XMBItem.WHITE_BITMAP
+                val icon = searchIcon ?: XmbItem.WHITE_BITMAP
 
                 ctx.drawBitmap(icon,
                         null,

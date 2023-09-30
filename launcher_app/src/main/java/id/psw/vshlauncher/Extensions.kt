@@ -12,7 +12,7 @@ import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.core.content.res.ResourcesCompat
 import id.psw.vshlauncher.activities.Xmb
 import id.psw.vshlauncher.types.Ref
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.views.XmbView
 import java.io.File
 import java.util.*
@@ -40,7 +40,7 @@ val Context.xmb : Xmb
 
 fun <T> Boolean.select(a:T, b:T) : T =  if(this) a else b
 
-val Iterable<XMBItem>.visibleItems get() = synchronized(this) { this.filter { !it.isHidden } }
+val Iterable<XmbItem>.visibleItems get() = synchronized(this) { this.filter { !it.isHidden } }
 
 infix fun Int.hasFlag(b:Int) : Boolean = this and b == b
 infix fun Byte.hasFlag(b:Byte) : Boolean = this and b == b

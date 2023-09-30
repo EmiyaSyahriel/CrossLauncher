@@ -6,7 +6,7 @@ import androidx.core.graphics.minus
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.Ref
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.*
 import kotlin.math.abs
@@ -25,7 +25,7 @@ class LegacyIconBackgroundDialogView(v: XmbView) : XmbDialogSubview(v) {
     private var bgMode = 0
     private var supportsYou = false
     private var selection : Int = 0
-    private var sampleIcon : Bitmap = XMBItem.WHITE_BITMAP
+    private var sampleIcon : Bitmap = XmbItem.WHITE_BITMAP
     private var displayPaint : Paint = Paint().apply {
     }
     private var textPaint : TextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {

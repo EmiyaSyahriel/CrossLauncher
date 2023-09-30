@@ -53,6 +53,7 @@ class XmbDialog(view : XmbView) : XmbScreen(view) {
     fun showDialog(dialog:XmbDialogSubview){
         activeDialog?.onClose() // Close previous dialog in case it's available
         activeDialog = dialog
+        activeDialog?.onStart()
         view.switchScreen(screens.dialog)
     }
 

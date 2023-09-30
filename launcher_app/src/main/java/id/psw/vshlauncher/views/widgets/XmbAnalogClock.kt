@@ -16,21 +16,21 @@ import id.psw.vshlauncher.vsh
 import java.util.Calendar
 
 class XmbAnalogClock(view: XmbView) : XmbWidget(view) {
-    private val statusOutlinePaint = vsh.makeTextPaint(size = 20.0f, color = Color.WHITE)
+    private val statusOutlinePaint = vsh.makeTextPaint(size = 20.0f, color = Color.WHITE, style = Paint.Style.STROKE)
     private val statusFillPaint = Paint()
     private val tmpPointFB = PointF()
     private val tmpPointFA = PointF()
-    private val calendar = Calendar.getInstance()
     var showSecondHand = false
     private var clockLoadTransition = 0.0f
 
     override fun render(ctx: Canvas) {
+        val calendar = Calendar.getInstance()
         val hh = calendar.get(Calendar.HOUR)
         val mm = calendar.get(Calendar.MINUTE)
         val ss = calendar.get(Calendar.SECOND)
         statusOutlinePaint.strokeWidth = 3.0f
         tmpPointFB.x = scaling.target.right - 85.0f
-        tmpPointFB.y = view.top.toFloat()
+        tmpPointFB.y = scaling.target.top + (scaling.target.height() * 0.1f)
 
         val tFactor = vsh.hasConcurrentLoading.select(1.0f, 0.0f)
         //clockLoadTransition = (clockLoadTransition + (tFactor * time.deltaTime)).coerceIn(0.0f, 1.0f)

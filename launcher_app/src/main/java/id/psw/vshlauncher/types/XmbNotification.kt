@@ -2,7 +2,7 @@ package id.psw.vshlauncher.types
 
 import android.graphics.Bitmap
 
-data class XMBNotification(
+data class XmbNotification(
     val handle:Long,
     var icon: Bitmap?,
     var title:String,

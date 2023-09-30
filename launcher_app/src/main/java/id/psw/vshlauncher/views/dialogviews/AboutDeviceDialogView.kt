@@ -11,10 +11,9 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.BuildConfig
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.submodules.VulkanisirSubmodule
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.XmbView
@@ -23,7 +22,7 @@ class AboutDeviceDialogView(v: XmbView) : XmbDialogSubview(v) {
     override val hasNegativeButton: Boolean = true
     override val hasPositiveButton: Boolean = false
     override val negativeButton: String = vsh.getString(R.string.common_back)
-    override val icon: Bitmap = ResourcesCompat.getDrawable(vsh.resources, R.drawable.icon_info, null)?.toBitmap(64,64) ?: XMBItem.TRANSPARENT_BITMAP
+    override val icon: Bitmap = ResourcesCompat.getDrawable(vsh.resources, R.drawable.icon_info, null)?.toBitmap(64,64) ?: XmbItem.TRANSPARENT_BITMAP
     override val title: String
         get() = vsh.getString(R.string.setting_systeminfo_name)
 
@@ -70,7 +69,7 @@ class AboutDeviceDialogView(v: XmbView) : XmbDialogSubview(v) {
     }
 
     override fun onClose() {
-        if(icon != XMBItem.TRANSPARENT_BITMAP){
+        if(icon != XmbItem.TRANSPARENT_BITMAP){
             icon.recycle()
         }
     }

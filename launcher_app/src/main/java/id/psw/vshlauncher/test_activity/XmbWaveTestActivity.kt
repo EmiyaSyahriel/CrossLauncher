@@ -8,9 +8,8 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.widget.Toast
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.livewallpaper.NativeGL
 
-class XMBWaveTestActivity : AppCompatActivity() {
+class XmbWaveTestActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_xmbwave)

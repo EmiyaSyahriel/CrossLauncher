@@ -8,8 +8,8 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.withRotation
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.PadKey
-import id.psw.vshlauncher.types.XMBItem
-import id.psw.vshlauncher.types.items.XMBAppItem
+import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.types.items.XmbAppItem
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.XmbView
@@ -17,7 +17,7 @@ import id.psw.vshlauncher.views.drawBitmap
 import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
 import kotlin.math.abs
 
-class AppInfoDialogView(v: XmbView, private val app : XMBAppItem) : XmbDialogSubview(v) {
+class AppInfoDialogView(v: XmbView, private val app : XmbAppItem) : XmbDialogSubview(v) {
     companion object {
         const val POS_NAME = 0
         const val POS_DESC = 2
@@ -60,8 +60,8 @@ class AppInfoDialogView(v: XmbView, private val app : XMBAppItem) : XmbDialogSub
         get() = _icon
 
     override fun onClose() {
-        if(_icon != XMBItem.WHITE_BITMAP)  _icon.recycle()
-        if(loadIcon != XMBItem.WHITE_BITMAP)  loadIcon.recycle()
+        if(_icon != XmbItem.WHITE_BITMAP)  _icon.recycle()
+        if(loadIcon != XmbItem.WHITE_BITMAP)  loadIcon.recycle()
     }
 
     override val negativeButton: String
@@ -75,16 +75,16 @@ class AppInfoDialogView(v: XmbView, private val app : XMBAppItem) : XmbDialogSub
         }
 
     override fun onStart() {
-        loadIcon = ResourcesCompat.getDrawable(vsh.resources,R.drawable.ic_sync_loading,null)?.toBitmap(256,256) ?: XMBItem.WHITE_BITMAP
+        loadIcon = ResourcesCompat.getDrawable(vsh.resources,R.drawable.ic_sync_loading,null)?.toBitmap(256,256) ?: XmbItem.WHITE_BITMAP
         super.onStart()
     }
 
     private fun drawLoading(ctx:Canvas){
         val time = vsh.xmbView?.time?.currentTime ?: (System.currentTimeMillis() / 1000.0f)
-            ctx.withRotation(
-                ((time + 0.375f) * -360.0f) % 360.0f, bmpRectF.centerX(), bmpRectF.centerY()) {
-                ctx.drawBitmap(loadIcon, null, bmpRectF, iconPaint, FittingMode.FIT, 0.5f, 0.5f)
-            }
+        ctx.withRotation(
+            ((time + 0.375f) * -360.0f) % 360.0f, bmpRectF.centerX(), bmpRectF.centerY()) {
+            ctx.drawBitmap(loadIcon, null, bmpRectF, iconPaint, FittingMode.FIT, 0.5f, 0.5f)
+        }
 
     }
 

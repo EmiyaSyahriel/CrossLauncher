@@ -1,14 +1,12 @@
 package id.psw.vshlauncher.types.sequentialimages
 import android.graphics.*
-import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 // import com.facebook.animated.webp.WebPImage
 // import com.facebook.imagepipeline.animated.base.AnimatedDrawableFrameInfo
 // import com.facebook.imagepipeline.common.ImageDecodeOptions
 import com.github.penfeizhou.animation.webp.WebPDrawable
-import id.psw.vshlauncher.select
 import java.io.File
 
-class XMBAnimWebP(val file:File) : XMBFrameAnimation() {
+class XmbAnimWebP(val file:File) : XmbFrameAnimation() {
     private var webp : WebPDrawable = WebPDrawable.fromFile(file.absolutePath).apply {
         setAutoPlay(false)
         setLoopLimit(0)

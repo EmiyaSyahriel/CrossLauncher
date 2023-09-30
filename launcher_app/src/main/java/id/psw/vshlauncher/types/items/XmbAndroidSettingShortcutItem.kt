@@ -8,15 +8,15 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.postNotification
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 
-class XMBAndroidSettingShortcutItem(
+class XmbAndroidSettingShortcutItem(
     val vsh: Vsh,
     @DrawableRes private val iconId:Int,
     @StringRes private val nameId:Int,
     @StringRes private val descId: Int,
     private val intentLaunchId:String
-) : XMBItem(vsh) {
+) : XmbItem(vsh) {
     override val displayName: String get() = vsh.getString(nameId)
     override val description: String get() = vsh.getString(descId)
     override val hasDescription: Boolean
@@ -30,7 +30,7 @@ class XMBAndroidSettingShortcutItem(
         get() = icon != TRANSPARENT_BITMAP
 
     override var hasContent: Boolean = false
-    override var content: ArrayList<XMBItem> = arrayListOf()
+    override var content: ArrayList<XmbItem> = arrayListOf()
 
     override val id: String = intentLaunchId
     private var _isActivityExists = false
@@ -47,7 +47,7 @@ class XMBAndroidSettingShortcutItem(
         }
     }
 
-    private fun launchSetting(xmb:XMBItem){
+    private fun launchSetting(xmb:XmbItem){
         try{
             val i = Intent(intentLaunchId)
             i.flags = i.flags or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -57,6 +57,6 @@ class XMBAndroidSettingShortcutItem(
         }
     }
 
-    override val onLaunch: (XMBItem) -> Unit
+    override val onLaunch: (XmbItem) -> Unit
         get() = ::launchSetting
 }

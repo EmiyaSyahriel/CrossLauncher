@@ -5,17 +5,17 @@ import android.os.Parcelable
 import id.psw.vshlauncher.readByteBoolean
 import id.psw.vshlauncher.writeByteBoolean
 
-class ExternalXMBItem() : Parcelable {
-    companion object CREATOR : Parcelable.Creator<ExternalXMBItem> {
+class ExternalXmbItem() : Parcelable {
+    companion object CREATOR : Parcelable.Creator<ExternalXmbItem> {
         const val PSW_XMB_HEADER = "[:psw:]"
         const val PSW_XMB_META_SEPARATOR = "[:meta:]"
         const val PSW_XMB_MEDIA_SEPARATOR = "[:media:]"
 
-        override fun createFromParcel(parcel: Parcel): ExternalXMBItem {
-            return ExternalXMBItem(parcel)
+        override fun createFromParcel(parcel: Parcel): ExternalXmbItem {
+            return ExternalXmbItem(parcel)
         }
 
-        override fun newArray(size: Int): Array<ExternalXMBItem?> {
+        override fun newArray(size: Int): Array<ExternalXmbItem?> {
             return arrayOfNulls(size)
         }
     }

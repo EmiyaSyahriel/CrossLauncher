@@ -1,9 +1,8 @@
 package id.psw.vshlauncher.types.items
 
 import id.psw.vshlauncher.Consts
-import id.psw.vshlauncher.types.XMBItem
 
-open class XMBMenuItem {
+open class XmbMenuItem {
     companion object{
         val EmptyLaunchImpl : () -> Unit = { }
     }
@@ -15,12 +14,12 @@ open class XMBMenuItem {
 
     override fun toString(): String = "[Menu] $displayName"
 
-    class XMBMenuItemLambda(
+    class XmbMenuItemLambda(
         val gDisplayName: () -> String,
         val gDisabled: () -> Boolean,
         override val displayOrder: Int,
         override val onLaunch: () -> Unit,
-    ) : XMBMenuItem() {
+    ) : XmbMenuItem() {
         override val displayName: String get() = gDisplayName()
         override val isDisabled: Boolean get() = gDisabled()
     }

@@ -8,7 +8,7 @@ import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.activities.Xmb
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.toLerp
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.vsh
 import kotlin.math.floor
 
@@ -41,7 +41,7 @@ fun Canvas.drawBitmap(bm:Bitmap, src: Rect?, dst: RectF, paint: Paint?, fitMode:
     }
 }
 
-fun List<XMBItem>.filterBySearch(vsh: Vsh): List<XMBItem> {
+fun List<XmbItem>.filterBySearch(vsh: Vsh): List<XmbItem> {
     val q = vsh.activeParent?.getProperty(Consts.XMB_ACTIVE_SEARCH_QUERY, "") ?: ""
     return this.filter { it.displayName.contains(q, true) }
 }

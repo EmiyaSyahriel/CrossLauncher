@@ -5,14 +5,13 @@ import android.text.TextPaint
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.Vsh
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.XmbView
 
 class TestDialogView(v: XmbView) : XmbDialogSubview(v) {
     override val icon: Bitmap
-        get() = ResourcesCompat.getDrawable(vsh.resources, R.drawable.category_games, null)?.toBitmap(50,50) ?: XMBItem.TRANSPARENT_BITMAP
+        get() = ResourcesCompat.getDrawable(vsh.resources, R.drawable.category_games, null)?.toBitmap(50,50) ?: XmbItem.TRANSPARENT_BITMAP
     private val tPaint = TextPaint(TextPaint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
         textSize = 20.0f

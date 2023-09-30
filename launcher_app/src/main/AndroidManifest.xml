@@ -55,7 +55,7 @@
         tools:ignore="UnusedAttribute">
 
         <activity
-            android:name=".test_activity.XMBAdaptiveIconTestActivity"
+            android:name=".test_activity.XmbAdaptiveIconTestActivity"
             android:exported="true" />
         <activity
             android:name=".activities.Xmb"
@@ -115,7 +115,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".test_activity.XMBWaveTestActivity"
+            android:name=".test_activity.XmbWaveTestActivity"
             android:exported="true"
             android:launchMode="singleInstance" />
         <service

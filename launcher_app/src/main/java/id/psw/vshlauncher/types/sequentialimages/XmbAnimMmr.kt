@@ -8,7 +8,7 @@ import id.psw.vshlauncher.FittingMode
 import id.psw.vshlauncher.views.drawBitmap
 import java.util.concurrent.Executors
 
-class XMBAnimMMR(file:String) : XMBFrameAnimation() {
+class XmbAnimMmr(file:String) : XmbFrameAnimation() {
     companion object{
         private val frameFetchingThreadPool = Executors.newFixedThreadPool(16)
     }

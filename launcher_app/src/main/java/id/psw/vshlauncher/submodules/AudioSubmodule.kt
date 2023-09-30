@@ -10,7 +10,7 @@ import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.VshBaseDirs
 import id.psw.vshlauncher.sdkAtLeast
 import id.psw.vshlauncher.types.FileQuery
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 import java.io.File
 import java.lang.Exception
 
@@ -137,7 +137,7 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
                     readSize = ins.read(bArray, 0, Vsh.COPY_DATA_SIZE_BUFFER)
                 }
             }
-            XMBItem.SILENT_AUDIO = file
+            XmbItem.SILENT_AUDIO = file
             bgmPlayerActiveSrc = file
         }
     }
@@ -170,10 +170,10 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
     }
 
     fun removeAudioSource(){
-        if(bgmPlayerActiveSrc != XMBItem.SILENT_AUDIO){
+        if(bgmPlayerActiveSrc != XmbItem.SILENT_AUDIO){
             if(bgmPlayer.isPlaying) bgmPlayer.stop()
             bgmPlayer.reset()
-            bgmPlayerActiveSrc = XMBItem.SILENT_AUDIO
+            bgmPlayerActiveSrc = XmbItem.SILENT_AUDIO
         }
     }
 

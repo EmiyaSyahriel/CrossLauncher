@@ -5,10 +5,9 @@ import android.graphics.Canvas
 import android.graphics.PointF
 import android.graphics.RectF
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.submodules.BitmapRef
 import id.psw.vshlauncher.submodules.PadKey
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.vsh
 
 open class XmbDialogSubview(var view : XmbView) {
@@ -16,7 +15,7 @@ open class XmbDialogSubview(var view : XmbView) {
     val vsh get() = view.context.vsh
 
     var isPSP: Boolean = false
-    open val icon : Bitmap = XMBItem.TRANSPARENT_BITMAP
+    open val icon : Bitmap = XmbItem.TRANSPARENT_BITMAP
     open val useRefIcon : Boolean = false
     open val reficon : BitmapRef = BitmapRef("default_icon_dialog", {null}, BitmapRef.FallbackColor.Transparent)
     open val title : String = vsh.getString(R.string.default_dialog_title)

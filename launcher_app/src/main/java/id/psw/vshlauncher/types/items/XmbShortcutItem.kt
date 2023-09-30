@@ -11,28 +11,28 @@ import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.reloadShortcutList
 import id.psw.vshlauncher.sdkAtLeast
-import id.psw.vshlauncher.types.CIFLoader
-import id.psw.vshlauncher.types.XMBItem
-import id.psw.vshlauncher.types.XMBShortcutInfo
-import id.psw.vshlauncher.types.sequentialimages.XMBFrameAnimation
+import id.psw.vshlauncher.types.CifLoader
+import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.types.XmbShortcutInfo
+import id.psw.vshlauncher.types.sequentialimages.XmbFrameAnimation
 import id.psw.vshlauncher.views.dialogviews.ConfirmDialogView
 import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
 import java.io.File
 
-class XMBShortcutItem(val vsh: Vsh, private val file: File) : XMBItem(vsh) {
+class XmbShortcutItem(val vsh: Vsh, private val file: File) : XmbItem(vsh) {
 
-    private val shortcut = XMBShortcutInfo(vsh, file)
+    private val shortcut = XmbShortcutInfo(vsh, file)
 
-    override val onLaunch: (XMBItem) -> Unit = {
+    override val onLaunch: (XmbItem) -> Unit = {
         launch(it)
     }
 
-    override val onScreenVisible: (XMBItem) -> Unit = { cif.loadIcon() }
-    override val onScreenInvisible: (XMBItem) -> Unit = { cif.unloadIcon() }
-    override val onHovered: (XMBItem) -> Unit = { cif.apply { loadBackdrop(); loadSound(); } }
-    override val onUnHovered: (XMBItem) -> Unit = { cif.apply { unloadBackdrop(); unloadSound(); } }
+    override val onScreenVisible: (XmbItem) -> Unit = { cif.loadIcon() }
+    override val onScreenInvisible: (XmbItem) -> Unit = { cif.unloadIcon() }
+    override val onHovered: (XmbItem) -> Unit = { cif.apply { loadBackdrop(); loadSound(); } }
+    override val onUnHovered: (XmbItem) -> Unit = { cif.apply { unloadBackdrop(); unloadSound(); } }
 
-    private val cif = CIFLoader(vsh, shortcut.idInLauncher, file.parentFile!!)
+    private val cif = CifLoader(vsh, shortcut.idInLauncher, file.parentFile!!)
     private val sourceAppName : String = try {
         val appInfo = if (sdkAtLeast(Build.VERSION_CODES.TIRAMISU)) {
             vsh.packageManager.getApplicationInfo(shortcut.packageName, PackageManager.ApplicationInfoFlags.of(0L))
@@ -49,20 +49,20 @@ class XMBShortcutItem(val vsh: Vsh, private val file: File) : XMBItem(vsh) {
     override val icon: Bitmap get() = cif.icon.bitmap
     override val hasIcon: Boolean  get() = true
     override val isIconLoaded: Boolean get() = cif.hasIconLoaded
-    override val animatedIcon: XMBFrameAnimation get() = cif.animIcon
+    override val animatedIcon: XmbFrameAnimation get() = cif.animIcon
     override val hasAnimatedIcon: Boolean get() = cif.hasAnimatedIcon
     override val isAnimatedIconLoaded: Boolean get() = cif.hasAnimIconLoaded
     override val hasBackSound: Boolean get()= cif.hasBackSound
     override val backSound: File get() = cif.backSound
     override val hasMenu: Boolean get() = true
-    override val menuItems: ArrayList<XMBMenuItem> get() = menus
+    override val menuItems: ArrayList<XmbMenuItem> get() = menus
     override val description: String get() = sourceAppName
     override val id: String get() = shortcut.idInLauncher
     val category : String get() = shortcut.category
 
-    private val menus = arrayListOf<XMBMenuItem>().apply {
-        val that = this@XMBShortcutItem
-        add(XMBMenuItem.XMBMenuItemLambda(
+    private val menus = arrayListOf<XmbMenuItem>().apply {
+        val that = this@XmbShortcutItem
+        add(XmbMenuItem.XmbMenuItemLambda(
             { vsh.getString(R.string.shortcut_launch) },
             { false },
             0
@@ -70,7 +70,7 @@ class XMBShortcutItem(val vsh: Vsh, private val file: File) : XMBItem(vsh) {
             launch(that)
         })
 
-        add(XMBMenuItem.XMBMenuItemLambda(
+        add(XmbMenuItem.XmbMenuItemLambda(
             { vsh.getString(R.string.shortcut_rename) },
             { false },
             1
@@ -84,7 +84,7 @@ class XMBShortcutItem(val vsh: Vsh, private val file: File) : XMBItem(vsh) {
                 }
                 .show()
         })
-        add(XMBMenuItem.XMBMenuItemLambda(
+        add(XmbMenuItem.XmbMenuItemLambda(
             { vsh.getString(R.string.shortcut_remove) },
             { false },
             2
@@ -107,7 +107,7 @@ class XMBShortcutItem(val vsh: Vsh, private val file: File) : XMBItem(vsh) {
     }
 
 
-    private fun launch(x:XMBItem){
+    private fun launch(x:XmbItem){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             val lcher = vsh.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
             val uid = android.os.Process.myUid()

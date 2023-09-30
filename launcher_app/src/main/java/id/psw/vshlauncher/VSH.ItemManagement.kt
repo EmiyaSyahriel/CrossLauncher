@@ -1,8 +1,8 @@
 package id.psw.vshlauncher
 
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 
-fun Vsh.addToCategory(categoryId:String, item:XMBItem) : Boolean {
+fun Vsh.addToCategory(categoryId:String, item:XmbItem) : Boolean {
     synchronized(categories){
         val category = categories.find { it.id == categoryId }
         if(category != null){
@@ -19,7 +19,7 @@ fun Vsh.removeFromCategory(categoryId:String, itemId:String) : Boolean {
     }
 }
 
-fun Vsh.getItemFromCategory(categoryId: String, itemId:String) : XMBItem? {
+fun Vsh.getItemFromCategory(categoryId: String, itemId:String) : XmbItem? {
     synchronized(categories) {
         return categories.find { it.id == categoryId }?.content?.find { it.id == itemId }
     }

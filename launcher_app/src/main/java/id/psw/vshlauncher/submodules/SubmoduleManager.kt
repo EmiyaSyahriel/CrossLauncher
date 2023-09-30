@@ -7,7 +7,7 @@ class SubmoduleManager(ctx: Vsh) {
     val bmp = BitmapManager(ctx)
     val customizer = CustomizerPackageSubmodule()
     val plugin = PluginManager(ctx)
-    val icons = XMBAdaptiveIconRenderer(ctx)
+    val icons = XmbAdaptiveIconRenderer(ctx)
     val network = NetworkSubmodule(ctx)
     val gamepad = GamepadSubmodule(ctx)
     val gamepadUi= GamepadUISubmodule()

@@ -12,21 +12,21 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.os.Build
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.types.INIFile
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.IniFile
+import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.types.sequentialimages.*
 import id.psw.vshlauncher.views.dialogviews.AppInfoDialogView
 import java.io.File
 import java.lang.StringBuilder
 import android.text.format.DateFormat
-import id.psw.vshlauncher.types.CIFLoader
+import id.psw.vshlauncher.types.CifLoader
 import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.views.asBytes
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class XMBAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XMBItem(vsh) {
+class XmbAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XmbItem(vsh) {
     enum class DescriptionDisplay(val v : Int) {
         /** No description is displayed */
         None(0),
@@ -80,7 +80,7 @@ class XMBAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XMBItem(vsh)
         }
     }
 
-    private val cif = CIFLoader(vsh, resInfo, FileQuery(VshBaseDirs.APPS_DIR).withNames(resInfo.uniqueActivityName).execute(vsh))
+    private val cif = CifLoader(vsh, resInfo, FileQuery(VshBaseDirs.APPS_DIR).withNames(resInfo.uniqueActivityName).execute(vsh))
 
     override val isIconLoaded: Boolean get()= cif.icon.isLoaded
     override val isAnimatedIconLoaded: Boolean get() = cif.hasAnimIconLoaded
@@ -95,7 +95,7 @@ class XMBAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XMBItem(vsh)
     override val hasPortraitBackdropOverlay: Boolean get() = cif.hasPortraitBackdropOverlay
     override val hasBackSound: Boolean get() = cif.hasBackSound
     override val hasAnimatedIcon: Boolean get() = cif.hasAnimatedIcon
-    private var iniFile = INIFile()
+    private var iniFile = IniFile()
 
     override val hasMenu: Boolean get() = true
     private var _customAppLabel = ""
@@ -136,9 +136,9 @@ class XMBAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XMBItem(vsh)
     override val icon: Bitmap get()= cif.icon.bitmap
     override val backdrop: Bitmap get() = cif.backdrop.bitmap
     override val backSound: File get() = cif.backSound
-    override val animatedIcon: XMBFrameAnimation get() = synchronized(cif.animIcon) { cif.animIcon }
+    override val animatedIcon: XmbFrameAnimation get() = synchronized(cif.animIcon) { cif.animIcon }
     override val hasDescription: Boolean get() = description.isNotEmpty()
-    override val menuItems: ArrayList<XMBMenuItem> = arrayListOf()
+    override val menuItems: ArrayList<XmbMenuItem> = arrayListOf()
     private var apkFile : File? = null
     private var pkgInfo : PackageInfo? = null
     private var apkSplits : Array<File> = arrayOf()
@@ -268,11 +268,11 @@ class XMBAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XMBItem(vsh)
     }
 
     private fun writeAppConfig(){
-        iniFile[XMBAppItem.INI_KEY_TYPE, XMBAppItem.INI_KEY_TITLE] = appCustomLabel
-        iniFile[XMBAppItem.INI_KEY_TYPE, XMBAppItem.INI_KEY_SUBTITLE] = appCustomDesc
-        iniFile[XMBAppItem.INI_KEY_TYPE, XMBAppItem.INI_KEY_ALBUM] = appAlbum
-        iniFile[XMBAppItem.INI_KEY_TYPE, XMBAppItem.INI_KEY_BOOTABLE] = isHidden.select("false", "true")
-        iniFile[XMBAppItem.INI_KEY_TYPE, XMBAppItem.INI_KEY_CATEGORY] = appCategory
+        iniFile[INI_KEY_TYPE, INI_KEY_TITLE] = appCustomLabel
+        iniFile[INI_KEY_TYPE, INI_KEY_SUBTITLE] = appCustomDesc
+        iniFile[INI_KEY_TYPE, INI_KEY_ALBUM] = appAlbum
+        iniFile[INI_KEY_TYPE, INI_KEY_BOOTABLE] = isHidden.select("false", "true")
+        iniFile[INI_KEY_TYPE, INI_KEY_CATEGORY] = appCategory
 
         if(iniFile.path.isEmpty()){
             vsh.tryMigrateOldGameDirectory()
@@ -319,6 +319,7 @@ class XMBAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XMBItem(vsh)
                     PackageManager.PackageInfoFlags.of(0L)
                 )
             }else{
+                @Suppress("DEPRECATION") // I know it's deprecated, but non-deprecated only on high API level
                 vsh.packageManager.getPackageInfo(resInfo.activityInfo.applicationInfo.packageName, 0)
             }
 
@@ -342,29 +343,35 @@ class XMBAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XMBItem(vsh)
             appLabel = resInfo.loadLabel(vsh.packageManager).toString()
             vsh.setLoadingFinished(handle)
             menuItems.add(
-                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_launch) }, { false }, 0){ _launch(this) })
+                XmbMenuItem.XmbMenuItemLambda({ vsh.getString(R.string.app_launch) }, { false }, 0){
+                    _launch(this)
+                    vsh.xmbView?.showSideMenu(false)
+                })
 
             menuItems.add(
-                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.menu_app_info) },
+                XmbMenuItem.XmbMenuItemLambda({ vsh.getString(R.string.menu_app_info) },
                     { false },1){
                     val xv = vsh.xmbView
                     xv?.showDialog(AppInfoDialogView(xv, this))
+                    vsh.xmbView?.showSideMenu(false)
                 }
             )
 
             menuItems.add(
-                XMBMenuItem.XMBMenuItemLambda({vsh.getString(R.string.app_create_customization_folder)}, {false}, 2){
+                XmbMenuItem.XmbMenuItemLambda({vsh.getString(R.string.app_create_customization_folder)}, {false}, 2){
                     createAppCustomDirectory()
+                    vsh.xmbView?.showSideMenu(false)
                 }
             )
             menuItems.add(
-                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_find_on_playstore) }, { false }, 3) {
+                XmbMenuItem.XmbMenuItemLambda({ vsh.getString(R.string.app_find_on_playstore) }, { false }, 3) {
                     vsh.xmbView?.context?.xmb?.appOpenInPlayStore(resInfo.activityInfo.packageName)
+                    vsh.xmbView?.showSideMenu(false)
                 }
             )
 
             menuItems.add(
-                XMBMenuItem.XMBMenuItemLambda({vsh.getString(R.string.app_force_kill)},
+                XmbMenuItem.XmbMenuItemLambda({vsh.getString(R.string.app_force_kill)},
                     { false }, 5)
                 {
                     val actMan = vsh.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -372,20 +379,22 @@ class XMBAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XMBItem(vsh)
                     vsh.postNotification(null,
                         vsh.getString(R.string.force_kill_sent_title),
                         vsh.getString(R.string.force_kill_sent_desc, resInfo.activityInfo.processName))
+                    vsh.xmbView?.showSideMenu(false)
                 }
             )
 
             menuItems.add(
-                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_uninstall) },
+                XmbMenuItem.XmbMenuItemLambda({ vsh.getString(R.string.app_uninstall) },
                     { isSystemApp },6){
                     vsh.xmbView?.context?.xmb?.appRequestUninstall(resInfo.activityInfo.packageName)
+                    vsh.xmbView?.showSideMenu(false)
                 }
             )
 
-
             menuItems.add(
-                XMBMenuItem.XMBMenuItemLambda({ vsh.getString(R.string.app_category_switch_sort) }, {false}, -2){
+                XmbMenuItem.XmbMenuItemLambda({ vsh.getString(R.string.app_category_switch_sort) }, {false}, -2){
                     vsh.doCategorySorting()
+                    vsh.xmbView?.showSideMenu(false)
                 }
             )
 
@@ -426,7 +435,7 @@ class XMBAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XMBItem(vsh)
         }.execute(vsh)
     }
 
-    private fun pOnScreenVisible(i : XMBItem){
+    private fun pOnScreenVisible(i : XmbItem){
         vsh.threadPool.execute {
             appLabel = resInfo.loadLabel(vsh.packageManager).toString()
             if(!cif.icon.isLoaded){
@@ -435,7 +444,7 @@ class XMBAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XMBItem(vsh)
         }
     }
 
-    private fun pOnScreenInvisible(i : XMBItem){
+    private fun pOnScreenInvisible(i : XmbItem){
         // Destroy icon, Unload it from memory
         vsh.threadPool.execute {
             if(vsh.aggressiveUnloading){
@@ -446,26 +455,26 @@ class XMBAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XMBItem(vsh)
         }
     }
 
-    private fun pOnHovered(i : XMBItem){
+    private fun pOnHovered(i : XmbItem){
         vsh.threadPool.execute {
             cif.loadBackdrop()
             cif.loadSound()
         }
     }
 
-    private fun pOnUnHovered(i: XMBItem){
+    private fun pOnUnHovered(i: XmbItem){
         vsh.threadPool.execute {
             cif.unloadBackdrop()
             cif.unloadSound()
         }
     }
 
-    override val onScreenVisible: (XMBItem) -> Unit get()= ::pOnScreenVisible
-    override val onScreenInvisible: (XMBItem) -> Unit get()= ::pOnScreenInvisible
-    override val onHovered: (XMBItem) -> Unit get() = ::pOnHovered
-    override val onUnHovered: (XMBItem) -> Unit get() = ::pOnUnHovered
+    override val onScreenVisible: (XmbItem) -> Unit get()= ::pOnScreenVisible
+    override val onScreenInvisible: (XmbItem) -> Unit get()= ::pOnScreenInvisible
+    override val onHovered: (XmbItem) -> Unit get() = ::pOnHovered
+    override val onUnHovered: (XmbItem) -> Unit get() = ::pOnUnHovered
 
-    private fun _launch(i: XMBItem){
+    private fun _launch(i: XmbItem){
         vsh.xmbView?.screens?.gameBoot?.bootInto(false){
             try{
                 val intents = arrayListOf<Intent?>()
@@ -502,5 +511,5 @@ class XMBAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XMBItem(vsh)
         }
     }
 
-    override val onLaunch: (XMBItem) -> Unit get()= ::_launch
+    override val onLaunch: (XmbItem) -> Unit get()= ::_launch
 }

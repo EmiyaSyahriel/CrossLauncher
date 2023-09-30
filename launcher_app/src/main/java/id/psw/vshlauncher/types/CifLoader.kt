@@ -10,11 +10,11 @@ import id.psw.vshlauncher.delayedExistenceCheck
 import id.psw.vshlauncher.getOrMake
 import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.submodules.BitmapRef
-import id.psw.vshlauncher.types.sequentialimages.XMBAnimAPNG
-import id.psw.vshlauncher.types.sequentialimages.XMBAnimGIF
-import id.psw.vshlauncher.types.sequentialimages.XMBAnimMMR
-import id.psw.vshlauncher.types.sequentialimages.XMBAnimWebP
-import id.psw.vshlauncher.types.sequentialimages.XMBFrameAnimation
+import id.psw.vshlauncher.types.sequentialimages.XmbAnimApng
+import id.psw.vshlauncher.types.sequentialimages.XmbAnimGif
+import id.psw.vshlauncher.types.sequentialimages.XmbAnimMmr
+import id.psw.vshlauncher.types.sequentialimages.XmbAnimWebP
+import id.psw.vshlauncher.types.sequentialimages.XmbFrameAnimation
 import id.psw.vshlauncher.uniqueActivityName
 import java.io.File
 
@@ -24,14 +24,14 @@ import java.io.File
  * Since XmbAppItem and XmbShortcutItem is generic, this class is to make sure
  * the loader implementation have the same exact behaviour
  */
-class CIFLoader {
+class CifLoader {
     companion object {
         var disableAnimatedIcon = false
         var disableBackSound = false
         var disableBackdrop = false
         var disableBackdropOverlay = false
         const val DEFAULT_BITMAP_REF = "None"
-        val default_bitmap = BitmapRef("none", {XMBItem.TRANSPARENT_BITMAP}, BitmapRef.FallbackColor.Transparent)
+        val default_bitmap = BitmapRef("none", {XmbItem.TRANSPARENT_BITMAP}, BitmapRef.FallbackColor.Transparent)
         private val ios = mutableMapOf<File, Ref<Boolean>>()
         private val ioc = mutableMapOf<File, Ref<Int>>()
     }
@@ -63,12 +63,12 @@ class CIFLoader {
         listCustomFiles()
     }
 
-    private var _animIcon : XMBFrameAnimation = XMBItem.TRANSPARENT_ANIM_BITMAP
+    private var _animIcon : XmbFrameAnimation = XmbItem.TRANSPARENT_ANIM_BITMAP
     private var _backdrop = default_bitmap
     private var _backOverlay = default_bitmap
     private var _portBackdrop = default_bitmap
     private var _portBackOverlay = default_bitmap
-    private var _backSound : File = XMBItem.SILENT_AUDIO
+    private var _backSound : File = XmbItem.SILENT_AUDIO
     private var _icon = default_bitmap
 
     val icon get() = _icon
@@ -168,11 +168,11 @@ class CIFLoader {
                     for(file in animatedIconFiles){
                         if(file.exists() || file.isFile){
                             _animIcon = when (file.extension.uppercase()) {
-                                "WEBP" -> XMBAnimWebP(file)
-                                "APNG" -> XMBAnimAPNG(file)
-                                "MP4" -> XMBAnimMMR(file.absolutePath)
-                                "GIF" -> XMBAnimGIF(file)
-                                else -> XMBItem.WHITE_ANIM_BITMAP
+                                "WEBP" -> XmbAnimWebP(file)
+                                "APNG" -> XmbAnimApng(file)
+                                "MP4" -> XmbAnimMmr(file.absolutePath)
+                                "GIF" -> XmbAnimGif(file)
+                                else -> XmbItem.WHITE_ANIM_BITMAP
                             }
                             _hasAnimIconLoaded = true
                             break
@@ -190,8 +190,8 @@ class CIFLoader {
         synchronized(_animIconSync){
             if(_hasAnimIconLoaded || !_animIcon.hasRecycled){
                 _hasAnimIconLoaded = false
-                if(_animIcon != XMBItem.WHITE_ANIM_BITMAP && _animIcon != XMBItem.TRANSPARENT_ANIM_BITMAP) _animIcon.recycle()
-                _animIcon = XMBItem.TRANSPARENT_ANIM_BITMAP
+                if(_animIcon != XmbItem.WHITE_ANIM_BITMAP && _animIcon != XmbItem.TRANSPARENT_ANIM_BITMAP) _animIcon.recycle()
+                _animIcon = XmbItem.TRANSPARENT_ANIM_BITMAP
             }
         }
     }
@@ -217,7 +217,7 @@ class CIFLoader {
     }
 
     fun unloadSound(){
-        _backSound = XMBItem.SILENT_AUDIO
+        _backSound = XmbItem.SILENT_AUDIO
     }
 
 }

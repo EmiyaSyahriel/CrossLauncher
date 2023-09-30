@@ -8,8 +8,8 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.submodules.PadType
-import id.psw.vshlauncher.submodules.XMBAdaptiveIconRenderer
-import id.psw.vshlauncher.types.CIFLoader
+import id.psw.vshlauncher.submodules.XmbAdaptiveIconRenderer
+import id.psw.vshlauncher.types.CifLoader
 import id.psw.vshlauncher.types.items.*
 import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.dialogviews.*
@@ -47,12 +47,12 @@ private fun Vsh.getCurrentLocaleName() : String {
     }
 }
 
-private fun Vsh.makeVolume(setting: XMBSettingsItem, volume : (Float) -> Unit ){
+private fun Vsh.makeVolume(setting: XmbSettingsItem, volume : (Float) -> Unit ){
     setting.hasMenu = true
-    val v = arrayListOf<XMBMenuItem>()
+    val v = arrayListOf<XmbMenuItem>()
     for(i in 10 downTo 0)
     {
-        v.add(XMBMenuItem.XMBMenuItemLambda({ i.toString() }, {false}, (10 - i) - 5){
+        v.add(XmbMenuItem.XmbMenuItemLambda({ i.toString() }, {false}, (10 - i) - 5){
             volume.invoke(i / 10.0f)
             xmbView?.showSideMenu(false)
         })
@@ -62,13 +62,13 @@ private fun Vsh.makeVolume(setting: XMBSettingsItem, volume : (Float) -> Unit ){
 
 private fun volumeToString(v: Float) : String = (v * 10).roundToInt().toString()
 
-private fun Vsh.createCategoryAudio(): XMBSettingsCategory{
+private fun Vsh.createCategoryAudio(): XmbSettingsCategory{
     val vsh = this
-    return XMBSettingsCategory(this, SettingsCategoryID.CATEGORY_SETTINGS_AUDIO,
+    return XmbSettingsCategory(this, SettingsCategoryID.CATEGORY_SETTINGS_AUDIO,
         R.drawable.icon_volume,
         R.string.settings_category_audio_name, R.string.settings_category_audio_title
     ).apply {
-        content.add(XMBSettingsItem(vsh, "audio_volume_master",
+        content.add(XmbSettingsItem(vsh, "audio_volume_master",
             R.string.settings_audio_master_volume_name,
             R.string.settings_audio_master_volume_desc,
             R.drawable.icon_volume, { volumeToString(M.audio.master) }
@@ -78,7 +78,7 @@ private fun Vsh.createCategoryAudio(): XMBSettingsCategory{
             makeVolume( this) { M.audio.master = it }
         })
 
-        content.add(XMBSettingsItem(vsh, "audio_volume_bgm",
+        content.add(XmbSettingsItem(vsh, "audio_volume_bgm",
             R.string.settings_audio_bgm_volume_name,
             R.string.settings_audio_bgm_volume_desc,
             R.drawable.category_music, { volumeToString(M.audio.bgm) }
@@ -88,7 +88,7 @@ private fun Vsh.createCategoryAudio(): XMBSettingsCategory{
             makeVolume( this) { M.audio.bgm = it }
         })
 
-        content.add(XMBSettingsItem(vsh, "audio_volume_sysbgm",
+        content.add(XmbSettingsItem(vsh, "audio_volume_sysbgm",
             R.string.settings_audio_sysbgm_volume_name,
             R.string.settings_audio_sysbgm_volume_desc,
             R.drawable.ic_component_audio, { volumeToString(M.audio.systemBgm) }
@@ -98,7 +98,7 @@ private fun Vsh.createCategoryAudio(): XMBSettingsCategory{
             makeVolume( this) { M.audio.systemBgm = it }
         })
 
-        content.add(XMBSettingsItem(vsh, "audio_volume_sfx",
+        content.add(XmbSettingsItem(vsh, "audio_volume_sfx",
             R.string.settings_audio_sfx_volume_name,
             R.string.settings_audio_sfx_volume_desc,
             R.drawable.ic_speaker_phone, { volumeToString(M.audio.sfx) }
@@ -107,7 +107,7 @@ private fun Vsh.createCategoryAudio(): XMBSettingsCategory{
         }.apply {
             makeVolume( this) { M.audio.sfx = it }
         })
-        content.add(XMBSettingsItem(vsh, "audio_reload_sfx",
+        content.add(XmbSettingsItem(vsh, "audio_reload_sfx",
             R.string.settings_audio_sfx_reload_name,
             R.string.settings_audio_sfx_reload_desc,
             R.drawable.icon_refresh, { "" }
@@ -117,9 +117,9 @@ private fun Vsh.createCategoryAudio(): XMBSettingsCategory{
     }
 }
 
-private fun Vsh.createCategorySystem() : XMBSettingsCategory{
+private fun Vsh.createCategorySystem() : XmbSettingsCategory{
     val vsh = this
-    return XMBSettingsCategory(this,
+    return XmbSettingsCategory(this,
         SettingsCategoryID.CATEGORY_SETTINGS_SYSTEM,
         R.drawable.category_setting,
         R.string.settings_category_system_name,
@@ -127,7 +127,7 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
     ).apply {
 
         content.add(
-            XMBSettingsItem(vsh, "settings_system_show_fps",
+            XmbSettingsItem(vsh, "settings_system_show_fps",
                 R.string.settings_system_show_fps_name,
                 R.string.settings_system_show_fps_desc,
                 R.drawable.category_setting,
@@ -141,7 +141,7 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
         )
 
         content.add(
-            XMBSettingsItem(vsh, "settings_system_show_detailed_mem",
+            XmbSettingsItem(vsh, "settings_system_show_detailed_mem",
                 R.string.settings_system_detailed_mem_name,
                 R.string.settings_system_detailed_mem_desc,
                 R.drawable.icon_device_info,
@@ -155,7 +155,7 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
         )
 
         content.add(
-            XMBSettingsItem(vsh, "settings_system_rearrange",
+            XmbSettingsItem(vsh, "settings_system_rearrange",
                 R.string.settings_system_rearrange_category_name,
                 R.string.settings_system_rearrange_category_desc,
                 R.drawable.category_setting, { "" }
@@ -165,11 +165,11 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
         )
 
         content.add(
-            XMBSettingsItem(vsh, "settings_system_reorder_icon_loading",
+            XmbSettingsItem(vsh, "settings_system_reorder_icon_loading",
                 R.string.settings_system_reorder_icon_loading_name,
                 R.string.settings_system_reorder_icon_loading_desc,
                 R.drawable.icon_storage, {
-                    val i = XMBAdaptiveIconRenderer.getIconPriorityAt(0)
+                    val i = XmbAdaptiveIconRenderer.getIconPriorityAt(0)
                     val id = IconPriorityDialogView.iconTypeToStrId[i]
                     vsh.getString(R.string.settings_system_reorder_icon_loading_value).format(vsh.getString(id))
                 }
@@ -179,7 +179,7 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
         )
 
         settingsAddSystemSetting2(this)
-        content.add(XMBSettingsItem(vsh, "settings_system_orientation",
+        content.add(XmbSettingsItem(vsh, "settings_system_orientation",
             R.string.item_orientation,
             R.string.item_orientation_desc, R.drawable.icon_orientation, {
                 val xmb = xmbView?.context?.xmb
@@ -201,7 +201,7 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
         }.apply {
             val xmb = xmbView?.context?.xmb
             hasMenu = true
-            val dMenuItems = arrayListOf<XMBMenuItem>()
+            val dMenuItems = arrayListOf<XmbMenuItem>()
             arrayOf(
                 ActivityInfo.SCREEN_ORIENTATION_USER,
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,
@@ -212,14 +212,14 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
                     ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> R.string.orient_portrait
                     else -> R.string.orient_unknown
                 })
-                dMenuItems.add(XMBMenuItem.XMBMenuItemLambda({nameStr}, {false}, i){
+                dMenuItems.add(XmbMenuItem.XmbMenuItemLambda({nameStr}, {false}, i){
                     xmb?.requestedOrientation = it
                 })
             }
             menuItems = dMenuItems
         })
 
-        content.add(XMBSettingsItem(vsh, "settings_system_button",
+        content.add(XmbSettingsItem(vsh, "settings_system_button",
         R.string.settings_system_asian_console_name, R.string.settings_system_asian_console_desc,
         R.drawable.category_games, {
                 getString(
@@ -235,7 +235,7 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
                 PadKey.spotMarkedByX.select(1,0))
         })
 
-        content.add(XMBSettingsItem(vsh, "settings_system_epimsg_disable",
+        content.add(XmbSettingsItem(vsh, "settings_system_epimsg_disable",
             R.string.settings_system_disable_splash_message_title,
             R.string.settings_system_disable_splash_message_desc,
             R.drawable.icon_info, {
@@ -257,49 +257,49 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
 
 
         content.add(
-            XMBSettingsItem(vsh, "settings_system_disable_video_icon",
+            XmbSettingsItem(vsh, "settings_system_disable_video_icon",
                 R.string.settings_system_disable_video_icon_name,
                 R.string.settings_system_disable_video_icon_desc,
                 R.drawable.category_video,
                 {
-                    getString(CIFLoader.disableAnimatedIcon.select(R.string.common_yes, R.string.common_no))
+                    getString(CifLoader.disableAnimatedIcon.select(R.string.common_yes, R.string.common_no))
                 }
             ){
-                CIFLoader.disableAnimatedIcon = !CIFLoader.disableAnimatedIcon
+                CifLoader.disableAnimatedIcon = !CifLoader.disableAnimatedIcon
                 M.pref.set(
                     PrefEntry.DISABLE_VIDEO_ICON,
-                    CIFLoader.disableAnimatedIcon.select(1,0)
+                    CifLoader.disableAnimatedIcon.select(1,0)
                 )
             }
         )
 
-        val kTypeAppDescKey = mapOf<XMBAppItem.DescriptionDisplay, Int>(
-            XMBAppItem.DescriptionDisplay.None to R.string.settings_system_visible_desc_val_none,
-            XMBAppItem.DescriptionDisplay.Date to R.string.settings_system_visible_desc_val_date,
-            XMBAppItem.DescriptionDisplay.FileSize to R.string.settings_system_visible_desc_val_filesize,
-            XMBAppItem.DescriptionDisplay.ModificationId to R.string.settings_system_visible_desc_val_modid,
-            XMBAppItem.DescriptionDisplay.PackageName to R.string.settings_system_visible_desc_val_packagename,
-            XMBAppItem.DescriptionDisplay.NkFileStyle to R.string.settings_system_visible_desc_val_nkfile
+        val kTypeAppDescKey = mapOf<XmbAppItem.DescriptionDisplay, Int>(
+            XmbAppItem.DescriptionDisplay.None to R.string.settings_system_visible_desc_val_none,
+            XmbAppItem.DescriptionDisplay.Date to R.string.settings_system_visible_desc_val_date,
+            XmbAppItem.DescriptionDisplay.FileSize to R.string.settings_system_visible_desc_val_filesize,
+            XmbAppItem.DescriptionDisplay.ModificationId to R.string.settings_system_visible_desc_val_modid,
+            XmbAppItem.DescriptionDisplay.PackageName to R.string.settings_system_visible_desc_val_packagename,
+            XmbAppItem.DescriptionDisplay.NkFileStyle to R.string.settings_system_visible_desc_val_nkfile
         )
         content.add(
-            XMBSettingsItem(vsh, "settings_system_visible_app_desc",
+            XmbSettingsItem(vsh, "settings_system_visible_app_desc",
                 R.string.settings_system_visible_app_desc_name,
                 R.string.settings_system_visible_app_desc_desc,
                 R.drawable.icon_info,
                 {
                     getString(
-                        kTypeAppDescKey[XMBAppItem.descriptionDisplay] ?: R.string.settings_system_visible_desc_val_none
+                        kTypeAppDescKey[XmbAppItem.descriptionDisplay] ?: R.string.settings_system_visible_desc_val_none
                     )
                 }
             ){
                 vsh.xmbView?.showSideMenu(true)
             }.apply {
                 hasMenu = true
-                val menu = arrayListOf<XMBMenuItem>()
+                val menu = arrayListOf<XmbMenuItem>()
                 var i = -(kTypeAppDescKey.size / 2)
                 for((k, m) in kTypeAppDescKey){
-                    menu.add(XMBMenuItem.XMBMenuItemLambda( { getString(m) }, {false}, i++){
-                        XMBAppItem.descriptionDisplay = k
+                    menu.add(XmbMenuItem.XmbMenuItemLambda( { getString(m) }, {false}, i++){
+                        XmbAppItem.descriptionDisplay = k
                         M.pref.set(PrefEntry.SYSTEM_VISIBLE_APP_DESC, k.ordinal)
                         vsh.xmbView?.showSideMenu(false)
                     })
@@ -309,7 +309,7 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
         )
 
         content.add(
-            XMBSettingsItem(vsh, "settings_system_skip_gameboot",
+            XmbSettingsItem(vsh, "settings_system_skip_gameboot",
                 R.string.setting_show_gameboot_name,
                 R.string.setting_show_gameboot_desc,
                 R.drawable.icon_dynamic_theme_effect, {
@@ -328,23 +328,23 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
         )
 
         content.add(
-            XMBSettingsItem(vsh, "settings_system_show_hidden_app",
+            XmbSettingsItem(vsh, "settings_system_show_hidden_app",
                 R.string.settings_system_show_hidden_app_name,
                 R.string.settings_system_show_hidden_app_desc,
                 R.drawable.icon_hidden, {
-                    getString(XMBAppItem.showHiddenByConfig.select(
+                    getString(XmbAppItem.showHiddenByConfig.select(
                         R.string.common_yes,
                         R.string.common_no
                     ))
                 }
             ){
-                XMBAppItem.showHiddenByConfig = !XMBAppItem.showHiddenByConfig
+                XmbAppItem.showHiddenByConfig = !XmbAppItem.showHiddenByConfig
             }
         )
 
 
         content.add(
-            XMBSettingsItem(vsh, "settings_system_prioritze_tv",
+            XmbSettingsItem(vsh, "settings_system_prioritze_tv",
                 R.string.settings_system_prioritize_tv_intent_name,
                 R.string.settings_system_prioritize_tv_intent_desc,
                 R.drawable.icon_video_anim_icon, {
@@ -360,7 +360,7 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
         )
 
         content.add(
-            XMBSettingsItem(vsh, "settings_system_info_dialog_open",
+            XmbSettingsItem(vsh, "settings_system_info_dialog_open",
                 R.string.setting_systeminfo_name,
                 R.string.setting_systeminfo_desc,
                 R.drawable.icon_info, { "" }
@@ -370,7 +370,7 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
         )
 
         content.add(
-            XMBSettingsItem(vsh, "settings_license_dialog_open",
+            XmbSettingsItem(vsh, "settings_license_dialog_open",
                 R.string.setting_license_name,
                 R.string.setting_license_desc,
                 R.drawable.icon_info, { "" }
@@ -383,7 +383,7 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
         val mon = cal.get(Calendar.MONTH)
         val day = cal.get(Calendar.DAY_OF_MONTH)
         if(mon == 3 && day == 1){
-            content.add(XMBSettingsItem(vsh, "settings_what_is_it",
+            content.add(XmbSettingsItem(vsh, "settings_what_is_it",
                 R.string.settings_system_test_option_name,
                 R.string.settings_system_test_option_desc,
                 R.drawable.icon_developer, {
@@ -400,9 +400,9 @@ private fun Vsh.createCategorySystem() : XMBSettingsCategory{
     }
 }
 
-private fun Vsh.createCategoryDebug() : XMBSettingsCategory{
+private fun Vsh.createCategoryDebug() : XmbSettingsCategory{
     val vsh = this
-    return XMBSettingsCategory(this,
+    return XmbSettingsCategory(this,
         SettingsCategoryID.CATEGORY_SETTINGS_DEBUG,
         R.drawable.category_debug,
         R.string.settings_category_debug_name,
@@ -411,17 +411,17 @@ private fun Vsh.createCategoryDebug() : XMBSettingsCategory{
 
         isSettingHidden = { !(BuildConfig.DEBUG || vsh.showDebuggerCount >= 8) }
 
-        content.add(XMBSettingsItem(vsh, "dbg_launch_dialog_test",
+        content.add(XmbSettingsItem(vsh, "dbg_launch_dialog_test",
             R.string.dbg_launch_dialog_test, R.string.empty_string, R.drawable.category_debug, {""}){
             if(vsh.haveXmbView) vsh.safeXmbView.showDialog(TestDialogView(vsh.safeXmbView))
         })
-        content.add(XMBSettingsItem(vsh, "dbg_launch_dialog_test_ui",
+        content.add(XmbSettingsItem(vsh, "dbg_launch_dialog_test_ui",
             R.string.dbg_launch_dialog_ui_test, R.string.empty_string, R.drawable.category_debug, {""}){
             if(vsh.haveXmbView) vsh.safeXmbView.showDialog(UITestDialogView(vsh.safeXmbView))
         })
 
         content.add(
-            XMBSettingsItem(vsh, "dbg_custom_file_list",
+            XmbSettingsItem(vsh, "dbg_custom_file_list",
                 R.string.dbg_custom_file_list,
                 R.string.empty_string,
                 R.drawable.ic_short_line, { "" }
@@ -432,7 +432,7 @@ private fun Vsh.createCategoryDebug() : XMBSettingsCategory{
 
         if(BuildConfig.DEBUG){
             content.add(
-                XMBSettingsItem(vsh, "dbg_throw_exception",
+                XmbSettingsItem(vsh, "dbg_throw_exception",
                     R.string.dbg_custom_throw_unhandled_exception,
                     R.string.empty_string,
                     R.drawable.ic_error, { "" }
@@ -442,7 +442,7 @@ private fun Vsh.createCategoryDebug() : XMBSettingsCategory{
             )
 
             content.add(
-                XMBSettingsItem(
+                XmbSettingsItem(
                     vsh,
                     "dbg_throw_window",
                     R.string.dbg_bitman_info, R.string.empty_string,
@@ -453,16 +453,16 @@ private fun Vsh.createCategoryDebug() : XMBSettingsCategory{
             )
         }
 
-        content.add(XMBSettingsItem(vsh, "settings_system_language",
+        content.add(XmbSettingsItem(vsh, "settings_system_language",
             R.string.settings_system_language, R.string.settings_system_language_description,
             R.drawable.icon_language, { getCurrentLocaleName() }
         ) {
             vsh.xmbView?.showSideMenu(true)
         }.apply {
             hasMenu = true
-            val dMenuItems = arrayListOf<XMBMenuItem>()
+            val dMenuItems = arrayListOf<XmbMenuItem>()
             supportedLocaleList.forEachIndexed { i, it ->
-                val item = XMBMenuItem.XMBMenuItemLambda(
+                val item = XmbMenuItem.XmbMenuItemLambda(
                     { it?.displayName ?: "System Default" },
                     { false }, i)
                 {
@@ -476,9 +476,9 @@ private fun Vsh.createCategoryDebug() : XMBSettingsCategory{
     }
 }
 
-private fun Vsh.createCategoryDisplay() : XMBSettingsCategory {
+private fun Vsh.createCategoryDisplay() : XmbSettingsCategory {
     val vsh = this
-    return XMBSettingsCategory(this,
+    return XmbSettingsCategory(this,
         SettingsCategoryID.CATEGORY_SETTINGS_DISPLAY,
         R.drawable.settings_category_display,
         R.string.settings_category_display_name,
@@ -486,7 +486,7 @@ private fun Vsh.createCategoryDisplay() : XMBSettingsCategory {
     ).apply {
         // region Layout Setting
         content.add(
-            XMBSettingsItem(vsh,
+            XmbSettingsItem(vsh,
                 "setting_display_layout_0",
                 R.string.setting_display_layout_type,
                 R.string.setting_display_layout_type_desc,
@@ -512,15 +512,15 @@ private fun Vsh.createCategoryDisplay() : XMBSettingsCategory {
                 }
             }.apply{
                 hasMenu = true
-                val dMenu = ArrayList<XMBMenuItem>()
+                val dMenu = ArrayList<XmbMenuItem>()
 
-                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                dMenu.add(XmbMenuItem.XmbMenuItemLambda(
                     {"PlayStation Portable"}, {false}, 1)
                 {
                     xmbView?.screens?.mainMenu?.layoutMode = XmbLayoutType.PSP
                     saveLayoutSetting()
                 })
-                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                dMenu.add(XmbMenuItem.XmbMenuItemLambda(
                     {"PlayStation 3"}, {false}, 0)
                 {
                     xmbView?.screens?.mainMenu?.layoutMode = XmbLayoutType.PS3
@@ -532,7 +532,7 @@ private fun Vsh.createCategoryDisplay() : XMBSettingsCategory {
         //endregion
 
 
-        content.add(XMBSettingsItem(vsh, "settings_display_hide_bar",
+        content.add(XmbSettingsItem(vsh, "settings_display_hide_bar",
             R.string.settings_display_hide_statusbar_name,
             R.string.settings_display_hide_statusbar_desc,
             R.drawable.icon_hidden, {
@@ -549,7 +549,7 @@ private fun Vsh.createCategoryDisplay() : XMBSettingsCategory {
 
         // region Console Button Display
         content.add(
-            XMBSettingsItem(vsh, "settings_display_button_type",
+            XmbSettingsItem(vsh, "settings_display_button_type",
                 R.string.setting_display_button_type_name,
                 R.string.setting_display_button_type_desc,
                 R.drawable.icon_button_display,
@@ -577,27 +577,27 @@ private fun Vsh.createCategoryDisplay() : XMBSettingsCategory {
             }.apply {
 
                 hasMenu = true
-                val dMenu = ArrayList<XMBMenuItem>()
+                val dMenu = ArrayList<XmbMenuItem>()
 
-                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                dMenu.add(XmbMenuItem.XmbMenuItemLambda(
                     {"PlayStation"}, {false}, 0)
                 {
                    M.gamepadUi.activeGamepad = PadType.PlayStation
                     saveButtonDisplaySetting()
                 })
-                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                dMenu.add(XmbMenuItem.XmbMenuItemLambda(
                     {"Xbox"}, {false}, 1)
                 {
                    M.gamepadUi.activeGamepad = PadType.Xbox
                     saveLayoutSetting()
                 })
-                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                dMenu.add(XmbMenuItem.XmbMenuItemLambda(
                     {"Nintendo Switch"}, {false}, 2)
                 {
                    M.gamepadUi.activeGamepad = PadType.Nintendo
                     saveLayoutSetting()
                 })
-                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                dMenu.add(XmbMenuItem.XmbMenuItemLambda(
                     {"Android"}, {false}, -1)
                 {
                    M.gamepadUi.activeGamepad = PadType.Android
@@ -609,7 +609,7 @@ private fun Vsh.createCategoryDisplay() : XMBSettingsCategory {
         // endregion
         // region Analog Clock Second Settings
         content.add(
-            XMBSettingsItem(vsh, "settings_display_analog_second",
+            XmbSettingsItem(vsh, "settings_display_analog_second",
                 R.string.settings_display_clock_second_analog_name,
                 R.string.settings_display_clock_second_analog_desc,
                 R.drawable.icon_clock,
@@ -626,7 +626,7 @@ private fun Vsh.createCategoryDisplay() : XMBSettingsCategory {
         // endregion
         // region Status Bar Text Format
         content.add(
-            XMBSettingsItem(vsh, "settings_display_statusbar_fmt",
+            XmbSettingsItem(vsh, "settings_display_statusbar_fmt",
                 R.string.settings_display_statusbar_fmt_name,
                 R.string.settings_display_statusbar_fmt_desc,
             R.drawable.icon_clock,
@@ -642,7 +642,7 @@ private fun Vsh.createCategoryDisplay() : XMBSettingsCategory {
         // endregion
         // region Show Operator Name Settings
         content.add(
-            XMBSettingsItem(vsh, "settings_display_operator",
+            XmbSettingsItem(vsh, "settings_display_operator",
                 R.string.settings_display_show_operator_name,
                 R.string.settings_display_show_operator_desc,
                 R.drawable.icon_network,
@@ -676,7 +676,7 @@ private fun Vsh.createCategoryDisplay() : XMBSettingsCategory {
             }
         )
 
-        val scRef = XMBSettingsItem(vsh, "settings_screen_reference_size",
+        val scRef = XmbSettingsItem(vsh, "settings_screen_reference_size",
             R.string.settings_display_refsize_name,
             R.string.settings_display_refsize_desc,
             R.drawable.ic_fullscreen,
@@ -699,7 +699,7 @@ private fun Vsh.createCategoryDisplay() : XMBSettingsCategory {
 
         // endregion
         // region Background Dim
-        content.add(XMBSettingsItem(vsh, "settings_display_bg_dim",
+        content.add(XmbSettingsItem(vsh, "settings_display_bg_dim",
         R.string.settings_display_background_dim_name,
         R.string.settings_display_background_dim_desc,
             R.drawable.icon_brightness,{
@@ -709,9 +709,9 @@ private fun Vsh.createCategoryDisplay() : XMBSettingsCategory {
             xmbView?.showSideMenu(true)
         }.apply {
             hasMenu = true
-            val dMenu = arrayListOf<XMBMenuItem>()
+            val dMenu = arrayListOf<XmbMenuItem>()
             for(i in 0 .. 10){
-                dMenu.add(XMBMenuItem.XMBMenuItemLambda(
+                dMenu.add(XmbMenuItem.XmbMenuItemLambda(
                     { i.toString() }, {false}, i)
                 {
                     xmbView?.screens?.mainMenu?.dimOpacity = i
@@ -754,38 +754,37 @@ fun Vsh.saveButtonDisplaySetting() {
     }
 }
 
-private fun Vsh.createCategoryAndroidSetting() : XMBSettingsCategory{
+private fun Vsh.createCategoryAndroidSetting() : XmbSettingsCategory{
     val vsh = this
-    return XMBSettingsCategory(this,
+    return XmbSettingsCategory(this,
         SettingsCategoryID.CATEGORY_SETTINGS_ANDROID,
         R.drawable.icon_android,
         R.string.setting_android_name,
         R.string.setting_android_desc,
     ).apply {
 
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.category_setting,
             R.string.android_sys_setting_homepage_name,
             R.string.android_sys_setting_homepage_desc,
             android.provider.Settings.ACTION_SETTINGS
         ))
 
-
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.icon_network,
             R.string.android_sys_network_name,
             R.string.android_sys_network_desc,
             android.provider.Settings.ACTION_WIRELESS_SETTINGS
         ))
 
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.icon_cda,
             R.string.android_sys_devices_name,
             R.string.android_sys_devices_desc,
             android.provider.Settings.ACTION_BLUETOOTH_SETTINGS
         ))
 
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.category_apps,
             R.string.android_sys_apps_name,
             R.string.android_sys_apps_desc,
@@ -793,7 +792,7 @@ private fun Vsh.createCategoryAndroidSetting() : XMBSettingsCategory{
         ).apply {
             hasContent = true
             content.add(
-                XMBAndroidSettingShortcutItem(
+                XmbAndroidSettingShortcutItem(
                     vsh, R.drawable.category_apps,
                     R.string.android_sys_all_apps_name,  R.string.android_sys_all_apps_desc,
                     android.provider.Settings.ACTION_APPLICATION_SETTINGS
@@ -801,14 +800,14 @@ private fun Vsh.createCategoryAndroidSetting() : XMBSettingsCategory{
             )
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
                 content.add(
-                    XMBAndroidSettingShortcutItem(
+                    XmbAndroidSettingShortcutItem(
                         vsh, R.drawable.category_notifications,
                         R.string.android_sys_nodisturb_name, R.string.android_sys_nodisturb_desc,
                         android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS
                     )
                 )
                 content.add(
-                    XMBAndroidSettingShortcutItem(
+                    XmbAndroidSettingShortcutItem(
                         vsh, R.drawable.category_notifications,
                         R.string.android_sys_notification_name, R.string.android_sys_notification_desc,
                         android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
@@ -817,7 +816,7 @@ private fun Vsh.createCategoryAndroidSetting() : XMBSettingsCategory{
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 content.add(
-                    XMBAndroidSettingShortcutItem(
+                    XmbAndroidSettingShortcutItem(
                         vsh, R.drawable.category_apps,
                         R.string.android_sys_default_apps_name,  R.string.android_sys_default_apps_desc,
                         android.provider.Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS
@@ -828,92 +827,92 @@ private fun Vsh.createCategoryAndroidSetting() : XMBSettingsCategory{
         })
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            content.add(XMBAndroidSettingShortcutItem(
+            content.add(XmbAndroidSettingShortcutItem(
                 vsh, R.drawable.icon_battery,
                 R.string.android_sys_battery_name,
                 R.string.android_sys_battery_desc,
                 android.provider.Settings.ACTION_BATTERY_SAVER_SETTINGS
             ))
         }
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.icon_brightness,
             R.string.android_sys_display_name,
             R.string.android_sys_display_desc,
             android.provider.Settings.ACTION_DISPLAY_SETTINGS
         ))
 
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.icon_color,
             R.string.android_sys_wallpaper_name,
             R.string.android_sys_wallpaper_desc,
             Intent.ACTION_SET_WALLPAPER
         ))
 
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.icon_volume,
             R.string.android_sys_sound_name,
             R.string.android_sys_sound_desc,
             android.provider.Settings.ACTION_SOUND_SETTINGS
         ))
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.icon_storage,
             R.string.android_sys_storage_name,
             R.string.android_sys_storage_desc,
             android.provider.Settings.ACTION_INTERNAL_STORAGE_SETTINGS
         ))
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.icon_privacy,
             R.string.android_sys_privacy_name,
             R.string.android_sys_privacy_desc,
             android.provider.Settings.ACTION_PRIVACY_SETTINGS
         ))
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.icon_location,
             R.string.android_sys_location_name,
             R.string.android_sys_location_desc,
             android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
         ))
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.icon_security,
             R.string.android_sys_security_name,
             R.string.android_sys_security_desc,
             android.provider.Settings.ACTION_SECURITY_SETTINGS
         ))
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.icon_accessibility,
             R.string.android_sys_accessibility_name,
             R.string.android_sys_accessibility_desc,
             android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS
         ))
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.icon_info,
             R.string.android_sys_systeminfo_name,
             R.string.android_sys_systeminfo_desc,
             "id.psw.vshlauncher.settings.category.system"
         ).apply {
             hasContent = true
-            content.add(XMBAndroidSettingShortcutItem(
+            content.add(XmbAndroidSettingShortcutItem(
                 vsh, R.drawable.icon_language,
                 R.string.android_sys_locale_name,
                 R.string.android_sys_locale_desc,
                 android.provider.Settings.ACTION_LOCALE_SETTINGS
             ))
 
-            content.add(XMBAndroidSettingShortcutItem(
+            content.add(XmbAndroidSettingShortcutItem(
                 vsh, R.drawable.icon_datetime,
                 R.string.android_sys_datetime_name,
                 R.string.android_sys_datetime_desc,
                 android.provider.Settings.ACTION_DATE_SETTINGS
             ))
 
-            content.add(XMBAndroidSettingShortcutItem(
+            content.add(XmbAndroidSettingShortcutItem(
                 vsh, R.drawable.icon_developer,
                 R.string.android_sys_developer_name,
                 R.string.android_sys_developer_desc,
                 android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS
             ))
         })
-        content.add(XMBAndroidSettingShortcutItem(
+        content.add(XmbAndroidSettingShortcutItem(
             vsh, R.drawable.icon_device_info,
             R.string.android_sys_deviceinfo_name,
             R.string.android_sys_deviceinfo_desc,

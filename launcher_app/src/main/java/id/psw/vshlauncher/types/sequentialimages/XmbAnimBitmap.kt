@@ -3,7 +3,7 @@ package id.psw.vshlauncher.types.sequentialimages
 import android.graphics.Bitmap
 import kotlin.math.roundToInt
 
-class XMBAnimBitmap(fps: Float = 0.0f, vararg vFrames: Bitmap) : XMBFrameAnimation() {
+class XmbAnimBitmap(fps: Float = 0.0f, vararg vFrames: Bitmap) : XmbFrameAnimation() {
     private var frames : ArrayList<Bitmap> = arrayListOf()
     private var pFps : Float = fps
     private var pHasRecycled = false

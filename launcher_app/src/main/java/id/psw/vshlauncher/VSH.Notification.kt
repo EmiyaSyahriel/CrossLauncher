@@ -6,7 +6,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.Vsh.Companion.TAG
-import id.psw.vshlauncher.types.XMBNotification
+import id.psw.vshlauncher.types.XmbNotification
 
 fun Vsh.postNotification(icon: Bitmap?, title:String, description:String, time:Float = 3.0f, destroy:Boolean = false) : Long {
     synchronized(notifications){
@@ -14,7 +14,7 @@ fun Vsh.postNotification(icon: Bitmap?, title:String, description:String, time:F
         while(notifications.find{it.handle==hwnd} != null){
             hwnd++;
         }
-        val notif = XMBNotification(hwnd, icon, title, description, time, destroy);
+        val notif = XmbNotification(hwnd, icon, title, description, time, destroy);
         notifications.add(notif)
         return hwnd
     }
@@ -33,7 +33,7 @@ fun Vsh.setNotificationTime(hwnd:Long, time:Float) =         synchronized(notifi
 fun Vsh.isNotificationExists(hWnd:Long) : Boolean =          synchronized(notifications) { notifications.indexOfFirst { it.handle == hWnd } >= 0 }
 fun Vsh.removeNotification(hWnd:Long) : Boolean =            synchronized(notifications) { notifications.removeAll { it.handle == hWnd } }
 
-fun Vsh.getUpdatedNotification() : ArrayList<XMBNotification> {
+fun Vsh.getUpdatedNotification() : ArrayList<XmbNotification> {
     synchronized(notifications){
         val cTime = SystemClock.uptimeMillis()
         val dTime = cTime - notificationLastCheckTime

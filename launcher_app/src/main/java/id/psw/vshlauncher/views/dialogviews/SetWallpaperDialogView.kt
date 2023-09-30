@@ -19,7 +19,7 @@ import id.psw.vshlauncher.R
 import id.psw.vshlauncher.activities.Xmb
 import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.submodules.PadKey
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.XmbView
@@ -28,12 +28,12 @@ import id.psw.vshlauncher.views.drawBitmap
 class SetWallpaperDialogView(v : XmbView, private val xmb: Xmb, private val intent: Intent) : XmbDialogSubview(v) {
     override val hasNegativeButton: Boolean = true
     override val hasPositiveButton: Boolean = true
-    override val icon: Bitmap get() = XMBItem.TRANSPARENT_BITMAP
+    override val icon: Bitmap get() = XmbItem.TRANSPARENT_BITMAP
     override val title: String get() = vsh.getString(R.string.dlg_set_wallpaper_title)
 
     private var isInternal = false
     private var imageLoaded = false
-    private var image : Bitmap = XMBItem.TRANSPARENT_BITMAP
+    private var image : Bitmap = XmbItem.TRANSPARENT_BITMAP
     private var bmpPaint = Paint().apply {
 
     }

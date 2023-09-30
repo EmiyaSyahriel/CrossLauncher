@@ -8,15 +8,15 @@ import androidx.core.graphics.scale
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.BitmapRef
 import id.psw.vshlauncher.types.FileQuery
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 
-class XMBItemCategory(
+class XmbItemCategory(
     private val vsh: Vsh, private val cateId:String,
     private val strId : Int, private val iconId: Int,
     val sortable: Boolean = false, defaultSortIndex : Int
-    ) : XMBItem(vsh) {
-    private val _content = ArrayList<XMBItem>()
-    private fun _postNoLaunchNotification(xmb: XMBItem){
+    ) : XmbItem(vsh) {
+    private val _content = ArrayList<XmbItem>()
+    private fun _postNoLaunchNotification(xmb: XmbItem){
         vsh.postNotification(null, vsh.getString(R.string.error_common_header), vsh.getString(R.string.error_category_launch))
     }
 
@@ -92,17 +92,17 @@ class XMBItemCategory(
         }
     }
 
-    override val content: ArrayList<XMBItem> get() = _content
+    override val content: ArrayList<XmbItem> get() = _content
 
-    fun addItem(item: XMBItem) {
+    fun addItem(item: XmbItem) {
         if(_content.indexOfFirst { it.id == item.id } == -1){
             _content.add(item)
         }
     }
 
-    var onSetSortFunc : (XMBItemCategory, Any) -> Unit = { _, _sortMode -> }
-    var onSwitchSortFunc : (XMBItemCategory) -> Unit = { }
-    var getSortModeNameFunc : (XMBItemCategory) -> String = { "" }
+    var onSetSortFunc : (XmbItemCategory, Any) -> Unit = { _, _sortMode -> }
+    var onSwitchSortFunc : (XmbItemCategory) -> Unit = { }
+    var getSortModeNameFunc : (XmbItemCategory) -> String = { "" }
 
     fun onSwitchSort() = onSwitchSortFunc(this)
     fun <T> setSort(sort:T) {
@@ -112,5 +112,5 @@ class XMBItemCategory(
     }
     val sortModeName : String get() = getSortModeNameFunc(this)
 
-    override val onLaunch: (XMBItem) -> Unit get() = ::_postNoLaunchNotification
+    override val onLaunch: (XmbItem) -> Unit get() = ::_postNoLaunchNotification
 }

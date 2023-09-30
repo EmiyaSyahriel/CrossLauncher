@@ -2,12 +2,10 @@ package id.psw.vshlauncher.types.sequentialimages
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.drawable.Animatable2
-import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import com.github.penfeizhou.animation.gif.GifDrawable
 import java.io.File
 
-class XMBAnimGIF(val file: File) : XMBFrameAnimation() {
+class XmbAnimGif(val file: File) : XmbFrameAnimation() {
     companion object {
     }
 

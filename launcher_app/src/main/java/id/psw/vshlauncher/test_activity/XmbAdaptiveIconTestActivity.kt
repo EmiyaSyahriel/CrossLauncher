@@ -8,11 +8,11 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import id.psw.vshlauncher.toLerp
-import id.psw.vshlauncher.submodules.XMBAdaptiveIconRenderer
+import id.psw.vshlauncher.submodules.XmbAdaptiveIconRenderer
 import id.psw.vshlauncher.vsh
 import kotlin.concurrent.thread
 
-class XMBAdaptiveIconTestActivity : AppCompatActivity() {
+class XmbAdaptiveIconTestActivity : AppCompatActivity() {
     private var hasLoaded = false
     private var loadProgress = 0.0f
     private var yOffset = 0.0f
@@ -70,13 +70,13 @@ class XMBAdaptiveIconTestActivity : AppCompatActivity() {
                     textPaint.textAlign = Paint.Align.LEFT
                     appList.keys.forEachIndexed { i, key ->
                         val it = appList[key]
-                        val y = (i * ((XMBAdaptiveIconRenderer.Height * 0.25f) + 10f)) + lYOffset
-                        if(y > -XMBAdaptiveIconRenderer.Height && y < height){
+                        val y = (i * ((XmbAdaptiveIconRenderer.Height * 0.25f) + 10f)) + lYOffset
+                        if(y > -XmbAdaptiveIconRenderer.Height && y < height){
                             sDrawRect.set(
                                 10.0f,
                                 y,
-                                10.0f + ((XMBAdaptiveIconRenderer.Width) * 0.25f),
-                                y + ((XMBAdaptiveIconRenderer.Height) * 0.25f)
+                                10.0f + ((XmbAdaptiveIconRenderer.Width) * 0.25f),
+                                y + ((XmbAdaptiveIconRenderer.Height) * 0.25f)
                             )
                             if(it != null)  ctx.drawBitmap(it, null, sDrawRect, null)
                             ctx.drawText(key, sDrawRect.right + 30.0f, sDrawRect.centerY(), textPaint)
@@ -119,7 +119,7 @@ class XMBAdaptiveIconTestActivity : AppCompatActivity() {
                     retval = true
                 }
             }
-            var maxTop = -appList.size * ((XMBAdaptiveIconRenderer.Height * 0.25f) + 10.0f)
+            var maxTop = -appList.size * ((XmbAdaptiveIconRenderer.Height * 0.25f) + 10.0f)
             maxTop += l.height
             yOffset = yOffset.coerceIn(maxTop, 0.0f)
         }

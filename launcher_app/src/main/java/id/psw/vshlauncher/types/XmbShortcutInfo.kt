@@ -13,7 +13,7 @@ import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.select
 import java.io.File
 
-class XMBShortcutInfo {
+class XmbShortcutInfo {
 
     companion object {
         const val INI_TYPE = "CrossLauncher.ShortcutInfo"
@@ -39,7 +39,7 @@ class XMBShortcutInfo {
         const val DEF_HANDLE = ""
     }
 
-    var icon : Bitmap = XMBItem.TRANSPARENT_BITMAP
+    var icon : Bitmap = XmbItem.TRANSPARENT_BITMAP
     var id : String = DEF_ID
     var idInLauncher : String = DEF_CXL_ID
     var name : String = DEF_NAME
@@ -51,7 +51,7 @@ class XMBShortcutInfo {
     var userHandle : UserHandle? = null
     var pinItem : LauncherApps.PinItemRequest? = null
 
-    private val ini = INIFile()
+    private val ini = IniFile()
 
     constructor(vsh: Vsh, intent: Intent){
         var isNextGen = false
@@ -85,7 +85,7 @@ class XMBShortcutInfo {
         if(!isNextGen){
             if(intent.action!!.equals(Intent.ACTION_CREATE_SHORTCUT, true)){
                 name = intent.getStringExtra(Intent.EXTRA_SHORTCUT_NAME) ?: name
-                icon = intent.getParcelableExtra<Bitmap>(Intent.EXTRA_SHORTCUT_ICON) ?: XMBItem.WHITE_BITMAP
+                icon = intent.getParcelableExtra<Bitmap>(Intent.EXTRA_SHORTCUT_ICON) ?: XmbItem.WHITE_BITMAP
                 packageName = intent.component?.toShortString() ?: packageName
             }
         }

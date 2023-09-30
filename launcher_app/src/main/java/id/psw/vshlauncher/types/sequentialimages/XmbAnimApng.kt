@@ -2,8 +2,6 @@ package id.psw.vshlauncher.types.sequentialimages
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.RectF
-import androidx.annotation.IntRange
 import com.github.penfeizhou.animation.apng.APNGDrawable
 //import com.linecorp.apng.ApngDrawable
 import java.io.File
@@ -12,7 +10,7 @@ import java.lang.Exception
 // APNG Library for unknown reason shows range error (from @IntRange attribute)
 // it gives error indicator to IDE but is still compilable, therefore we suppress the range error.
 @SuppressLint("Range")
-class XMBAnimAPNG(file: File) : XMBFrameAnimation() {
+class XmbAnimApng(file: File) : XmbFrameAnimation() {
     private val apng = APNGDrawable.fromFile(file.absolutePath).apply {
         setAutoPlay(false)
         setLoopLimit(0)

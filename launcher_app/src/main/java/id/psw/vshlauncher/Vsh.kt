@@ -21,8 +21,8 @@ import id.psw.vshlauncher.livewallpaper.NativeGL
 import id.psw.vshlauncher.submodules.*
 import id.psw.vshlauncher.types.*
 import id.psw.vshlauncher.types.Stack
-import id.psw.vshlauncher.types.items.XMBAppItem
-import id.psw.vshlauncher.types.items.XMBItemCategory
+import id.psw.vshlauncher.types.items.XmbAppItem
+import id.psw.vshlauncher.types.items.XmbItemCategory
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.filterBySearch
@@ -72,9 +72,9 @@ class Vsh : Application() {
     var mediaListingStarted = false
     lateinit var mainHandle : Handler
 
-    val categories = arrayListOf<XMBItemCategory>()
+    val categories = arrayListOf<XmbItemCategory>()
     /** Return all item in current selected category or current active item, including the hidden ones */
-    val items : ArrayList<XMBItem>? get(){
+    val items : ArrayList<XmbItem>? get(){
         try {
             var root = categories.visibleItems.find { it.id == selectedCategoryId }?.content
             var i = 0
@@ -92,10 +92,10 @@ class Vsh : Application() {
             e.printStackTrace()
             vsh.postNotification(R.drawable.ic_error, e.javaClass.name, e.toString())
         }
-        return arrayListOf<XMBItem>()
+        return arrayListOf<XmbItem>()
     }
 
-    val activeParent : XMBItem? get(){
+    val activeParent : XmbItem? get(){
         var root = categories.visibleItems.find { it.id == selectedCategoryId }
         var i = 0
         while(root != null && i < selectStack.size){
@@ -105,7 +105,7 @@ class Vsh : Application() {
         return root
     }
 
-    val hoveredItem : XMBItem? get() = items?.find { it.id == selectedItemId }
+    val hoveredItem : XmbItem? get() = items?.find { it.id == selectedItemId }
     private var _waveShouldRefresh = false
     var showLauncherFPS = true
     var waveShouldReReadPreferences : Boolean get() {
@@ -128,9 +128,9 @@ class Vsh : Application() {
 
     val isInRoot : Boolean get() = selectStack.size == 0
     var notificationLastCheckTime = 0L
-    val notifications = arrayListOf<XMBNotification>()
+    val notifications = arrayListOf<XmbNotification>()
     val threadPool: ExecutorService = Executors.newFixedThreadPool(8)
-    val loadingHandles = arrayListOf<XMBLoadingHandle>()
+    val loadingHandles = arrayListOf<XmbLoadingHandle>()
     val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
 
     val M = SubmoduleManager(this)
@@ -143,10 +143,10 @@ class Vsh : Application() {
     private fun reloadPreference() {
         setActiveLocale(readSerializedLocale(M.pref.get(PrefEntry.SYSTEM_LANGUAGE, "")))
         showLauncherFPS = M.pref.get(PrefEntry.SHOW_LAUNCHER_FPS, 0) == 1
-        CIFLoader.disableAnimatedIcon = M.pref.get(PrefEntry.DISABLE_VIDEO_ICON, 0) != 0
-        val o = M.pref.get(PrefEntry.SYSTEM_VISIBLE_APP_DESC, XMBAppItem.DescriptionDisplay.PackageName.ordinal)
-        XMBAppItem.descriptionDisplay = enumFromInt(o)
-        XMBAdaptiveIconRenderer.Companion.AdaptiveRenderSetting.iconPriority =
+        CifLoader.disableAnimatedIcon = M.pref.get(PrefEntry.DISABLE_VIDEO_ICON, 0) != 0
+        val o = M.pref.get(PrefEntry.SYSTEM_VISIBLE_APP_DESC, XmbAppItem.DescriptionDisplay.PackageName.ordinal)
+        XmbAppItem.descriptionDisplay = enumFromInt(o)
+        XmbAdaptiveIconRenderer.Companion.AdaptiveRenderSetting.iconPriority =
             M.pref.get(PrefEntry.ICON_RENDERER_PRIORITY, 0b01111000)
         val tvAsDefault = isTv.select(1, 0)
         _prioritizeTvIntent = M.pref.get(PrefEntry.LAUNCHER_TV_INTENT_FIRST, tvAsDefault) != 0
@@ -243,11 +243,11 @@ class Vsh : Application() {
     fun queryTexture(customId:String) : ArrayList<File> =FileQuery(VshBaseDirs.VSH_RESOURCES_DIR).withNames("$customId.png").execute(this)
 
     fun loadTexture(@DrawableRes d : Int, w:Int, h:Int, whiteFallback:Boolean = false ) : Bitmap {
-        return ResourcesCompat.getDrawable(resources, d, null)?.toBitmap(w, h) ?: whiteFallback.select(XMBItem.WHITE_BITMAP, XMBItem.TRANSPARENT_BITMAP)
+        return ResourcesCompat.getDrawable(resources, d, null)?.toBitmap(w, h) ?: whiteFallback.select(XmbItem.WHITE_BITMAP, XmbItem.TRANSPARENT_BITMAP)
     }
     fun loadTexture(@DrawableRes d : Int, whiteFallback:Boolean = false ) : Bitmap {
         val dwb =ResourcesCompat.getDrawable(resources, d, null)
-        return dwb?.toBitmap(dwb.intrinsicWidth, dwb.intrinsicHeight?: 1) ?: whiteFallback.select(XMBItem.WHITE_BITMAP, XMBItem.TRANSPARENT_BITMAP)
+        return dwb?.toBitmap(dwb.intrinsicWidth, dwb.intrinsicHeight?: 1) ?: whiteFallback.select(XmbItem.WHITE_BITMAP, XmbItem.TRANSPARENT_BITMAP)
     }
     fun loadTexture(@DrawableRes d: Int, customId:String, w:Int, h:Int, whiteFallback: Boolean) : Bitmap{
         var retval : Bitmap? = null
@@ -320,7 +320,7 @@ class Vsh : Application() {
     fun doCategorySorting(){
         if(isInRoot){
             val cat = categories.visibleItems.find { it.id == selectedCategoryId }
-            if(cat is XMBItemCategory){
+            if(cat is XmbItemCategory){
                 if(cat.sortable){
                     cat.onSwitchSort()
                     xmbView?.screens?.mainMenu?.sortHeaderDisplay = 5.25f
@@ -368,13 +368,13 @@ class Vsh : Application() {
 
     private fun registerInternalCategory(){
         try {
-            categories.add(XMBItemCategory(this, ITEM_CATEGORY_HOME, R.string.category_home, R.drawable.category_home, defaultSortIndex = 0))
-            categories.add(XMBItemCategory(this, ITEM_CATEGORY_SETTINGS, R.string.category_settings, R.drawable.category_setting, defaultSortIndex = 1))
-            categories.add(XMBItemCategory(this, ITEM_CATEGORY_VIDEO, R.string.category_videos, R.drawable.category_video, true, defaultSortIndex = 2))
-            categories.add(XMBItemCategory(this, ITEM_CATEGORY_SHORTCUT, R.string.category_shortcut, R.drawable.category_shortcut, true, defaultSortIndex = 2))
-            categories.add(XMBItemCategory(this, ITEM_CATEGORY_MUSIC, R.string.category_music, R.drawable.category_music, true, defaultSortIndex = 3))
-            categories.add(XMBItemCategory(this, ITEM_CATEGORY_GAME, R.string.category_games, R.drawable.category_games, true, defaultSortIndex = 4))
-            categories.add(XMBItemCategory(this, ITEM_CATEGORY_APPS, R.string.category_apps, R.drawable.category_apps, true, defaultSortIndex = 5))
+            categories.add(XmbItemCategory(this, ITEM_CATEGORY_HOME, R.string.category_home, R.drawable.category_home, defaultSortIndex = 0))
+            categories.add(XmbItemCategory(this, ITEM_CATEGORY_SETTINGS, R.string.category_settings, R.drawable.category_setting, defaultSortIndex = 1))
+            categories.add(XmbItemCategory(this, ITEM_CATEGORY_VIDEO, R.string.category_videos, R.drawable.category_video, true, defaultSortIndex = 2))
+            categories.add(XmbItemCategory(this, ITEM_CATEGORY_SHORTCUT, R.string.category_shortcut, R.drawable.category_shortcut, true, defaultSortIndex = 2))
+            categories.add(XmbItemCategory(this, ITEM_CATEGORY_MUSIC, R.string.category_music, R.drawable.category_music, true, defaultSortIndex = 3))
+            categories.add(XmbItemCategory(this, ITEM_CATEGORY_GAME, R.string.category_games, R.drawable.category_games, true, defaultSortIndex = 4))
+            categories.add(XmbItemCategory(this, ITEM_CATEGORY_APPS, R.string.category_apps, R.drawable.category_apps, true, defaultSortIndex = 5))
             categories.sortBy { it.sortIndex }
         }catch(e:Exception){
 
@@ -399,7 +399,7 @@ class Vsh : Application() {
         super.onTerminate()
     }
 
-    fun showAppInfo(app: XMBAppItem) {
+    fun showAppInfo(app: XmbAppItem) {
         val i = Intent()
         i.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
         i.data = Uri.fromParts("package", app.resInfo.activityInfo.applicationInfo.packageName, null)

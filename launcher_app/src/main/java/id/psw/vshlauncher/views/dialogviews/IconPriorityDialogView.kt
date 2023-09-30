@@ -6,7 +6,7 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.minus
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.PadKey
-import id.psw.vshlauncher.submodules.XMBAdaptiveIconRenderer
+import id.psw.vshlauncher.submodules.XmbAdaptiveIconRenderer
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.DrawExtension
 import id.psw.vshlauncher.views.XmbDialogSubview
@@ -50,7 +50,7 @@ class IconPriorityDialogView(v: XmbView) : XmbDialogSubview(v) {
     private val priorityArray = arrayOf(0,0,0,0)
 
     init {
-        for(i in 0 .. 3){ priorityArray[i] = XMBAdaptiveIconRenderer.getIconPriorityAt(i) }
+        for(i in 0 .. 3){ priorityArray[i] = XmbAdaptiveIconRenderer.getIconPriorityAt(i) }
 
         checkAndFixDupe()
     }
@@ -70,10 +70,10 @@ class IconPriorityDialogView(v: XmbView) : XmbDialogSubview(v) {
         }
 
         if(!needFix) return
-        priorityArray[0] = XMBAdaptiveIconRenderer.ICON_PRIORITY_TYPE_APP_ICON_ADAPTIVE
-        priorityArray[1] = XMBAdaptiveIconRenderer.ICON_PRIORITY_TYPE_APP_BANNER_ADAPTIVE
-        priorityArray[2] = XMBAdaptiveIconRenderer.ICON_PRIORITY_TYPE_APP_BANNER_LEGACY
-        priorityArray[3] = XMBAdaptiveIconRenderer.ICON_PRIORITY_TYPE_APP_ICON_LEGACY
+        priorityArray[0] = XmbAdaptiveIconRenderer.ICON_PRIORITY_TYPE_APP_ICON_ADAPTIVE
+        priorityArray[1] = XmbAdaptiveIconRenderer.ICON_PRIORITY_TYPE_APP_BANNER_ADAPTIVE
+        priorityArray[2] = XmbAdaptiveIconRenderer.ICON_PRIORITY_TYPE_APP_BANNER_LEGACY
+        priorityArray[3] = XmbAdaptiveIconRenderer.ICON_PRIORITY_TYPE_APP_ICON_LEGACY
     }
 
     override fun onDialogButton(isPositive: Boolean) {
@@ -194,7 +194,7 @@ class IconPriorityDialogView(v: XmbView) : XmbDialogSubview(v) {
             val orv = (priorityArray[i] shl ((3 - i) * 2))
             va = va or orv
         }
-        XMBAdaptiveIconRenderer.Companion.AdaptiveRenderSetting.iconPriority = va
+        XmbAdaptiveIconRenderer.Companion.AdaptiveRenderSetting.iconPriority = va
         vsh.M.pref.set(PrefEntry.ICON_RENDERER_PRIORITY, va)
         iconBitmap.recycle()
         super.onClose()

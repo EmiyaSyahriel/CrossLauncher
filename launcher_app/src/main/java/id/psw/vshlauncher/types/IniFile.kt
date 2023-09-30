@@ -3,7 +3,7 @@ package id.psw.vshlauncher.types
 import java.io.File
 import java.io.OutputStreamWriter
 
-class INIFile() {
+class IniFile() {
 
     private var _path = ""
     val path get()=_path

@@ -19,7 +19,6 @@ import id.psw.vshlauncher.FColor
 import id.psw.vshlauncher.FittingMode
 import id.psw.vshlauncher.PrefEntry
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.lerpFactor
 import id.psw.vshlauncher.livewallpaper.NativeGL
 import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
@@ -28,8 +27,8 @@ import id.psw.vshlauncher.select
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.submodules.SfxType
 import id.psw.vshlauncher.toLerp
-import id.psw.vshlauncher.types.XMBItem
-import id.psw.vshlauncher.types.items.XMBItemCategory
+import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.types.items.XmbItemCategory
 import id.psw.vshlauncher.views.DirectionLock
 import id.psw.vshlauncher.views.DrawExtension
 import id.psw.vshlauncher.views.XmbLayoutType
@@ -42,8 +41,6 @@ import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
 import id.psw.vshlauncher.visibleItems
 import id.psw.vshlauncher.vsh
 import id.psw.vshlauncher.xmb
-import java.text.SimpleDateFormat
-import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -62,16 +59,6 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     var coldBootTransition = 0.0f
     var dimOpacity = 0
 
-    data class StatusBarSetting(
-            var disabled : Boolean = false,
-            var showMobileOperator : Boolean = true,
-            var showBattery : Boolean = true,
-            var showBatteryPercentage : Boolean = true,
-            var showAnalogClock : Boolean = true,
-            var padPSPStatusBar : Boolean = false,
-            var secondOnAnalog : Boolean = true
-    )
-
     data class VerticalMenu(
             var playAnimatedIcon : Boolean = true,
             var playBackSound : Boolean = true,
@@ -84,16 +71,16 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     val verticalMenu = VerticalMenu()
     private var directionLock : DirectionLock = DirectionLock.None
     private val backgroundPaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val statusOutlinePaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val sortHeaderOutlinePaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = 3.0f
         color = Color.WHITE
     }
-    private val statusFillPaint : Paint = vsh.makeTextPaint(color = FColor.setAlpha(Color.WHITE, 0.5f)).apply {
+    private val sortHeaderFillPaint : Paint = vsh.makeTextPaint(color = FColor.setAlpha(Color.BLACK, 0.5f)).apply {
         style = Paint.Style.FILL
         strokeWidth = 3.0f
     }
-    private val statusTextPaint : Paint = vsh.makeTextPaint(size = 10.0f, color = Color.WHITE).apply {
+    private val sortHeaderTextPaint : Paint = vsh.makeTextPaint(size = 20.0f, color = Color.WHITE).apply {
         style = Paint.Style.FILL
         strokeWidth = 3.0f
     }
@@ -132,7 +119,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
             arrowBitmap =
                     ResourcesCompat.getDrawable(view.resources, R.drawable.miptex_arrow, null)
                             ?.toBitmap(128,128)
-                            ?: XMBItem.TRANSPARENT_BITMAP
+                            ?: XmbItem.TRANSPARENT_BITMAP
             arrowBitmapLoaded = true
         }
 
@@ -503,10 +490,10 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                         //ctx.drawText(item.displayName, textLeft, centerY, menuVerticalNamePaint, dispNameYOffset)
 
                         if (isPSP && item.hasDescription) {
-                            statusOutlinePaint.strokeWidth = 2.0f
-                            statusOutlinePaint.color = Color.WHITE
-                            statusOutlinePaint.alpha = selected.select(255, menuDispT.toLerp(255f,0f).toInt())
-                            ctx.drawLine(textLeft, centerY,(scaling.viewport.right - 20.0f), centerY, statusOutlinePaint)
+                            sortHeaderOutlinePaint.strokeWidth = 2.0f
+                            sortHeaderOutlinePaint.color = Color.WHITE
+                            sortHeaderOutlinePaint.alpha = selected.select(255, menuDispT.toLerp(255f,0f).toInt())
+                            ctx.drawLine(textLeft, centerY,(scaling.viewport.right - 20.0f), centerY, sortHeaderOutlinePaint)
                         }
                     }
                 }
@@ -535,19 +522,6 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                     .setTitle(context.getString(R.string.dlg_set_search_query))
                     .setValue(q)
                     .show()
-        }
-    }
-
-    private fun updateColdbootWaveAnim(){
-        val speed = M.pref.get(XMBWaveSurfaceView.KEY_SPEED, 1.0f)
-        NativeGL.setSpeed( screens.coldBoot.transition.toLerp(speed, 25.0f) )
-        NativeGL.setVerticalScale( screens.coldBoot.transition.toLerp(1.0f, 1.25f) )
-
-        screens.coldBoot.transition -= time.deltaTime * 2.0f
-        if(screens.coldBoot.transition < 0.0f){
-            context.vsh.waveShouldReReadPreferences = true
-            NativeGL.setVerticalScale( 1.0f )
-            NativeGL.setSpeed( 1.0f )
         }
     }
 
@@ -821,7 +795,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     private fun drawSortHeaderDisplay(ctx:Canvas){
         if(sortHeaderDisplay > 0.0f){
             val selCat = vsh.categories.visibleItems.find {it.id == vsh.selectedCategoryId}
-            if(selCat is XMBItemCategory){
+            if(selCat is XmbItemCategory){
                 if(selCat.sortable){
                     val t = (
                             if(sortHeaderDisplay > 3.0f) sortHeaderDisplay.lerpFactor(5.0f, 4.75f)
@@ -830,17 +804,17 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                     val textName = selCat.sortModeName
                     val scale = t.toLerp(2.0f, 1.0f)
                     ctx.withScale(scale, scale,  scaling.target.width() / 2.0f, scaling.target.height() / 2.0f){
-                        statusFillPaint.alpha = (t * t).toLerp(0.0f,128.0f).toInt()
-                        statusOutlinePaint.alpha = (t * t).toLerp(0.0f,255.0f).toInt()
-                        statusTextPaint.alpha = (t * t).toLerp(0.0f,255.0f).toInt()
-                        statusTextPaint.textAlign = Paint.Align.LEFT
+                        sortHeaderFillPaint.alpha = (t * t).toLerp(0.0f,128.0f).toInt()
+                        sortHeaderOutlinePaint.alpha = (t * t).toLerp(0.0f,255.0f).toInt()
+                        sortHeaderTextPaint.alpha = (t * t).toLerp(0.0f,255.0f).toInt()
+                        sortHeaderTextPaint.textAlign = Paint.Align.LEFT
 
                         tmpRectF.set(scaling.viewport.left - 10.0f, scaling.viewport.top - 10.0f,
                                 scaling.viewport.right + 10.0f, 150.0f)
-                        ctx.drawRect(tmpRectF, statusFillPaint)
-                        ctx.drawRect(tmpRectF, statusOutlinePaint)
+                        ctx.drawRect(tmpRectF, sortHeaderFillPaint)
+                        ctx.drawRect(tmpRectF, sortHeaderOutlinePaint)
 
-                        ctx.drawText(textName, 75f, tmpRectF.bottom - 50.0f, statusTextPaint, 0.5f)
+                        ctx.drawText(textName, 75f, tmpRectF.bottom - 50.0f, sortHeaderTextPaint, 0.5f)
                     }
                 }
             }
@@ -865,6 +839,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                 widgets.searchQuery.render(ctx)
                 widgets.statusBar.render(ctx)
                 drawSortHeaderDisplay(ctx)
+
             }catch(_:ConcurrentModificationException){}
         }
     }

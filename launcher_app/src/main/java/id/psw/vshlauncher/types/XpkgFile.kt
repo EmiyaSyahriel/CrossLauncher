@@ -2,7 +2,7 @@ package id.psw.vshlauncher.types
 
 import java.util.zip.ZipFile
 
-class XPKGFile(val zip:ZipFile) {
+class XpkgFile(val zip:ZipFile) {
 
     companion object {
         const val INI_PKG_METADATA = "PKG_METADATA"
@@ -21,7 +21,7 @@ class XPKGFile(val zip:ZipFile) {
             )
 
     val fileNames = arrayListOf<String>()
-    val info = INIFile()
+    val info = IniFile()
     private var _loadProgress = 0.0f
     val loadProgress get() = _loadProgress
 

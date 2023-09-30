@@ -21,8 +21,8 @@ object VshBaseDirs {
 }
 
 object VshResName {
-    const val COLDBOOT = "coldboot"
-    const val GAMEBOOT = "gameboot"
+    val COLDBOOT = arrayOf("coldboot", "COLDBOOT")
+    val GAMEBOOT = arrayOf("gameboot", "GAMEBOOT")
     const val APP_ICON = "ICON0"
     const val APP_ANIM_ICON = "ICON1"
 }

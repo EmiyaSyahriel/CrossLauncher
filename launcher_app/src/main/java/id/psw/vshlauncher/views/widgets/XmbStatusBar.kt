@@ -27,30 +27,15 @@ import kotlin.math.min
 class XmbStatusBar(view: XmbView) : XmbWidget(view) {
     var disabled = false
 
-    val statusFillPaint : Paint = vsh.makeTextPaint(color = FColor.setAlpha(Color.WHITE, 0.5f)).apply {
+    private val statusFillPaint : Paint = vsh.makeTextPaint(color = FColor.setAlpha(Color.WHITE, 0.5f)).apply {
         style = Paint.Style.FILL
         strokeWidth = 3.0f
     }
-    val statusTextPaint : Paint = vsh.makeTextPaint(size = 10.0f, color = Color.WHITE).apply {
+    private val statusTextPaint : Paint = vsh.makeTextPaint(size = 10.0f, color = Color.WHITE).apply {
         style = Paint.Style.FILL
         strokeWidth = 3.0f
     }
-    val iconPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {}
-    val menuVerticalNamePaint : Paint = vsh.makeTextPaint(size = 20.0f, color = Color.WHITE).apply {
-        textAlign = Paint.Align.LEFT
-    }
-    val menuVerticalDescPaint : Paint = vsh.makeTextPaint(size = 10.0f, color = Color.WHITE).apply {
-        textAlign = Paint.Align.LEFT
-    }
-
-    val menuHorizontalNamePaint : Paint = vsh.makeTextPaint(size = 15.0f, color = Color.WHITE).apply {
-        style = Paint.Style.FILL
-        textAlign = Paint.Align.CENTER
-    }
-    val menuHorizontalIconPaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        alpha = 255
-    }
-    val statusOutlinePaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val statusOutlinePaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = 3.0f
         color = Color.WHITE
@@ -116,7 +101,7 @@ class XmbStatusBar(view: XmbView) : XmbWidget(view) {
         return sb.toString()
     }
 
-    private fun drawStatusBar(ctx: Canvas){
+    override fun render(ctx: Canvas){
         if(disabled) return
         when(view.screens.mainMenu.layoutMode){
             XmbLayoutType.PS3 -> drawStatusBarPS3(ctx)

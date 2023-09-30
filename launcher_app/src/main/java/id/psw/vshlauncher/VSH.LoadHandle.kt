@@ -1,6 +1,6 @@
 package id.psw.vshlauncher
 
-import id.psw.vshlauncher.types.XMBLoadingHandle
+import id.psw.vshlauncher.types.XmbLoadingHandle
 
 /**
  * Check if there is a process currently in loading,
@@ -22,7 +22,7 @@ fun Vsh.addLoadHandle() : Long {
         while(loadingHandles.find { it.handle == hWnd } != null){
             hWnd++
         }
-        loadingHandles.add(XMBLoadingHandle(hWnd, false))
+        loadingHandles.add(XmbLoadingHandle(hWnd, false))
         return hWnd
     }
 }
