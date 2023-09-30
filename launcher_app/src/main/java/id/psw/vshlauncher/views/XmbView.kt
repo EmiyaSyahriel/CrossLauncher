@@ -191,13 +191,16 @@ class XmbView @JvmOverloads constructor(
         contentDescription = context.getString(R.string.xmb_view_content_description)
         holder.setFormat(PixelFormat.TRANSPARENT)
         DrawExtension.init(context.vsh)
-        activeScreen
     }
 
     private var onceStarted = false
     private fun start(){
         screens = Screens(this)
         widgets = Widgets(this)
+
+        activeScreen = screens.idle
+        switchScreen(context.xmb.skipColdBoot.select(screens.mainMenu, screens.coldBoot))
+
         loadPreferences()
     }
 
@@ -380,6 +383,11 @@ class XmbView @JvmOverloads constructor(
             }
         }
         context.vsh.isNowRendering = false
+    }
+
+    /** Shortcut to [XmbDialog.showDialog] */
+    fun showDialog(dlg : XmbDialogSubview){
+        screens.dialog.showDialog(dlg)
     }
 
     /** Shortcut to [XmbDialog.showDialog] */
