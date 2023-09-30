@@ -188,7 +188,7 @@ class CifLoader {
         if(_icon.id != default_bitmap.id) _icon.release()
 
         synchronized(_animIconSync){
-            if(_hasAnimIconLoaded || !_animIcon.hasRecycled){
+            if(_hasAnimIconLoaded && !_animIcon.hasRecycled){
                 _hasAnimIconLoaded = false
                 if(_animIcon != XmbItem.WHITE_ANIM_BITMAP && _animIcon != XmbItem.TRANSPARENT_ANIM_BITMAP) _animIcon.recycle()
                 _animIcon = XmbItem.TRANSPARENT_ANIM_BITMAP

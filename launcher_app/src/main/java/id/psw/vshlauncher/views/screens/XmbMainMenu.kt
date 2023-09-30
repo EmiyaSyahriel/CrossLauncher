@@ -323,17 +323,6 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                     menuVerticalDescPaint.alpha = textAlpha
                     menuVerticalNamePaint.alpha = textAlpha
 
-                    if (selected) {
-                        val radius = abs((kotlin.math.sin(currentTime / 3.0f)) * 10f)
-                        // menuVerticalNamePaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
-                        // menuVerticalDescPaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
-                        // iconPaint.setShadowLayer(radius, 0f, 0f, Color.WHITE)
-                    } else {
-                        // menuVerticalNamePaint.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
-                        // menuVerticalDescPaint.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
-                        // iconPaint.setShadowLayer(0f, 0f, 0f, Color.TRANSPARENT)
-                    }
-
                     val targetSize =
                             isPSP.select(
                                     selected.select(pspSelectedIconSize, pspUnselectedIconSize),

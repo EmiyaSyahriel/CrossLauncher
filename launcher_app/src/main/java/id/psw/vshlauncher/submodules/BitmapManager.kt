@@ -128,8 +128,11 @@ class BitmapManager(private val ctx: Vsh) : IVshSubmodule {
                     queueMutex.lock(this)
                     loadQueue.removeAt(0)
                 }
+
+                cleanup()
+
                 queueMutex.unlock(this)
-                delay(10L)
+                delay(100L)
             }
         }
     }
@@ -178,6 +181,16 @@ class BitmapManager(private val ctx: Vsh) : IVshSubmodule {
         }else{
             Logger.i(TAG, "[${handle.id}] - Load Queued")
         }
+    }
+
+    fun cleanup(){
+        for(ch in cache){
+            if(ch.refCount <= 0){
+                ch.bitmap?.recycle()
+            }
+        }
+
+        cache.removeAll { it.refCount == 0 }
     }
 
     fun get(bitmapRef: BitmapRef) : Bitmap =
