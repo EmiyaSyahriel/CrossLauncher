@@ -328,10 +328,13 @@ class XmbView @JvmOverloads constructor(
             canvas.withTranslation(-scaling.viewport.left, -scaling.viewport.top){
                 activeScreen.render(canvas)
 
-                widgets.debugTouch.render(canvas)
-                drawKeygen(canvas)
                 drawNotifications(canvas)
+                drawKeygen(canvas)
+                widgets.sideMenu.render(canvas)
+
                 widgets.debugInfo.render(canvas)
+                widgets.debugTouch.render(canvas)
+
             }
         }
     }
