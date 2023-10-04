@@ -92,7 +92,7 @@ class Vsh : Application() {
             e.printStackTrace()
             vsh.postNotification(R.drawable.ic_error, e.javaClass.name, e.toString())
         }
-        return arrayListOf<XmbItem>()
+        return arrayListOf()
     }
 
     val activeParent : XmbItem? get(){
@@ -131,7 +131,7 @@ class Vsh : Application() {
     val notifications = arrayListOf<XmbNotification>()
     val threadPool: ExecutorService = Executors.newFixedThreadPool(8)
     val loadingHandles = arrayListOf<XmbLoadingHandle>()
-    val hiddenCategories = arrayListOf(ITEM_CATEGORY_MUSIC, ITEM_CATEGORY_VIDEO)
+    val hiddenCategories = arrayListOf<String>()
 
     val M = SubmoduleManager(this)
     var isTv = false

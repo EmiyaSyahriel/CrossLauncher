@@ -94,6 +94,7 @@ fun Vsh.reloadAppList(){
     vsh.lifeScope.launch {
         withContext(Dispatchers.Main){
             XmbAppItem.showHiddenByConfig = false
+
             val gameCat = categories.find {it.id == Vsh.ITEM_CATEGORY_GAME }
             if(gameCat != null){
                 synchronized(gameCat){
@@ -121,9 +122,16 @@ fun Vsh.reloadAppList(){
                 packageManager.queryIntentActivities(intent, 0)
             }.forEach {
                 val item = XmbAppItem(vsh, it)
-                val isGame = isAGame(it)
-                addToCategory(isGame.select(Vsh.ITEM_CATEGORY_GAME, Vsh.ITEM_CATEGORY_APPS), item)
-                isGame.select(gameCat, appCat)?.setSort(AppItemSorting.Name)
+                val cat = categories.find { cc -> cc.id == item.appCategory }
+                if(cat == null){
+                    val isGame = isAGame(it)
+                    addToCategory(isGame.select(Vsh.ITEM_CATEGORY_GAME, Vsh.ITEM_CATEGORY_APPS), item)
+                    isGame.select(gameCat, appCat)?.setSort(AppItemSorting.Name)
+                }else{
+                    addToCategory(cat.id, item)
+                    if(cat.id == Vsh.ITEM_CATEGORY_APPS) appCat?.setSort(AppItemSorting.Name)
+                    if(cat.id == Vsh.ITEM_CATEGORY_GAME) gameCat?.setSort(AppItemSorting.Name)
+                }
             }
 
             setLoadingFinished(lh)
