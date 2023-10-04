@@ -8,33 +8,21 @@ import android.graphics.RectF
 import androidx.core.graphics.withRotation
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.FColor
+import id.psw.vshlauncher.makeTextPaint
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.submodules.SfxType
 import id.psw.vshlauncher.toLerp
-import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.XmbWidget
 import id.psw.vshlauncher.views.drawText
 
 class XmbSideMenu(view: XmbView) : XmbWidget(view) {
-    val menuContextMenuTextPaint : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = 10.0f
-        textAlign = Paint.Align.LEFT
-        typeface = FontCollections.masterFont
-        color = Color.WHITE
-    }
-    val menuContextMenuOutline : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val textPaint : Paint = vsh.makeTextPaint(10.0f)
+    private val shapeOutline : Paint = vsh.makeTextPaint(style= Paint.Style.STROKE, color = Color.WHITE).apply {
         strokeWidth = 3.0f
-        style = Paint.Style.STROKE
-        typeface = FontCollections.masterFont
-        color = Color.WHITE
     }
-    val menuContextMenuFill : Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-        color = FColor.setAlpha(Color.BLACK, 0.5f)
-        typeface = FontCollections.masterFont
-    }
+    private val shapeFill : Paint = vsh.makeTextPaint(style= Paint.Style.FILL, color = FColor.setAlpha(Color.BLACK, 0.5f))
 
     var showMenuDisplayFactor = 0.0f
     var isDisplayed = false
@@ -72,7 +60,7 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
         val item = vsh.hoveredItem
         if(item != null){
             if(item.hasMenu){
-                menuContextMenuTextPaint.textSize = isPSP.select(30.0f, 20.0f)
+                textPaint.textSize = isPSP.select(30.0f, 20.0f)
 
                 showMenuDisplayFactor = (time.deltaTime * 10.0f).toLerp(showMenuDisplayFactor, isDisplayed.select(1.0f, 0.0f)).coerceIn(0.0f, 1.0f)
                 val menuLeft = showMenuDisplayFactor.toLerp(scaling.viewport.right + 10.0f, scaling.target.right - 400f)
@@ -83,24 +71,15 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
                         scaling.viewport.right + 20.0f,
                         scaling.viewport.bottom + 10.0f)
 
-                ctx.drawRect(itemMenuRectF, menuContextMenuFill)
-                ctx.drawRect(itemMenuRectF, menuContextMenuOutline)
+                ctx.drawRect(itemMenuRectF, shapeFill)
+                ctx.drawRect(itemMenuRectF, shapeOutline)
 
                 val zeroIdx = itemMenuRectF.centerY()
-                val textSize = menuContextMenuTextPaint.textSize * isPSP.select(1.5f, 1.25f)
+                val textSize = textPaint.textSize * isPSP.select(1.5f, 1.25f)
                 val textLeft = isPSP.select(0.0f, textSize) + menuLeft + 20.0f
 
                 item.menuItems?.forEach {
-                    menuContextMenuTextPaint.color = it.isDisabled .select(Color.GRAY, Color.WHITE)
-                    if(it.displayOrder == selectedIndex){
-                        // menuContextMenuTextPaint
-                        //     .setShadowLayer(
-                        //         abs(sin(time.currentTime)) * 10.0f,
-                        //         0f,0f, Color.WHITE)
-                    } else {
-                        // menuContextMenuTextPaint
-                        //     .setShadowLayer(0.0f, 0f,0f, Color.TRANSPARENT)
-                    }
+                    textPaint.color = it.isDisabled .select(Color.GRAY, Color.WHITE)
 
                     if(it.displayOrder == selectedIndex){
                         if(isPSP){
@@ -109,9 +88,9 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
                                     scaling.viewport.right - 5.0f, yOff)
                             if(showMenuDisplayFactor > 0.1f){
                                 ctx.drawRoundRect(itemMenuRectF,
-                                        5.0f, 5.0f, menuContextMenuFill)
+                                        5.0f, 5.0f, shapeFill)
                                 ctx.drawRoundRect(itemMenuRectF,
-                                        5.0f, 5.0f, menuContextMenuOutline)
+                                        5.0f, 5.0f, shapeOutline)
                             }
                         }else{
                             if(view.screens.mainMenu.arrowBitmapLoaded){
@@ -128,7 +107,7 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
                         }
                     }
 
-                    ctx.drawText(it.displayName, textLeft, zeroIdx + (it.displayOrder * textSize), menuContextMenuTextPaint, -0.5f, false)
+                    ctx.drawText(it.displayName, textLeft, zeroIdx + (it.displayOrder * textSize), textPaint, -0.5f, false)
                 }
             }else{
                 isDisplayed = false
