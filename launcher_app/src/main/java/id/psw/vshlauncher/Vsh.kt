@@ -45,6 +45,7 @@ class Vsh : Application() {
         const val ITEM_CATEGORY_GAME = "vsh_game"
         const val ITEM_CATEGORY_VIDEO = "vsh_video"
         const val ITEM_CATEGORY_SHORTCUT = "vsh_shortcut"
+        const val ITEM_CATEGORY_PHOTO = "vsh_photos"
         const val ITEM_CATEGORY_MUSIC = "vsh_music"
         const val ITEM_CATEGORY_SETTINGS = "vsh_settings"
         const val COPY_DATA_SIZE_BUFFER = 10240
@@ -372,9 +373,10 @@ class Vsh : Application() {
             categories.add(XmbItemCategory(this, ITEM_CATEGORY_SETTINGS, R.string.category_settings, R.drawable.category_setting, defaultSortIndex = 1))
             categories.add(XmbItemCategory(this, ITEM_CATEGORY_VIDEO, R.string.category_videos, R.drawable.category_video, true, defaultSortIndex = 2))
             categories.add(XmbItemCategory(this, ITEM_CATEGORY_SHORTCUT, R.string.category_shortcut, R.drawable.category_shortcut, true, defaultSortIndex = 2))
-            categories.add(XmbItemCategory(this, ITEM_CATEGORY_MUSIC, R.string.category_music, R.drawable.category_music, true, defaultSortIndex = 3))
-            categories.add(XmbItemCategory(this, ITEM_CATEGORY_GAME, R.string.category_games, R.drawable.category_games, true, defaultSortIndex = 4))
-            categories.add(XmbItemCategory(this, ITEM_CATEGORY_APPS, R.string.category_apps, R.drawable.category_apps, true, defaultSortIndex = 5))
+            categories.add(XmbItemCategory(this, ITEM_CATEGORY_PHOTO, R.string.category_photo, R.drawable.category_photo, true, defaultSortIndex = 3))
+            categories.add(XmbItemCategory(this, ITEM_CATEGORY_MUSIC, R.string.category_music, R.drawable.category_music, true, defaultSortIndex = 4))
+            categories.add(XmbItemCategory(this, ITEM_CATEGORY_GAME, R.string.category_games, R.drawable.category_games, true, defaultSortIndex = 5))
+            categories.add(XmbItemCategory(this, ITEM_CATEGORY_APPS, R.string.category_apps, R.drawable.category_apps, true, defaultSortIndex = 6))
             categories.sortBy { it.sortIndex }
         }catch(e:Exception){
 

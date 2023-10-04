@@ -411,4 +411,5 @@
   <string name="dlg_confirm_cancel">Cancel</string>
     <string name="shortcut_remove_confirm_text">Would you like to delete this shorctut?\n\n%s</string>
     <string name="shortcut_rename">Rename</string>
+    <string name="category_photo">Photos</string>
 </resources>
