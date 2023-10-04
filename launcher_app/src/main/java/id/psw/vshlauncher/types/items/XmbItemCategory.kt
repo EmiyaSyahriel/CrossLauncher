@@ -31,7 +31,7 @@ class XmbItemCategory(
     override val hasDescription: Boolean = false
     override val hasMenu = false
     override val isHidden: Boolean
-        get() = vsh.isCategoryHidden(id)
+        get() = vsh.isCategoryHidden(id) || _content.isEmpty()
 
     override val displayName: String get() = vsh.getString(strId)
     override val icon: Bitmap get() = _icon.bitmap
