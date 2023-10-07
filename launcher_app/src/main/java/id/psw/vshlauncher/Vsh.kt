@@ -221,6 +221,7 @@ class Vsh : Application() {
         if(items.isNotEmpty()){
             M.audio.preventPlayMedia = false
             var cIdx = items.indexOfFirst { it.id == selectedCategoryId }
+            cIdx = cIdx.coerceIn(0, items.size - 1)
             val oldIdx = cIdx
             items[cIdx].lastSelectedItemId = selectedItemId // Save last category item id
             items[cIdx].content?.forEach { it.isHovered = false }
@@ -250,6 +251,9 @@ class Vsh : Application() {
         val dwb =ResourcesCompat.getDrawable(resources, d, null)
         return dwb?.toBitmap(dwb.intrinsicWidth, dwb.intrinsicHeight?: 1) ?: whiteFallback.select(XmbItem.WHITE_BITMAP, XmbItem.TRANSPARENT_BITMAP)
     }
+
+    val allAppEntries = arrayListOf<XmbAppItem>()
+
     fun loadTexture(@DrawableRes d: Int, customId:String, w:Int, h:Int, whiteFallback: Boolean) : Bitmap{
         var retval : Bitmap? = null
         val file = queryTexture(customId).find { it.exists() }

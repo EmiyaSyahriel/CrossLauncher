@@ -98,7 +98,7 @@ fun Vsh.reloadAppList(){
             val gameCat = categories.find {it.id == Vsh.ITEM_CATEGORY_GAME }
             if(gameCat != null){
                 synchronized(gameCat){
-                    gameCat.onSetSortFunc = { it, sort ->  appCategorySetSorting(it, sort) }
+                    gameCat.onSetSortFunc = { it, sort -> appCategorySetSorting(it, sort) }
                     gameCat.onSwitchSortFunc = { appCategorySorting(it) }
                     gameCat.getSortModeNameFunc = { appCategorySortingName(it) }
                 }
@@ -122,12 +122,13 @@ fun Vsh.reloadAppList(){
                 packageManager.queryIntentActivities(intent, 0)
             }.forEach {
                 val item = XmbAppItem(vsh, it)
+                allAppEntries.add(item)
                 val cat = categories.find { cc -> cc.id == item.appCategory }
-                if(cat == null){
+                if(cat == null) {
                     val isGame = isAGame(it)
                     addToCategory(isGame.select(Vsh.ITEM_CATEGORY_GAME, Vsh.ITEM_CATEGORY_APPS), item)
                     isGame.select(gameCat, appCat)?.setSort(AppItemSorting.Name)
-                }else{
+                } else {
                     addToCategory(cat.id, item)
                     if(cat.id == Vsh.ITEM_CATEGORY_APPS) appCat?.setSort(AppItemSorting.Name)
                     if(cat.id == Vsh.ITEM_CATEGORY_GAME) gameCat?.setSort(AppItemSorting.Name)

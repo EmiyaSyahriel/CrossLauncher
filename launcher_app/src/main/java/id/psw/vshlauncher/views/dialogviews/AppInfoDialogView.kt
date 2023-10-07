@@ -71,6 +71,11 @@ class AppInfoDialogView(v: XmbView, private val app : XmbAppItem) : XmbDialogSub
     override fun onClose() {
         if(_icon != XmbItem.WHITE_BITMAP)  _icon.recycle()
         if(loadIcon != XmbItem.WHITE_BITMAP)  loadIcon.recycle()
+
+        // Move the icon to other category
+        if(originalCategory != app.appCategory){
+            vsh.swapCategory(app.id, originalCategory, app.appCategory)
+        }
     }
 
     override val negativeButton: String
@@ -83,6 +88,8 @@ class AppInfoDialogView(v: XmbView, private val app : XmbAppItem) : XmbDialogSub
             5 -> vsh.getString(R.string.category_settings)
             else -> vsh.getString(R.string.common_edit)
         }
+
+    private var originalCategory = app.appCategory
 
     override fun onStart() {
         loadIcon = ResourcesCompat.getDrawable(vsh.resources,R.drawable.ic_sync_loading,null)?.toBitmap(256,256) ?: XmbItem.WHITE_BITMAP
@@ -292,7 +299,7 @@ class AppInfoDialogView(v: XmbView, private val app : XmbAppItem) : XmbDialogSub
                 4 -> {
                     // Set Category
                     val menus = arrayListOf<XmbMenuItem>()
-                    var i  =0
+                    var i  = 0
                     categoryMaps.forEach {
                         menus.add(XmbMenuItem.XmbMenuItemLambda(
                             {vsh.getString(it.value)}, {false}, i++)

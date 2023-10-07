@@ -413,4 +413,6 @@
     <string name="shortcut_rename">Rename</string>
     <string name="category_photo">Photos</string>
     <string name="common_change">Change</string>
+    <string name="error_category_switch_failed_title">Failed to swap app category</string>
+  <string name="error_category_switch_failed_desc">App with id \"%1$s\" cannot be moved from category id \"%2%s\" to \"$3%s\". \n\nHowever, app\'s state have been saved, restarting the launcher will put the icon in designated catgeory</string>
 </resources>
