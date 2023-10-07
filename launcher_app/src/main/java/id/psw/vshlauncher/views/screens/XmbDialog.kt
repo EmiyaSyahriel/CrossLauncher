@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.PointF
 import android.graphics.RectF
 import android.text.TextPaint
+import android.view.MotionEvent
 import androidx.core.graphics.contains
 import androidx.core.graphics.withClip
 import androidx.core.graphics.withTranslation
@@ -124,6 +125,8 @@ class XmbDialog(view : XmbView) : XmbScreen(view) {
         ctx.restoreToCount(ctxState)
     }
 
+    private val ptFirstDownAt = PointF()
+
     override fun onTouchScreen(start: PointF, current: PointF, action:Int){
         val dlg = activeDialog
         if(dlg != null){
@@ -132,16 +135,22 @@ class XmbDialog(view : XmbView) : XmbScreen(view) {
             val offB = tmpPointB
 
             if(dTmpBound.contains(start) || dTmpBound.contains(current)){
-
                 offA.set(start.x - dTmpBound.left, start.y - dTmpBound.top)
                 offB.set(current.x - dTmpBound.left, current.y - dTmpBound.top)
                 dlg.onTouch(offA,offB,action)
             }else{
-                if(scaling.target.contains(start) && start.y > dTmpBound.bottom && action == android.view.MotionEvent.ACTION_UP){
+                if(scaling.target.contains(start) && ptFirstDownAt.y > dTmpBound.bottom && current.y > dTmpBound.bottom && action == android.view.MotionEvent.ACTION_UP){
                     if(dlg.hasPositiveButton || dlg.hasNegativeButton){
-                        dlg.onDialogButton(start.x > scaling.target.centerX())
+                        val exec = ptFirstDownAt.x > scaling.target.centerX() == current.x > scaling.target.centerX()
+                        if(exec){
+                            dlg.onDialogButton(ptFirstDownAt.x > scaling.target.centerX())
+                        }
                     }
                 }
+            }
+
+            if(action == MotionEvent.ACTION_DOWN){
+                ptFirstDownAt.set(start)
             }
         }
     }
