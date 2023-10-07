@@ -518,50 +518,35 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
         if(isDown){
             when(key){
                 PadKey.PadL -> {
-                    if(!inMenu){
-                        if(vsh.isInRoot){
-                            vsh.moveCursorX(false)
-                            M.audio.playSfx(SfxType.Selection)
-                        }else{
-                            vsh.backStep()
-                            M.audio.playSfx(SfxType.Cancel)
-                        }
-                        retval = true
+                    if(vsh.isInRoot){
+                        vsh.moveCursorX(false)
+                        M.audio.playSfx(SfxType.Selection)
+                    }else{
+                        vsh.backStep()
+                        M.audio.playSfx(SfxType.Cancel)
                     }
+                    retval = true
                 }
                 PadKey.PadR -> {
                     if(vsh.isInRoot){
-                        if(!inMenu){
-                            context.vsh.moveCursorX(true)
-                        }
+                        context.vsh.moveCursorX(true)
                         retval = true
                     }
                 }
                 PadKey.PadU -> {
-                    if(inMenu){
-                        view.widgets.sideMenu.moveCursor(false)
-                    }else{
-                        context.vsh.moveCursorY(false)
-                    }
+                    context.vsh.moveCursorY(false)
                     retval = true
                 }
                 PadKey.PadD -> {
-                    if(inMenu){
-                        view.widgets.sideMenu.moveCursor(true)
-                    }else{
-                        context.vsh.moveCursorY(true)
-                    }
+
+                    context.vsh.moveCursorY(true)
                     retval = true
                 }
                 PadKey.Triangle -> {
                     val item = vsh.hoveredItem
-                    if(inMenu){
-                        widgets.sideMenu.isDisplayed = false
-                    }else{
-                        if(item != null){
-                            if(item.hasMenu){
-                                widgets.sideMenu.isDisplayed = true
-                            }
+                    if(item != null){
+                        if(item.hasMenu){
+                            widgets.sideMenu.isDisplayed = true
                         }
                     }
                     retval = true
@@ -577,29 +562,18 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                     }
                 }
                 PadKey.Confirm, PadKey.StaticConfirm -> {
-                    if(inMenu) {
-                        if(isOpenMenuDisableMenuExec){
-                            view.widgets.sideMenu.executeSelected()
-                            widgets.sideMenu.isDisplayed = false
-                        }
+                    // Start Timer
+                    if(isOpenMenuOnHold){
+                        vsh.mainHandle.postDelayed(::openMenuOnHoldAction, 500L)
+                        isOpenMenuHeld = true
+                        widgets.sideMenu.disableMenuExec = true
                     }else{
-                        // Start Timer
-                        if(isOpenMenuOnHold){
-                            vsh.mainHandle.postDelayed(::openMenuOnHoldAction, 500L)
-                            isOpenMenuHeld = true
-                            isOpenMenuDisableMenuExec = true
-                        }else{
-                            vsh.launchActiveItem()
-                        }
+                        vsh.launchActiveItem()
                     }
                     retval = true
                 }
                 PadKey.Cancel, PadKey.StaticCancel -> {
-                    if(inMenu){
-                        widgets.sideMenu.isDisplayed = false
-                    }else{
-                        vsh.backStep()
-                    }
+                    vsh.backStep()
                     retval = true
                 }
                 else -> {  }
@@ -613,10 +587,10 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                             vsh.launchActiveItem()
                             isOpenMenuHeld = false
                             retval = true
-                        }else{
+                        } else {
                             retval = false
                         }
-                        isOpenMenuDisableMenuExec = false
+                        widgets.sideMenu.disableMenuExec = false
                     }else{
                         retval = false
                     }
@@ -642,123 +616,92 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     }
 
     override fun onTouchScreen(start: PointF, current: PointF, action: Int) {
-        if(widgets.sideMenu.isDisplayed){
-            when(action){
-                MotionEvent.ACTION_DOWN ->{
-                    run { // Is Up
-                        if(current.x < scaling.target.right - 400.0f){
-                            widgets.sideMenu.isDisplayed = false
-                        }else{
-                            if(current.y < 200.0f){
-                                view.widgets.sideMenu.moveCursor(false)
-                            }else if(current.y > scaling.target.bottom - 200.0f){
-                                view.widgets.sideMenu.moveCursor(true)
-                            }else{
-                                view.widgets.sideMenu.executeSelected()
-                            }
-                        }
+
+        val isPSP = layoutMode == XmbLayoutType.PSP
+
+        when (action) {
+            MotionEvent.ACTION_UP -> {
+                if(directionLock == DirectionLock.None){
+                    val iconSize = isPSP.select(pspSelectedIconSize, ps3SelectedIconSize)
+                    val hSeparation = (isPSP).select(pspIconSeparation, ps3IconSeparation).x
+                    val separation = (isPSP).select(pspIconSeparation, ps3IconSeparation).y
+                    val center = (isPSP).select(pspMenuIconCenter, ps3MenuIconCenter)
+                    val xPos =
+                        ((scaling.target.width() * center.x) + (context.vsh.itemOffsetX * hSeparation))
+                    val yPos = (scaling.target.height() * center.y) + (separation * 2.0f)
+                    val hSizeX = iconSize.x * 0.5f
+                    val hSizeY = iconSize.y * 0.5f
+                    touchTestRectF.set(
+                        xPos - hSizeX,
+                        yPos - hSizeY,
+                        xPos + hSizeX,
+                        yPos + hSizeY
+                    )
+
+                    if(context.vsh.isInRoot){
+                        touchTestSearchRectF.set(
+                            xPos - hSizeX,
+                            yPos - hSizeY - iconSize.y,
+                            xPos + hSizeX,
+                            yPos - hSizeY,
+                        )
+                    }else{
+                        touchTestSearchRectF.set(
+                            xPos - hSizeX - iconSize.x,
+                            yPos - hSizeY - iconSize.y,
+                            xPos - hSizeX,
+                            yPos - hSizeY,
+                        )
+
+                    }
+
+                    if (touchTestRectF.contains(start)) {
+                        context.vsh.launchActiveItem()
+                    }else if(touchTestSearchRectF.contains(start)){
+                        openSearchQuery()
+                    }
+                    else if(current.x < 200.0f){
+                        context.vsh.backStep()
                     }
                 }
+                directionLock = DirectionLock.None
             }
-        }else {
-            val isPSP = layoutMode == XmbLayoutType.PSP
-
-
-            when (action) {
-                MotionEvent.ACTION_UP -> {
-
-                    run { // Run Active Icon
-                        if(directionLock == DirectionLock.None){
-                            val iconSize = isPSP.select(pspSelectedIconSize, ps3SelectedIconSize)
-                            val hSeparation = (isPSP).select(pspIconSeparation, ps3IconSeparation).x
-                            val separation = (isPSP).select(pspIconSeparation, ps3IconSeparation).y
-                            val center = (isPSP).select(pspMenuIconCenter, ps3MenuIconCenter)
-                            val xPos =
-                                    ((scaling.target.width() * center.x) + (context.vsh.itemOffsetX * hSeparation))
-                            val yPos = (scaling.target.height() * center.y) + (separation * 2.0f)
-                            val hSizeX = iconSize.x * 0.5f
-                            val hSizeY = iconSize.y * 0.5f
-                            touchTestRectF.set(
-                                    xPos - hSizeX,
-                                    yPos - hSizeY,
-                                    xPos + hSizeX,
-                                    yPos + hSizeY
-                            )
-
-                            if(context.vsh.isInRoot){
-                                touchTestSearchRectF.set(
-                                        xPos - hSizeX,
-                                        yPos - hSizeY - iconSize.y,
-                                        xPos + hSizeX,
-                                        yPos - hSizeY,
-                                )
-                            }else{
-                                touchTestSearchRectF.set(
-                                        xPos - hSizeX - iconSize.x,
-                                        yPos - hSizeY - iconSize.y,
-                                        xPos - hSizeX,
-                                        yPos - hSizeY,
-                                )
-
-                            }
-
-                            if (touchTestRectF.contains(start)) {
-                                context.vsh.launchActiveItem()
-                            }else if(touchTestSearchRectF.contains(start)){
-                                openSearchQuery()
-                            }
-                            else if(current.x < 200.0f){
-                                context.vsh.backStep()
-                            }
+            MotionEvent.ACTION_MOVE -> {
+                val isMenu = start.x > scaling.target.right - 200.0f
+                if(isMenu){
+                    val menuTol = (view.width > view.height).select(400.0f, 100.0f)
+                    if(current.x <  scaling.target.right - menuTol){
+                        val item = context.vsh.hoveredItem
+                        if(item?.hasMenu == true){
+                            widgets.sideMenu.isDisplayed = true
+                        }
+                    }
+                }else {
+                    val iconSize =
+                        (isPSP).select(pspUnselectedIconSize, ps3UnselectedIconSize)
+                    if (directionLock != DirectionLock.Horizontal) { // Vertical
+                        val yLen = current.y - start.y
+                        if (abs(yLen) > iconSize.y) {
+                            context.vsh.moveCursorY(yLen < 0.0f)
+                            context.xmb.touchStartPointF.set(current)
+                            directionLock = DirectionLock.Vertical
                         }
                     }
 
-                    directionLock = DirectionLock.None
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    val isMenu = start.x > scaling.target.right - 200.0f
-                    run{
-                        if(isMenu){
-                            val menuTol = (view.width > view.height).select(400.0f, 100.0f)
-                            if(current.x <  scaling.target.right - menuTol){
-                                val item = context.vsh.hoveredItem
-                                if(item?.hasMenu == true){
-                                    widgets.sideMenu.isDisplayed = true
+                    if (directionLock != DirectionLock.Vertical) { // Horizontal
+                        val xLen = current.x - start.x
+                        if (abs(xLen) > iconSize.x) {
+                            if (context.vsh.isInRoot) {
+                                context.vsh.moveCursorX(xLen < 0.0f)
+                            } else {
+                                if (xLen > 0.0f) {
+                                    context.vsh.backStep()
                                 }
                             }
+                            context.xmb.touchStartPointF.set(current)
+                            directionLock = DirectionLock.Horizontal
                         }
                     }
-                    if(!isMenu) {
-                        run { //
-                            val iconSize =
-                                    (isPSP).select(pspUnselectedIconSize, ps3UnselectedIconSize)
-                            if (directionLock != DirectionLock.Horizontal) { // Vertical
-                                val yLen = current.y - start.y
-                                if (abs(yLen) > iconSize.y) {
-                                    context.vsh.moveCursorY(yLen < 0.0f)
-                                    context.xmb.touchStartPointF.set(current)
-                                    directionLock = DirectionLock.Vertical
-                                }
-                            }
-
-                            if (directionLock != DirectionLock.Vertical) { // Horizontal
-                                val xLen = current.x - start.x
-                                if (abs(xLen) > iconSize.x) {
-                                    if (context.vsh.isInRoot) {
-                                        context.vsh.moveCursorX(xLen < 0.0f)
-                                    } else {
-                                        if (xLen > 0.0f) {
-                                            context.vsh.backStep()
-                                        }
-                                    }
-                                    context.xmb.touchStartPointF.set(current)
-                                    directionLock = DirectionLock.Horizontal
-                                }
-                            }
-                        }
-                    }
-
-
                 }
             }
         }

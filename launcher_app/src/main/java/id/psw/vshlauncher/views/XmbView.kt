@@ -297,10 +297,17 @@ class XmbView @JvmOverloads constructor(
         touchStartPointF.set(start)
         touchCurrentPointF.set(current)
         lastTouchAction = action
-        activeScreen.onTouchScreen(start, current, action)
+        if(widgets.sideMenu.isDisplayed){
+            widgets.sideMenu.onTouchScreen(start, current, action)
+        }else{
+            activeScreen.onTouchScreen(start, current, action)
+        }
     }
 
     fun onGamepadInput(key: PadKey, isDown:Boolean) : Boolean{
+        if(widgets.sideMenu.isDisplayed){
+            return widgets.sideMenu.onGamepadInput(key, isDown)
+        }
         return activeScreen.onGamepadInput(key, isDown)
     }
 
