@@ -20,7 +20,6 @@ import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.XmbWidget
 import id.psw.vshlauncher.views.drawText
-import id.psw.vshlauncher.vsh
 
 class XmbSideMenu(view: XmbView) : XmbWidget(view) {
     private val textPaint : Paint = vsh.makeTextPaint(10.0f)
