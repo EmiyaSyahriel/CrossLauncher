@@ -20,7 +20,6 @@ import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.XmbWidget
 import id.psw.vshlauncher.views.drawText
-import id.psw.vshlauncher.vsh
 
 class XmbSideMenu(view: XmbView) : XmbWidget(view) {
     private val textPaint : Paint = vsh.makeTextPaint(10.0f)
@@ -40,6 +39,7 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
     var disableMenuExec = false
 
     fun show(items : ArrayList<XmbMenuItem>){
+        this.items.clear()
         this.items.addAll(items)
         isDisplayed = true
     }
@@ -53,22 +53,26 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
         isDisplayed = false
     }
 
+    private val allItems : ArrayList<XmbMenuItem>?  get(){
+        val item = vsh.hoveredItem
+        return if(view.activeScreen == view.screens.mainMenu && item?.hasMenu == true){
+            item.menuItems
+        }else{
+            this.items
+        }
+    }
+
     fun moveCursor(isDown:Boolean){
         try{
-            val item = vsh.hoveredItem
-            if(item != null){
-                if(item.hasMenu){
-                    val menuItems = item.menuItems
-                    if(menuItems != null){
-                        val sortedMenu = menuItems.sortedBy { it.displayOrder }
-                        val cIndex = sortedMenu.indexOfFirst { it.displayOrder == selectedIndex }
-                        val newIndex = cIndex + isDown.select(1, -1)
-                        if(cIndex >= 0 && newIndex < menuItems.size && newIndex >= 0){
-                            selectedIndex = sortedMenu[newIndex].displayOrder
-                        }
-                        M.audio.playSfx(SfxType.Selection)
-                    }
+            val menuItems = allItems
+            if(menuItems != null){
+                val sortedMenu = menuItems.sortedBy { it.displayOrder }
+                val cIndex = sortedMenu.indexOfFirst { it.displayOrder == selectedIndex }
+                val newIndex = cIndex + isDown.select(1, -1)
+                if(cIndex >= 0 && newIndex < menuItems.size && newIndex >= 0){
+                    selectedIndex = sortedMenu[newIndex].displayOrder
                 }
+                M.audio.playSfx(SfxType.Selection)
             }
         }catch(_:ArrayIndexOutOfBoundsException){
 
@@ -85,12 +89,7 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
 
         val menuLeft = showMenuDisplayFactor.toLerp(scaling.viewport.right + 10.0f, scaling.target.right - 400f)
 
-        val item = vsh.hoveredItem
-        val items = if(view.activeScreen == view.screens.mainMenu && item?.hasMenu == true){
-            item.menuItems
-        }else{
-            this.items
-        }
+        val items = allItems
         itemMenuRectF.set(
             menuLeft,
             scaling.viewport.top- 10.0f,
@@ -161,13 +160,7 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
 
     fun executeSelected(){
         try{
-            val item = vsh.hoveredItem
-            val items = if(view.activeScreen == view.screens.mainMenu && item?.hasMenu == true){
-                item.menuItems
-            }else{
-                this.items
-            }
-
+            val items = allItems
             if(items != null && items.size > 0){
                 items.find {it.displayOrder == selectedIndex}?.onLaunch?.invoke()
                 M.audio.playSfx(SfxType.Confirm)
@@ -234,6 +227,7 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
                         view.widgets.sideMenu.executeSelected()
                     }
                 }
+                start.set(current)
             }
         }
     }
