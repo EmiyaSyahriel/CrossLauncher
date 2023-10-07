@@ -10,6 +10,7 @@ import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.types.items.XmbAppItem
+import id.psw.vshlauncher.types.items.XmbMenuItem
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.XmbView
@@ -47,6 +48,14 @@ class AppInfoDialogView(v: XmbView, private val app : XmbAppItem) : XmbDialogSub
         typeface = FontCollections.masterFont
     }
 
+    private val categoryMaps = mapOf (
+        "" to R.string.common_default,
+        Vsh.ITEM_CATEGORY_APPS to R.string.category_apps,
+        Vsh.ITEM_CATEGORY_GAME to R.string.category_games,
+        Vsh.ITEM_CATEGORY_PHOTO to R.string.category_photo,
+        Vsh.ITEM_CATEGORY_VIDEO to R.string.category_videos,
+        Vsh.ITEM_CATEGORY_MUSIC to R.string.category_music
+    )
     private var iconPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var rectPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply{
         color = Color.WHITE
@@ -70,6 +79,7 @@ class AppInfoDialogView(v: XmbView, private val app : XmbAppItem) : XmbDialogSub
     override val positiveButton: String
         get() = when(cursorPos) {
             3 -> vsh.getString(R.string.common_toggle)
+            4 -> vsh.getString(R.string.common_change)
             5 -> vsh.getString(R.string.category_settings)
             else -> vsh.getString(R.string.common_edit)
         }
@@ -141,13 +151,13 @@ class AppInfoDialogView(v: XmbView, private val app : XmbAppItem) : XmbDialogSub
         val cX = drawBound.centerX() - 100.0f
 
         var i = 0
-        mapOf<Int, String>(
+        mapOf(
             R.string.dlg_info_name to app.displayName,
             R.string.dlg_info_pkg_name to app.packageName,
             R.string.dlg_info_desc to app.appCustomDesc.ifEmpty { "-" },
             R.string.dlg_info_album to app.appAlbum.ifEmpty { "-" },
             R.string.dlg_info_hidden to vsh.getString(app.isHiddenByCfg.select(R.string.common_yes, R.string.common_no)),
-            R.string.dlg_info_category to app.appCategory.ifEmpty { "-" },
+            R.string.dlg_info_category to getCategoryDisplay(app.appCategory),
             R.string.dlg_info_update to app.displayUpdateTime,
             R.string.dlg_info_apk_size to app.fileSize,
             R.string.dlg_info_version to app.version
@@ -155,7 +165,7 @@ class AppInfoDialogView(v: XmbView, private val app : XmbAppItem) : XmbDialogSub
             tPaint.textAlign = Paint.Align.RIGHT
             ctx.drawText(vsh.getString(l.key), cX, sY, tPaint)
             val str = l.value
-
+            cursorPos = cursorPos.coerceIn(0, validSelections.size - 1)
             val isSelected = validSelections[cursorPos] == i
 
             if(isSelected){
@@ -178,6 +188,13 @@ class AppInfoDialogView(v: XmbView, private val app : XmbAppItem) : XmbDialogSub
             ctx.drawRoundRect(selRectF, 5.0f, 5.0f, rectPaint)
         }
         ctx.drawText(vsh.getString(R.string.app_info_by_system), drawBound.centerX(), sY + 20.0f, tPaint)
+    }
+
+    private fun getCategoryDisplay(appCategory: String): String {
+        if(categoryMaps.containsKey(appCategory)){
+            return vsh.getString(categoryMaps[appCategory] ?: R.string.empty_string)
+        }
+        return appCategory.ifEmpty { "-" }
     }
 
     override fun onGamepad(key: PadKey, isPress: Boolean): Boolean {
@@ -274,13 +291,17 @@ class AppInfoDialogView(v: XmbView, private val app : XmbAppItem) : XmbDialogSub
                 }
                 4 -> {
                     // Set Category
-                    NativeEditTextDialog(vsh)
-                        .setTitle(vsh.getString(R.string.dlg_info_album))
-                        .setOnFinish {
-                            app.appCategory = it
-                        }
-                        .setValue(app.appCategory)
-                        .show()
+                    val menus = arrayListOf<XmbMenuItem>()
+                    var i  =0
+                    categoryMaps.forEach {
+                        menus.add(XmbMenuItem.XmbMenuItemLambda(
+                            {vsh.getString(it.value)}, {false}, i++)
+                        {
+                            app.appCategory = it.key
+                        })
+                    }
+                    view.widgets.sideMenu.show(menus)
+                    view.widgets.sideMenu.selectedIndex = 0
                 }
                 5 -> {
                     // Show in Android
