@@ -52,13 +52,6 @@ class Xmb : AppCompatActivity() {
         sysBarTranslucent()
         updateSystemBarVisibility()
 
-        _lastOrientation = resources.configuration.orientation
-
-        checkCanvasHwAcceleration()
-
-        if(_lastOrientation == Configuration.ORIENTATION_PORTRAIT){
-            postPortraitScreenOrientationWarning()
-        }
         vsh.doMemoryInfoGrab = true
         handleAdditionalIntent(intent)
     }
@@ -140,14 +133,6 @@ class Xmb : AppCompatActivity() {
 
     private fun readXmbViewPreference(){
         xmbView.fpsLimit = M.pref.get(PrefEntry.SURFACEVIEW_FPS_LIMIT, 0).toLong()
-    }
-
-    private fun checkCanvasHwAcceleration(){
-        if(!xmbView.isHWAccelerated){
-            vsh.postNotification(null, getString(R.string.no_hwaccel_warning_title),
-                getString(R.string.no_hwaccel_warning_desc)
-            )
-        }
     }
 
     private fun sysBarTranslucent(){
@@ -233,33 +218,6 @@ class Xmb : AppCompatActivity() {
 
     val touchStartPointF = PointF()
     val touchCurrentPointF = PointF()
-
-    private var screenOrientationWarningPosted = false
-    private fun postPortraitScreenOrientationWarning() {
-        if(!screenOrientationWarningPosted){
-            vsh.postNotification(null,
-                getString(R.string.screen_portrait_warning_title),
-                getString(R.string.screen_portrait_warning_desc)
-            )
-            screenOrientationWarningPosted = true
-        }
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        if(newConfig.orientation != _lastOrientation){
-            when(newConfig.orientation){
-                Configuration.ORIENTATION_PORTRAIT ->
-                {
-                    postPortraitScreenOrientationWarning()
-                }
-                else-> {
-
-                }
-            }
-            _lastOrientation = newConfig.orientation
-        }
-        super.onConfigurationChanged(newConfig)
-    }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         var retval = false

@@ -1,6 +1,7 @@
 package id.psw.vshlauncher.views
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.*
 import android.os.Build
 import android.text.TextPaint
@@ -124,6 +125,25 @@ class XmbView @JvmOverloads constructor(
         }catch(e:Exception){}
     }
 
+    private fun checkCanvasHwAcceleration(){
+        if(!isHWAccelerated){
+            context.vsh.postNotification(null, context.getString(R.string.no_hwaccel_warning_title),
+                context.getString(R.string.no_hwaccel_warning_desc)
+            )
+        }
+    }
+
+    private var screenOrientationWarningPosted = false
+    private fun postPortraitScreenOrientationWarning() {
+        if(!screenOrientationWarningPosted){
+            context.vsh.postNotification(null,
+                context.getString(R.string.screen_portrait_warning_title),
+                context.getString(R.string.screen_portrait_warning_desc)
+            )
+            screenOrientationWarningPosted = true
+        }
+    }
+
     fun startDrawThread(){
         shouldKeepRenderThreadRunning = true
         drawThread = thread(start=true, isDaemon = true){ drawThreadFunc() }.apply { name = "XMB Render Thread" }
@@ -182,6 +202,7 @@ class XmbView @JvmOverloads constructor(
         switchScreen(context.xmb.skipColdBoot.select(screens.mainMenu, screens.coldBoot))
 
         loadPreferences()
+        checkCanvasHwAcceleration()
     }
 
     private fun adaptScreenSize(){
@@ -383,8 +404,30 @@ class XmbView @JvmOverloads constructor(
         startDrawThread()
     }
 
+    private var _lastOrientation : Int = Configuration.ORIENTATION_UNDEFINED
+
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        onSizeChanged(width, height, this.width, this.height);
+
+        val orientation = when {
+            width < height -> Configuration.ORIENTATION_PORTRAIT
+            width > height -> Configuration.ORIENTATION_LANDSCAPE
+            else -> Configuration.ORIENTATION_UNDEFINED
+        }
+
+        if(orientation != _lastOrientation){
+            when(orientation){
+                Configuration.ORIENTATION_PORTRAIT ->
+                {
+                    postPortraitScreenOrientationWarning()
+                }
+                else-> {
+
+                }
+            }
+        }
+        _lastOrientation = orientation
+
+        onSizeChanged(width, height, this.width, this.height)
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
