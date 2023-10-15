@@ -14,7 +14,6 @@ fun getDate() : String {
     return fmt.format(date)
 }
 
-
 android {
     compileSdk = 33
     namespace = "id.psw.vshlauncher"
@@ -100,10 +99,12 @@ dependencies {
     implementation("com.github.penfeizhou.android.animation:apng:2.17.2")
     implementation("com.github.penfeizhou.android.animation:gif:2.17.2")
     implementation("com.android.support:multidex:1.0.3")
+    implementation("com.google.code.gson:gson:2.10.1")
     implementation(project(mapOf("path" to ":launcher_xlib")))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test:rules:1.5.0")
 
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {

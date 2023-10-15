@@ -12,10 +12,10 @@ class SubmoduleManager(ctx: Vsh) {
     val gamepad = GamepadSubmodule(ctx)
     val gamepadUi= GamepadUISubmodule()
     val audio = AudioSubmodule(ctx)
+    val updater = UpdateCheckSubmodule(ctx)
 
     fun onCreate(){
         for(mod in arrayOf(
-            // Submodule initialization timing
             pref,
             bmp,
             customizer,
@@ -24,7 +24,8 @@ class SubmoduleManager(ctx: Vsh) {
             network,
             gamepad,
             gamepadUi,
-            plugin
+            plugin,
+            updater
         )){
             if(mod is IVshSubmodule){
                 mod.onCreate()
@@ -34,7 +35,6 @@ class SubmoduleManager(ctx: Vsh) {
 
     fun onDestroy(){
         for(mod in arrayOf(
-            // Submodule initialization timing
             pref,
             bmp,
             customizer,
@@ -43,7 +43,8 @@ class SubmoduleManager(ctx: Vsh) {
             network,
             gamepad,
             gamepadUi,
-            plugin
+            plugin,
+            updater
         )){
             if(mod is IVshSubmodule){
                 mod.onDestroy()
