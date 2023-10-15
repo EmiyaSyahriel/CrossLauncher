@@ -202,6 +202,7 @@ class XmbView @JvmOverloads constructor(
         switchScreen(context.xmb.skipColdBoot.select(screens.mainMenu, screens.coldBoot))
 
         loadPreferences()
+        checkCanvasHwAcceleration()
     }
 
     private var onceStarted = false
