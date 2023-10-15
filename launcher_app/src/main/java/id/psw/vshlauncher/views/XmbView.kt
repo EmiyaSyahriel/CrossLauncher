@@ -60,7 +60,6 @@ class XmbView @JvmOverloads constructor(
     private lateinit var drawThread : Thread
     private var shouldKeepRenderThreadRunning = true
     private var isRenderThreadRunning = false
-    internal var showDetailedMemory = false
 
     private fun doNothing(){}
 
@@ -161,8 +160,8 @@ class XmbView @JvmOverloads constructor(
         widgets.statusBar.dateTimeFormat =
             pref.get(PrefEntry.DISPLAY_STATUS_BAR_FORMAT, widgets.statusBar.dateTimeFormat)
         screens.gameBoot.defaultSkip = pref.get(PrefEntry.SKIP_GAMEBOOT, 0) != 0
-        vsh.showLauncherFPS = pref.get(PrefEntry.SHOW_LAUNCHER_FPS, 0) != 0
-        showDetailedMemory = pref.get(PrefEntry.SHOW_DETAILED_MEMORY, 0) != 0
+        widgets.debugInfo.showLauncherFPS = pref.get(PrefEntry.SHOW_LAUNCHER_FPS, 0) != 0
+        widgets.debugInfo.showDetailedMemory = pref.get(PrefEntry.SHOW_DETAILED_MEMORY, 0) != 0
     }
 
     init {

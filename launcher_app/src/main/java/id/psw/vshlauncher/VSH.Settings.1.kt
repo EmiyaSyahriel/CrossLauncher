@@ -132,11 +132,15 @@ private fun Vsh.createCategorySystem() : XmbSettingsCategory{
                 R.string.settings_system_show_fps_desc,
                 R.drawable.category_setting,
                 {
-                    showLauncherFPS.select(vsh.getString(R.string.common_yes),vsh.getString(R.string.common_no))
+                    val strId =  xmbView?.widgets?.debugInfo?.showLauncherFPS?.select(R.string.common_yes,R.string.common_no) ?: R.string.unknown
+                    vsh.getString(strId)
                 }
             ){
-                showLauncherFPS = !showLauncherFPS
-                M.pref.set(PrefEntry.SHOW_LAUNCHER_FPS, showLauncherFPS.select(1,0))
+                if(haveXmbView){
+                    val w = safeXmbView.widgets.debugInfo
+                    w.showLauncherFPS = !w.showLauncherFPS
+                    M.pref.set(PrefEntry.SHOW_LAUNCHER_FPS, w.showLauncherFPS.select(1,0))
+                }
             }
         )
 
@@ -146,11 +150,15 @@ private fun Vsh.createCategorySystem() : XmbSettingsCategory{
                 R.string.settings_system_detailed_mem_desc,
                 R.drawable.icon_device_info,
                 {
-                    (xmbView?.showDetailedMemory ?: false).select(vsh.getString(R.string.common_yes),vsh.getString(R.string.common_no))
+                    val strId = xmbView?.widgets?.debugInfo?.showDetailedMemory?.select(R.string.common_yes,R.string.common_no) ?: R.string.unknown
+                    vsh.getString(strId)
                 }
             ){
-                xmbView?.showDetailedMemory = xmbView?.showDetailedMemory != true
-                M.pref.set(PrefEntry.SHOW_DETAILED_MEMORY, (xmbView?.showDetailedMemory == true).select(1,0))
+                if(haveXmbView){
+                    val w = safeXmbView.widgets.debugInfo
+                    w.showDetailedMemory = !w.showDetailedMemory
+                    M.pref.set(PrefEntry.SHOW_DETAILED_MEMORY, w.showDetailedMemory.select(1,0))
+                }
             }
         )
 

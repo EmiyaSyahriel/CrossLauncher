@@ -108,7 +108,6 @@ class Vsh : Application() {
 
     val hoveredItem : XmbItem? get() = items?.find { it.id == selectedItemId }
     private var _waveShouldRefresh = false
-    var showLauncherFPS = true
     var waveShouldReReadPreferences : Boolean get() {
         val r = _waveShouldRefresh
         _waveShouldRefresh = false
@@ -143,7 +142,6 @@ class Vsh : Application() {
 
     private fun reloadPreference() {
         setActiveLocale(readSerializedLocale(M.pref.get(PrefEntry.SYSTEM_LANGUAGE, "")))
-        showLauncherFPS = M.pref.get(PrefEntry.SHOW_LAUNCHER_FPS, 0) == 1
         CifLoader.disableAnimatedIcon = M.pref.get(PrefEntry.DISABLE_VIDEO_ICON, 0) != 0
         val o = M.pref.get(PrefEntry.SYSTEM_VISIBLE_APP_DESC, XmbAppItem.DescriptionDisplay.PackageName.ordinal)
         XmbAppItem.descriptionDisplay = enumFromInt(o)

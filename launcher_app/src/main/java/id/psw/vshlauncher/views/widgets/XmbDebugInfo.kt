@@ -6,6 +6,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Debug
+import id.psw.vshlauncher.PrefEntry
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.XmbWidget
@@ -27,6 +28,10 @@ class XmbDebugInfo(view: XmbView) : XmbWidget(view) {
     var showDetailedMemory = false
     var showLauncherFPS = false
 
+    init {
+        showLauncherFPS = M.pref.get(PrefEntry.SHOW_LAUNCHER_FPS, 0) == 1
+    }
+
     private fun memFmt(name:String, vararg names:Int) : String {
         memFmtSb.clear()
         memFmtSb.append(name).append(" - ")
@@ -45,7 +50,7 @@ class XmbDebugInfo(view: XmbView) : XmbWidget(view) {
     }
 
     override fun render(ctx: Canvas) {
-        if(showLauncherFPS) return
+        if(!showLauncherFPS) return
         val fps = (1.0f / time.deltaTime).roundToInt()
         val fpsTxt = "[FPS] $fps FPS | ${(time.deltaTime * 1000).roundToInt()} ms"
         dummyPaint.color = Color.GREEN
