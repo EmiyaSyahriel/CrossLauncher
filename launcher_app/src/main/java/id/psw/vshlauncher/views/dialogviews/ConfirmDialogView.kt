@@ -1,17 +1,16 @@
 package id.psw.vshlauncher.views.dialogviews
 
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import id.psw.vshlauncher.R
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.makeTextPaint
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
+import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.wrapText
 
-class ConfirmDialogView(val vsh: VSH, override val title: String, val iconId:Int = 0, val text:String, private val onChange : (Boolean) -> Unit) : XmbDialogSubview(vsh) {
+class ConfirmDialogView(v: XmbView, override val title: String, val iconId:Int = 0, val text:String, private val onChange : (Boolean) -> Unit) : XmbDialogSubview(v) {
 
     override val hasPositiveButton: Boolean
         get() = true
@@ -27,7 +26,7 @@ class ConfirmDialogView(val vsh: VSH, override val title: String, val iconId:Int
 
     override fun onDialogButton(isPositive: Boolean) {
         onChange(isPositive)
-        finish(VshViewPage.MainMenu)
+        finish(view.screens.mainMenu)
     }
 
     private lateinit var paint : Paint

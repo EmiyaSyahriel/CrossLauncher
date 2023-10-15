@@ -4,12 +4,10 @@ package id.psw.vshlauncher
 
 import android.content.Context
 import android.content.res.Configuration
-import android.os.Build
-import android.os.LocaleList
 import androidx.annotation.StringRes
 import java.util.*
 
-val VSH.supportedLocaleList: ArrayList<Locale?>
+val Vsh.supportedLocaleList: ArrayList<Locale?>
     get() = arrayListOf(
         null,
         Locale("en"),
@@ -22,17 +20,17 @@ val VSH.supportedLocaleList: ArrayList<Locale?>
         Locale("jv","ID","jvlmalang"),
     )
 
-fun VSH.createLocalizedContext(locale: Locale?) : Context {
+fun Vsh.createLocalizedContext(locale: Locale?) : Context {
     val cfg = Configuration(resources.configuration)
     cfg.setLocale(locale ?: Locale.getDefault())
     return createConfigurationContext(cfg)
 }
 
-fun VSH.getStringLocale(locale: Locale?, @StringRes resId: Int) : String {
+fun Vsh.getStringLocale(locale: Locale?, @StringRes resId: Int) : String {
     return createLocalizedContext(locale).getText(resId).toString()
 }
 
-fun VSH.setActiveLocale(locale:Locale?){
+fun Vsh.setActiveLocale(locale:Locale?){
     val cfg = Configuration(resources.configuration)
     if(locale != null){
         cfg.setLocale(locale)
@@ -44,6 +42,6 @@ fun VSH.setActiveLocale(locale:Locale?){
     M.pref.set(PrefEntry.SYSTEM_LANGUAGE, createSerializedLocale(locale))
 }
 
-fun VSH.getStringLocale(locale:Locale, @StringRes resId:Int, vararg fmt:Any) : String {
+fun Vsh.getStringLocale(locale:Locale, @StringRes resId:Int, vararg fmt:Any) : String {
     return String.format(createLocalizedContext(locale).getText(resId).toString(), fmt)
 }

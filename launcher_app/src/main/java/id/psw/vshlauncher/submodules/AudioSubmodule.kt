@@ -6,15 +6,15 @@ import android.media.MediaPlayer
 import android.media.SoundPool
 import id.psw.vshlauncher.Logger
 import id.psw.vshlauncher.PrefEntry
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.VshBaseDirs
 import id.psw.vshlauncher.sdkAtLeast
 import id.psw.vshlauncher.types.FileQuery
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 import java.io.File
 import java.lang.Exception
 
-class AudioSubmodule(private val ctx : VSH) : IVshSubmodule {
+class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
     companion object {
         private const val TAG = "vsh_audio"
     }
@@ -127,17 +127,17 @@ class AudioSubmodule(private val ctx : VSH) : IVshSubmodule {
 
     fun preparePlaceholderAudio(){
         ctx.assets.open("silent.aac").use { ins ->
-            val bArray = ByteArray(VSH.COPY_DATA_SIZE_BUFFER)
+            val bArray = ByteArray(Vsh.COPY_DATA_SIZE_BUFFER)
             val file = File.createTempFile("silent",".aac")
             file.deleteOnExit()
             file.outputStream().use { outs ->
-                var readSize = ins.read(bArray, 0, VSH.COPY_DATA_SIZE_BUFFER)
+                var readSize = ins.read(bArray, 0, Vsh.COPY_DATA_SIZE_BUFFER)
                 while(readSize > 0){
                     outs.write(bArray, 0, readSize)
-                    readSize = ins.read(bArray, 0, VSH.COPY_DATA_SIZE_BUFFER)
+                    readSize = ins.read(bArray, 0, Vsh.COPY_DATA_SIZE_BUFFER)
                 }
             }
-            XMBItem.SILENT_AUDIO = file
+            XmbItem.SILENT_AUDIO = file
             bgmPlayerActiveSrc = file
         }
     }
@@ -161,19 +161,19 @@ class AudioSubmodule(private val ctx : VSH) : IVshSubmodule {
                 bgmPlayer.setDataSource(newSrc.absolutePath)
                 bgmPlayer.prepareAsync()
                 bgmPlayerDoNotAutoPlay = doNotStart
-                Logger.d(VSH.TAG, "Changing BGM Player Source to ${newSrc.absolutePath}")
+                Logger.d(Vsh.TAG, "Changing BGM Player Source to ${newSrc.absolutePath}")
             }catch(e: Exception){
-                Logger.e(VSH.TAG, "BGM Player Failed : ${e.message}")
+                Logger.e(Vsh.TAG, "BGM Player Failed : ${e.message}")
                 e.printStackTrace()
             }
         }
     }
 
     fun removeAudioSource(){
-        if(bgmPlayerActiveSrc != XMBItem.SILENT_AUDIO){
+        if(bgmPlayerActiveSrc != XmbItem.SILENT_AUDIO){
             if(bgmPlayer.isPlaying) bgmPlayer.stop()
             bgmPlayer.reset()
-            bgmPlayerActiveSrc = XMBItem.SILENT_AUDIO
+            bgmPlayerActiveSrc = XmbItem.SILENT_AUDIO
         }
     }
 

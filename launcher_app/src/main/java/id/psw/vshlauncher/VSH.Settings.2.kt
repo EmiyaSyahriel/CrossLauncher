@@ -10,14 +10,12 @@ import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
 import id.psw.vshlauncher.livewallpaper.XMBWaveSettingSubDialog
 import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
 import id.psw.vshlauncher.livewallpaper.XMBWaveWallpaperService
-import id.psw.vshlauncher.types.XMBItem
-import id.psw.vshlauncher.types.items.XMBMenuItem
-import id.psw.vshlauncher.types.items.XMBSettingsCategory
-import id.psw.vshlauncher.types.items.XMBSettingsItem
-import id.psw.vshlauncher.views.VshViewPage
+import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.types.items.XmbMenuItem
+import id.psw.vshlauncher.types.items.XmbSettingsCategory
+import id.psw.vshlauncher.types.items.XmbSettingsItem
 import id.psw.vshlauncher.views.dialogviews.LegacyIconBackgroundDialogView
 import id.psw.vshlauncher.views.dialogviews.TextDialogView
-import id.psw.vshlauncher.views.showDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -25,38 +23,39 @@ import kotlinx.coroutines.withContext
 
 
 private var settingWaveCurrentWaveStyle = XMBWaveRenderer.WAVE_TYPE_PS3_NORMAL
-private fun VSH.updateWaveConfig(){
+private fun Vsh.updateWaveConfig(){
     getSharedPreferences(XMBWaveSurfaceView.PREF_NAME, Context.MODE_PRIVATE).edit(false) {
         putInt(XMBWaveSurfaceView.KEY_STYLE, settingWaveCurrentWaveStyle.toInt())
     }
     waveShouldReReadPreferences = true
 }
 
-private fun VSH.readWaveConfig(){
+private fun Vsh.readWaveConfig(){
     getSharedPreferences(XMBWaveSurfaceView.PREF_NAME, Context.MODE_PRIVATE).apply {
         settingWaveCurrentWaveStyle = getInt(XMBWaveSurfaceView.KEY_STYLE, XMBWaveRenderer.WAVE_TYPE_PSP.toInt()).toByte()
     }
 }
 
-private fun VSH.setWaveStyle(s:Byte){
+private fun Vsh.setWaveStyle(s:Byte){
     settingWaveCurrentWaveStyle = s
     updateWaveConfig()
 }
 
-fun VSH.showXMBLiveWallpaperWizard(){
-    xmbView?.showDialog(XMBWaveSettingSubDialog(vsh))
+fun Vsh.showXMBLiveWallpaperWizard(){
+    val xv = xmbView
+    xv?.showDialog(XMBWaveSettingSubDialog(xv))
 }
 
 @SuppressLint("ApplySharedPref")
-fun VSH.createCategoryWaveSetting(): XMBSettingsCategory {
+fun Vsh.createCategoryWaveSetting(): XmbSettingsCategory {
     val vsh = this
-    return XMBSettingsCategory(this,
+    return XmbSettingsCategory(this,
         SettingsCategoryID.CATEGORY_SETTINGS_WAVE,
         R.drawable.category_shortcut,
         R.string.title_activity_wave_wallpaper_setting,
         R.string.empty_string
     ).apply {
-        content.add(XMBSettingsItem(vsh, "settings_wave_set",
+        content.add(XmbSettingsItem(vsh, "settings_wave_set",
             R.string.settings_wave_set_name, R.string.settings_wave_set_desc,
             R.drawable.category_setting, {""}
         ){
@@ -77,14 +76,15 @@ fun VSH.createCategoryWaveSetting(): XMBSettingsCategory {
             }
         })
 
-        content.add(XMBSettingsItem(vsh, "settings_wave_make_internal",
+        content.add(XmbSettingsItem(vsh, "settings_wave_make_internal",
             R.string.settings_wave_make_internal_name, R.string.setting_wave_make_internal_desc,
             R.drawable.category_settings_display, {
                 getString(vsh.useInternalWave.select(R.string.common_yes, R.string.common_no))
             }
         ){
-            xmbView?.showDialog(
-                TextDialogView(vsh).setData(null, getString(R.string.common_reboot_required),
+            val xv = xmbView
+            xv?.showDialog(
+                TextDialogView(xv).setData(null, getString(R.string.common_reboot_required),
                     getString(R.string.settings_wave_apply_as_layer_dlg_text_main))
                     .setPositive(getString(R.string.common_reboot)){_ ->
                         // Commit instead of apply, allow the app to save the preference before restarting
@@ -98,14 +98,13 @@ fun VSH.createCategoryWaveSetting(): XMBSettingsCategory {
                                 vsh.restart()
                             }
                         }
-
                     }
-                    .setNegative(getString(android.R.string.cancel)){dlg -> dlg.finish(VshViewPage.MainMenu) }
+                    .setNegative(getString(android.R.string.cancel)){dlg -> dlg.finish(xv.screens.mainMenu) }
             )
         })
 
         content.add(
-            XMBSettingsItem(vsh, "settings_wave_theme",
+            XmbSettingsItem(vsh, "settings_wave_theme",
                 R.string.settings_wave_theme_name,
                 R.string.settings_wave_theme_desc,
                 R.drawable.category_setting, { "" }
@@ -117,28 +116,28 @@ fun VSH.createCategoryWaveSetting(): XMBSettingsCategory {
     }
 }
 
-fun VSH.settingsAddInstallPackage(): XMBItem {
-    val xi = XMBSettingsItem(this, "settings_install_package", R.string.settings_install_package, R.string.empty_string, R.drawable.ic_folder,{
+fun Vsh.settingsAddInstallPackage(): XmbItem {
+    val xi = XmbSettingsItem(this, "settings_install_package", R.string.settings_install_package, R.string.empty_string, R.drawable.ic_folder,{
         ""
     }){
         val i = Intent(Intent.ACTION_OPEN_DOCUMENT)
         i.type = "*/*"
         try{
-            xmbView?.context?.xmb?.startActivityForResult(Intent.createChooser(i, getString(R.string.settings_install_package)), VSH.ACT_REQ_INSTALL_PACKAGE)
+            xmbView?.context?.xmb?.startActivityForResult(Intent.createChooser(i, getString(R.string.settings_install_package)), Vsh.ACT_REQ_INSTALL_PACKAGE)
         }catch(e:Exception){}
 
     }
     return xi
 }
 
-fun VSH.setSysBarVisibility(i:Int){
+fun Vsh.setSysBarVisibility(i:Int){
     vsh.xmb.sysBarVisibility = i
     M.pref.set(PrefEntry.SYSTEM_STATUS_BAR, i)
     vsh.xmb.updateSystemBarVisibility()
 }
 
-fun VSH.settingsAddSystemSetting2(cat : XMBSettingsCategory){
-    cat.content.add(XMBSettingsItem(vsh, "settings_system_android_bar",
+fun Vsh.settingsAddSystemSetting2(cat : XmbSettingsCategory){
+    cat.content.add(XmbSettingsItem(vsh, "settings_system_android_bar",
         R.string.settings_system_android_bar_name,
         R.string.settings_system_android_bar_desc,
         R.drawable.icon_hidden,
@@ -161,23 +160,23 @@ fun VSH.settingsAddSystemSetting2(cat : XMBSettingsCategory){
         }
         setSysBarVisibility(i)
     }.apply {
-        val menu = arrayListOf<XMBMenuItem>()
+        val menu = arrayListOf<XmbMenuItem>()
         arrayListOf(
             R.string.system_bar_visible_all to SysBar.ALL,
             R.string.system_bar_visible_navigation to SysBar.NAVIGATION,
             R.string.system_bar_visible_status to SysBar.STATUS,
             R.string.system_bar_visible_none to SysBar.NONE
         ).forEachIndexed { i, it ->
-            menu.add(XMBMenuItem.XMBMenuItemLambda({ getString(it.first) }, { false }, i){
+            menu.add(XmbMenuItem.XmbMenuItemLambda({ getString(it.first) }, { false }, i){
                 setSysBarVisibility(it.second)
-                xmb.xmbView.state.itemMenu.isDisplayed = false
+                xmb.xmbView.widgets.sideMenu.isDisplayed = false
             })
         }
         menuItems = menu
         hasMenu = true
     })
 
-    cat.content.add(XMBSettingsItem(vsh, "settings_system_legacy_icon_bg", R.string.dlg_legacyicon_title, R.string.settings_system_legacy_icon_background_desc, R.drawable.icon_video_anim_icon, {
+    cat.content.add(XmbSettingsItem(vsh, "settings_system_legacy_icon_bg", R.string.dlg_legacyicon_title, R.string.settings_system_legacy_icon_background_desc, R.drawable.icon_video_anim_icon, {
         val mode = M.pref.get(PrefEntry.ICON_RENDERER_LEGACY_BACKGROUND, 0)
         vsh.getString(when(mode){
             1 -> R.string.common_enabled
@@ -185,6 +184,7 @@ fun VSH.settingsAddSystemSetting2(cat : XMBSettingsCategory){
             else -> R.string.common_disabled
         })
     }){
-        vsh.xmbView?.showDialog(LegacyIconBackgroundDialogView(vsh))
+        val xv = vsh.xmbView
+        xv?.showDialog(LegacyIconBackgroundDialogView(xv))
     })
 }

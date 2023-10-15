@@ -3,7 +3,6 @@ package id.psw.vshlauncher.typography
 import android.graphics.Typeface
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.types.FileQuery
-import java.nio.file.Files.exists
 
 object FontCollections {
     /**
@@ -35,7 +34,7 @@ object FontCollections {
     const val TAG = "fntmgr.self"
     private const val FONT_NAME = "VSH-CustomFont"
 
-    fun init(ctx: VSH){
+    fun init(ctx: Vsh){
         buttonFont = Typeface.createFromAsset(ctx.assets, "vshbtn.ttf")
         val ttf = FileQuery(VshBaseDirs.FLASH_DATA_DIR)
             .atPath("font")

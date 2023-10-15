@@ -39,8 +39,8 @@ object PrefEntry{
     const val DISPLAY_ORIENTATION = "/setting/display/0/orientation"
     /** Boolean, Show Detailed Memory */
     const val SHOW_DETAILED_MEMORY = "/crosslauncher/debug/showJvmMemory"
-    /** Boolean */
-    const val DISABLE_VIDEO_ICON = "/crosslauncher/menu/disableVideoIcon"
+    /** Int */
+    const val VIDEO_ICON_PLAY_MODE = "/crosslauncher/menu/videoIconPlayMode"
     /** Int */
     const val SYSTEM_VISIBLE_APP_DESC = "/crosslauncher/menu/visibleAppDesc"
     /** Boolean */

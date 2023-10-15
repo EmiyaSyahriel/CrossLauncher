@@ -6,8 +6,7 @@ import android.graphics.Rect
 import android.graphics.Typeface
 import android.text.TextPaint
 import androidx.annotation.StringRes
-import id.psw.vshlauncher.VSH
-import id.psw.vshlauncher.submodules.GamepadSubmodule
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.views.drawText
 import kotlin.collections.ArrayList
@@ -80,7 +79,7 @@ class MultifontSpan : ArrayList<MultifontText>() {
          * - `ps` = PS Button / Xbox Button / Home Button
          * - **OTHER** = Skipped
         */
-        fun createButtonMixedSpan(vsh:VSH, src:String) : MultifontSpan {
+        fun createButtonMixedSpan(vsh:Vsh, src:String) : MultifontSpan {
             val retval = MultifontSpan()
             src.parseEncapsulatedBracket().forEachIndexed { i, s ->
                 if(i % 2 == 0){
@@ -121,21 +120,21 @@ class MultifontSpan : ArrayList<MultifontText>() {
         this.add(MultifontText(font, text))
         return this
     }
-    fun add(vsh: VSH, k:PadKey) : MultifontSpan{
+    fun add(vsh: Vsh, k:PadKey) : MultifontSpan{
         this.add(MultifontText(FontCollections.buttonFont, vsh.M.gamepadUi.getGamepadChar(k).toString()))
         return this
     }
 }
 
-fun String.toButtonSpan(vsh:VSH) : MultifontSpan {
+fun String.toButtonSpan(vsh:Vsh) : MultifontSpan {
     return MultifontSpan.createButtonMixedSpan(vsh, this)
 }
 
-fun VSH.getButtonedString(@StringRes strId : Int) : MultifontSpan {
+fun Vsh.getButtonedString(@StringRes strId : Int) : MultifontSpan {
     return MultifontSpan.createButtonMixedSpan(this, this.getString(strId))
 }
 
-fun VSH.getButtonedString(@StringRes strId : Int, vararg fmt:Any) : MultifontSpan {
+fun Vsh.getButtonedString(@StringRes strId : Int, vararg fmt:Any) : MultifontSpan {
     return MultifontSpan.createButtonMixedSpan(this, this.getString(strId, *fmt))
 }
 

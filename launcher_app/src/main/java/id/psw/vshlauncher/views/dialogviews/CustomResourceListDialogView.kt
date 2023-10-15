@@ -7,11 +7,11 @@ import android.view.MotionEvent
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.SfxType
 import id.psw.vshlauncher.types.FileQuery
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
+import id.psw.vshlauncher.views.XmbView
 import java.io.File
 
-class CustomResourceListDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh) {
+class CustomResourceListDialogView(v: XmbView) : XmbDialogSubview(v) {
     private val totalScrollRectF = RectF()
     private var offsetScroll = 0.0f
     private val lastPointF = PointF()
@@ -61,6 +61,6 @@ class CustomResourceListDialogView(private val vsh: VSH) :  XmbDialogSubview(vsh
     }
 
     override fun onDialogButton(isPositive: Boolean) {
-        finish(VshViewPage.MainMenu)
+        finish(view.screens.mainMenu)
     }
 }

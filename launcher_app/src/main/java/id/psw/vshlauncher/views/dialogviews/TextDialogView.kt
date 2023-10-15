@@ -2,17 +2,15 @@ package id.psw.vshlauncher.views.dialogviews
 
 import android.graphics.*
 import android.text.TextPaint
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import id.psw.vshlauncher.VSH
 import id.psw.vshlauncher.select
-import id.psw.vshlauncher.types.XMBItem
+import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbDialogSubview
+import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.drawText
 import id.psw.vshlauncher.views.wrapText
 
-class TextDialogView(vsh: VSH) : XmbDialogSubview(vsh) {
+class TextDialogView(v: XmbView) : XmbDialogSubview(v) {
     override var hasNegativeButton: Boolean = true
     override var hasPositiveButton: Boolean = true
     private val textPaint = TextPaint(TextPaint.ANTI_ALIAS_FLAG).apply {
@@ -25,7 +23,7 @@ class TextDialogView(vsh: VSH) : XmbDialogSubview(vsh) {
     var onPositiveButton : ((TextDialogView) -> Unit)? = null
     var onNegativeButton : ((TextDialogView) -> Unit)? = null
 
-    override var icon: Bitmap = XMBItem.TRANSPARENT_BITMAP
+    override var icon: Bitmap = XmbItem.TRANSPARENT_BITMAP
     override var title: String = "Dialog"
 
     var content = ""
@@ -65,7 +63,7 @@ class TextDialogView(vsh: VSH) : XmbDialogSubview(vsh) {
         return this
     }
     fun setData(icon:Bitmap?, title:String, content:String): TextDialogView {
-        this.icon = icon?: XMBItem.TRANSPARENT_BITMAP
+        this.icon = icon?: XmbItem.TRANSPARENT_BITMAP
         this.title = title
         this.content = content
         return this

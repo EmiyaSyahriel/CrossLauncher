@@ -6,14 +6,14 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.Build
 import android.util.Log
-import id.psw.vshlauncher.types.items.XMBAppItem
-import id.psw.vshlauncher.types.items.XMBItemCategory
+import id.psw.vshlauncher.types.items.XmbAppItem
+import id.psw.vshlauncher.types.items.XmbItemCategory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private const val TAG = "GameCustomMigrate"
-fun VSH.isAGame(rInfo: ResolveInfo): Boolean {
+fun Vsh.isAGame(rInfo: ResolveInfo): Boolean {
     val appInfo = packageManager.getApplicationInfo(rInfo.activityInfo.packageName, 0)
     var retval = false
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -25,7 +25,7 @@ fun VSH.isAGame(rInfo: ResolveInfo): Boolean {
     return retval
 }
 
-fun VSH.appCategorySorting(it: XMBItemCategory) {
+fun Vsh.appCategorySorting(it: XmbItemCategory) {
     val newSort = when(it.getProperty(Consts.XMB_KEY_APP_SORT_MODE, AppItemSorting.FileSize)){
             AppItemSorting.Name -> AppItemSorting.PackageName
             AppItemSorting.PackageName -> AppItemSorting.FileSize
@@ -36,10 +36,10 @@ fun VSH.appCategorySorting(it: XMBItemCategory) {
     it.setProperty(Consts.XMB_KEY_APP_SORT_MODE, newSort)
 }
 
-fun VSH.appCategorySetSorting(it:XMBItemCategory, newSort:Any){
+fun Vsh.appCategorySetSorting(it:XmbItemCategory, newSort:Any){
     if(newSort is AppItemSorting){
         it.content.sortBy { item ->
-            if(item is XMBAppItem){
+            if(item is XmbAppItem){
                 when(newSort){
                     AppItemSorting.Name -> item.displayName
                     AppItemSorting.UpdateTime -> item.sortUpdateTime
@@ -55,7 +55,7 @@ fun VSH.appCategorySetSorting(it:XMBItemCategory, newSort:Any){
     }
 }
 
-fun VSH.appCategorySortingName(it : XMBItemCategory) : String{
+fun Vsh.appCategorySortingName(it : XmbItemCategory) : String{
     return when(it.getProperty(Consts.XMB_KEY_APP_SORT_MODE, AppItemSorting.Name)){
         AppItemSorting.Name -> vsh.getString(R.string.app_sorting_name)
         AppItemSorting.UpdateTime -> vsh.getString(R.string.app_sorting_updtime)
@@ -64,7 +64,7 @@ fun VSH.appCategorySortingName(it : XMBItemCategory) : String{
     }
 }
 
-fun VSH.tryMigrateOldGameDirectory(){
+fun Vsh.tryMigrateOldGameDirectory(){
     if(!runtimeTriageCheck(TAG)) return
 
     val storages = getExternalFilesDirs(null)
@@ -90,19 +90,20 @@ fun VSH.tryMigrateOldGameDirectory(){
     }
 }
 
-fun VSH.reloadAppList(){
+fun Vsh.reloadAppList(){
     vsh.lifeScope.launch {
         withContext(Dispatchers.Main){
-            XMBAppItem.showHiddenByConfig = false
-            val gameCat = categories.find {it.id == VSH.ITEM_CATEGORY_GAME }
+            XmbAppItem.showHiddenByConfig = false
+
+            val gameCat = categories.find {it.id == Vsh.ITEM_CATEGORY_GAME }
             if(gameCat != null){
                 synchronized(gameCat){
-                    gameCat.onSetSortFunc = { it, sort ->  appCategorySetSorting(it, sort) }
+                    gameCat.onSetSortFunc = { it, sort -> appCategorySetSorting(it, sort) }
                     gameCat.onSwitchSortFunc = { appCategorySorting(it) }
                     gameCat.getSortModeNameFunc = { appCategorySortingName(it) }
                 }
             }
-            val appCat = categories.find{ it.id == VSH.ITEM_CATEGORY_APPS }
+            val appCat = categories.find{ it.id == Vsh.ITEM_CATEGORY_APPS }
             if(appCat != null){
                 synchronized(appCat){
                     appCat.onSetSortFunc = { it, sort -> appCategorySetSorting(it, sort) }
@@ -120,10 +121,18 @@ fun VSH.reloadAppList(){
                 @Suppress("DEPRECATION") // API Below TIRAMISU
                 packageManager.queryIntentActivities(intent, 0)
             }.forEach {
-                val item = XMBAppItem(vsh, it)
-                val isGame = isAGame(it)
-                addToCategory(isGame.select(VSH.ITEM_CATEGORY_GAME, VSH.ITEM_CATEGORY_APPS), item)
-                isGame.select(gameCat, appCat)?.setSort(AppItemSorting.Name)
+                val item = XmbAppItem(vsh, it)
+                allAppEntries.add(item)
+                val cat = categories.find { cc -> cc.id == item.appCategory }
+                if(cat == null) {
+                    val isGame = isAGame(it)
+                    addToCategory(isGame.select(Vsh.ITEM_CATEGORY_GAME, Vsh.ITEM_CATEGORY_APPS), item)
+                    isGame.select(gameCat, appCat)?.setSort(AppItemSorting.Name)
+                } else {
+                    addToCategory(cat.id, item)
+                    if(cat.id == Vsh.ITEM_CATEGORY_APPS) appCat?.setSort(AppItemSorting.Name)
+                    if(cat.id == Vsh.ITEM_CATEGORY_GAME) gameCat?.setSort(AppItemSorting.Name)
+                }
             }
 
             setLoadingFinished(lh)

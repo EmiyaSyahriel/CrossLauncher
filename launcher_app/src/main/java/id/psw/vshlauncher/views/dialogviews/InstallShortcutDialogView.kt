@@ -7,17 +7,17 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.types.FileQuery
-import id.psw.vshlauncher.types.XMBItem
-import id.psw.vshlauncher.types.XMBShortcutInfo
+import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.types.XmbShortcutInfo
 import id.psw.vshlauncher.typography.FontCollections
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
+import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.drawBitmap
 import id.psw.vshlauncher.views.drawText
 import java.io.File
 import kotlin.random.Random
 
-class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent) : XmbDialogSubview(vsh) {
+class InstallShortcutDialogView(v: XmbView, private val intent: Intent) : XmbDialogSubview(v) {
     companion object {
         private val rng = Random(System.nanoTime())
     }
@@ -30,9 +30,9 @@ class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent
     override val negativeButton: String = vsh.getString(android.R.string.cancel)
     override val positiveButton: String = vsh.getString(R.string.common_install)
 
-    override val icon: Bitmap = ResourcesCompat.getDrawable(vsh.resources, R.drawable.category_shortcut, null)?.toBitmap(50,50) ?: XMBItem.WHITE_BITMAP
+    override val icon: Bitmap = ResourcesCompat.getDrawable(vsh.resources, R.drawable.category_shortcut, null)?.toBitmap(50,50) ?: XmbItem.WHITE_BITMAP
 
-    private val shortcut = XMBShortcutInfo(vsh, intent)
+    private val shortcut = XmbShortcutInfo(vsh, intent)
 
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         typeface = FontCollections.masterFont
@@ -42,7 +42,7 @@ class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent
 
 
     override fun onClose() {
-        if(icon != XMBItem.WHITE_BITMAP){
+        if(icon != XmbItem.WHITE_BITMAP){
             icon.recycle()
         }
     }
@@ -97,7 +97,7 @@ class InstallShortcutDialogView(private val vsh: VSH, private val intent: Intent
                 vsh.reloadShortcutList()
             }
         }
-        finish(VshViewPage.MainMenu)
+        finish(view.screens.mainMenu)
     }
 
     private val tmpRectF = RectF()

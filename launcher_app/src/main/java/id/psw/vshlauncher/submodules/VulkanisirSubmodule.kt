@@ -1,7 +1,5 @@
 package id.psw.vshlauncher.submodules
 
-import id.psw.vshlauncher.VSH
-
 object VulkanisirSubmodule {
     init{
         System.loadLibrary("vulkanisir")

@@ -3,9 +3,9 @@ package id.psw.vshlauncher
 import android.content.Context
 import android.content.pm.LauncherApps
 import android.os.Build
-import id.psw.vshlauncher.VSH.Companion.ITEM_CATEGORY_SHORTCUT
+import id.psw.vshlauncher.Vsh.Companion.ITEM_CATEGORY_SHORTCUT
 import id.psw.vshlauncher.types.FileQuery
-import id.psw.vshlauncher.types.items.XMBShortcutItem
+import id.psw.vshlauncher.types.items.XmbShortcutItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,7 +20,7 @@ import java.io.File
  *
  * Shortcut uses same customization directory structure as Apps
  */
-fun VSH.reloadShortcutList(){
+fun Vsh.reloadShortcutList(){
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         Logger.d("SHORTCUT", "Getting shortcuts...")
         val apl = getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
@@ -54,7 +54,7 @@ fun VSH.reloadShortcutList(){
                     for(sc in scDirs){
                         val ini = File(sc, "SHORTCUT.INI")
                         if(ini.exists() || ini.isFile){
-                            val app = XMBShortcutItem(vsh, ini)
+                            val app = XmbShortcutItem(vsh, ini)
                             addToCategory(ITEM_CATEGORY_SHORTCUT, app)
                         }
                     }

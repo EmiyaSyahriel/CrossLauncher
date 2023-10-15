@@ -1,27 +1,24 @@
 package id.psw.vshlauncher.views.dialogviews
 
-import android.app.ProgressDialog.show
 import android.graphics.*
-import android.os.Build
 import android.text.TextPaint
 import android.view.MotionEvent
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.minus
 import androidx.core.graphics.withRotation
 import id.psw.vshlauncher.*
-import id.psw.vshlauncher.submodules.GamepadSubmodule
 import id.psw.vshlauncher.submodules.PadKey
-import id.psw.vshlauncher.types.XMBItem
-import id.psw.vshlauncher.types.items.XMBAppItem
+import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.types.items.XmbAppItem
+import id.psw.vshlauncher.types.items.XmbMenuItem
 import id.psw.vshlauncher.typography.FontCollections
-import id.psw.vshlauncher.views.VshViewPage
 import id.psw.vshlauncher.views.XmbDialogSubview
+import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.drawBitmap
 import id.psw.vshlauncher.views.nativedlg.NativeEditTextDialog
 import kotlin.math.abs
 
-class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : XmbDialogSubview(vsh) {
+class AppInfoDialogView(v: XmbView, private val app : XmbAppItem) : XmbDialogSubview(v) {
     companion object {
         const val POS_NAME = 0
         const val POS_DESC = 2
@@ -51,6 +48,14 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
         typeface = FontCollections.masterFont
     }
 
+    private val categoryMaps = mapOf (
+        "" to R.string.common_default,
+        Vsh.ITEM_CATEGORY_APPS to R.string.category_apps,
+        Vsh.ITEM_CATEGORY_GAME to R.string.category_games,
+        Vsh.ITEM_CATEGORY_PHOTO to R.string.category_photo,
+        Vsh.ITEM_CATEGORY_VIDEO to R.string.category_videos,
+        Vsh.ITEM_CATEGORY_MUSIC to R.string.category_music
+    )
     private var iconPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var rectPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply{
         color = Color.WHITE
@@ -64,8 +69,13 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
         get() = _icon
 
     override fun onClose() {
-        if(_icon != XMBItem.WHITE_BITMAP)  _icon.recycle()
-        if(loadIcon != XMBItem.WHITE_BITMAP)  loadIcon.recycle()
+        if(_icon != XmbItem.WHITE_BITMAP)  _icon.recycle()
+        if(loadIcon != XmbItem.WHITE_BITMAP)  loadIcon.recycle()
+
+        // Move the icon to other category
+        if(originalCategory != app.appCategory){
+            vsh.swapCategory(app.id, originalCategory, app.appCategory)
+        }
     }
 
     override val negativeButton: String
@@ -74,21 +84,24 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
     override val positiveButton: String
         get() = when(cursorPos) {
             3 -> vsh.getString(R.string.common_toggle)
+            4 -> vsh.getString(R.string.common_change)
             5 -> vsh.getString(R.string.category_settings)
             else -> vsh.getString(R.string.common_edit)
         }
 
+    private var originalCategory = app.appCategory
+
     override fun onStart() {
-        loadIcon = ResourcesCompat.getDrawable(vsh.resources,R.drawable.ic_sync_loading,null)?.toBitmap(256,256) ?: XMBItem.WHITE_BITMAP
+        loadIcon = ResourcesCompat.getDrawable(vsh.resources,R.drawable.ic_sync_loading,null)?.toBitmap(256,256) ?: XmbItem.WHITE_BITMAP
         super.onStart()
     }
 
     private fun drawLoading(ctx:Canvas){
         val time = vsh.xmbView?.time?.currentTime ?: (System.currentTimeMillis() / 1000.0f)
-            ctx.withRotation(
-                ((time + 0.375f) * -360.0f) % 360.0f, bmpRectF.centerX(), bmpRectF.centerY()) {
-                ctx.drawBitmap(loadIcon, null, bmpRectF, iconPaint, FittingMode.FIT, 0.5f, 0.5f)
-            }
+        ctx.withRotation(
+            ((time + 0.375f) * -360.0f) % 360.0f, bmpRectF.centerX(), bmpRectF.centerY()) {
+            ctx.drawBitmap(loadIcon, null, bmpRectF, iconPaint, FittingMode.FIT, 0.5f, 0.5f)
+        }
 
     }
 
@@ -145,13 +158,13 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
         val cX = drawBound.centerX() - 100.0f
 
         var i = 0
-        mapOf<Int, String>(
+        mapOf(
             R.string.dlg_info_name to app.displayName,
             R.string.dlg_info_pkg_name to app.packageName,
             R.string.dlg_info_desc to app.appCustomDesc.ifEmpty { "-" },
             R.string.dlg_info_album to app.appAlbum.ifEmpty { "-" },
             R.string.dlg_info_hidden to vsh.getString(app.isHiddenByCfg.select(R.string.common_yes, R.string.common_no)),
-            R.string.dlg_info_category to app.appCategory.ifEmpty { "-" },
+            R.string.dlg_info_category to getCategoryDisplay(app.appCategory),
             R.string.dlg_info_update to app.displayUpdateTime,
             R.string.dlg_info_apk_size to app.fileSize,
             R.string.dlg_info_version to app.version
@@ -159,7 +172,7 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
             tPaint.textAlign = Paint.Align.RIGHT
             ctx.drawText(vsh.getString(l.key), cX, sY, tPaint)
             val str = l.value
-
+            cursorPos = cursorPos.coerceIn(0, validSelections.size - 1)
             val isSelected = validSelections[cursorPos] == i
 
             if(isSelected){
@@ -182,6 +195,13 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
             ctx.drawRoundRect(selRectF, 5.0f, 5.0f, rectPaint)
         }
         ctx.drawText(vsh.getString(R.string.app_info_by_system), drawBound.centerX(), sY + 20.0f, tPaint)
+    }
+
+    private fun getCategoryDisplay(appCategory: String): String {
+        if(categoryMaps.containsKey(appCategory)){
+            return vsh.getString(categoryMaps[appCategory] ?: R.string.empty_string)
+        }
+        return appCategory.ifEmpty { "-" }
     }
 
     override fun onGamepad(key: PadKey, isPress: Boolean): Boolean {
@@ -278,13 +298,17 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
                 }
                 4 -> {
                     // Set Category
-                    NativeEditTextDialog(vsh)
-                        .setTitle(vsh.getString(R.string.dlg_info_album))
-                        .setOnFinish {
-                            app.appCategory = it
-                        }
-                        .setValue(app.appCategory)
-                        .show()
+                    val menus = arrayListOf<XmbMenuItem>()
+                    var i  = 0
+                    categoryMaps.forEach {
+                        menus.add(XmbMenuItem.XmbMenuItemLambda(
+                            {vsh.getString(it.value)}, {false}, i++)
+                        {
+                            app.appCategory = it.key
+                        })
+                    }
+                    view.widgets.sideMenu.show(menus)
+                    view.widgets.sideMenu.selectedIndex = 0
                 }
                 5 -> {
                     // Show in Android
@@ -293,6 +317,6 @@ class AppInfoDialogView(private val vsh: VSH, private val app : XMBAppItem) : Xm
             }
         }
 
-        if(!isPositive) finish(VshViewPage.MainMenu)
+        if(!isPositive) finish(view.screens.mainMenu)
     }
 }

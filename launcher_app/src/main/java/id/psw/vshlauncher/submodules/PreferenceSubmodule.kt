@@ -3,7 +3,7 @@ package id.psw.vshlauncher.submodules
 import android.content.Context
 import android.content.SharedPreferences
 import id.psw.vshlauncher.Logger
-import id.psw.vshlauncher.VSH
+import id.psw.vshlauncher.Vsh
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 
 typealias PreferenceChangeCallback = (key:String, isNew:Boolean, prevValue:Any, newValue:Any) -> Unit
 
-class PreferenceSubmodule(private val ctx: VSH) : IVshSubmodule {
+class PreferenceSubmodule(private val ctx: Vsh) : IVshSubmodule {
     companion object {
         private const val PREF_NAME = "xRegistry.sys"
         private const val PREF_PUSH_CHECK_EVERY = 30L

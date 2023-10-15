@@ -8,7 +8,6 @@ import android.text.TextPaint
 import androidx.annotation.ColorInt
 import id.psw.vshlauncher.typography.FontCollections
 import java.io.File
-import java.lang.StringBuilder
 
 object VshBaseDirs {
     const val VSH_RESOURCES_DIR = "dev_flash/vsh/resource"
@@ -22,8 +21,8 @@ object VshBaseDirs {
 }
 
 object VshResName {
-    const val COLDBOOT = "coldboot"
-    const val GAMEBOOT = "gameboot"
+    val COLDBOOT = arrayOf("coldboot", "COLDBOOT")
+    val GAMEBOOT = arrayOf("gameboot", "GAMEBOOT")
     const val APP_ICON = "ICON0"
     const val APP_ANIM_ICON = "ICON1"
 }
@@ -38,11 +37,11 @@ object VshResTypes {
 val ActivityInfo.uniqueActivityName get() = "${processName}_${name.removeSimilarPrefixes(processName)}"
 val ResolveInfo.uniqueActivityName get() = activityInfo.uniqueActivityName
 
-val VSH.allCacheDirs : Array<File> get() {
+val Vsh.allCacheDirs : Array<File> get() {
     return arrayOf(cacheDir, *externalCacheDirs)
 }
 
-fun VSH.makeTextPaint(
+fun Vsh.makeTextPaint(
     size: Float = 12.0f,
     align: Paint.Align = Paint.Align.LEFT,
     @ColorInt color : Int = Color.WHITE,
@@ -82,7 +81,7 @@ fun String.removeSimilarPrefixes(b:String) : String{
  * mounts the emulated internal storage to "/mnt/media" (or something similar) instead of to
  * "/storage/emulated/{user_index}", this is useless.
  */
-fun VSH.getUserIdPath() : String {
+fun Vsh.getUserIdPath() : String {
     return "00000000"
 }
 

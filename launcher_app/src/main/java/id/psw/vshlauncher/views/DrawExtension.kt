@@ -65,7 +65,7 @@ object DrawExtension {
         }
     }
 
-    fun init(vsh: VSH){
+    fun init(vsh: Vsh){
         texProgressBar = vsh.loadTexture(R.drawable.miptex_progressbar, "progress_bar", false)
 
         texGlowEdge = vsh.loadTexture(R.drawable.miptex_gradient_border_128, "glow_edge", 120, 120, false)
@@ -153,7 +153,7 @@ object DrawExtension {
     private val editorGaugeRect = RectF()
     private val editorGaugeText = RectF()
 
-    fun editorGauge(vsh: VSH, ctx : Canvas, selected: Boolean, title: String, value:Float, displayValue:String, paint:Paint, kvpSeparateAt:Float, rect:RectF){
+    fun editorGauge(vsh: Vsh, ctx : Canvas, selected: Boolean, title: String, value:Float, displayValue:String, paint:Paint, kvpSeparateAt:Float, rect:RectF){
         val align =paint.textAlign
         editorGaugeText.set(rect.left, rect.top, kvpSeparateAt.toLerp(rect.left, rect.right) - 10.0f, rect.bottom)
         editorGaugeRect.set(kvpSeparateAt.toLerp(rect.left, rect.right) + 30.0f, rect.top, rect.right, rect.bottom)
@@ -171,7 +171,7 @@ object DrawExtension {
         paint.textAlign = align
     }
 
-    fun editorCheckBox(vsh:VSH, ctx : Canvas, selected: Boolean, title: String, value:Boolean, paint:Paint, kvpSeparateAt:Float, rect:RectF){
+    fun editorCheckBox(vsh:Vsh, ctx : Canvas, selected: Boolean, title: String, value:Boolean, paint:Paint, kvpSeparateAt:Float, rect:RectF){
         val align =paint.textAlign
         editorGaugeText.set(rect.left, rect.top, kvpSeparateAt.toLerp(rect.left, rect.right) - 10.0f, rect.bottom)
         editorGaugeRect.set(kvpSeparateAt.toLerp(rect.left, rect.right) + 30.0f, rect.top, rect.right, rect.bottom)
@@ -188,7 +188,7 @@ object DrawExtension {
     }
 
     fun editorTextValues(
-        vsh: VSH,
+        vsh: Vsh,
         ctx: Canvas,
         selected: Boolean,
         title: String,

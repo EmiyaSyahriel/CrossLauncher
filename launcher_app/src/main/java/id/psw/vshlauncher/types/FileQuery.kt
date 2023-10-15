@@ -1,6 +1,7 @@
 package id.psw.vshlauncher.types
 
-import id.psw.vshlauncher.VSH
+import android.os.Build
+import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.select
 import java.io.File
 
@@ -62,7 +63,7 @@ class FileQuery {
         return this
     }
 
-    fun execute(vsh:VSH) : ArrayList<File>{
+    fun execute(vsh:Vsh) : ArrayList<File>{
         val files = arrayListOf<File>()
 
         val bStorages = arrayListOf<File>()
@@ -70,7 +71,16 @@ class FileQuery {
         if(isBaseAbsolute){
             bStorages.add(File(baseDir))
         }else{
-            val storages = vsh.getExternalFilesDirs(null)
+            val storages = arrayListOf<File>().apply {
+
+                // Add Android/data - Other app needs SAF to modify this app starting from Android 10
+                addAll(vsh.getExternalFilesDirs(null))
+
+                // Add Android/media - File managers are allowed to access without SAF
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    addAll(vsh.externalMediaDirs)
+                }
+            }
             for (storage in storages){
                 var baseFile = File(storage, baseDir)
                 for(path in paths){
