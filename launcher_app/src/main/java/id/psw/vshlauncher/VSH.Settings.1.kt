@@ -10,6 +10,7 @@ import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.submodules.PadType
 import id.psw.vshlauncher.submodules.XmbAdaptiveIconRenderer
 import id.psw.vshlauncher.types.CifLoader
+import id.psw.vshlauncher.types.VideoIconMode
 import id.psw.vshlauncher.types.items.*
 import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.dialogviews.*
@@ -263,25 +264,49 @@ private fun Vsh.createCategorySystem() : XmbSettingsCategory{
         }
         )
 
-
+        val kTypeVideoIconMode = mapOf(
+            VideoIconMode.Disabled to R.string.system_video_mode_disabled,
+            VideoIconMode.AllTime to R.string.system_video_mode_all_time,
+            VideoIconMode.SelectedOnly to R.string.system_video_mode_selected_only
+        )
         content.add(
-            XmbSettingsItem(vsh, "settings_system_disable_video_icon",
-                R.string.settings_system_disable_video_icon_name,
-                R.string.settings_system_disable_video_icon_desc,
+            XmbSettingsItem(vsh, "settings_system_video_icon_mode",
+                R.string.settings_system_video_icon_mode_name,
+                R.string.settings_system_video_icon_mode_desc,
                 R.drawable.category_video,
                 {
-                    getString(CifLoader.disableAnimatedIcon.select(R.string.common_yes, R.string.common_no))
+                    getString(kTypeVideoIconMode[CifLoader.videoIconMode] ?: R.string.unknown)
                 }
             ){
-                CifLoader.disableAnimatedIcon = !CifLoader.disableAnimatedIcon
+                CifLoader.videoIconMode = when(CifLoader.videoIconMode)
+                {
+                    VideoIconMode.Disabled -> VideoIconMode.AllTime
+                    VideoIconMode.AllTime -> VideoIconMode.SelectedOnly
+                    VideoIconMode.SelectedOnly -> VideoIconMode.Disabled
+                }
                 M.pref.set(
-                    PrefEntry.DISABLE_VIDEO_ICON,
-                    CifLoader.disableAnimatedIcon.select(1,0)
+                    PrefEntry.VIDEO_ICON_PLAY_MODE,
+                    VideoIconMode.toInt(CifLoader.videoIconMode)
                 )
+            }.apply {
+                hasMenu = true
+                val menu = arrayListOf<XmbMenuItem>()
+                var i = -(kTypeVideoIconMode.size / 2)
+                for((k, m) in kTypeVideoIconMode){
+                    menu.add(XmbMenuItem.XmbMenuItemLambda( { getString(m) }, {false}, i++){
+                        CifLoader.videoIconMode = k
+                        M.pref.set(
+                            PrefEntry.VIDEO_ICON_PLAY_MODE,
+                            VideoIconMode.toInt(CifLoader.videoIconMode)
+                        )
+                        vsh.xmbView?.showSideMenu(false)
+                    })
+                }
+                menuItems= menu
             }
         )
 
-        val kTypeAppDescKey = mapOf<XmbAppItem.DescriptionDisplay, Int>(
+        val kTypeAppDescKey = mapOf(
             XmbAppItem.DescriptionDisplay.None to R.string.settings_system_visible_desc_val_none,
             XmbAppItem.DescriptionDisplay.Date to R.string.settings_system_visible_desc_val_date,
             XmbAppItem.DescriptionDisplay.FileSize to R.string.settings_system_visible_desc_val_filesize,

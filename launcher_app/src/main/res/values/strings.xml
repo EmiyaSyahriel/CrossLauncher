@@ -405,14 +405,19 @@
   <string name="setting_license_desc">Show all open-source components used by this launcher</string>
   <string name="settings_system_prioritize_tv_intent_name">Prioritize TV Intent</string>
   <string name="settings_system_prioritize_tv_intent_desc">On TV, Launch TV/Leanback intent and fallback to phone if not found</string>
-    <string name="shortcut_launch">Launch</string>
+  <string name="shortcut_launch">Launch</string>
   <string name="shortcut_remove">Remove</string>
-    <string name="dlg_confirm_confirm">Confirm</string>
+  <string name="dlg_confirm_confirm">Confirm</string>
   <string name="dlg_confirm_cancel">Cancel</string>
-    <string name="shortcut_remove_confirm_text">Would you like to delete this shorctut?\n\n%s</string>
-    <string name="shortcut_rename">Rename</string>
-    <string name="category_photo">Photos</string>
-    <string name="common_change">Change</string>
-    <string name="error_category_switch_failed_title">Failed to swap app category</string>
+  <string name="shortcut_remove_confirm_text">Would you like to delete this shorctut?\n\n%s</string>
+  <string name="shortcut_rename">Rename</string>
+  <string name="category_photo">Photos</string>
+  <string name="common_change">Change</string>
+  <string name="error_category_switch_failed_title">Failed to swap app category</string>
   <string name="error_category_switch_failed_desc">App with id \"%1$s\" cannot be moved from category id \"%2%s\" to \"$3%s\". \n\nHowever, app\'s state have been saved, restarting the launcher will put the icon in designated catgeory</string>
+  <string name="settings_system_video_icon_mode_name">Animated Icon Mode</string>
+  <string name="settings_system_video_icon_mode_desc">When entries video icon should be played</string>
+  <string name="system_video_mode_disabled">Disabled</string>
+  <string name="system_video_mode_all_time">Play Visible</string>
+  <string name="system_video_mode_selected_only">Play Selected Only</string>
 </resources>

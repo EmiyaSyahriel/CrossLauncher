@@ -142,7 +142,7 @@ class Vsh : Application() {
 
     private fun reloadPreference() {
         setActiveLocale(readSerializedLocale(M.pref.get(PrefEntry.SYSTEM_LANGUAGE, "")))
-        CifLoader.disableAnimatedIcon = M.pref.get(PrefEntry.DISABLE_VIDEO_ICON, 0) != 0
+        CifLoader.videoIconMode = VideoIconMode.fromInt(M.pref.get(PrefEntry.VIDEO_ICON_PLAY_MODE, 0))
         val o = M.pref.get(PrefEntry.SYSTEM_VISIBLE_APP_DESC, XmbAppItem.DescriptionDisplay.PackageName.ordinal)
         XmbAppItem.descriptionDisplay = enumFromInt(o)
         XmbAdaptiveIconRenderer.Companion.AdaptiveRenderSetting.iconPriority =

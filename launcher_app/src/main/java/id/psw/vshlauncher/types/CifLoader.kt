@@ -26,7 +26,7 @@ import java.io.File
  */
 class CifLoader {
     companion object {
-        var disableAnimatedIcon = false
+        var videoIconMode = VideoIconMode.AllTime
         var disableBackSound = false
         var disableBackdrop = false
         var disableBackdropOverlay = false
@@ -102,7 +102,7 @@ class CifLoader {
         backdropOverlayFiles = createCustomizationFileArray(disableBackdropOverlay,"PIC0",VshResTypes.IMAGES)
         portraitBackdropFiles = createCustomizationFileArray(disableBackdrop,"PIC1_P",VshResTypes.IMAGES)
         portraitBackdropOverlayFiles = createCustomizationFileArray(disableBackdropOverlay,"PIC0_P",VshResTypes.IMAGES)
-        animatedIconFiles = createCustomizationFileArray(disableAnimatedIcon,"ICON1",VshResTypes.ANIMATED_ICONS)
+        animatedIconFiles = createCustomizationFileArray(videoIconMode == VideoIconMode.Disabled,"ICON1",VshResTypes.ANIMATED_ICONS)
         iconFiles = createCustomizationFileArray(false,"ICON0",VshResTypes.ICONS)
         backSoundFiles = createCustomizationFileArray(disableBackSound,"SND0",VshResTypes.SOUNDS)
     }
@@ -120,17 +120,14 @@ class CifLoader {
     val hasBackSoundLoaded get() = _backSound.exists()
     val hasBackdropLoaded get() = _backdrop.isLoaded
     val hasPortBackdropLoaded get() = _portBackdrop.isLoaded
-
     private fun <K> MutableMap<File, Ref<K>>.getOrMake(k:File, refDefVal:K) = getOrMake<File, Ref<K>>(k){ Ref<K>(refDefVal) }
-
     private fun ArrayList<File>.checkAnyExists() : Boolean = any { it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false)) }
-
     val hasBackdrop : Boolean get() =                   !disableBackdrop && backdropFiles.checkAnyExists()
     val hasPortraitBackdrop : Boolean get() =           !disableBackdrop && backdropOverlayFiles.checkAnyExists()
     val hasBackOverlay : Boolean get() =                !disableBackdropOverlay && backdropOverlayFiles.checkAnyExists()
     val hasPortraitBackdropOverlay : Boolean get() =    !disableBackdropOverlay && portraitBackdropOverlayFiles.checkAnyExists()
     val hasBackSound : Boolean get() =                  !disableBackSound && backSoundFiles.checkAnyExists()
-    val hasAnimatedIcon : Boolean get() =               !disableAnimatedIcon && animatedIconFiles.checkAnyExists()
+    val hasAnimatedIcon : Boolean get() =               videoIconMode != VideoIconMode.Disabled && animatedIconFiles.checkAnyExists()
 
 
     fun loadIcon(){

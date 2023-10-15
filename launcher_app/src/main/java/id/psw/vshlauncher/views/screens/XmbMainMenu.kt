@@ -27,6 +27,8 @@ import id.psw.vshlauncher.select
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.submodules.SfxType
 import id.psw.vshlauncher.toLerp
+import id.psw.vshlauncher.types.CifLoader
+import id.psw.vshlauncher.types.VideoIconMode
 import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.types.items.XmbItemCategory
 import id.psw.vshlauncher.views.DirectionLock
@@ -51,7 +53,6 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     var arrowBitmapLoaded = false
     var menuScaleTime : Float = 0.0f
     var loadingIconBitmap : Bitmap? = null
-    var playVideoIcon = true
     var coldBootTransition = 0.0f
     var dimOpacity = 0
 
@@ -105,7 +106,6 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     /** Is **Open Menu Hold** enabled. */
     var isOpenMenuOnHold = true
     var isOpenMenuHeld = false
-    var isOpenMenuDisableMenuExec = true
 
     override fun start() {
         currentTime = 0.0f
@@ -251,6 +251,15 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
             }
         }
     }
+    
+    private fun shouldPlayVideo(item:XmbItem, isSelected : Boolean) : Boolean {
+        val byIcon = item.hasAnimatedIcon && item.isAnimatedIconLoaded
+        return when(CifLoader.videoIconMode){
+            VideoIconMode.Disabled -> false
+            VideoIconMode.AllTime -> byIcon
+            VideoIconMode.SelectedOnly -> byIcon && isSelected
+        }
+    }
 
     private fun drawVerticalMenu(ctx:Canvas){
         val items = vsh.items?.visibleItems?.filterBySearch(context.vsh)
@@ -368,7 +377,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                         verticalRectF.set(xPos - hSizeX, centerY - hSizeY, xPos + hSizeX, centerY + hSizeY)
                         if (item.hasIcon) {
                             val iconAnchorX = (isPSP).select(0.5f, 0.5f)
-                            if (item.hasAnimatedIcon && item.isAnimatedIconLoaded && playVideoIcon) {
+                            if (shouldPlayVideo(item, selected)) {
                                 val animIconBm = item.animatedIcon.getFrame(time.deltaTime)
                                 ctx.drawBitmap(animIconBm, null, verticalRectF, iconPaint, FittingMode.FIT, iconAnchorX, 0.5f)
                             } else {
