@@ -40,6 +40,8 @@ fun Vsh.fillSettingsCategory(){
         addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, createCategoryDebug())
         addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, settingsAddSystemUpdate())
         addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, settingsAddInstallPackage())
+
+        addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, settingsAddSystemUpdate())
     }
 }
 
