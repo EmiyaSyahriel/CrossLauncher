@@ -138,6 +138,8 @@ class Vsh : Application() {
     var isTv = false
     var shouldShowExitOption = false
 
+    var isNowRendering = false
+
     var useInternalWave = true
     var lifeScope : LifecycleCoroutineScope = ProcessLifecycleOwner.get().lifecycleScope
 

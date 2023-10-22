@@ -11,6 +11,7 @@ import id.psw.vshlauncher.types.items.XmbItemCategory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 
 private const val TAG = "GameCustomMigrate"
 fun Vsh.isAGame(rInfo: ResolveInfo): Boolean {
@@ -121,6 +122,11 @@ fun Vsh.reloadAppList(){
                 @Suppress("DEPRECATION") // API Below TIRAMISU
                 packageManager.queryIntentActivities(intent, 0)
             }.forEach {
+                // Wait until rendering ends to prevent ConcurrentModificationException
+                while(isNowRendering){
+                    yield()
+                }
+
                 val item = XmbAppItem(vsh, it)
                 allAppEntries.add(item)
                 val cat = categories.find { cc -> cc.id == item.appCategory }
