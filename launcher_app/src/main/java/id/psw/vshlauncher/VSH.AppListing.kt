@@ -92,7 +92,7 @@ fun Vsh.tryMigrateOldGameDirectory(){
 
 fun Vsh.reloadAppList(){
     vsh.lifeScope.launch {
-        withContext(Dispatchers.Main){
+        withContext(Dispatchers.IO){
             XmbAppItem.showHiddenByConfig = false
 
             val gameCat = categories.find {it.id == Vsh.ITEM_CATEGORY_GAME }
