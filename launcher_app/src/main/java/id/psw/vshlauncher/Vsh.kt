@@ -17,6 +17,7 @@ import androidx.core.graphics.scale
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.jakewharton.threetenabp.AndroidThreeTen
 import id.psw.vshlauncher.livewallpaper.NativeGL
 import id.psw.vshlauncher.submodules.*
 import id.psw.vshlauncher.types.*
@@ -153,6 +154,7 @@ class Vsh : Application() {
 
     override fun onCreate() {
         Logger.init(this)
+        AndroidThreeTen.init(this)
         mainHandle = Handler(mainLooper)
         isTv = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
