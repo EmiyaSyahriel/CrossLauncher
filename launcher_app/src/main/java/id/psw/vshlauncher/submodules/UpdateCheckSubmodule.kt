@@ -3,7 +3,6 @@ package id.psw.vshlauncher.submodules
 import android.os.Build
 import com.google.gson.Gson
 import id.psw.vshlauncher.BuildConfig
-import id.psw.vshlauncher.Logger
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.postNotification
@@ -31,13 +30,29 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
         vsh.threadPool.execute (::checkThreadFn)
     }
 
-    private var _isChecking = false
-    private var _hasUpdate = false
-    private var _apkUrl = ""
-    private var _newRelName = ""
-    private var _updatedAt = ""
-    private var _updateSize = ""
-    private var _updateInfo = ""
+    var isChecking = false
+        private set
+    var hasUpdate = false
+        private set
+    var apkUrl = ""
+        private set
+    var newRelName = ""
+        private set
+    var updatedAt = ""
+        private set
+    var updateSize = ""
+        private set
+    var updateInfo = ""
+        private set
+
+    var isDownloading = false
+        private set
+    var downloadProgressCurrent = 0L
+        private set
+    var downloadProgressMax = 0L
+        private set
+    val downloadProgressF : Float get() = downloadProgressCurrent.toFloat() / downloadProgressMax.toFloat()
+
 
     data class GithubReleaseAssetInfo (
         val browser_download_url : String,
@@ -57,7 +72,7 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
     private class GitHubReleaseInfoArray : ArrayList<GithubReleaseInfo>() {}
 
     private fun checkThreadFn(){
-        _isChecking = true
+        isChecking = true
         val uri = URL(GIT_RELEASE_URL)
         var cn : HttpsURLConnection? = null
         val apkDate = Instant.parse(BuildConfig.BUILD_DATE).plusSeconds(30 * 60) // 30 Minutes after building
@@ -79,18 +94,18 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
                         } else{
                             APK_RELEASE_NAME
                         }
-                        _hasUpdate = apk.name.endsWith(apkSuffix)
-                        if(_hasUpdate){
-                            _apkUrl = apk.browser_download_url
-                            _updateSize = apk.size.asBytes()
+                        hasUpdate = apk.name.endsWith(apkSuffix)
+                        if(hasUpdate){
+                            apkUrl = apk.browser_download_url
+                            updateSize = apk.size.asBytes()
                             break
                         }
                     }
-                    if(_hasUpdate){
+                    if(hasUpdate){
                         vsh.postNotification(R.drawable.ic_sync_loading, "System Update Found!", "You can check and download the update at Settings > System Update\nor you can open the GitHub Release page and download from there")
-                        _updatedAt = dat.created_at
-                        _newRelName = dat.name
-                        _updateInfo = dat.body
+                        updatedAt = dat.created_at
+                        newRelName = dat.name
+                        updateInfo = dat.body
                     }
                 }
             }
@@ -99,10 +114,14 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
         }finally {
             cn?.disconnect()
         }
-        _isChecking = false
+        isChecking = false
     }
 
     override fun onDestroy() {
+
+    }
+
+    fun beginDownload() {
 
     }
 }
