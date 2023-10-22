@@ -133,7 +133,7 @@ fun Vsh.settingsAddInstallPackage(): XmbItem {
 fun Vsh.settingsAddSystemUpdate(): XmbItem {
     val xi = XmbSettingsItem(this, "settings_system_update", R.string.settings_system_update_name,
         R.string.settings_system_update_desc,
-        R.drawable.icon_refresh, { "" }
+        R.drawable.ic_sync_loading, { "" }
     ){
         safeXmbView.showDialog(SystemUpdateDialogView(safeXmbView))
     }
