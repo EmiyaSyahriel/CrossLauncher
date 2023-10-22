@@ -1,5 +1,10 @@
+import org.gradle.internal.impldep.org.joda.time.DateTimeUtils
 import java.util.Date
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 plugins{
     id("com.android.application")
@@ -9,9 +14,12 @@ plugins{
 }
 
 fun getDate() : String {
-    val date = Date().time
-    val fmt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-    return fmt.format(date)
+    val znow = ZonedDateTime.now()
+    val now = LocalDateTime.now()
+            // Compensate for machine local date
+        .plusSeconds((-znow.offset.totalSeconds).toLong())
+        .atOffset(ZoneOffset.UTC)
+    return now.format(DateTimeFormatter.ISO_DATE_TIME)
 }
 
 android {
