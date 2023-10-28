@@ -420,4 +420,8 @@
   <string name="system_video_mode_disabled">Disabled</string>
   <string name="system_video_mode_all_time">Play Visible</string>
   <string name="system_video_mode_selected_only">Play Selected Only</string>
+    <string name="settings_system_update_name">System Update</string>
+    <string name="settings_system_update_desc">Updates the system software on this launcher</string>
+    <string name="system_update_check">Check</string>
+    <string name="system_update_download">Download</string>
 </resources>

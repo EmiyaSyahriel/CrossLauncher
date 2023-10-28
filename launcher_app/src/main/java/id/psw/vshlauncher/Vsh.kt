@@ -11,12 +11,14 @@ import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import androidx.annotation.DrawableRes
+import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.jakewharton.threetenabp.AndroidThreeTen
 import id.psw.vshlauncher.livewallpaper.NativeGL
 import id.psw.vshlauncher.submodules.*
 import id.psw.vshlauncher.types.*
@@ -137,6 +139,8 @@ class Vsh : Application() {
     var isTv = false
     var shouldShowExitOption = false
 
+    var isNowRendering = false
+
     var useInternalWave = true
     var lifeScope : LifecycleCoroutineScope = ProcessLifecycleOwner.get().lifecycleScope
 
@@ -153,6 +157,7 @@ class Vsh : Application() {
 
     override fun onCreate() {
         Logger.init(this)
+        AndroidThreeTen.init(this)
         mainHandle = Handler(mainLooper)
         isTv = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
@@ -418,5 +423,20 @@ class Vsh : Application() {
             return true
         }
         return false
+    }
+    fun openFileByDefaultApp(apk: File) {
+        if(haveXmbView){
+            val xmb =safeXmbView.context.xmb
+            xmb.runOnUiThread {
+                val u = FileProvider.getUriForFile(xmb, "id.psw.vshlauncher.fileprovider", apk)
+                val i = Intent(Intent.ACTION_VIEW)
+                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                i.setDataAndType(u, contentResolver.getType(u))
+                i.putExtra(Intent.EXTRA_STREAM, u)
+                i.data = u
+                xmb.startActivity(i)
+            }
+        }
+
     }
 }

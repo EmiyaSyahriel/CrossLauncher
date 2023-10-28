@@ -343,6 +343,7 @@ class XmbView @JvmOverloads constructor(
     }
 
     fun xmbOnDraw(canvas: Canvas?) {
+        context.vsh.isNowRendering = true
         if(!onceStarted){
             onceStarted = true
             start()
@@ -370,6 +371,7 @@ class XmbView @JvmOverloads constructor(
 
             }
         }
+        context.vsh.isNowRendering = false
     }
 
     /** Shortcut to [XmbDialog.showDialog] */

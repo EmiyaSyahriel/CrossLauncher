@@ -43,9 +43,7 @@ class IconPriorityDialogView(v: XmbView) : XmbDialogSubview(v) {
         color = Color.WHITE
     }
 
-    private val iconBitmap = vsh.resources.getDrawable(R.drawable.icon_storage).toBitmap(128,128)
     private val pNum = 0
-    override val icon: Bitmap = iconBitmap
 
     private val priorityArray = arrayOf(0,0,0,0)
 
@@ -196,7 +194,6 @@ class IconPriorityDialogView(v: XmbView) : XmbDialogSubview(v) {
         }
         XmbAdaptiveIconRenderer.Companion.AdaptiveRenderSetting.iconPriority = va
         vsh.M.pref.set(PrefEntry.ICON_RENDERER_PRIORITY, va)
-        iconBitmap.recycle()
         super.onClose()
     }
 }

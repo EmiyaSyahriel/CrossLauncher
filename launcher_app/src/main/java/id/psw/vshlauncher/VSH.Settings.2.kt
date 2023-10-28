@@ -15,6 +15,7 @@ import id.psw.vshlauncher.types.items.XmbMenuItem
 import id.psw.vshlauncher.types.items.XmbSettingsCategory
 import id.psw.vshlauncher.types.items.XmbSettingsItem
 import id.psw.vshlauncher.views.dialogviews.LegacyIconBackgroundDialogView
+import id.psw.vshlauncher.views.dialogviews.SystemUpdateDialogView
 import id.psw.vshlauncher.views.dialogviews.TextDialogView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -124,8 +125,17 @@ fun Vsh.settingsAddInstallPackage(): XmbItem {
         i.type = "*/*"
         try{
             xmbView?.context?.xmb?.startActivityForResult(Intent.createChooser(i, getString(R.string.settings_install_package)), Vsh.ACT_REQ_INSTALL_PACKAGE)
-        }catch(e:Exception){}
+        }catch(_:Exception){}
+    }
+    return xi
+}
 
+fun Vsh.settingsAddSystemUpdate(): XmbItem {
+    val xi = XmbSettingsItem(this, "settings_system_update", R.string.settings_system_update_name,
+        R.string.settings_system_update_desc,
+        R.drawable.ic_sync_loading, { "" }
+    ){
+        safeXmbView.showDialog(SystemUpdateDialogView(safeXmbView))
     }
     return xi
 }
