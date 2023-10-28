@@ -122,6 +122,7 @@ fun Vsh.reloadAppList(){
                 @Suppress("DEPRECATION") // API Below TIRAMISU
                 packageManager.queryIntentActivities(intent, 0)
             }.forEach {
+
                 // Wait until rendering ends to prevent ConcurrentModificationException
                 while(isNowRendering){
                     yield()

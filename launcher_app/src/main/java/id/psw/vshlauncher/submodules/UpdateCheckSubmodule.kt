@@ -136,7 +136,7 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
     override fun onDestroy() {
 
     }
-
+    
     fun beginDownload() {
         //vsh.threadPool.execute (::downloadThreadFn)
         try {

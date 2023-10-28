@@ -117,7 +117,7 @@ dependencies {
 
     // Multidex support (This project has >65000 methods)
     implementation("com.android.support:multidex:1.0.3")
-
+    
     // JSON Parsing
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(project(mapOf("path" to ":launcher_xlib")))

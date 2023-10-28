@@ -424,7 +424,6 @@ class Vsh : Application() {
         }
         return false
     }
-
     fun openFileByDefaultApp(apk: File) {
         if(haveXmbView){
             val xmb =safeXmbView.context.xmb

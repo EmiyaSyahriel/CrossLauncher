@@ -36,7 +36,6 @@ fun Vsh.fillSettingsCategory(){
         addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, createCategorySystem())
         addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, createCategoryAndroidSetting())
         addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, createCategoryDebug())
-
         addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, settingsAddSystemUpdate())
         addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, settingsAddInstallPackage())
     }
