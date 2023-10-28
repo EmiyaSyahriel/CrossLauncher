@@ -1,5 +1,7 @@
 package id.psw.vshlauncher.submodules
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import com.google.gson.Gson
 import id.psw.vshlauncher.BuildConfig
@@ -136,9 +138,19 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
     }
 
     fun beginDownload() {
-        vsh.threadPool.execute (::downloadThreadFn)
+        //vsh.threadPool.execute (::downloadThreadFn)
+        try {
+            val act = Intent(Intent.ACTION_VIEW)
+            act.data = Uri.parse(apkUrl)
+            act.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            vsh.startActivity(act)
+        }catch(e:Exception){
+            vsh.postNotification(R.drawable.ic_error, "Failed to download update", "${e.message}")
+        }
     }
 
+    // Disabled unstable, for now call browser
+/*
     private fun downloadThreadFn(){
         isDownloading = true
         val uri = URL(apkUrl)
@@ -178,5 +190,5 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
             cn?.disconnect()
         }
         isDownloading = false
-    }
+    }*/
 }
