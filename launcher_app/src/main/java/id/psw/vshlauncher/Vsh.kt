@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import androidx.annotation.DrawableRes
+import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.scale
@@ -422,5 +423,21 @@ class Vsh : Application() {
             return true
         }
         return false
+    }
+
+    fun openFileByDefaultApp(apk: File) {
+        if(haveXmbView){
+            val xmb =safeXmbView.context.xmb
+            xmb.runOnUiThread {
+                val u = FileProvider.getUriForFile(xmb, "id.psw.vshlauncher.fileprovider", apk)
+                val i = Intent(Intent.ACTION_VIEW)
+                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                i.setDataAndType(u, contentResolver.getType(u))
+                i.putExtra(Intent.EXTRA_STREAM, u)
+                i.data = u
+                xmb.startActivity(i)
+            }
+        }
+
     }
 }

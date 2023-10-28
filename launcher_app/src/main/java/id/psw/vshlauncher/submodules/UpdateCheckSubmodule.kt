@@ -7,7 +7,9 @@ import id.psw.vshlauncher.R
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.views.asBytes
+import kotlinx.coroutines.sync.Mutex
 import org.threeten.bp.Instant
+import java.io.File
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
@@ -24,6 +26,7 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
     private val gson = Gson()
     override fun onCreate() {
         beginCheck()
+        apkFile = File(vsh.externalCacheDir ?: vsh.cacheDir, "CXLUPDAT.APK")
     }
 
     fun beginCheck(){
@@ -51,6 +54,13 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
         private set
     var downloadProgressMax = 0L
         private set
+    var downloadComplete = false
+        private set
+    var apkFile = File("", "CXLUPDAT.APK")
+        private set
+
+    var locker = Mutex()
+
     val downloadProgressF : Float get() = downloadProgressCurrent.toFloat() / downloadProgressMax.toFloat()
 
 
@@ -97,12 +107,16 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
                         hasUpdate = apk.name.endsWith(apkSuffix)
                         if(hasUpdate){
                             apkUrl = apk.browser_download_url
+                            downloadProgressMax = apk.size
                             updateSize = apk.size.asBytes()
                             break
                         }
                     }
                     if(hasUpdate){
-                        vsh.postNotification(R.drawable.ic_sync_loading, "System Update Found!", "You can check and download the update at Settings > System Update\nor you can open the GitHub Release page and download from there")
+                        vsh.postNotification(
+                            R.drawable.ic_sync_loading,
+                            "System Update Found!",
+                            "You can check and download the update at Settings > System Update\nor you can open the GitHub Release page and download from there")
                         updatedAt = dat.created_at
                         newRelName = dat.name
                         updateInfo = dat.body
@@ -122,6 +136,47 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
     }
 
     fun beginDownload() {
+        vsh.threadPool.execute (::downloadThreadFn)
+    }
 
+    private fun downloadThreadFn(){
+        isDownloading = true
+        val uri = URL(apkUrl)
+        if(!apkFile.exists()){
+            apkFile.createNewFile()
+        }
+        val apkStr = apkFile.outputStream()
+        apkStr.channel.position(0L)
+
+        var cn : HttpsURLConnection? = null
+        try {
+            downloadProgressCurrent = 0
+            cn = uri.openConnection() as HttpsURLConnection
+            cn.requestMethod = "GET"
+            cn.setRequestProperty("Accept", "application/vnd.android.package-archive")
+            cn.setRequestProperty("User-Agent", httpUserAgent)
+
+            cn.doInput = true
+            val ins = cn.inputStream
+            val chrArr = ByteArray(1024)
+            var rd = ins.read(chrArr, 0, chrArr.size)
+            while(rd > -1) {
+                apkStr.write(chrArr, 0, rd)
+                apkStr.flush()
+                synchronized(locker){
+                    downloadProgressCurrent += rd
+                }
+                rd = ins.read(chrArr, 0, chrArr.size)
+            }
+            apkStr.flush()
+            apkStr.close()
+
+            vsh.openFileByDefaultApp(apkFile)
+        }catch(e:Exception){
+            e.printStackTrace()
+        }finally{
+            cn?.disconnect()
+        }
+        isDownloading = false
     }
 }

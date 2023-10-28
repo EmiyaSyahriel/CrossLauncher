@@ -6,8 +6,11 @@ import android.graphics.RectF
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.makeTextPaint
 import id.psw.vshlauncher.submodules.BitmapRef
+import id.psw.vshlauncher.views.DrawExtension
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.XmbView
+import id.psw.vshlauncher.views.asBytes
+import kotlin.math.roundToInt
 
 class SystemUpdateDialogView(v: XmbView) : XmbDialogSubview(v) {
 
@@ -32,15 +35,37 @@ class SystemUpdateDialogView(v: XmbView) : XmbDialogSubview(v) {
         textAlign = Paint.Align.CENTER
     }
     override fun onDraw(ctx: Canvas, drawBound: RectF, deltaTime: Float) {
+        val u = vsh.M.updater
         when {
-            vsh.M.updater.hasUpdate -> {
-                ctx.drawText("Update found!", drawBound.centerX(), drawBound.centerY(), textPaint)
-            }
-            vsh.M.updater.isChecking -> {
+            u.isChecking -> {
                 ctx.drawText("Checking ...", drawBound.centerX(), drawBound.centerY(), textPaint)
             }
-            vsh.M.updater.isDownloading -> {
-                ctx.drawText("Downloading ...", drawBound.centerX(), drawBound.centerY(), textPaint)
+            u.isDownloading -> {
+                val al =textPaint.textAlign
+                textPaint.textAlign = Paint.Align.LEFT
+                val lines = "Preparing to update ...\nDo not close the launcher.\nAfter preparation has completed, Please install the update package".lines()
+                lines.forEachIndexed { i, s ->
+                    val y = lines.size - i
+                    ctx.drawText(s, drawBound.centerX() - 300.0f, drawBound.centerY() - (y * textPaint.textSize), textPaint)
+                }
+                DrawExtension.progressBar(ctx,
+                    0.0f,
+                    1.0f,
+                    u.downloadProgressF,
+                    drawBound.centerX() - 300.0f, drawBound.centerY(),
+                    600.0f
+                )
+                textPaint.textAlign = Paint.Align.CENTER
+                synchronized(u.locker){
+                    val f = u.downloadProgressCurrent.asBytes()
+                    val n = u.downloadProgressMax.asBytes()
+                    val p = (u.downloadProgressF * 1000).roundToInt() / 10.0f
+                    ctx.drawText("$f / $n ($p%)", drawBound.centerX(), drawBound.centerY() + 50.0f, textPaint)
+                }
+                textPaint.textAlign = al
+            }
+            u.hasUpdate -> {
+                ctx.drawText("Update found!", drawBound.centerX(), drawBound.centerY(), textPaint)
             }
             else -> {
                 ctx.drawText("Launcher is up-to-date", drawBound.centerX(), drawBound.centerY(), textPaint)
@@ -55,10 +80,11 @@ class SystemUpdateDialogView(v: XmbView) : XmbDialogSubview(v) {
     }
 
     override fun onDialogButton(isPositive: Boolean) {
+        val u = vsh.M.updater
         when {
-            vsh.M.updater.hasUpdate -> {
+            u.hasUpdate -> {
                 if(isPositive){
-                    vsh.M.updater.beginDownload()
+                    u.beginDownload()
                 }else{
                     close()
                 }
@@ -67,7 +93,7 @@ class SystemUpdateDialogView(v: XmbView) : XmbDialogSubview(v) {
                 if(!isPositive){
                     close()
                 }else{
-                    vsh.M.updater.beginCheck()
+                    u.beginCheck()
                 }
             }
         }
