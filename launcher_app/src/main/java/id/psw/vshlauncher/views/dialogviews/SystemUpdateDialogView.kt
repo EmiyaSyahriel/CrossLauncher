@@ -65,7 +65,17 @@ class SystemUpdateDialogView(v: XmbView) : XmbDialogSubview(v) {
                 textPaint.textAlign = al
             }
             u.hasUpdate -> {
-                ctx.drawText("Update found!", drawBound.centerX(), drawBound.centerY(), textPaint)
+                val lines = arrayOf(
+                    "A system software update is found.",
+                    "${u.updateSize} is going to be downloaded.",
+                    "Do you want to update now?"
+                )
+                val al = textPaint.textAlign
+                textPaint.textAlign = Paint.Align.LEFT
+                lines.forEachIndexed { i, s ->
+                    ctx.drawText(s, drawBound.centerX() - 200.0f, drawBound.centerY() + (i * textPaint.textSize), textPaint)
+                }
+                textPaint.textAlign = al
             }
             else -> {
                 ctx.drawText("Launcher is up-to-date", drawBound.centerX(), drawBound.centerY(), textPaint)
