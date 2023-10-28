@@ -391,11 +391,6 @@ class XmbView @JvmOverloads constructor(
         screens.dialog.showDialog(dlg)
     }
 
-    /** Shortcut to [XmbDialog.showDialog] */
-    fun showDialog(dlg : XmbDialogSubview){
-        screens.dialog.showDialog(dlg)
-    }
-
     private fun drawKeygen(ctx: Canvas) {
         if(keygenActive) return
         val cal = Calendar.getInstance()
