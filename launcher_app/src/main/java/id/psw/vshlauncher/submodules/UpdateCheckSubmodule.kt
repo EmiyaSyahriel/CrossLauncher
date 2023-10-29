@@ -117,8 +117,8 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
                     if(hasUpdate){
                         vsh.postNotification(
                             R.drawable.ic_sync_loading,
-                            "System Update Found!",
-                            "You can check and download the update at Settings > System Update\nor you can open the GitHub Release page and download from there")
+                            vsh.getString(R.string.updater_found_update_title),
+                            vsh.getString(R.string.updater_found_update_desc))
                         updatedAt = dat.created_at
                         newRelName = dat.name
                         updateInfo = dat.body
@@ -145,7 +145,9 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
             act.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             vsh.startActivity(act)
         }catch(e:Exception){
-            vsh.postNotification(R.drawable.ic_error, "Failed to download update", "${e.message}")
+            vsh.postNotification(R.drawable.ic_error,
+                vsh.getString(R.string.updater_download_failed_title),
+                e.message ?: vsh.getString(R.string.updater_download_failed_unknown_error))
         }
     }
 

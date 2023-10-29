@@ -395,4 +395,36 @@
   <string name="settings_system_reorder_icon_loading_name">Prioritas Muat Ikon Apl</string>
   <string name="settings_system_reorder_icon_loading_desc">Ikon Apl mana yang akan dicek-muat dulu.</string>
   <string name="settings_system_reorder_icon_loading_value">%s lebih dulu</string>
+
+  <string name="shortcut_failed_to_launch_title">Gagal memulai Pintasan</string>
+  <string name="shortcut_failed_to_launch_desc">Aktifitas %s tidak ditemukan atau dilarang untuk diluncurkan dari CrossLauncher.</string>
+  <string name="error_pkgi_no_media">Tidak menemukan media yang bisa ditulis</string>
+  <string name="setting_license_name">Lisensi Sumber Terbuka</string>
+  <string name="setting_license_desc">Tampilkan lisensi sumber terbuka dari semua komponen yang dipakai peluncur</string>
+  <string name="settings_system_prioritize_tv_intent_name">Dahulukan Intent TV</string>
+  <string name="settings_system_prioritize_tv_intent_desc">Pada TV, luncurkan Intent untuk TV / Leanback dan luncurkan Intent biasa jika tidak ditemukan</string>
+  <string name="shortcut_launch">Luncurkan</string>
+  <string name="shortcut_remove">Hapus</string>
+  <string name="dlg_confirm_confirm">Konfirmasi</string>
+  <string name="dlg_confirm_cancel">Batalkan</string>
+  <string name="shortcut_remove_confirm_text">Yakin menghapus pintasan ini?\n\n%s</string>
+  <string name="shortcut_rename">Ganti Nama</string>
+  <string name="category_photo">Foto</string>
+  <string name="common_change">Ganti</string>
+  <string name="error_category_switch_failed_title">Gagal memindah kategori Apl</string>
+  <string name="error_category_switch_failed_desc">"Apl dengan id \"%1$s\" tidak bisa dipindahkan dari kategori dengan id \"%2%s\" to \"$3%s\". \n\nTetapi, keadaan Apl sudah disimpan, memulai ulang peluncur akan memindahkan Apl ke kategori yang dipilih. "</string>
+  <string name="settings_system_video_icon_mode_name">Mainkan Ikon Animasi</string>
+  <string name="settings_system_video_icon_mode_desc">Kapan ikon video akan dimainkan</string>
+  <string name="system_video_mode_disabled">Mati</string>
+  <string name="system_video_mode_all_time">Ketika Tampil</string>
+  <string name="system_video_mode_selected_only">Ketika Dipilih</string>
+  <string name="settings_system_update_name">Pembaruan Sistem</string>
+  <string name="settings_system_update_desc">Memperbarui perangkat lunak sistem pada peluncur ini</string>
+  <string name="system_update_check">Periksa</string>
+  <string name="system_update_download">Unduh</string>
+  <string name="updater_found_update_title">Pembaruan SIstem Ditemukan</string>
+  <string name="updater_found_update_desc"><![CDATA[Anda bisa mengecek dan mengunduh pembaruan lewat Pengaturan > Pembaruan Sistem\natau anda bisa membuka halaman Release di GitHub dan mengunduh dari sana]]></string>
+  <string name="updater_download_failed_title">Gagal mengunduh pembaruan</string>
+  <string name="updater_download_failed_unknown_error">Mengalami galat yang tidak diketahui sebabnya</string>
+
 </resources>
