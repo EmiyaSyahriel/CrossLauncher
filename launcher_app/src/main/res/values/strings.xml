@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name">Cross Launcher</string>
     <string name="app_desc">A launcher simulating Sony XrossMediaBar Experiences in PlayStation 3 and PlayStation Portable on Android</string>
     <string name="locale_lang_display_name">English (Default)</string>
@@ -428,5 +428,4 @@
   <string name="updater_found_update_desc"><![CDATA[You can check and download the update at Settings > System Update\nor you can open the GitHub Release page and download from there]]></string>
   <string name="updater_download_failed_title">Failed to download update</string>
   <string name="updater_download_failed_unknown_error">Unknown error encountered</string>
-  <string name="shortcut_failed_to_launch_desc">Activity %s is not found or is forbidden to be launched by CrossLauncher.</string>
 </resources>
