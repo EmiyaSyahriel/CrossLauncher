@@ -25,6 +25,7 @@ import id.psw.vshlauncher.types.*
 import id.psw.vshlauncher.types.Stack
 import id.psw.vshlauncher.types.items.XmbAppItem
 import id.psw.vshlauncher.types.items.XmbItemCategory
+import id.psw.vshlauncher.types.media.LinearMediaList
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.filterBySearch
@@ -52,6 +53,7 @@ class Vsh : Application() {
         const val ITEM_CATEGORY_SETTINGS = "vsh_settings"
         const val COPY_DATA_SIZE_BUFFER = 10240
         const val ACT_REQ_INSTALL_PACKAGE = 4496
+        const val ACT_REQ_MEDIA_LISTING = 0x9121
 
         val dbgMemInfo = Debug.MemoryInfo()
         val actMemInfo = ActivityManager.MemoryInfo()
@@ -74,6 +76,8 @@ class Vsh : Application() {
     var playAnimatedIcon = true
     var mediaListingStarted = false
     lateinit var mainHandle : Handler
+
+    val linearMediaList = LinearMediaList()
 
     val categories = arrayListOf<XmbItemCategory>()
     /** Return all item in current selected category or current active item, including the hidden ones */

@@ -51,6 +51,7 @@ class Xmb : AppCompatActivity() {
 
         sysBarTranslucent()
         updateSystemBarVisibility()
+        vsh.mediaListingStart()
 
         vsh.doMemoryInfoGrab = true
         handleAdditionalIntent(intent)
@@ -173,7 +174,11 @@ class Xmb : AppCompatActivity() {
                     }
                 }
             }
-
+            Vsh.ACT_REQ_MEDIA_LISTING -> {
+                if(resultCode == RESULT_OK){
+                    vsh.mediaListingStart()
+                }
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
