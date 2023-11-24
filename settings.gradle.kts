@@ -16,4 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "Cross Launcher"
 include(":launcher_app")
 include(":launcher_xlib")
-include(":extensions:sample")
+// include(":extensions:sample")
