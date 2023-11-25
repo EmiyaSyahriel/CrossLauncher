@@ -34,5 +34,5 @@ jobs:
     - name: Upload debug APK
       uses: actions/upload-artifact@v2
       with:
-        name: launcher_app-development.apk
-        path: launcher_app/build/outputs/apk/development/launcher_app-development.apk
+        name: launcher_app-dex.apk
+        path: launcher_app/build/outputs/apk/development/launcher_app-dex.apk

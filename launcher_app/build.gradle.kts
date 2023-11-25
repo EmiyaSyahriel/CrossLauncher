@@ -60,20 +60,32 @@ android {
             buildConfigField("Boolean", "IS_DEVELOPMENT", "false")
         }
 
-        create("development"){
+        create("dex"){
             initWith(getByName("debug"))
             isDebuggable = true
             isMinifyEnabled = false
+
             buildConfigField("Boolean", "IS_DEVELOPMENT", "true")
-            applicationIdSuffix = ".devel"
-            versionNameSuffix = "-devel"
+            applicationIdSuffix = ".dexfw"
+            versionNameSuffix = "-dex"
             matchingFallbacks += listOf("debug", "release")
+
+            // Different app_name -> DEX Variant have (DEX) suffix
+            sourceSets {
+                getByName("main") {
+                    res {
+                        srcDirs("dex/res")
+                    }
+                }
+            }
         }
 
         all {
             buildConfigField("String", "BUILD_DATE",buildDate)
         }
     }
+
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -153,7 +165,7 @@ dependencies {
     }
 
     debugImplementation(kotlin("reflect"))
-    "developmentImplementation"(kotlin("reflect"))
+    "dexImplementation"(kotlin("reflect"))
 }
 
 configurations {

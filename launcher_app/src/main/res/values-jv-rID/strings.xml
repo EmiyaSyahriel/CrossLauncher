@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Cross Launcher</string>
+    <string name="app_name">Paluncur Cross</string>
     <string name="orient_landscape">Miring</string>
     <string name="orient_portrait">Ngadeg</string>
     <string name="orient_user">Manut Sistem</string>
