@@ -29,10 +29,10 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew assembleDebug
+      run: ./gradlew assembleDevelopment
 
     - name: Upload debug APK
       uses: actions/upload-artifact@v2
       with:
-        name: launcher-debug.apk
-        path: launcher_app/build/outputs/apk/debug/launcher_app-debug.apk
+        name: launcher_app-development.apk
+        path: launcher_app/build/outputs/apk/development/launcher_app-development.apk

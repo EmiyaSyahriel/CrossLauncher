@@ -7,7 +7,7 @@ pluginManagement {
 
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories { 
+  repositories {
     google()
     mavenCentral()
   }
@@ -16,4 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "Cross Launcher"
 include(":launcher_app")
 include(":launcher_xlib")
-// include(":extensions:sample")
+include(":extensions:sample")

@@ -55,6 +55,21 @@ android {
         debug {
             isMinifyEnabled = false
         }
+
+        all {
+            buildConfigField("Boolean", "IS_DEVELOPMENT", "false")
+        }
+
+        create("development"){
+            initWith(getByName("debug"))
+            isDebuggable = true
+            isMinifyEnabled = false
+            buildConfigField("Boolean", "IS_DEVELOPMENT", "true")
+            applicationIdSuffix = ".devel"
+            versionNameSuffix = "-devel"
+            matchingFallbacks += listOf("debug", "release")
+        }
+
         all {
             buildConfigField("String", "BUILD_DATE",buildDate)
         }
@@ -138,6 +153,7 @@ dependencies {
     }
 
     debugImplementation(kotlin("reflect"))
+    "developmentImplementation"(kotlin("reflect"))
 }
 
 configurations {

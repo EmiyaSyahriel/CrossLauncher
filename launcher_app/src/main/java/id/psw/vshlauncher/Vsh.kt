@@ -432,7 +432,8 @@ class Vsh : Application() {
         if(haveXmbView){
             val xmb =safeXmbView.context.xmb
             xmb.runOnUiThread {
-                val u = FileProvider.getUriForFile(xmb, "id.psw.vshlauncher.fileprovider", apk)
+                val authority = BuildConfig.APPLICATION_ID + ".fileprovider"
+                val u = FileProvider.getUriForFile(xmb, authority, apk)
                 val i = Intent(Intent.ACTION_VIEW)
                 i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 i.setDataAndType(u, contentResolver.getType(u))
