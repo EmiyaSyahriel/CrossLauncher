@@ -9,6 +9,7 @@ import android.util.Size
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.sdkAtLeast
 import id.psw.vshlauncher.types.XmbItem
+import java.io.File
 
 class XmbMusicItem(val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
     override val displayName: String
@@ -58,6 +59,7 @@ class XmbMusicItem(val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
 
     private fun launch(i:XmbItem){
         // Open by default or use internal device
+        vsh.openFileByDefaultApp(File(data.data))
     }
 
     override val onLaunch: (XmbItem) -> Unit

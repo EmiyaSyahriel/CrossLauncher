@@ -12,6 +12,7 @@ import id.psw.vshlauncher.sdkAtLeast
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.views.asBytes
+import java.io.File
 
 class XmbVideoItem(val vsh: Vsh, val data : VideoData) : XmbItem(vsh) {
     override val displayName: String
@@ -53,6 +54,7 @@ class XmbVideoItem(val vsh: Vsh, val data : VideoData) : XmbItem(vsh) {
 
     private fun launch(i:XmbItem){
         // Open by default or use internal device
+        vsh.openFileByDefaultApp(File(data.data))
     }
 
     override val description: String
