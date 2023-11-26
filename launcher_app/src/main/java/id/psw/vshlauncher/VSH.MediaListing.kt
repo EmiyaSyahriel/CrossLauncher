@@ -2,7 +2,6 @@ package id.psw.vshlauncher
 
 import android.Manifest
 import android.content.ContentUris
-import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
@@ -127,16 +126,16 @@ fun Vsh.mediaListingStart(){
         MediaStore.Video.Media.INTERNAL_CONTENT_URI
     )
 
-    val sndCurs = Array(sndCol.size){
+    val sndDataPairs = Array(sndCol.size){
         Pair(sndCol[it], contentResolver.query(sndCol[it], sndProj, null, null, null))
     }
 
-    val vidCurs =Array(vidCol.size){
+    val vidDataPairs =Array(vidCol.size){
         Pair(vidCol[it], contentResolver.query(vidCol[it], vidProj, null, null, null))
     }
 
-    for(sndCure in sndCurs){
-        val sndCur = sndCure.second
+    for(pair in sndDataPairs){
+        val sndCur = pair.second
         if(sndCur != null){
             sndCur.moveToFirst()
             while(!sndCur.isAfterLast){
@@ -150,7 +149,7 @@ fun Vsh.mediaListingStart(){
                     val size  = sndCur.getValue(sndProj[5], Cursor::getLong,   0L)
                     val dur   = sndCur.getValue(sndProj[6], Cursor::getLong,   0L)
                     val mime  = sndCur.getValue(sndProj[7], Cursor::getString, "audio/*")
-                    val uri   = ContentUris.withAppendedId(sndCure.first, id)
+                    val uri   = ContentUris.withAppendedId(pair.first, id)
 
                     // Find duplicate
                     if(linearMediaList.musics.find { it.data.id == id } == null){
@@ -169,8 +168,8 @@ fun Vsh.mediaListingStart(){
         }
     }
 
-    for(vidCure in vidCurs){
-        val vidCur = vidCure.second
+    for(pair in vidDataPairs){
+        val vidCur = pair.second
         if(vidCur != null){
             while(!vidCur.isAfterLast){
                 try{
@@ -180,7 +179,7 @@ fun Vsh.mediaListingStart(){
                     val size  = vidCur.getValue(vidProj[3], Cursor::getLong, 0L)
                     val dur   = vidCur.getValue(vidProj[4], Cursor::getLong, 0L)
                     val mime  = vidCur.getValue(vidProj[5], Cursor::getString, "video/*")
-                    val uri   = ContentUris.withAppendedId(vidCure.first, id)
+                    val uri   = ContentUris.withAppendedId(pair.first, id)
 
                     if(linearMediaList.videos.find { it.data.id == id } == null){
                         linearMediaList.videos.add(XmbVideoItem(vsh,
