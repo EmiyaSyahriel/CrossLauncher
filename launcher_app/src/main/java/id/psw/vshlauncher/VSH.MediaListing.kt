@@ -8,6 +8,7 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.core.app.ActivityCompat
 import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.types.items.XmbItemCategory
 import id.psw.vshlauncher.types.media.MusicData
 import id.psw.vshlauncher.types.media.VideoData
 import id.psw.vshlauncher.types.media.XmbMusicItem
@@ -15,24 +16,21 @@ import id.psw.vshlauncher.types.media.XmbPhotoItem
 import id.psw.vshlauncher.types.media.XmbVideoItem
 
 fun Vsh.cleanMediaListing(){
-    for(cat in categories){
-        val removed = arrayListOf<XmbItem>()
-        for(item in cat.content){
-            if(item is XmbMusicItem || item is XmbPhotoItem || item is XmbVideoItem){
-                removed.add(item)
-                item.onScreenInvisible(item)
-            }
+    cleanMediaListing<XmbVideoItem>( categories.find {it.id == Vsh.ITEM_CATEGORY_VIDEO } )
+    cleanMediaListing<XmbMusicItem>( categories.find {it.id == Vsh.ITEM_CATEGORY_MUSIC } )
+    cleanMediaListing<XmbPhotoItem>( categories.find {it.id == Vsh.ITEM_CATEGORY_PHOTO } )
+}
+
+inline fun <reified T : XmbItem> Vsh.cleanMediaListing(list : XmbItemCategory? ){
+    if(list == null) return
+
+    list.content.forEach {
+        if(it is T){
+            it.onScreenInvisible(it)
         }
-        cat.content.removeAll(removed.toSet())
     }
 
-    for(i in linearMediaList.musics) i.onScreenInvisible(i)
-    for(i in linearMediaList.photos) i.onScreenInvisible(i)
-    for(i in linearMediaList.videos) i.onScreenInvisible(i)
-
-    linearMediaList.musics.clear()
-    linearMediaList.photos.clear()
-    linearMediaList.videos.clear()
+    list.content.removeAll { it is T }
 }
 
 fun <T> Cursor.getValue(id: String, getter : Cursor.(Int) -> T, defVal : T)  : T {
