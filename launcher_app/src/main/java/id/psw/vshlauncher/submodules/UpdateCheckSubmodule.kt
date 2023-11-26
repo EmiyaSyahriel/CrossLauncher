@@ -22,7 +22,7 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
         const val GIT_ACTION_URL = "https://api.github.com/repos/EmiyaSyahriel/CrossLauncher/releases?per_page=1&page=1"
         const val APK_DEBUG_NAME = "-debug.apk";
         const val APK_RELEASE_NAME = "-release.apk";
-        const val APK_DEVELOPMENT_NAME = "-development.apk";
+        const val APK_DEVELOPMENT_NAME = "-dex.apk";
 
         // https://github.com/EmiyaSyahriel/CrossLauncher/suites/${suiteId}/artifacts/${artifactId}
         private fun generateActionDownloadUri(suiteId: Long, artifactId: Long) : String {
@@ -163,7 +163,13 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
                 val artfJson = cn.inputStream.bufferedReader().readText()
                 val artfs = gson.fromJson(artfJson, GitHubActionArtifactList::class.java)
                 for(artf in artfs.artifacts){
-
+                    hasUpdate = artf.name.endsWith(APK_DEVELOPMENT_NAME)
+                    if(hasUpdate){
+                        apkUrl = generateActionDownloadUri(workflows.check_suite_id, artf.id)
+                        downloadProgressMax = artf.size_in_bytes
+                        updateSize = artf.size_in_bytes.asBytes()
+                        break
+                    }
                 }
             }
         }
