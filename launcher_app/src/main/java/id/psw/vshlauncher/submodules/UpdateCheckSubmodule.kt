@@ -19,8 +19,15 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
 
     companion object {
         const val GIT_RELEASE_URL = "https://api.github.com/repos/EmiyaSyahriel/CrossLauncher/releases?per_page=1&page=1"
+        const val GIT_ACTION_URL = "https://api.github.com/repos/EmiyaSyahriel/CrossLauncher/releases?per_page=1&page=1"
         const val APK_DEBUG_NAME = "-debug.apk";
         const val APK_RELEASE_NAME = "-release.apk";
+        const val APK_DEVELOPMENT_NAME = "-development.apk";
+
+        // https://github.com/EmiyaSyahriel/CrossLauncher/suites/${suiteId}/artifacts/${artifactId}
+        private fun generateActionDownloadUri(suiteId: Long, artifactId: Long) : String {
+            return "https://github.com/EmiyaSyahriel/CrossLauncher/suites/${suiteId}/artifacts/${artifactId}";
+        }
     }
 
     /** This User-Agent is intended to be unique, Update only if this UA is banned by GitHub */
@@ -72,6 +79,18 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
         val size : Long
             )
 
+    data class GitHubActionArtifactInfo(
+        val id : Long,
+        val name : String,
+        val size_in_bytes : Long
+    )
+
+    @Suppress("ArrayInDataClass")
+    data class GitHubActionArtifactList(
+        val total_count : Int,
+        val artifacts : Array<GitHubActionArtifactInfo>
+    )
+
     @Suppress("ArrayInDataClass")
     data class GithubReleaseInfo(
         val url : String,
@@ -81,11 +100,78 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
         val assets : Array<GithubReleaseAssetInfo>
     )
 
+    data class GithubActionRunInfo(
+        val id : Int,
+        val url : String,
+        val name : String,
+        val workflow_id: Long,
+        val check_suite_id : Long,
+        val created_at : String,
+        val artifacts_url : String
+    )
+
     private class GitHubReleaseInfoArray : ArrayList<GithubReleaseInfo>() {}
+    private data class GitHubActionRunInfoArray (
+        val total_count: Int,
+        val workflow_runs : ArrayList<GithubActionRunInfo>
+        )
+
+    private fun updateFromReleasePage(ins:String, apkDate :Instant){
+        val dats = gson.fromJson(ins, GitHubReleaseInfoArray::class.java)
+        for(dat in dats){
+            val relDate = Instant.parse(dat.created_at)
+            if(relDate > apkDate){ // Release is newer than this APK + 30 min
+                for(apk in dat.assets){
+                    val apkSuffix = if(BuildConfig.DEBUG){
+                        APK_DEBUG_NAME
+                    } else{
+                        APK_RELEASE_NAME
+                    }
+                    hasUpdate = apk.name.endsWith(apkSuffix)
+                    if(hasUpdate){
+                        apkUrl = apk.browser_download_url
+                        downloadProgressMax = apk.size
+                        updateSize = apk.size.asBytes()
+                        break
+                    }
+                }
+                if(hasUpdate){
+                    vsh.postNotification(
+                        R.drawable.ic_sync_loading,
+                        vsh.getString(R.string.updater_found_update_title),
+                        vsh.getString(R.string.updater_found_update_desc))
+                    updatedAt = dat.created_at
+                    newRelName = dat.name
+                    updateInfo = dat.body
+                }
+            }
+        }
+    }
+
+    private fun listActionWorkflowRuns(ins:String, apkDate: Instant){
+        val dats = gson.fromJson(ins, GitHubActionRunInfoArray::class.java)
+        for(workflows in dats.workflow_runs){
+            val relDate = Instant.parse(workflows.created_at)
+
+            if(relDate > apkDate){ // Release is newer than this APK + 30 min
+                val uri = URL(workflows.artifacts_url)
+                val cn = uri.openConnection() as HttpsURLConnection
+                cn.requestMethod = "GET"
+                cn.setRequestProperty("Accept", "application/vnd.github+json")
+                cn.setRequestProperty("User-Agent", httpUserAgent)
+                cn.doInput = true
+                val artfJson = cn.inputStream.bufferedReader().readText()
+                val artfs = gson.fromJson(artfJson, GitHubActionArtifactList::class.java)
+                for(artf in artfs.artifacts){
+
+                }
+            }
+        }
+    }
 
     private fun checkThreadFn(){
         isChecking = true
-        val uri = URL(GIT_RELEASE_URL)
+        val uri =  if(BuildConfig.IS_DEVELOPMENT) URL(GIT_ACTION_URL) else URL(GIT_RELEASE_URL)
         var cn : HttpsURLConnection? = null
         val apkDate = Instant.parse(BuildConfig.BUILD_DATE).plusSeconds(30 * 60) // 30 Minutes after building
         try {
@@ -96,34 +182,10 @@ class UpdateCheckSubmodule(private val vsh: Vsh) : IVshSubmodule {
 
             cn.doInput = true
             val ins = cn.inputStream.bufferedReader().readText()
-            val dats = gson.fromJson(ins, GitHubReleaseInfoArray::class.java)
-            for(dat in dats){
-                val relDate = Instant.parse(dat.created_at)
-                if(relDate > apkDate){ // Release is newer than this APK + 30 min
-                    for(apk in dat.assets){
-                        val apkSuffix = if(BuildConfig.DEBUG){
-                            APK_DEBUG_NAME
-                        } else{
-                            APK_RELEASE_NAME
-                        }
-                        hasUpdate = apk.name.endsWith(apkSuffix)
-                        if(hasUpdate){
-                            apkUrl = apk.browser_download_url
-                            downloadProgressMax = apk.size
-                            updateSize = apk.size.asBytes()
-                            break
-                        }
-                    }
-                    if(hasUpdate){
-                        vsh.postNotification(
-                            R.drawable.ic_sync_loading,
-                            vsh.getString(R.string.updater_found_update_title),
-                            vsh.getString(R.string.updater_found_update_desc))
-                        updatedAt = dat.created_at
-                        newRelName = dat.name
-                        updateInfo = dat.body
-                    }
-                }
+            if(BuildConfig.IS_DEVELOPMENT){ // Download from Action instead
+                listActionWorkflowRuns(ins, apkDate)
+            }else{
+                updateFromReleasePage(ins, apkDate)
             }
         }catch(e:Exception){
             e.printStackTrace()

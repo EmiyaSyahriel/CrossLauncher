@@ -113,17 +113,29 @@ fun Vsh.reloadAppList(){
                 }
             }
 
-            val intent = Intent(Intent.ACTION_MAIN, null);
-            intent.addCategory(Intent.CATEGORY_LAUNCHER)
+            val phoneIntent = Intent(Intent.ACTION_MAIN, null);
+            phoneIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+
+            val tvIntent = Intent(Intent.ACTION_MAIN, null)
+
+            if (sdkAtLeast(Build.VERSION_CODES.LOLLIPOP)) {
+                tvIntent.addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER)
+            }
+
+            val items = arrayListOf<ResolveInfo>()
+
             val lh = addLoadHandle()
             if (sdkAtLeast(Build.VERSION_CODES.TIRAMISU)) {
-                packageManager.queryIntentActivities(intent, PackageManager.ResolveInfoFlags.of(0L))
-            } else {
-                @Suppress("DEPRECATION") // API Below TIRAMISU
-                packageManager.queryIntentActivities(intent, 0)
-            }.forEach {
+                items.addAll(packageManager.queryIntentActivities(phoneIntent, PackageManager.ResolveInfoFlags.of(0L)))
+                items.addAll(packageManager.queryIntentActivities(tvIntent, PackageManager.ResolveInfoFlags.of(0L)))
 
-                // Wait until rendering ends to prevent ConcurrentModificationException
+                items
+            } else @Suppress("DEPRECATION") { // API Below TIRAMISU
+                items.addAll(packageManager.queryIntentActivities(phoneIntent, 0))
+                items.addAll(packageManager.queryIntentActivities(tvIntent, 0))
+
+                items
+            }.forEach {
                 while(isNowRendering){
                     yield()
                 }
