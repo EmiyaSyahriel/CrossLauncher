@@ -13,10 +13,15 @@ void cxl_bg_start(){
     wave_state.bg.TEXCOORD =   glGetAttribLocation (wave_state.bg.program, wave_consts.attr_names.TEXCOORD0);
 
     //wave_state.bg_mode = (AUTO_BG_MODE)((int8_t)AUTO_BG_MODE::DAY_NIGHT | (int8_t)AUTO_BG_MODE::MONTHLY);
-    wave_state.bg_month = MONTH_COLOR_INDEX::MONTH_CURRENT;
-    wave_state.colors.bg_a = vec3(0.0f, 1.0f, 1.0f);
-    wave_state.colors.bg_b = vec3(0.0f, 0.0f, 1.0f);
     wave_state.vert_scale = 1.0f;
+
+    /* XMBWaveSurfaceView will call setBackgroundMonth and setBackgroundColor
+     * Every time the surface view gets out of view, GLSurfaceView will also re-run onSurfaceCreated
+     * Setting these here during surface recreation will cause a preference desync
+     */
+    //wave_state.bg_month = MONTH_COLOR_INDEX::MONTH_CURRENT;
+    //wave_state.colors.bg_a = vec3(0.0f, 1.0f, 1.0f);
+    //wave_state.colors.bg_b = vec3(0.0f, 0.0f, 1.0f);
 }
 
 void cxl_bg_draw(){
