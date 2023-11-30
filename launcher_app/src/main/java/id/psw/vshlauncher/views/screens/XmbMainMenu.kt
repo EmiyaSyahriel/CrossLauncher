@@ -536,10 +536,8 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                 PadKey.PadL -> {
                     if(vsh.isInRoot){
                         vsh.moveCursorX(false)
-                        M.audio.playSfx(SfxType.Selection)
                     }else{
                         vsh.backStep()
-                        M.audio.playSfx(SfxType.Cancel)
                     }
                     retval = true
                 }
