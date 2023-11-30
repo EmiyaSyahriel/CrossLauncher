@@ -49,29 +49,13 @@ There is 2 type of download now:
   - Updated less frequently
   - Have both Release and Debug
 
-Or you can build it yourself, see [Building](#building) section.
+Or you can build it yourself, see [Building](https://github.com/EmiyaSyahriel/CrossLauncher/wiki/Contributing-and-Building-the-App#building) on repo's wiki pages.
 
 ## Building
-### Prerequisites
-- Android Studio with:
-    - Android SDK 33+
-    - NDK 21+
-    - CMake 3.8+
-
-### Steps
-- Clone or Download this repository
-- Open this project directory at Android Studio
-- Build
-
-To compile without the entire Android Studio package, please refer to this page : 
-[Build your app from the command line | Android Developers](https://developer.android.com/studio/build/building-cmdline)
-However, you would still need the Android SDK, NDK, CMake and Gradle.
-
-Note : If you edit any text resource file located in `launcher_app/src/main/cpp/res`, run gradle task `:launcher_app:generateEmbeddedNativeSource`
-to include the change to the source code since these files were all embedded into source code
+see [Building](https://github.com/EmiyaSyahriel/CrossLauncher/wiki/Contributing-and-Building-the-App#building) on repo's wiki pages.
 
 ## Contribution
-Translations and fixes are welcome.
+Translations and fixes are welcome. How to contribute is [explained here](https://github.com/EmiyaSyahriel/CrossLauncher/wiki/Contributing-and-Building-the-App#for-contribution-work).
 
 There is also an Extension System planned, so anyone can develop a plugin to provide additional feature to CrossLauncher.
 
