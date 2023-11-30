@@ -21,6 +21,7 @@ import id.psw.vshlauncher.PrefEntry
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.lerpFactor
 import id.psw.vshlauncher.livewallpaper.NativeGL
+import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
 import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
 import id.psw.vshlauncher.makeTextPaint
 import id.psw.vshlauncher.select
@@ -53,7 +54,8 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     var arrowBitmapLoaded = false
     var menuScaleTime : Float = 0.0f
     var loadingIconBitmap : Bitmap? = null
-    var coldBootTransition = 0.0f
+    var coldBootTransition = 2.0f
+    var coldBootWaveVerticalScale = 0.1f;
     var dimOpacity = 0
 
     data class VerticalMenu(
@@ -125,6 +127,11 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
 
         widgets.statusBar.disabled = M.pref.get(PrefEntry.DISPLAY_DISABLE_STATUS_BAR, 0) == 1
         widgets.analogClock.showSecondHand = M.pref.get(PrefEntry.DISPLAY_SHOW_CLOCK_SECOND, 0) == 1
+
+        val waveType = M.pref.get(XMBWaveSurfaceView.KEY_STYLE, XMBWaveRenderer.WAVE_TYPE_PS3_BLINKS.toInt()).toByte()
+        if(waveType == XMBWaveRenderer.WAVE_TYPE_PSP_CENTER){
+            coldBootWaveVerticalScale = 0.5f;
+        }
     }
 
     private val ps3MenuIconCenter = PointF(0.30f, 0.25f)
@@ -718,14 +725,22 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
 
     private fun updateColdBootWaveAnimation(){
         val speed = M.pref.get(XMBWaveSurfaceView.KEY_SPEED, 1.0f)
-        NativeGL.setSpeed( coldBootTransition.toLerp(speed, 25.0f) )
-        NativeGL.setVerticalScale( coldBootTransition.toLerp(1.0f, 1.25f) )
+        if(coldBootTransition > 1.0f) {
+            val firstHalfTransition = coldBootTransition - 1.0f;
+            NativeGL.setSpeed(firstHalfTransition.toLerp(25.0f, 0.5f))
+            NativeGL.setVerticalScale(firstHalfTransition.toLerp(1.25f, coldBootWaveVerticalScale))
+            coldBootTransition -= time.deltaTime * 4.0f
+        }else{
+            NativeGL.setSpeed(coldBootTransition.toLerp(speed, 25.0f))
+            NativeGL.setVerticalScale(coldBootTransition.toLerp(1.0f, 1.25f))
+            coldBootTransition -= time.deltaTime * 2.0f
+        }
 
-        coldBootTransition -= time.deltaTime * 2.0f
         if(coldBootTransition < 0.0f){
             context.vsh.waveShouldReReadPreferences = true
             NativeGL.setVerticalScale( 1.0f )
             NativeGL.setSpeed( 1.0f )
+            coldBootTransition = -2.0f;
         }
     }
 
@@ -764,7 +779,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
         menuScaleTime = (time.deltaTime * 10.0f).toLerp(menuScaleTime, 0.0f).coerceIn(0f,1f)
         val menuScale = menuScaleTime.toLerp(1.0f, 2.0f).coerceIn(1.0f, 2.0f)
 
-        if(coldBootTransition > 0.0f){
+        if(coldBootTransition > -1.0f){
             updateColdBootWaveAnimation()
         }
 

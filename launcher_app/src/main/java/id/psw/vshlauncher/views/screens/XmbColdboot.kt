@@ -18,6 +18,7 @@ import id.psw.vshlauncher.VshResTypes
 import id.psw.vshlauncher.getDrawable
 import id.psw.vshlauncher.lerpFactor
 import id.psw.vshlauncher.livewallpaper.NativeGL
+import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
 import id.psw.vshlauncher.livewallpaper.XMBWaveSurfaceView
 import id.psw.vshlauncher.makeTextPaint
 import id.psw.vshlauncher.submodules.PadKey
@@ -38,9 +39,9 @@ class XmbColdboot(view : XmbView) : XmbScreen(view) {
     }
     private var isL1Down = false
     private val epiwarnPaint = vsh.makeTextPaint(size = 20.0f, color = Color.WHITE)
-    private var waveSpeed = 1.0f
     var hideEpilepsyWarning = false
-    var transition = 0.0f
+
+    private var waveVerticalScale = 0.1f;
 
     private fun playColdBootSound(){
         var isFound = false
@@ -90,8 +91,8 @@ class XmbColdboot(view : XmbView) : XmbScreen(view) {
 
     override fun render(ctx: Canvas) {
         ensureImageLoaded()
-        NativeGL.setSpeed(0.0f)
-        NativeGL.setVerticalScale(0.0f)
+        NativeGL.setSpeed(0.5f)
+        NativeGL.setVerticalScale(waveVerticalScale)
 
         val img = image
         val cTime = currentTime
@@ -148,12 +149,11 @@ class XmbColdboot(view : XmbView) : XmbScreen(view) {
         currentTime = 0.0f
         ensureImageLoaded()
         playColdBootSound()
-        transition = 1.0f
         val pref = context.vsh.getSharedPreferences(XMBWaveSurfaceView.PREF_NAME, Context.MODE_PRIVATE)
-
-        waveSpeed = pref.getFloat(XMBWaveSurfaceView.KEY_SPEED, 1.0f)
-        NativeGL.setSpeed(0.0f)
-        NativeGL.setVerticalScale(0.0f)
+        val waveType = pref.getInt(XMBWaveSurfaceView.KEY_STYLE, XMBWaveRenderer.WAVE_TYPE_PS3_BLINKS.toInt()).toByte()
+        if(waveType == XMBWaveRenderer.WAVE_TYPE_PSP_CENTER){
+            waveVerticalScale = 0.5f;
+        }
     }
 
     override fun end(){
