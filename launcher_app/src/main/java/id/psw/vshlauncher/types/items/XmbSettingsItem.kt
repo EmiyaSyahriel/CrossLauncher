@@ -23,7 +23,7 @@ class XmbSettingsItem(
     override var menuItems: ArrayList<XmbMenuItem>? = null
     override val hasIcon: Boolean = true
     override val isIconLoaded: Boolean = true
-    override val icon = ResourcesCompat.getDrawable(vsh.resources, r_icon, null)?.toBitmap(256,256) ?: TRANSPARENT_BITMAP
+    override val icon = ResourcesCompat.getDrawable(vsh.resources, r_icon, null)?.toBitmap(Vsh.ITEM_BUILTIN_ICON_BITMAP_SIZE,Vsh.ITEM_BUILTIN_ICON_BITMAP_SIZE) ?: TRANSPARENT_BITMAP
     override val isHidden: Boolean get() = checkIsHidden()
     var checkIsHidden : () -> Boolean = {
         false

@@ -14,7 +14,7 @@ class XmbSettingsCategory(
     private val descResId : Int
 ) :
     XmbItem(vsh) {
-    override val icon : Bitmap = ResourcesCompat.getDrawable(vsh.resources, iconResId, null)!!.toBitmap(100,100)
+    override val icon : Bitmap = ResourcesCompat.getDrawable(vsh.resources, iconResId, null)!!.toBitmap(Vsh.ITEM_BUILTIN_ICON_BITMAP_SIZE,Vsh.ITEM_BUILTIN_ICON_BITMAP_SIZE)
     override val displayName: String get() = vsh.getString(nameResId)
     override val description: String get() = vsh.getString(descResId)
     override val content: ArrayList<XmbItem> = arrayListOf()

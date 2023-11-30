@@ -74,14 +74,14 @@ class XmbItemCategory(
                 for(file in cFiles){
                     try{
                         val srcb =BitmapFactory.decodeFile(file.absolutePath)
-                        cbmp = srcb?.scale(300, 300)
+                        cbmp = srcb?.scale(Vsh.ITEM_BUILTIN_ICON_BITMAP_SIZE, Vsh.ITEM_BUILTIN_ICON_BITMAP_SIZE)
                         srcb.recycle()
                     }catch(_:Exception){
                     }
                 }
 
                 cbmp ?:
-                    ResourcesCompat.getDrawable(vsh.resources, iconId, null)?.toBitmap(300,300)
+                    ResourcesCompat.getDrawable(vsh.resources, iconId, null)?.toBitmap(Vsh.ITEM_BUILTIN_ICON_BITMAP_SIZE,Vsh.ITEM_BUILTIN_ICON_BITMAP_SIZE)
                     ?: TRANSPARENT_BITMAP
             })
 
