@@ -24,7 +24,7 @@ class XmbAndroidSettingShortcutItem(
     override val isIconLoaded: Boolean = true
     override val icon: Bitmap = ResourcesCompat
         .getDrawable(vsh.resources, iconId, null)
-        ?.toBitmap(50,50)
+        ?.toBitmap(Vsh.ITEM_BUILTIN_ICON_BITMAP_SIZE,Vsh.ITEM_BUILTIN_ICON_BITMAP_SIZE)
         ?: TRANSPARENT_BITMAP
     override val hasIcon: Boolean
         get() = icon != TRANSPARENT_BITMAP

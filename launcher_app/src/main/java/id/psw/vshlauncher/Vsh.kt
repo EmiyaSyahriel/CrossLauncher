@@ -54,6 +54,7 @@ class Vsh : Application() {
         const val COPY_DATA_SIZE_BUFFER = 10240
         const val ACT_REQ_INSTALL_PACKAGE = 4496
         const val ACT_REQ_MEDIA_LISTING = 0x9121
+        const val ITEM_BUILTIN_ICON_BITMAP_SIZE = 300
 
         val dbgMemInfo = Debug.MemoryInfo()
         val actMemInfo = ActivityManager.MemoryInfo()
