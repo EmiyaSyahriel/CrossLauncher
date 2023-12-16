@@ -18,6 +18,7 @@ import id.psw.vshlauncher.toLerp
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.typography.drawText
 import id.psw.vshlauncher.typography.toButtonSpan
+
 import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.XmbScreen
@@ -179,3 +180,4 @@ class XmbDialog(view : XmbView) : XmbScreen(view) {
         return retval
     }
 }
+
