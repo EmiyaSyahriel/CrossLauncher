@@ -18,7 +18,7 @@ import id.psw.vshlauncher.toLerp
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.typography.drawText
 import id.psw.vshlauncher.typography.toButtonSpan
-<<<<<<<< HEAD:launcher_app/src/main/java/id/psw/vshlauncher/views/screens/XmbDialog.kt
+
 import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.XmbScreen
@@ -180,6 +180,4 @@ class XmbDialog(view : XmbView) : XmbScreen(view) {
         return retval
     }
 }
-========
-import java.util.*
->>>>>>>> bd88d56 (Move Rendering foreign function to each classes):launcher_app/src/main/java/id/psw/vshlauncher/views/XmbView.Dialog.kt
+

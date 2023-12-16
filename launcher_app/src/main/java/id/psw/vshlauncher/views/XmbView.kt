@@ -205,18 +205,6 @@ class XmbView @JvmOverloads constructor(
         checkCanvasHwAcceleration()
     }
 
-    private var onceStarted = false
-    private fun start(){
-        screens = Screens(this)
-        widgets = Widgets(this)
-
-        activeScreen = screens.idle
-        switchScreen(context.xmb.skipColdBoot.select(screens.mainMenu, screens.coldBoot))
-
-        loadPreferences()
-        checkCanvasHwAcceleration()
-    }
-
     private fun adaptScreenSize(){
         if(!fitsSystemWindows){  fitsSystemWindows = true }
 

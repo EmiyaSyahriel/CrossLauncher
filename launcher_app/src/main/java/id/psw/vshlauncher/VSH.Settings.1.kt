@@ -14,8 +14,6 @@ import id.psw.vshlauncher.types.VideoIconMode
 import id.psw.vshlauncher.types.items.*
 import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.dialogviews.*
-import id.psw.vshlauncher.views.formatStatusBar
-import id.psw.vshlauncher.views.showDialog
 import kotlinx.coroutines.*
 import java.util.*
 import kotlin.collections.ArrayList

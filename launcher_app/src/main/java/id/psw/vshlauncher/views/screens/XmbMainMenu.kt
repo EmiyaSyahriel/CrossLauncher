@@ -264,11 +264,14 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
         return when(CifLoader.videoIconMode){
             VideoIconMode.AllTime -> byIcon
             VideoIconMode.SelectedOnly -> byIcon && isSelected
+            VideoIconMode.Disabled -> false
         }
     }
 
     private fun drawVerticalMenu(ctx:Canvas){
         val items = vsh.items?.visibleItems?.filterBySearch(context.vsh)
+
+        val loadIcon = loadingIconBitmap
         val isPSP = layoutMode == XmbLayoutType.PSP
         val menuDispT = widgets.sideMenu.showMenuDisplayFactor
         val isLand = view.width > view.height
