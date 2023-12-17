@@ -103,6 +103,7 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
                 .setAudioAttributes(attr.build())
                 .build()
         }else{
+            @Suppress("DEPRECATION") // For old Android version
             sfxPlayer = SoundPool(6, AudioManager.STREAM_MUSIC, 0)
         }
 
@@ -178,8 +179,6 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
     }
 
     fun loadSfxData(attach : Boolean = true){
-        var that = this
-
         if(attach){
             sfxPlayer.setOnLoadCompleteListener { _, id, status ->
                 if(status != 0){

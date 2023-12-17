@@ -51,7 +51,7 @@ class Xmb : AppCompatActivity() {
 
         sysBarTranslucent()
         updateSystemBarVisibility()
-        vsh.mediaListingStart()
+        vsh.M.media.mediaListingStart()
 
         vsh.doMemoryInfoGrab = true
         handleAdditionalIntent(intent)
@@ -113,6 +113,7 @@ class Xmb : AppCompatActivity() {
     private fun checkIsDefaultHomeIntent() {
         val i = Intent(Intent.ACTION_MAIN)
         i.addCategory(Intent.CATEGORY_HOME)
+        @Suppress("DEPRECATION") // Resolve Activity - before API 33
         val ri = if(sdkAtLeast(33))
             packageManager.resolveActivity(i, PackageManager.ResolveInfoFlags.of(0))
             else packageManager.resolveActivity(i, 0)
@@ -139,8 +140,12 @@ class Xmb : AppCompatActivity() {
     private fun sysBarTranslucent(){
         //if(Build.VERSION.SDK_INT >= 19){
             window.apply {
+                @Suppress("DEPRECATION") // Supports old Android Version
                 clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+
+                @Suppress("DEPRECATION") // Supports old Android Version
                 decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+
                 addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
                 if(Build.VERSION.SDK_INT >= 21){
                     addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -153,12 +158,13 @@ class Xmb : AppCompatActivity() {
         //}
     }
 
+    @Suppress("OVERRIDE_DEPRECATION") // We do not use compat library, not using this might cause error on old version
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when(requestCode){
             ACT_REQ_UNINSTALL -> {
                 if(resultCode == RESULT_OK){
                     vsh.postNotification(null, getString(R.string.app_uninstall),getString(R.string.app_refresh_due_to_uninstall))
-                    vsh.reloadAppList()
+                    vsh.M.apps.reloadAppList()
                 }
             }
             Vsh.ACT_REQ_INSTALL_PACKAGE -> {
@@ -176,10 +182,12 @@ class Xmb : AppCompatActivity() {
             }
             Vsh.ACT_REQ_MEDIA_LISTING -> {
                 if(resultCode == RESULT_OK){
-                    vsh.mediaListingStart()
+                    vsh.M.media.mediaListingStart()
                 }
             }
         }
+
+        @Suppress("DEPRECATION") // For old version compatibility
         super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -293,6 +301,8 @@ class Xmb : AppCompatActivity() {
         }else{
             true
         }
+
+        @Suppress("DEPRECATION") // Action Uninstall Package is deprecated on API > P
         if(permissionAllowed){
             val i = Intent(Intent.ACTION_UNINSTALL_PACKAGE).setData(Uri.parse("package:$pkgName"))
             startActivityForResult(i, ACT_REQ_UNINSTALL)

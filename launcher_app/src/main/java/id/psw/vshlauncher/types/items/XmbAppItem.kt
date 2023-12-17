@@ -157,6 +157,7 @@ class XmbAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XmbItem(vsh)
     val displayUpdateTime : String get() {
         return if(apkFile?.exists() == true){
             val fmt = DateFormat.is24HourFormat(vsh).select( "d/M/yyyy k:m", "d/M/yyyy h:m a")
+            @Suppress("DEPRECATION") // locales.get(0) only for SDK >= N
             val sdf =
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
                     SimpleDateFormat(fmt, vsh.resources.configuration.locales.get(0))
@@ -275,7 +276,7 @@ class XmbAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XmbItem(vsh)
         iniFile[INI_KEY_TYPE, INI_KEY_CATEGORY] = appCategory
 
         if(iniFile.path.isEmpty()){
-            vsh.tryMigrateOldGameDirectory()
+            vsh.M.apps.tryMigrateOldGameDirectory()
             val haveCustomFolder = FileQuery(VshBaseDirs.APPS_DIR).atPath(resInfo.uniqueActivityName).createParentDirectory(true).execute(vsh).any { it.exists() }
             if(!haveCustomFolder){
                 createAppCustomDirectory()
@@ -421,7 +422,7 @@ class XmbAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XmbItem(vsh)
     }
 
     private fun createAppCustomDirectory() {
-        vsh.tryMigrateOldGameDirectory()
+        vsh.M.apps.tryMigrateOldGameDirectory()
         FileQuery(VshBaseDirs.APPS_DIR).atPath(resInfo.uniqueActivityName).createParentDirectory(true){file, created ->
             val sb = StringBuilder()
             for(i in file.absolutePath.indices){

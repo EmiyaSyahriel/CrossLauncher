@@ -29,7 +29,7 @@ fun Vsh.swapCategory(itemId:String, categoryFrom:String, categoryTo:String) : Bo
         if(categoryTo.isEmpty() || dstCat == null ){
             val entry = vsh.allAppEntries.find { it.id == itemId }
             if(entry != null){
-                val id = isAGame(entry.resInfo).select(Vsh.ITEM_CATEGORY_GAME, Vsh.ITEM_CATEGORY_APPS)
+                val id = M.apps.isAGame(entry.resInfo).select(Vsh.ITEM_CATEGORY_GAME, Vsh.ITEM_CATEGORY_APPS)
                 dstCat = categories.find { it.id == id }
             }
         }

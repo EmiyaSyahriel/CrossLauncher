@@ -74,11 +74,8 @@ class Vsh : Application() {
     val haveXmbView get() = xmbView != null
     val safeXmbView get()= xmbView!!
 
-    var playAnimatedIcon = true
-    var mediaListingStarted = false
     lateinit var mainHandle : Handler
-
-    val linearMediaList = LinearMediaList()
+    var playAnimatedIcon = true
 
     val categories = arrayListOf<XmbItemCategory>()
     /** Return all item in current selected category or current active item, including the hidden ones */
@@ -167,6 +164,7 @@ class Vsh : Application() {
         isTv = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
         }else{
+            @Suppress("DEPRECATION") // TV Feature before Lollipop (IDK if there is exists)
             packageManager.hasSystemFeature(PackageManager.FEATURE_TELEVISION)
         }
 
@@ -176,7 +174,7 @@ class Vsh : Application() {
         // Fresco.initialize(this)
         notificationLastCheckTime = SystemClock.uptimeMillis()
         registerInternalCategory()
-        reloadAppList()
+        M.apps.reloadAppList()
         reloadShortcutList()
         fillSettingsCategory()
         addHomeScreen()
@@ -189,7 +187,7 @@ class Vsh : Application() {
         registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 postNotification(null, "Updating database...","Device package list has been changed, updating list...")
-                reloadAppList()
+                M.apps.reloadAppList()
             }
         }, IntentFilter().apply {
             addAction(Intent.ACTION_PACKAGE_ADDED)
@@ -257,7 +255,7 @@ class Vsh : Application() {
     }
     fun loadTexture(@DrawableRes d : Int, whiteFallback:Boolean = false ) : Bitmap {
         val dwb =ResourcesCompat.getDrawable(resources, d, null)
-        return dwb?.toBitmap(dwb.intrinsicWidth, dwb.intrinsicHeight?: 1) ?: whiteFallback.select(XmbItem.WHITE_BITMAP, XmbItem.TRANSPARENT_BITMAP)
+        return dwb?.toBitmap(dwb.intrinsicWidth, dwb.intrinsicHeight) ?: whiteFallback.select(XmbItem.WHITE_BITMAP, XmbItem.TRANSPARENT_BITMAP)
     }
 
     val allAppEntries = arrayListOf<XmbAppItem>()

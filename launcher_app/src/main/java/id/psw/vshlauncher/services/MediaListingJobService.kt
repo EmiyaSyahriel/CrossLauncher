@@ -10,9 +10,9 @@ import android.content.Context
 import android.os.Build
 import android.os.Handler
 import android.provider.MediaStore
+import android.util.Log
 import androidx.annotation.RequiresApi
 import id.psw.vshlauncher.BuildConfig
-import id.psw.vshlauncher.mediaListingAdd
 import id.psw.vshlauncher.sdkAtLeast
 import id.psw.vshlauncher.vsh
 
@@ -20,6 +20,7 @@ import id.psw.vshlauncher.vsh
 class MediaListingJobService : JobService() {
     companion object {
         private const val ID_MEDIA_LISTING_JOB = 0x70BA1
+        const val TAG = "MediaListingJobService"
         private var job : JobInfo? = null
 
         fun schedule(ctx: Context){
@@ -56,9 +57,7 @@ class MediaListingJobService : JobService() {
         if(auths == null || uris == null) return true
         val handler = Handler(mainLooper)
         for(uri in uris){
-            handler.post(Runnable {
-                vsh.mediaListingAdd(uri)
-            })
+            Log.d(TAG, "Media Added -> $uri")
         }
 
         jobFinished(params, true)

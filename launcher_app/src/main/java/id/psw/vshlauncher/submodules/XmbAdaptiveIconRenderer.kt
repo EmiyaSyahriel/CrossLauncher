@@ -80,7 +80,7 @@ class XmbAdaptiveIconRenderer(private val ctx: Vsh) : IVshSubmodule {
         val mSb = StringBuilder()
         mSb.appendLine("Icon file source : ")
 
-        ctx.tryMigrateOldGameDirectory()
+        ctx.M.apps.tryMigrateOldGameDirectory()
 
         FileQuery(VshBaseDirs.APPS_DIR).createParentDirectory(true).execute(ctx).forEach {
             fileRoots.add(it)
