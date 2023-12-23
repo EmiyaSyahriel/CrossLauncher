@@ -6,8 +6,10 @@ import android.media.MediaMetadataRetriever
 import android.provider.MediaStore
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.types.XmbItem
+import java.io.File
 
 class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
+    override val id: String = "MUSIC_INTERNAL_${data.id}"
     override val displayName: String
         get() = data.title
 
@@ -45,7 +47,7 @@ class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
     }
 
     private fun launch(i:XmbItem){
-        // Open by default or use internal device
+        vsh.openFileByDefaultApp(File(data.data))
     }
 
     override val onLaunch: (XmbItem) -> Unit

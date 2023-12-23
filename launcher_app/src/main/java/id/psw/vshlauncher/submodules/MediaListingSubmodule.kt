@@ -9,8 +9,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.app.ActivityCompat.startActivityForResult
 import id.psw.vshlauncher.Vsh
+import id.psw.vshlauncher.addToCategory
 import id.psw.vshlauncher.sdkAtLeast
 import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.types.media.LinearMediaList
@@ -28,6 +30,7 @@ class MediaListingSubmodule(private val vsh : Vsh) : IVshSubmodule {
 
     companion object {
         const val RQI_PICK_PHOTO_DIR = 1024 + 0xFE
+        const val TAG = "MediaListing"
     }
 
     private val videoProjection = arrayOf(
@@ -113,36 +116,52 @@ class MediaListingSubmodule(private val vsh : Vsh) : IVshSubmodule {
     }
 
     private fun beginMediaListingVideo(){
-        val vidCol = if(sdkAtLeast(30))
-            MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-        else MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+        val vidCols = if(sdkAtLeast(30))
+            arrayOf(
+                MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL),
+                MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY),
+            )
+        else arrayOf(
+            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+            MediaStore.Video.Media.INTERNAL_CONTENT_URI
+        )
 
-        val vidCur = vsh.contentResolver.query(vidCol, videoProjection, null, null, null)
+        for(vidCol in vidCols){
+            val vidCur = vsh.contentResolver.query(vidCol, videoProjection, null, null, null)
 
-        if(vidCur != null){
-            while(!vidCur.isAfterLast){
-                addVideoListing(vidCur)
-                vidCur.moveToNext()
+            if(vidCur != null){
+                vidCur.moveToFirst()
+                while(!vidCur.isAfterLast){
+                    addVideoListing(vidCur)
+                    vidCur.moveToNext()
+                }
+                vidCur.close()
             }
-            vidCur.close()
         }
     }
 
     private fun beginMediaListingAudio(){
-        val sndCol = if(sdkAtLeast(30))
-            MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-        else MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        val sndCols = if(sdkAtLeast(30))
+            arrayOf(
+            MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL),
+            MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY),
+            )
+        else arrayOf(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            MediaStore.Audio.Media.INTERNAL_CONTENT_URI
+        )
 
-        val sndCur = vsh.contentResolver.query(sndCol, audioProjection, null, null, null)
+        for(sndCol in sndCols){
+            val sndCur = vsh.contentResolver.query(sndCol, audioProjection, null, null, null)
 
-        if(sndCur != null){
-
-            sndCur.moveToFirst()
-            while(!sndCur.isAfterLast){
-                addAudioListing(sndCur)
-                sndCur.moveToNext()
+            if(sndCur != null){
+                sndCur.moveToFirst()
+                while(!sndCur.isAfterLast){
+                    addAudioListing(sndCur)
+                    sndCur.moveToNext()
+                }
+                sndCur.close()
             }
-            sndCur.close()
         }
     }
 
@@ -161,15 +180,14 @@ class MediaListingSubmodule(private val vsh : Vsh) : IVshSubmodule {
         // TODO: List photos
     }
 
-    private var hasPermissionCached = false
-        get() = field
-        private set(v) {field = v}
+    var hasPermissionCached = false
+        private set
 
-    private val hasPermission: Boolean get() {
-        var ok =  vsh.hasPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
+    val hasPermission: Boolean get() {
+        var ok =  true
         if (sdkAtLeast(Build.VERSION_CODES.TIRAMISU)) {
-            ok = vsh.hasPermissionGranted(Manifest.permission.READ_MEDIA_AUDIO) && ok
-            ok = vsh.hasPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO) && ok
+            ok = vsh.hasPermissionGranted(Manifest.permission.READ_MEDIA_AUDIO ) && ok
+            ok = vsh.hasPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO ) && ok
             ok = vsh.hasPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES) && ok
         }
         hasPermissionCached = ok
@@ -179,11 +197,17 @@ class MediaListingSubmodule(private val vsh : Vsh) : IVshSubmodule {
     fun requestPermission(){
         if(!hasPermission){
             val names = arrayListOf<String>()
-            val arr = arrayOf<String>()
-            names.toArray(arr)
 
+            // names.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            if (sdkAtLeast(Build.VERSION_CODES.TIRAMISU)) {
+                names.add(Manifest.permission.READ_MEDIA_AUDIO )
+                names.add(Manifest.permission.READ_MEDIA_VIDEO )
+                names.add(Manifest.permission.READ_MEDIA_IMAGES)
+            }
+
+            val arr = Array(names.size){ i -> names[i] }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                vsh.xmb.requestPermissions(arr, 1000 + 0x42F)
+                vsh.xmb.requestPermissions(arr, RQI_PICK_PHOTO_DIR)
             }
         }
     }
@@ -202,8 +226,27 @@ class MediaListingSubmodule(private val vsh : Vsh) : IVshSubmodule {
         beginMediaListingAudio()
         beginMediaListingPhoto()
 
+        addMediaToCategories()
+
         // Update Items
         mediaListingStarted = false
+    }
+
+    private fun addMediaToCategories() {
+        for(l in linearMediaList.musics){
+            Log.d(TAG, "Music : ${l.id}")
+            vsh.addToCategory(Vsh.ITEM_CATEGORY_MUSIC, l)
+        }
+
+        for(l in linearMediaList.videos){
+            Log.d(TAG, "Video : ${l.id}")
+            vsh.addToCategory(Vsh.ITEM_CATEGORY_VIDEO, l)
+        }
+
+        for(l in linearMediaList.photos){
+            Log.d(TAG, "Photo : ${l.id}")
+            vsh.addToCategory(Vsh.ITEM_CATEGORY_PHOTO, l)
+        }
     }
 
     private val videoObserver : ContentObserver by lazy {

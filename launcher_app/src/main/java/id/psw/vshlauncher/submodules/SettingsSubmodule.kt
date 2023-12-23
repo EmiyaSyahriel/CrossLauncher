@@ -38,12 +38,10 @@ class SettingsSubmodule(private val ctx : Vsh) : IVshSubmodule
             ctx.addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, media.createCategory())
             ctx.addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, system.createCategory())
             ctx.addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, android.createCategory())
+            ctx.addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, rootDir.settingsAddSystemUpdate())
             ctx.addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, debug.createCategory())
+            ctx.addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, rootDir.settingsAddInstallPackage())
 
-            val roots = rootDir.createCategories()
-            for(r in roots){
-                ctx.addToCategory(Vsh.ITEM_CATEGORY_SETTINGS, r)
-            }
         }
     }
 

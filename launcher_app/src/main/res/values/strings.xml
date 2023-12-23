@@ -430,4 +430,8 @@
   <string name="updater_download_failed_unknown_error">Unknown error encountered</string>
     <string name="settings_category_media_name">Media Settings</string>
   <string name="settings_category_media_desc">Media listing and media item behaviour</string>
+  <string name="permission_granted">Permission Granted</string>
+  <string name="permission_not_granted">Permission not Granted</string>
+  <string name="settings_media_request_permission_name">Media Permission Status</string>
+  <string name="settings_media_request_permission_desc">Is launcher have permission to access media on device?</string>
 </resources>

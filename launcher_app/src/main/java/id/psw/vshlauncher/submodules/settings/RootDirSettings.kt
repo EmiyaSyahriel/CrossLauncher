@@ -24,7 +24,7 @@ class RootDirSettings (private val vsh: Vsh) : ISettingsCategories(vsh) {
         return xi
     }
 
-    private fun settingsAddSystemUpdate(): XmbItem {
+    fun settingsAddSystemUpdate(): XmbItem {
         val xi = XmbSettingsItem(vsh, "settings_system_update", R.string.settings_system_update_name,
             R.string.settings_system_update_desc,
             R.drawable.ic_sync_loading, { "" }
@@ -32,10 +32,6 @@ class RootDirSettings (private val vsh: Vsh) : ISettingsCategories(vsh) {
             vsh.safeXmbView.showDialog(SystemUpdateDialogView(vsh.safeXmbView))
         }
         return xi
-    }
-
-    fun createCategories() : Array<XmbItem> {
-        return arrayOf(settingsAddInstallPackage(), settingsAddSystemUpdate())
     }
 
     @Deprecated("For this class use [createCategories] instead")
