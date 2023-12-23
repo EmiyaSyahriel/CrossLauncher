@@ -18,6 +18,10 @@ class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
 
     private var _hasIcon = false
     private var _icon : Bitmap? = null
+    private var _hasIconLoaded = false
+
+    override val isIconLoaded: Boolean
+        get() = _hasIconLoaded
 
     override val hasIcon: Boolean
         get() = _hasIcon
@@ -34,6 +38,7 @@ class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
             }else{
                 _icon = BitmapFactory.decodeByteArray(dat, 0, dat.size)
                 _hasIcon = _icon != null
+                _hasIconLoaded = true
             }
         }
     }
@@ -41,6 +46,7 @@ class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
     private fun unloadIcon(i:XmbItem){
         _hasIcon = false
         if(_icon != null){
+            _hasIconLoaded = false
             _icon?.recycle()
             _icon = null
         }
