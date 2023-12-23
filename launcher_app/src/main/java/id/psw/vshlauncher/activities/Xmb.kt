@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.core.content.ContextCompat
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.submodules.MediaListingSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.items.XmbAppItem
 import id.psw.vshlauncher.views.M
@@ -100,7 +101,7 @@ class Xmb : AppCompatActivity() {
                 vsh.showInstallPkgDialog(intent)
             }
             intent.action == Consts.ACTION_WAVE_SETTINGS_WIZARD -> {
-                vsh.showXMBLiveWallpaperWizard()
+                M.settings.display.wave.showXMBLiveWallpaperWizard()
             }
             intent.action == Consts.ACTION_UI_TEST_DIALOG -> {
                 xmbView.showDialog(UITestDialogView(xmbView))
@@ -183,6 +184,19 @@ class Xmb : AppCompatActivity() {
             Vsh.ACT_REQ_MEDIA_LISTING -> {
                 if(resultCode == RESULT_OK){
                     vsh.M.media.mediaListingStart()
+                }
+            }
+            MediaListingSubmodule.RQI_PICK_PHOTO_DIR -> {
+                if(resultCode == RESULT_OK){
+                    if(data != null){
+                        vsh.M.media.onDirectoryPicked(data)
+                    }else{
+                        vsh.postNotification(
+                            R.drawable.ic_folder,
+                            getString(R.string.error_common_header),
+                            getString(R.string.custom_package_error_no_intent),
+                            3.0f)
+                    }
                 }
             }
         }

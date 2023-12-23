@@ -15,6 +15,7 @@ class SubmoduleManager(ctx: Vsh) {
     val updater = UpdateCheckSubmodule(ctx)
     val media = MediaListingSubmodule(ctx)
     val apps = AppListingSubmodule(ctx)
+    val settings = SettingsSubmodule(ctx)
 
     fun onCreate(){
         for(mod in arrayOf(
@@ -24,6 +25,7 @@ class SubmoduleManager(ctx: Vsh) {
             apps,
             customizer,
             audio,
+            settings,
             icons,
             network,
             gamepad,
@@ -45,6 +47,7 @@ class SubmoduleManager(ctx: Vsh) {
             apps,
             customizer,
             audio,
+            settings,
             icons,
             network,
             gamepad,

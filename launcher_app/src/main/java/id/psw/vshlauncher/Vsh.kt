@@ -176,7 +176,7 @@ class Vsh : Application() {
         registerInternalCategory()
         M.apps.reloadAppList()
         reloadShortcutList()
-        fillSettingsCategory()
+        M.settings.fillSettings()
         addHomeScreen()
         installBroadcastReceivers()
         super.onCreate()
@@ -442,5 +442,13 @@ class Vsh : Application() {
             }
         }
 
+    }
+
+    fun hasPermissionGranted(permission : String) : Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
     }
 }

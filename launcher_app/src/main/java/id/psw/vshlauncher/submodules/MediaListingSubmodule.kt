@@ -1,10 +1,15 @@
 package id.psw.vshlauncher.submodules
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.ContentObserver
 import android.database.Cursor
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.provider.MediaStore
+import androidx.core.app.ActivityCompat.startActivityForResult
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.sdkAtLeast
 import id.psw.vshlauncher.types.XmbItem
@@ -14,10 +19,16 @@ import id.psw.vshlauncher.types.media.VideoData
 import id.psw.vshlauncher.types.media.XmbMusicItem
 import id.psw.vshlauncher.types.media.XmbPhotoItem
 import id.psw.vshlauncher.types.media.XmbVideoItem
+import id.psw.vshlauncher.xmb
+import java.security.Permission
 
 class MediaListingSubmodule(private val vsh : Vsh) : IVshSubmodule {
     private val linearMediaList = LinearMediaList()
     private var mediaListingStarted = false
+
+    companion object {
+        const val RQI_PICK_PHOTO_DIR = 1024 + 0xFE
+    }
 
     private val videoProjection = arrayOf(
         MediaStore.Video.VideoColumns._ID,          /* long _id */
@@ -117,8 +128,6 @@ class MediaListingSubmodule(private val vsh : Vsh) : IVshSubmodule {
         }
     }
 
-
-
     private fun beginMediaListingAudio(){
         val sndCol = if(sdkAtLeast(30))
             MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
@@ -135,6 +144,16 @@ class MediaListingSubmodule(private val vsh : Vsh) : IVshSubmodule {
             }
             sndCur.close()
         }
+    }
+
+    fun addPhotoDirectory(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val i = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+            vsh.xmb.startActivityForResult(i, RQI_PICK_PHOTO_DIR)
+        }
+    }
+
+    fun onDirectoryPicked(i: Intent){
 
     }
 
@@ -142,9 +161,40 @@ class MediaListingSubmodule(private val vsh : Vsh) : IVshSubmodule {
         // TODO: List photos
     }
 
+    private var hasPermissionCached = false
+        get() = field
+        private set(v) {field = v}
+
+    private val hasPermission: Boolean get() {
+        var ok =  vsh.hasPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (sdkAtLeast(Build.VERSION_CODES.TIRAMISU)) {
+            ok = vsh.hasPermissionGranted(Manifest.permission.READ_MEDIA_AUDIO) && ok
+            ok = vsh.hasPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO) && ok
+            ok = vsh.hasPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES) && ok
+        }
+        hasPermissionCached = ok
+        return ok
+    }
+
+    fun requestPermission(){
+        if(!hasPermission){
+            val names = arrayListOf<String>()
+            val arr = arrayOf<String>()
+            names.toArray(arr)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                vsh.xmb.requestPermissions(arr, 1000 + 0x42F)
+            }
+        }
+    }
+
     fun mediaListingStart(){
         // Return directly if media already started
         if(mediaListingStarted) return
+
+        // No permission, return
+        if(!hasPermission) return
+
         mediaListingStarted = true
 
         cleanMediaListing()

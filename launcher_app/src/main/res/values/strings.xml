@@ -428,4 +428,6 @@
   <string name="updater_found_update_desc"><![CDATA[You can check and download the update at Settings > System Update\nor you can open the GitHub Release page and download from there]]></string>
   <string name="updater_download_failed_title">Failed to download update</string>
   <string name="updater_download_failed_unknown_error">Unknown error encountered</string>
+    <string name="settings_category_media_name">Media Settings</string>
+  <string name="settings_category_media_desc">Media listing and media item behaviour</string>
 </resources>
