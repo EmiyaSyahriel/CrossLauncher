@@ -25,7 +25,6 @@ import id.psw.vshlauncher.types.*
 import id.psw.vshlauncher.types.Stack
 import id.psw.vshlauncher.types.items.XmbAppItem
 import id.psw.vshlauncher.types.items.XmbItemCategory
-import id.psw.vshlauncher.types.media.LinearMediaList
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.filterBySearch
@@ -427,22 +426,29 @@ class Vsh : Application() {
         }
         return false
     }
-    fun openFileByDefaultApp(apk: File) {
+
+    fun openFileOnExternalApp(apk: File, chooser: Boolean = false, chooserTitle : String = "") {
         if(haveXmbView){
             val xmb =safeXmbView.context.xmb
             xmb.runOnUiThread {
                 val authority = BuildConfig.APPLICATION_ID + ".fileprovider"
                 val u = FileProvider.getUriForFile(xmb, authority, apk)
-                val i = Intent(Intent.ACTION_VIEW)
+                var i = Intent(Intent.ACTION_VIEW)
                 i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 i.setDataAndType(u, contentResolver.getType(u))
                 i.putExtra(Intent.EXTRA_STREAM, u)
                 i.data = u
+
+                if(chooser){
+                    i = Intent.createChooser(i, chooserTitle)
+                }
+
                 xmb.startActivity(i)
             }
         }
 
     }
+
 
     fun hasPermissionGranted(permission : String) : Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

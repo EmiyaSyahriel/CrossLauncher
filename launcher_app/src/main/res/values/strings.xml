@@ -445,4 +445,10 @@
   <string name="settings_audio_menubgm_pick_desc">Pick Audio file for menu music that is always playing in background</string>
   <string name="settings_audio_menubgm_delete_name">Delete Menu Music File</string>
   <string name="settings_audio_menubgm_delete_desc">Delete menu background music file</string>
+  <string name="media_open">Open</string>
+  <string name="media_open_with">Open with ...</string>
+  <string name="media_play">Play</string>
+  <string name="media_delete">Delete</string>
+  <string name="media_delete_confirmation">Would you like to delete \"%s\" ?\n\nThis operation cannot be undone.</string>
+  <string name="media_share">Share</string>
 </resources>

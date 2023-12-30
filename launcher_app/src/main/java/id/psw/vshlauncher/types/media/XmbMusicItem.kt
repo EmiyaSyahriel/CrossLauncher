@@ -3,9 +3,10 @@ package id.psw.vshlauncher.types.media
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
-import android.provider.MediaStore
+import id.psw.vshlauncher.R
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.types.items.XmbMenuItem
 import java.io.File
 
 class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
@@ -20,6 +21,8 @@ class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
     private var _icon : Bitmap? = null
     private var _hasIconLoaded = false
 
+    private val _itemMenus = arrayListOf<XmbMenuItem>()
+
     override val isIconLoaded: Boolean
         get() = _hasIconLoaded
 
@@ -27,6 +30,15 @@ class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
         get() = _hasIcon
     override val icon: Bitmap
         get() = _icon!!
+
+    override val hasMenu: Boolean
+        get() = true
+
+    override val menuItems: ArrayList<XmbMenuItem>?
+        get() = _itemMenus
+
+    override val menuItemCount: Int
+        get() = _itemMenus.size
 
     private fun loadIcon(i:XmbItem){
         vsh.threadPool.execute {
@@ -53,7 +65,11 @@ class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
     }
 
     private fun launch(i:XmbItem){
-        vsh.openFileByDefaultApp(File(data.data))
+        vsh.openFileOnExternalApp(File(data.data))
+    }
+
+    init {
+        vsh.M.media.createMediaMenuItems(_itemMenus, data)
     }
 
     override val onLaunch: (XmbItem) -> Unit

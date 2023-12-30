@@ -12,6 +12,9 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import id.psw.vshlauncher.*
 import id.psw.vshlauncher.submodules.AudioSubmodule
@@ -209,6 +212,13 @@ class Xmb : AppCompatActivity() {
 
         @Suppress("DEPRECATION") // For old version compatibility
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    val mediaDeletionActivityResult = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()
+    ) {
+        if(it.resultCode == RESULT_OK )  {
+            vsh.M.media.mediaListingStart()
+        }
     }
 
     override fun onDestroy() {

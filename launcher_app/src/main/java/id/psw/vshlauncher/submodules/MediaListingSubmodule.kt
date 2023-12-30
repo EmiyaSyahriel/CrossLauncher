@@ -1,9 +1,9 @@
 package id.psw.vshlauncher.submodules
 
 import android.Manifest
+import android.app.RecoverableSecurityException
 import android.content.ContentUris
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.database.ContentObserver
 import android.database.Cursor
 import android.net.Uri
@@ -11,19 +11,23 @@ import android.os.Build
 import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
-import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.activity.result.IntentSenderRequest
+import id.psw.vshlauncher.R
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.addToCategory
 import id.psw.vshlauncher.sdkAtLeast
 import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.types.items.XmbMenuItem
 import id.psw.vshlauncher.types.media.LinearMediaList
+import id.psw.vshlauncher.types.media.MediaData
 import id.psw.vshlauncher.types.media.MusicData
 import id.psw.vshlauncher.types.media.VideoData
 import id.psw.vshlauncher.types.media.XmbMusicItem
 import id.psw.vshlauncher.types.media.XmbPhotoItem
 import id.psw.vshlauncher.types.media.XmbVideoItem
+import id.psw.vshlauncher.views.dialogviews.ConfirmDialogView
 import id.psw.vshlauncher.xmb
-import java.security.Permission
+import java.io.File
 
 class MediaListingSubmodule(private val vsh : Vsh) : IVshSubmodule {
     private val linearMediaList = LinearMediaList()
@@ -100,7 +104,7 @@ class MediaListingSubmodule(private val vsh : Vsh) : IVshSubmodule {
         val uri   = ContentUris.withAppendedId(root, id)
 
         linearMediaList.videos.add(
-            XmbVideoItem(vsh, VideoData(id, uri, name, path, size, dur, mime))
+            XmbVideoItem(vsh, VideoData(id, uri, path, name, size, dur, mime))
         )
     }
     private fun addAudioListing(root: Uri, cursor: Cursor){
@@ -118,6 +122,70 @@ class MediaListingSubmodule(private val vsh : Vsh) : IVshSubmodule {
         linearMediaList.musics.add(
             XmbMusicItem(vsh, MusicData(id, uri, path, title, album, artis, size, dur, mime))
         )
+    }
+
+    fun createMediaMenuItems(_itemMenus : ArrayList<XmbMenuItem>, data: MediaData){
+        // Play Media
+        _itemMenus.add(XmbMenuItem.XmbMenuItemLambda(
+            { vsh.getString(R.string.media_play ) },
+            {false}, 0)
+        {
+            vsh.openFileOnExternalApp(File(data.data), false, vsh.getString(R.string.media_play))
+        })
+
+        // Open With
+        _itemMenus.add(XmbMenuItem.XmbMenuItemLambda(
+            { vsh.getString(R.string.media_open_with) },
+            {false}, 1)
+        {
+            vsh.openFileOnExternalApp(File(data.data), true, vsh.getString(R.string.media_open_with))
+        })
+
+        // Delete File
+        _itemMenus.add(XmbMenuItem.XmbMenuItemLambda(
+            { vsh.getString(R.string.media_delete) },
+            {false}, 2)
+        {
+            vsh.xmbView?.showDialog(
+                ConfirmDialogView(
+                    vsh.safeXmbView,
+                    vsh.getString(R.string.media_delete),
+                    R.drawable.ic_delete,
+                    vsh.getString(R.string.media_delete_confirmation).format(data.data)
+                ){ confirmed ->
+                    if(confirmed){
+                        deleteMedia(data.uri)
+                    }
+                })
+        })
+
+        // Share File (You cannot copy since launcher have no direct interface to storage other than it's own)
+        _itemMenus.add(XmbMenuItem.XmbMenuItemLambda(
+            { vsh.getString(R.string.media_share) },
+            {false}, 3)
+        {
+            val i= Intent(Intent.ACTION_SEND)
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            i.setDataAndType(data.uri, vsh.contentResolver.getType(data.uri))
+            i.putExtra(Intent.EXTRA_STREAM, data.uri)
+
+            vsh.xmb.startActivity(Intent.createChooser(i, vsh.getString(R.string.media_share)))
+        })
+    }
+
+
+    private fun deleteMedia(uri:Uri){
+        val rsl = vsh.contentResolver
+        try {
+            vsh.contentResolver.delete(uri, null, null)
+            mediaListingStart()
+        }catch (scEx: SecurityException){
+            if(sdkAtLeast(Build.VERSION_CODES.Q)){
+                val rse = scEx as RecoverableSecurityException
+                val isr = IntentSenderRequest.Builder(rse.userAction.actionIntent.intentSender).build()
+                vsh.xmb.mediaDeletionActivityResult.launch(isr)
+            }
+        }
     }
 
     private fun beginMediaListingVideo(){
