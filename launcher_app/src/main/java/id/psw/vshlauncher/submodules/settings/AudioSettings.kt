@@ -62,6 +62,18 @@ class AudioSettings(private val vsh: Vsh) : ISettingsCategories(vsh) {
         }
     }
 
+    private fun mkItemVolumeMenuBgm() : XmbSettingsItem {
+        return XmbSettingsItem(vsh, "audio_volume_menubgm",
+            R.string.settings_audio_menubgm_volume_name,
+            R.string.settings_audio_menubgm_volume_desc,
+            R.drawable.category_music, { volumeToString(vsh.M.audio.menuBgm) }
+        ){
+            vsh.xmbView?.showSideMenu(true)
+        }.apply {
+            makeVolume( this) { vsh.M.audio.menuBgm = it }
+        }
+    }
+
     private fun mkItemVolumeSfx() : XmbSettingsItem {
         return XmbSettingsItem(vsh, "audio_volume_sfx",
             R.string.settings_audio_sfx_volume_name,
@@ -83,6 +95,26 @@ class AudioSettings(private val vsh: Vsh) : ISettingsCategories(vsh) {
         }
     }
 
+    private fun mkItemPickMenuBgm() : XmbSettingsItem {
+        return XmbSettingsItem(vsh, "audio_pick_menu_bgm",
+            R.string.settings_audio_menubgm_pick_name,
+            R.string.settings_audio_menubgm_pick_desc,
+            R.drawable.ic_open, { "" }
+        ){
+            vsh.M.audio.openMenuBgmPicker()
+        }
+    }
+
+    private fun mkItemDeleteMenuBgm() : XmbSettingsItem {
+        return XmbSettingsItem(vsh, "audio_delete_menu_bgm",
+            R.string.settings_audio_menubgm_delete_name,
+            R.string.settings_audio_menubgm_delete_desc,
+            R.drawable.ic_delete, { "" }
+        ){
+            vsh.M.audio.deleteMenuBgm()
+        }
+    }
+
     override fun createCategory() : XmbSettingsCategory {
         return XmbSettingsCategory(vsh, SettingsSubmodule.CATEGORY_SETTINGS_AUDIO,
             R.drawable.icon_volume,
@@ -92,8 +124,11 @@ class AudioSettings(private val vsh: Vsh) : ISettingsCategories(vsh) {
                 mkItemVolumeMaster(),
                 mkItemVolumeBgm(),
                 mkItemVolumeSystemBgm(),
+                mkItemVolumeMenuBgm(),
                 mkItemVolumeSfx(),
-                mkItemReloadSfx()
+                mkItemReloadSfx(),
+                mkItemPickMenuBgm(),
+                mkItemDeleteMenuBgm()
             )
         }
     }

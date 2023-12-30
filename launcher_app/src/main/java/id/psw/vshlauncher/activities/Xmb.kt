@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.core.content.ContextCompat
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.submodules.AudioSubmodule
 import id.psw.vshlauncher.submodules.MediaListingSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.items.XmbAppItem
@@ -53,6 +54,7 @@ class Xmb : AppCompatActivity() {
         sysBarTranslucent()
         updateSystemBarVisibility()
         vsh.M.media.mediaListingStart()
+        vsh.M.audio.initMenuBgm()
 
         vsh.doMemoryInfoGrab = true
         handleAdditionalIntent(intent)
@@ -79,7 +81,6 @@ class Xmb : AppCompatActivity() {
         }
 
         window.decorView.systemUiVisibility = flag
-
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -186,6 +187,11 @@ class Xmb : AppCompatActivity() {
                     vsh.M.media.mediaListingStart()
                 }
             }
+            AudioSubmodule.PICKER_REQ_ID -> {
+                if(resultCode == RESULT_OK && data != null){
+                    vsh.M.audio.loadPickedMenuBgm(data)
+                }
+            }
             MediaListingSubmodule.RQI_PICK_PHOTO_DIR -> {
                 if(resultCode == RESULT_OK){
                     if(data != null){
@@ -205,11 +211,17 @@ class Xmb : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    override fun onDestroy() {
+        vsh.M.audio.destroyMenuBgmPlayer()
+        super.onDestroy()
+    }
+
     override fun onPause() {
         M.audio.removeAudioSource()
         M.audio.preventPlayMedia = true
         xmbView.pauseRendering()
         vsh.doMemoryInfoGrab = false
+        vsh.M.audio.pauseMenuBgm()
         super.onPause()
     }
 
@@ -217,6 +229,7 @@ class Xmb : AppCompatActivity() {
         vsh.xmbView = xmbView
         xmbView.startDrawThread()
         vsh.doMemoryInfoGrab = true
+        vsh.M.audio.resumeMenuBgm()
         super.onResume()
     }
 

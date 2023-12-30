@@ -159,6 +159,9 @@ class XmbColdboot(view : XmbView) : XmbScreen(view) {
     override fun end(){
         image?.recycle()
         image = null
+
+        // Begin Playing Menu BGM
+        vsh.M.audio.resumeMenuBgm()
     }
 
     override fun onGamepadInput(key: PadKey, isDown: Boolean): Boolean {
