@@ -1,6 +1,7 @@
 package id.psw.vshlauncher.submodules.settings
 
 import android.os.Build
+import android.provider.Settings
 import id.psw.vshlauncher.BuildConfig
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.Vsh
@@ -8,6 +9,7 @@ import id.psw.vshlauncher.addAllV
 import id.psw.vshlauncher.setActiveLocale
 import id.psw.vshlauncher.submodules.SettingsSubmodule
 import id.psw.vshlauncher.supportedLocaleList
+import id.psw.vshlauncher.types.items.XmbAndroidSettingShortcutItem
 import id.psw.vshlauncher.types.items.XmbMenuItem
 import id.psw.vshlauncher.types.items.XmbSettingsCategory
 import id.psw.vshlauncher.types.items.XmbSettingsItem
@@ -108,16 +110,29 @@ class DebugSettings(private val vsh: Vsh): ISettingsCategories(vsh) {
             content.addAllV(
                 mkItemTestDialog(),
                 mkItemTestUIDialog(),
-                mkItemCustomFileList())
+                mkItemCustomFileList()
+            )
+
             if(BuildConfig.DEBUG){
                 content.addAllV(
                     mkItemDebugThrows(),
-                    mkItemOpenBitmapManager())
+                    mkItemOpenBitmapManager(),
+                    mkItemOpenFakeSettings()
+                )
             }
 
             content.add(mkItemChangeLocale())
 
         }
+    }
+
+    private fun mkItemOpenFakeSettings(): XmbAndroidSettingShortcutItem {
+        return XmbAndroidSettingShortcutItem(
+            vsh, R.drawable.category_setting,
+            R.string.android_dbg_setting_invalid_page_name,
+            R.string.android_dbg_setting_invalid_page_desc,
+            "id.psw.vshlauncher.FakeSettings\$DoNotCreateThisClassPlz"
+        )
     }
 
 }
