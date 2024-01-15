@@ -6,6 +6,7 @@ import android.provider.MediaStore
 import android.util.Size
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.sdkAtLeast
+import id.psw.vshlauncher.submodules.BitmapRef
 import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.types.items.XmbMenuItem
 import id.psw.vshlauncher.views.asBytes
@@ -18,6 +19,8 @@ class XmbVideoItem(val vsh: Vsh, val data : VideoData) : XmbItem(vsh) {
 
     override val description: String
         get() = data.size.asBytes()
+
+    private val defaultBitmap = BitmapRef("none", { TRANSPARENT_BITMAP }, BitmapRef.FallbackColor.Transparent)
 
     private var _hasIcon = false
     private var _icon : Bitmap? = null
@@ -40,6 +43,8 @@ class XmbVideoItem(val vsh: Vsh, val data : VideoData) : XmbItem(vsh) {
         get() = _itemMenus
     override val menuItemCount: Int
         get() = _itemMenus.size
+
+
 
     private fun loadIcon(i:XmbItem){
         vsh.threadPool.execute {

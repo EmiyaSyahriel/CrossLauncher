@@ -3,13 +3,20 @@ package id.psw.vshlauncher.types.media
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
+import androidx.core.graphics.drawable.toBitmap
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.Vsh
+import id.psw.vshlauncher.submodules.BitmapManager
+import id.psw.vshlauncher.submodules.BitmapRef
 import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.types.items.XmbMenuItem
 import java.io.File
 
 class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
+    companion object {
+        private var noAlbum : BitmapRef? = null
+    }
+
     override val id: String = "MUSIC_INTERNAL_${data.id}"
     override val displayName: String
         get() = data.title
@@ -17,19 +24,19 @@ class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
     override val description: String
         get() = "${data.album} - ${data.artist}"
 
-    private var _hasIcon = false
-    private var _icon : Bitmap? = null
-    private var _hasIconLoaded = false
+    private val defaultBitmap = BitmapRef("none", { TRANSPARENT_BITMAP }, BitmapRef.FallbackColor.Transparent)
+
+    private var _icon : BitmapRef = defaultBitmap
 
     private val _itemMenus = arrayListOf<XmbMenuItem>()
 
     override val isIconLoaded: Boolean
-        get() = _hasIconLoaded
+        get() = _icon.isLoaded
 
     override val hasIcon: Boolean
-        get() = _hasIcon
+        get() = true
     override val icon: Bitmap
-        get() = _icon!!
+        get() = _icon.bitmap
 
     override val hasMenu: Boolean
         get() = true
@@ -40,28 +47,28 @@ class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
     override val menuItemCount: Int
         get() = _itemMenus.size
 
-    private fun loadIcon(i:XmbItem){
-        vsh.threadPool.execute {
-            val mmr = MediaMetadataRetriever()
-            mmr.setDataSource(data.data)
-            val dat = mmr.embeddedPicture
-            if(dat == null){
-                _hasIcon = false
-            }else{
-                _icon = BitmapFactory.decodeByteArray(dat, 0, dat.size)
-                _hasIcon = _icon != null
-                _hasIconLoaded = true
-            }
+    private fun iconLoader() : Bitmap? {
+        val mmr = MediaMetadataRetriever()
+        mmr.setDataSource(data.data)
+        val dat = mmr.embeddedPicture
+
+        /// TODO: Load No_Album icon only once
+        return if(dat == null){
+            val bmp = vsh.resources.getDrawable(R.drawable.ic_music_no_album).toBitmap(300,300)
+            bmp
+        } else {
+            val bmp = BitmapFactory.decodeByteArray(dat, 0, dat.size)
+            bmp
         }
     }
 
+    private fun loadIcon(i:XmbItem){
+        _icon = BitmapRef("albumart_$id", ::iconLoader)
+    }
+
     private fun unloadIcon(i:XmbItem){
-        _hasIcon = false
-        if(_icon != null){
-            _hasIconLoaded = false
-            _icon?.recycle()
-            _icon = null
-        }
+        if(_icon != defaultBitmap) _icon.release()
+        _icon = defaultBitmap
     }
 
     private fun launch(i:XmbItem){
