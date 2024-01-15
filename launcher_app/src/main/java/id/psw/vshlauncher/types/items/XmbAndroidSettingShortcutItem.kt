@@ -3,6 +3,7 @@ package id.psw.vshlauncher.types.items
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
+import android.provider.Settings
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
@@ -80,7 +81,7 @@ class XmbAndroidSettingShortcutItem(
 
     private fun launchMainSettings() {
         try{
-            val i = Intent(intentLaunchId)
+            val i = Intent(Settings.ACTION_SETTINGS)
             i.flags = i.flags or Intent.FLAG_ACTIVITY_NEW_TASK
             vsh.startActivity(i)
         }catch(e:Exception){
