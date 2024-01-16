@@ -452,7 +452,11 @@
   <string name="media_delete_confirmation">Would you like to delete \"%s\" ?\n\nThis operation cannot be undone.</string>
   <string name="media_share">Share</string>
     <string name="error_setting_not_found">Setting not Found</string>
-  <string name="error_setting_not_found_description">Cannot open setting page for %s, would you like \nto open the main Settings page instead?</string>
-    <string name="android_dbg_setting_invalid_page_name">Open Invalid Page</string>
-  <string name="android_dbg_setting_invalid_page_desc">Open non-existent Settings page, test for devices with incomplete settings</string>
+  <string name="error_setting_not_found_description">This launcher cannot open setting page for %s.
+\n
+\nReason : %s
+\n
+\nWould you like to open the main Settings page instead?</string>
+    <string name="android_dbg_setting_invalid_page_name">Open Invalid Setting Page</string>
+  <string name="android_dbg_setting_invalid_page_desc">Open non-existent Setting page, test for devices with incomplete settings</string>
 </resources>

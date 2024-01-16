@@ -59,19 +59,15 @@ class XmbAndroidSettingShortcutItem(
             i.flags = i.flags or Intent.FLAG_ACTIVITY_NEW_TASK
             vsh.startActivity(i)
         }catch(e:Exception){
-            if(e is ActivityNotFoundException){
-                askUserShouldOpenMainPage()
-            }else{
-                vsh.postNotification(null, e.javaClass.name, e.message ?: "Unknown cause", 10.0f)
-            }
+            askUserShouldOpenMainPage(e)
         }
     }
 
-    private fun askUserShouldOpenMainPage() {
+    private fun askUserShouldOpenMainPage(e:Exception) {
         val xv = vsh.xmbView ?: return
         xv.showDialog(
             ConfirmDialogView(xv, vsh.getString(R.string.error_setting_not_found), R.drawable.category_setting,
-                vsh.getString(R.string.error_setting_not_found_description).format(displayName)){confirmed ->
+                vsh.getString(R.string.error_setting_not_found_description).format(displayName, "${e.javaClass.name} - ${e.message}")){confirmed ->
                 if(confirmed){
                     launchMainSettings()
                 }
