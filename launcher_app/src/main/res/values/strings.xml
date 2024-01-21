@@ -456,7 +456,7 @@
 \n
 \nReason : %s
 \n
-\nWould you like to open the main Settings page instead?</string>
+\nWould you like to open the main Settings page instead so you can access manually?</string>
   <string name="android_dbg_setting_invalid_page_name">Open Invalid Setting Page</string>
   <string name="android_dbg_setting_invalid_page_desc">Open non-existent Setting page, test for devices with incomplete settings</string>
   <string name="common_loading">Loading…</string>
