@@ -6,6 +6,7 @@ import android.content.ContentUris
 import android.content.Intent
 import android.database.ContentObserver
 import android.database.Cursor
+import android.database.CursorIndexOutOfBoundsException
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
@@ -94,34 +95,42 @@ class MediaListingSubmodule(private val vsh : Vsh) : IVshSubmodule {
     }
 
     private fun addVideoListing(root: Uri, cursor: Cursor){
-        // TODO : Use getString for Unknowns
-        val id    = cursor.getValue(videoProjection[0], Cursor::getLong, 0L)
-        val name  = cursor.getValue(videoProjection[1], Cursor::getString, "Unknown.3gp")
-        val path  = cursor.getValue(videoProjection[2], Cursor::getString, "/dev/null")
-        val size  = cursor.getValue(videoProjection[3], Cursor::getLong, 0L)
-        val dur   = cursor.getValue(videoProjection[4], Cursor::getLong, 0L)
-        val mime  = cursor.getValue(videoProjection[5], Cursor::getString, "video/*")
-        val uri   = ContentUris.withAppendedId(root, id)
+        try {
+            // TODO : Use getString for Unknowns
+            val id    = cursor.getValue(videoProjection[0], Cursor::getLong, 0L)
+            val name  = cursor.getValue(videoProjection[1], Cursor::getString, "Unknown.3gp")
+            val path  = cursor.getValue(videoProjection[2], Cursor::getString, "/dev/null")
+            val size  = cursor.getValue(videoProjection[3], Cursor::getLong, 0L)
+            val dur   = cursor.getValue(videoProjection[4], Cursor::getLong, 0L)
+            val mime  = cursor.getValue(videoProjection[5], Cursor::getString, "video/*")
+            val uri   = ContentUris.withAppendedId(root, id)
 
-        linearMediaList.videos.add(
-            XmbVideoItem(vsh, VideoData(id, uri, path, name, size, dur, mime))
-        )
+            linearMediaList.videos.add(
+                XmbVideoItem(vsh, VideoData(id, uri, path, name, size, dur, mime))
+            )
+        }catch(cio: CursorIndexOutOfBoundsException){
+            cio.printStackTrace()
+        }
     }
     private fun addAudioListing(root: Uri, cursor: Cursor){
-        // TODO : Use getString for Unknowns
-        val id    = cursor.getValue(audioProjection[0], Cursor::getLong,   0L)
-        val path  = cursor.getValue(audioProjection[1], Cursor::getString, "/dev/null")
-        val title = cursor.getValue(audioProjection[2], Cursor::getString, "No Title")
-        val album = cursor.getValue(audioProjection[3], Cursor::getString, "No Album")
-        val artis = cursor.getValue(audioProjection[4], Cursor::getString, "Unknown Artist")
-        val size  = cursor.getValue(audioProjection[5], Cursor::getLong,   0L)
-        val dur   = cursor.getValue(audioProjection[6], Cursor::getLong,   0L)
-        val mime  = cursor.getValue(audioProjection[7], Cursor::getString, "audio/*")
-        val uri   = ContentUris.withAppendedId(root, id)
+        try {
+            // TODO : Use getString for Unknowns
+            val id    = cursor.getValue(audioProjection[0], Cursor::getLong,   0L)
+            val path  = cursor.getValue(audioProjection[1], Cursor::getString, "/dev/null")
+            val title = cursor.getValue(audioProjection[2], Cursor::getString, "No Title")
+            val album = cursor.getValue(audioProjection[3], Cursor::getString, "No Album")
+            val artis = cursor.getValue(audioProjection[4], Cursor::getString, "Unknown Artist")
+            val size  = cursor.getValue(audioProjection[5], Cursor::getLong,   0L)
+            val dur   = cursor.getValue(audioProjection[6], Cursor::getLong,   0L)
+            val mime  = cursor.getValue(audioProjection[7], Cursor::getString, "audio/*")
+            val uri   = ContentUris.withAppendedId(root, id)
 
-        linearMediaList.musics.add(
-            XmbMusicItem(vsh, MusicData(id, uri, path, title, album, artis, size, dur, mime))
-        )
+            linearMediaList.musics.add(
+                XmbMusicItem(vsh, MusicData(id, uri, path, title, album, artis, size, dur, mime))
+            )
+        }catch(cio: CursorIndexOutOfBoundsException){
+            cio.printStackTrace()
+        }
     }
 
     fun createMediaMenuItems(_itemMenus : ArrayList<XmbMenuItem>, data: MediaData){
