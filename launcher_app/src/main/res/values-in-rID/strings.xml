@@ -427,4 +427,39 @@
   <string name="updater_download_failed_title">Gagal mengunduh pembaruan</string>
   <string name="updater_download_failed_unknown_error">Mengalami galat yang tidak diketahui sebabnya</string>
 
+  <string name="settings_category_media_name">Pengaturan Media</string>
+  <string name="settings_category_media_desc">Perilaku pendaftaran dan  item media</string>
+  <string name="permission_granted">Izin diberikan</string>
+  <string name="permission_not_granted">Izin tidak diberikan</string>
+  <string name="settings_media_request_permission_name">Minta Izin Pembacaan Media</string>
+  <string name="settings_media_request_permission_desc">Apakah peluncur memiliki izin untuk membaca media?</string>
+  <string name="error_menubgm_load_nopath">Gagal meminta berkas BGM Sistem</string>
+  <string name="picker_pick_bgm">Pilih BGM Sistem</string>
+  <string name="error_menubgm_copy_empty">Gagal menemukan direktori tujuan, mungkin karena kesalahan sistem Android.</string>
+  <string name="error_menubgm_source_null">Berkas kosong, mungkin karena galat pada apl pemilih berkas atau keamanan yang terlalu ketat</string>
+  <string name="error_menubgm_copy_source_not_found">Berkas sumber tidak ditemukan. Mungklin karena kesalahan apl pemilih atau keamanan yang terlalu ketat</string>
+  <string name="settings_audio_menubgm_volume_name">Volume Musik Menu</string>
+  <string name="settings_audio_menubgm_volume_desc">Volume musik untuk latar belakang menu (jika dimuat)</string>
+  <string name="settings_audio_menubgm_pick_name">Pilih Berkas Musik Menu</string>
+  <string name="settings_audio_menubgm_pick_desc">Pilih berkas audio sebagai musik yang terus dimainkan di latar belakang</string>
+  <string name="settings_audio_menubgm_delete_name">Hapus Berkas Musik Menu</string>
+  <string name="settings_audio_menubgm_delete_desc">Hapus berkas audio untuk musik menu</string>
+  <string name="media_open">Buka</string>
+  <string name="media_open_with">Buka dengan…</string>
+  <string name="media_play">Mainkan</string>
+  <string name="media_delete">Hapus</string>
+  <string name="media_delete_confirmation">Hapus \"%s\" ?\n\nOperasi tidak bisa diurungkan.</string>
+  <string name="media_share">Bagikan</string>
+  <string name="error_setting_not_found">Pengaturan Tidak Ditemukan</string>
+  <string name="error_setting_not_found_description">Peluncur gagal membuka pengaturan untuk %s.
+\n
+\nAlasan Teknis : %s
+\n
+\nMaukah anda membuka halaman pengaturan utama sebagai gantinya, agar anda bisa mengakses secara manual?</string>
+  <string name="android_dbg_setting_invalid_page_name">Buka Pengaturan Tidak Nyata</string>
+  <string name="android_dbg_setting_invalid_page_desc">Buka halaman pengaturan yang tidak ada, untuk tes perangkat dengan pengaturan yang tidak lengkap</string>
+  <string name="common_loading">Memuat…</string>
+  <string name="error_setting_wait_dialog_closing_msg">Menutup…\n\nJika dialog tidak segera menutup, tekan Konfirmasi atau Batalkan</string>
+  <string name="android_dbg_setting_self_name">Buka Xmb Sebagai Pengaturan</string>
+  <string name="android_dbg_setting_self_desc">Harusnya memiliki efek yang sama dengan meluncurkan pengaturan yang terdaftar tapi aslinya tidak ada</string>
 </resources>
