@@ -5,6 +5,7 @@ import android.provider.Settings
 import id.psw.vshlauncher.BuildConfig
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.Vsh
+import id.psw.vshlauncher.activities.Xmb
 import id.psw.vshlauncher.addAllV
 import id.psw.vshlauncher.setActiveLocale
 import id.psw.vshlauncher.submodules.SettingsSubmodule
@@ -117,7 +118,8 @@ class DebugSettings(private val vsh: Vsh): ISettingsCategories(vsh) {
                 content.addAllV(
                     mkItemDebugThrows(),
                     mkItemOpenBitmapManager(),
-                    mkItemOpenFakeSettings()
+                    mkItemOpenFakeSettings(),
+                    mkItemOpenSelfAsSettings()
                 )
             }
 
@@ -135,4 +137,12 @@ class DebugSettings(private val vsh: Vsh): ISettingsCategories(vsh) {
         )
     }
 
+    private fun mkItemOpenSelfAsSettings(): XmbAndroidSettingShortcutItem {
+        return XmbAndroidSettingShortcutItem(
+            vsh, R.drawable.category_setting,
+            R.string.android_dbg_setting_self_name,
+            R.string.android_dbg_setting_self_desc,
+            Xmb.Companion::class.java.canonicalName ?: "id.psw.vshlauncher.activities.Xmb"
+        )
+    }
 }

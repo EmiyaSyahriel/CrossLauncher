@@ -13,6 +13,7 @@ import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.views.dialogviews.ConfirmDialogView
+import id.psw.vshlauncher.views.dialogviews.WaitForAndroidSettingDialogView
 import id.psw.vshlauncher.xmb
 
 class XmbAndroidSettingShortcutItem(
@@ -54,35 +55,8 @@ class XmbAndroidSettingShortcutItem(
     }
 
     private fun launchSetting(xmb:XmbItem){
-        try{
-            val i = Intent(intentLaunchId)
-            i.flags = i.flags or Intent.FLAG_ACTIVITY_NEW_TASK
-            vsh.startActivity(i)
-        }catch(e:Exception){
-            askUserShouldOpenMainPage(e)
-        }
-    }
-
-    private fun askUserShouldOpenMainPage(e:Exception) {
-        val xv = vsh.xmbView ?: return
-        xv.showDialog(
-            ConfirmDialogView(xv, vsh.getString(R.string.error_setting_not_found), R.drawable.category_setting,
-                vsh.getString(R.string.error_setting_not_found_description).format(displayName, "${e.javaClass.name} - ${e.message}")){confirmed ->
-                if(confirmed){
-                    launchMainSettings()
-                }
-            }
-        )
-    }
-
-    private fun launchMainSettings() {
-        try{
-            val i = Intent(Settings.ACTION_SETTINGS)
-            i.flags = i.flags or Intent.FLAG_ACTIVITY_NEW_TASK
-            vsh.startActivity(i)
-        }catch(e:Exception){
-            vsh.postNotification(null, e.javaClass.name, e.message ?: "Unknown cause", 10.0f)
-        }
+        val v =vsh.xmbView ?: return
+        v.showDialog(WaitForAndroidSettingDialogView(v, displayName, intentLaunchId))
     }
 
     override val onLaunch: (XmbItem) -> Unit

@@ -37,6 +37,8 @@ class Xmb : AppCompatActivity() {
     var skipColdBoot = false
     var sysBarVisibility = SysBar.NONE
 
+    val onPauseCallbacks = arrayListOf<() -> Unit>()
+
     private var _lastOrientation : Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -227,6 +229,16 @@ class Xmb : AppCompatActivity() {
     }
 
     override fun onPause() {
+        val callback = arrayListOf<() -> Unit>()
+
+        // Safe from concurrent modification
+        callback.addAll(onPauseCallbacks)
+        callback.forEach {
+            try {
+                it.invoke()
+            }catch(e:Exception){ e.printStackTrace() }
+        }
+
         M.audio.removeAudioSource()
         M.audio.preventPlayMedia = true
         xmbView.pauseRendering()
