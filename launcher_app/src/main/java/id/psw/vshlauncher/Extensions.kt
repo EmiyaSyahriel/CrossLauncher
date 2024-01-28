@@ -210,3 +210,11 @@ fun String.asHexToByteArray() : ByteArray {
 
     return chunked(2).map { it.toInt(16).toByte() }.toByteArray()
 }
+
+fun <T> ArrayList<T>.copyList() : ArrayList<T> {
+    val a = arrayListOf<T>()
+    synchronized(this){
+        a.addAll(this)
+    }
+    return a
+}

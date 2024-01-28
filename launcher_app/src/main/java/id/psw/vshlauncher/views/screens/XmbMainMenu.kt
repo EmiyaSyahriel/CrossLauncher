@@ -19,6 +19,7 @@ import id.psw.vshlauncher.FColor
 import id.psw.vshlauncher.FittingMode
 import id.psw.vshlauncher.PrefEntry
 import id.psw.vshlauncher.R
+import id.psw.vshlauncher.copyList
 import id.psw.vshlauncher.lerpFactor
 import id.psw.vshlauncher.livewallpaper.NativeGL
 import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
@@ -207,7 +208,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
         val xPos = (scaling.target.width() * center.x) + context.vsh.isInRoot.select(0f, isPSP.select(
                 pspSelectedIconSize, ps3SelectedIconSize).x * -0.75f)
         val yPos = scaling.target.height() * center.y
-        val notHidden = context.vsh.categories.visibleItems
+        val notHidden = context.vsh.categories.copyList().visibleItems
         val separation = (layoutMode == XmbLayoutType.PSP).select(pspIconSeparation, ps3IconSeparation).x
         val cursorX = context.vsh.itemCursorX
         for(wx in notHidden.indices){
@@ -269,7 +270,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     }
 
     private fun drawVerticalMenu(ctx:Canvas){
-        val items = vsh.items?.visibleItems?.filterBySearch(context.vsh)
+        val items = vsh.items?.copyList()?.visibleItems?.filterBySearch(context.vsh)
 
         val loadIcon = loadingIconBitmap
         val isPSP = layoutMode == XmbLayoutType.PSP
