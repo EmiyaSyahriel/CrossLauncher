@@ -10,11 +10,14 @@ import id.psw.vshlauncher.PrefEntry
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.VshBaseDirs
+import id.psw.vshlauncher.lerpFactor
 import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.sdkAtLeast
 import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.xmb
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileNotFoundException
 import kotlin.Exception
@@ -23,6 +26,7 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
     companion object {
         private const val TAG = "vsh_audio"
         const val PICKER_REQ_ID = 0x4FF + 0xCED
+        const val MENU_BGM_FADE_TIME = 1000.0f
     }
 
     enum class Channel {
@@ -185,13 +189,43 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
                 bgmPlayerDoNotAutoPlay = doNotStart
                 Logger.d(Vsh.TAG, "Changing BGM Player Source to ${newSrc.absolutePath}")
 
-                // Silent the Menu BGM
-                pauseMenuBgm()
+                ctx.lifeScope.launch {
+                    turnDownVolumeAndPauseMenuBgm()
+                }
+
             }catch(e: Exception){
                 Logger.e(Vsh.TAG, "BGM Player Failed : ${e.message}")
                 e.printStackTrace()
             }
         }
+    }
+
+    private suspend fun turnDownVolumeAndPauseMenuBgm(){
+        val begin = System.currentTimeMillis()
+        var now = begin
+        while(now - begin < MENU_BGM_FADE_TIME){
+            val t = (now - begin) / MENU_BGM_FADE_TIME
+            val v = t.lerpFactor(menuBgm, 0.0f)
+            menuBgmPlayer.setVolume(v,v)
+            now = System.currentTimeMillis()
+            delay(16L)
+        }
+        menuBgmPlayer.setVolume(0.0f, 0.0f)
+        pauseMenuBgm()
+    }
+
+    private suspend fun resumeAndTurnVolumeUpMenuBgm(){
+        val begin = System.currentTimeMillis()
+        var now = begin
+        resumeMenuBgm()
+        while(now - begin < MENU_BGM_FADE_TIME){
+            val t = (now - begin) / MENU_BGM_FADE_TIME
+            val v = t.lerpFactor(0.0f, menuBgm)
+            menuBgmPlayer.setVolume(v,v)
+            now = System.currentTimeMillis()
+            delay(16L)
+        }
+        menuBgmPlayer.setVolume(menuBgm, menuBgm)
     }
 
     fun removeAudioSource(){
@@ -201,7 +235,9 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
             bgmPlayerActiveSrc = XmbItem.SILENT_AUDIO
 
             // Continue menu BGM
-            resumeMenuBgm()
+            ctx.lifeScope.launch {
+                resumeAndTurnVolumeUpMenuBgm()
+            }
         }
     }
 
