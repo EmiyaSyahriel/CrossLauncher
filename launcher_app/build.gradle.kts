@@ -76,6 +76,9 @@ android {
                     res {
                         srcDirs("dex/res")
                     }
+                    java {
+                        srcDirs("src/dex/java")
+                    }
                 }
             }
         }

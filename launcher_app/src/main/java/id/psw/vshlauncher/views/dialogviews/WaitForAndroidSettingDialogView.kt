@@ -5,11 +5,11 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.provider.Settings
+import android.util.Log
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.makeTextPaint
 import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.select
-import id.psw.vshlauncher.views.DrawExtension
 import id.psw.vshlauncher.views.XmbDialogSubview
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.wrapText
@@ -17,9 +17,16 @@ import id.psw.vshlauncher.xmb
 import java.util.Timer
 import kotlin.concurrent.timerTask
 
-class WaitForAndroidSettingDialogView(xmb: XmbView, private val displayName: String, private val intentId:String) : XmbDialogSubview(xmb)  {
+class WaitForAndroidSettingDialogView(
+    xmb: XmbView,
+    private val displayName: String,
+    private val intentId:String,
+    private val isComponent: Boolean = false
+) : XmbDialogSubview(xmb)  {
     companion object {
+        const val TAG = "XmbDialogSubview"
         const val WAIT_TIME = 1000L
+        const val RESUME_TIME_THRESHOLD = 300L
         const val TIMER_ID = "wait_for_setting_window"
     }
 
@@ -31,6 +38,7 @@ class WaitForAndroidSettingDialogView(xmb: XmbView, private val displayName: Str
     private var state = State.Waiting
     private var isTimerCancelled = false
     private val timer = Timer(TIMER_ID)
+    private var startTime = 0L
     private var paint = vsh.makeTextPaint(20.0f, Paint.Align.CENTER)
 
     override val title: String
@@ -54,13 +62,14 @@ class WaitForAndroidSettingDialogView(xmb: XmbView, private val displayName: Str
     override fun onStart() {
         if(started) return
         started = true
-        timer.schedule(timerTask { onScheduleEnd() }, WAIT_TIME)
-        vsh.xmb.onPauseCallbacks.add(::cancelScheduleAndClose)
+        startTime = System.currentTimeMillis()
+        timer.schedule(timerTask { onLaunchFailed() }, WAIT_TIME)
+        vsh.xmb.onPauseCallbacks.add(::onPaused)
 
         launch(intentId, false)
     }
 
-    private fun onScheduleEnd(){
+    private fun onLaunchFailed(){
         state = State.Failed
         lastException = Exception("Android failed launch requested intent")
     }
@@ -87,7 +96,9 @@ class WaitForAndroidSettingDialogView(xmb: XmbView, private val displayName: Str
     }
 
     private fun launch(actionSettings: String, closeOnFail : Boolean) {
-        val i = Intent(actionSettings)
+        val i = if(isComponent)
+            Intent(vsh, Class.forName(intentId))
+            else Intent(actionSettings)
         if(!actionSettings.startsWith("id.psw.vshlauncher")){
             i.flags = i.flags or Intent.FLAG_ACTIVITY_NEW_TASK
         }
@@ -111,11 +122,26 @@ class WaitForAndroidSettingDialogView(xmb: XmbView, private val displayName: Str
         if(p != null) finish(p)
     }
 
-    private fun cancelScheduleAndClose(){
+    private fun onPaused(){
+        Log.d(TAG, "Paused")
+
+        // Cancel Fail Check Schedule
         cancelTimer()
 
-        vsh.xmb.onPauseCallbacks.remove(::cancelScheduleAndClose)
-        closeDialog()
+        startTime = System.currentTimeMillis()
+        vsh.xmb.onPauseCallbacks.remove(::onPaused)
+        vsh.xmb.onResumeCallbacks.add(::onResumed)
+    }
+
+    private fun onResumed(){
+        vsh.xmb.onResumeCallbacks.remove(::onResumed)
+        val now = System.currentTimeMillis()
+        // App must run longer than this threshold before is deemed failed to launch
+        if(now - startTime > RESUME_TIME_THRESHOLD){
+            closeDialog()
+        }else{
+            onLaunchFailed()
+        }
     }
 
     override fun onDraw(ctx: Canvas, drawBound: RectF, deltaTime: Float) {

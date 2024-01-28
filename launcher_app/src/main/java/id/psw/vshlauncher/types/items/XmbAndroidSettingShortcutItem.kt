@@ -43,6 +43,8 @@ class XmbAndroidSettingShortcutItem(
     override val isHidden: Boolean
         get() = !_isActivityExists
 
+    internal var useComponentInstead = false
+
     init {
         val i = Intent(intentLaunchId)
         i.flags = i.flags or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -56,7 +58,7 @@ class XmbAndroidSettingShortcutItem(
 
     private fun launchSetting(xmb:XmbItem){
         val v =vsh.xmbView ?: return
-        v.showDialog(WaitForAndroidSettingDialogView(v, displayName, intentLaunchId))
+        v.showDialog(WaitForAndroidSettingDialogView(v, displayName, intentLaunchId, useComponentInstead))
     }
 
     override val onLaunch: (XmbItem) -> Unit

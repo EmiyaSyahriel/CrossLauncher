@@ -142,7 +142,9 @@ class DebugSettings(private val vsh: Vsh): ISettingsCategories(vsh) {
             vsh, R.drawable.category_setting,
             R.string.android_dbg_setting_self_name,
             R.string.android_dbg_setting_self_desc,
-            Xmb.Companion::class.java.canonicalName ?: "id.psw.vshlauncher.activities.Xmb"
-        )
+            Xmb::class.java.canonicalName ?: "id.psw.vshlauncher.activities.Xmb"
+        ).apply {
+            useComponentInstead = true
+        }
     }
 }
