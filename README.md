@@ -2,9 +2,9 @@
 
 [Baca dalam Bahasa Indonesia](README_ID.md)
 
-## **⚠ Warning! ⚠**
-This app is in heavy alpha stage development and therefore not really stable! If you have
-technical issue like crash or system bug, Please refer to [this page](https://github.com/EmiyaSyahriel/CrossLauncher/wiki/Error-Reporting)
+> [!WARNING]
+> This app is in heavy alpha stage development and therefore not really stable! If you have
+> technical issue like crash or system bug, Please refer to [this page](https://github.com/EmiyaSyahriel/CrossLauncher/wiki/Error-Reporting)
 
 ## Main Focus
 This launcher is not really focused to be used on touch-screen Android, it's mostly targeted
