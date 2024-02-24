@@ -121,7 +121,7 @@ android {
         targetFile = project.rootProject.file("other_asset/vshbtn/vshbtn.ttf")
     }
 }
-
+ 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar") )))
 

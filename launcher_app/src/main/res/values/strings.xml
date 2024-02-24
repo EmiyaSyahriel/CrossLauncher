@@ -463,4 +463,10 @@
   <string name="error_setting_wait_dialog_closing_msg">Now Closing…\n\nIf dialog not closing soon, press Confirm or Cancel</string>
   <string name="android_dbg_setting_self_name">Open Xmb as Setting</string>
   <string name="android_dbg_setting_self_desc">This should trigger same effect as when Android have settings entry but not the actual implementation.</string>
+    <string name="notification_listener_service_name">CrossLauncher System Notification Listener</string>
+    <string name="sysnotif_new">New Notification</string>
+  <string name="sysnotif_no_info">No Information is available</string>
+    <string name="settings_system_notification_enabled_name">System Notification</string>
+  <string name="settings_system_notification_enabled_desc">Is launcher allowed to access Android Notification</string>
+    <string name="error_sysnotif_no_settings">Failed to Grant Notification Access</string>
 </resources>

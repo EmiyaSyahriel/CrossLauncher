@@ -1,12 +1,16 @@
 package id.psw.vshlauncher.submodules.settings
 
+import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.os.Bundle
 import id.psw.vshlauncher.PrefEntry
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.SysBar
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.addAllV
+import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.select
+import id.psw.vshlauncher.services.SystemNotificationListener
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.submodules.SettingsSubmodule
 import id.psw.vshlauncher.submodules.XmbAdaptiveIconRenderer
@@ -433,6 +437,32 @@ class SystemSettings(private val vsh: Vsh) : ISettingsCategories(vsh) {
         }
     }
 
+    private fun mkItemSystemNotification(): XmbSettingsItem {
+        return XmbSettingsItem(vsh, "settings_system_notification_enabled",
+            R.string.settings_system_notification_enabled_name,
+            R.string.settings_system_notification_enabled_desc,
+            R.drawable.category_notifications,
+            {
+                val i = SystemNotificationListener.getIsAllowed(vsh).select(R.string.common_enabled, R.string.common_disabled)
+                vsh.getString(i)
+            }
+        ){
+            val i = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+            val key = ":settings:fragment_args_key"
+            val component =SystemNotificationListener.componentName
+            i.putExtra(key, component.flattenToString())
+            i.putExtra(":settings:show_fragment_args", Bundle().apply {
+                putString(key, component.flattenToString())
+            })
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            try {
+                vsh.startActivity(i)
+            }catch(e:Exception){
+                vsh.postNotification(R.drawable.category_notifications, vsh.getString(R.string.error_sysnotif_no_settings), e.localizedMessage ?: "No message", 5.0f)
+            }
+        }
+    }
+
     private fun mkItemTrialMode(cat: XmbSettingsCategory){
         val cal = Calendar.getInstance()
         val mon = cal.get(Calendar.MONTH)
@@ -469,6 +499,7 @@ class SystemSettings(private val vsh: Vsh) : ISettingsCategories(vsh) {
                 mkItemLegacyIconBg(),
                 mkItemOrientation(),
                 mkItemAsianConsole(),
+                mkItemSystemNotification(),
                 mkItemDisableSplashMessage(),
                 mkItemVideoIconMode(),
                 mkItemAppDesc(),
