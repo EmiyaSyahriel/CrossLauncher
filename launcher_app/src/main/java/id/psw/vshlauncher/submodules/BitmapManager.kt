@@ -18,7 +18,7 @@ class BitmapManager(private val ctx: Vsh) : IVshSubmodule {
         private const val TAG = "Bitman"
     }
 
-    private data class BitmapCache (
+    internal data class BitmapCache (
         val id : String,
         var bitmap : Bitmap?,
         var loadMutex : Mutex,
@@ -28,7 +28,7 @@ class BitmapManager(private val ctx: Vsh) : IVshSubmodule {
             )
 
     private val cacheAccessLock = Mutex(false)
-    private val cache = arrayListOf<BitmapCache>()
+    internal val cache = arrayListOf<BitmapCache>()
     private lateinit var dclWhite : Bitmap
     private lateinit var dclBlack : Bitmap
     private lateinit var dclTrans : Bitmap
