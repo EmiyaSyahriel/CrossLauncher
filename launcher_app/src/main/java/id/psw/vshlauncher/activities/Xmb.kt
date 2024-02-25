@@ -12,8 +12,13 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import id.psw.vshlauncher.*
+import id.psw.vshlauncher.submodules.AudioSubmodule
+import id.psw.vshlauncher.submodules.MediaListingSubmodule
 import id.psw.vshlauncher.submodules.PadKey
 import id.psw.vshlauncher.types.items.XmbAppItem
 import id.psw.vshlauncher.views.M
@@ -31,6 +36,9 @@ class Xmb : AppCompatActivity() {
     lateinit var xmbView : XmbView
     var skipColdBoot = false
     var sysBarVisibility = SysBar.NONE
+
+    val onPauseCallbacks = arrayListOf<() -> Unit>()
+    val onResumeCallbacks = arrayListOf<() -> Unit>()
 
     private var _lastOrientation : Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +59,8 @@ class Xmb : AppCompatActivity() {
 
         sysBarTranslucent()
         updateSystemBarVisibility()
-        vsh.mediaListingStart()
+        vsh.M.media.mediaListingStart()
+        vsh.M.audio.initMenuBgm()
 
         vsh.doMemoryInfoGrab = true
         handleAdditionalIntent(intent)
@@ -78,7 +87,6 @@ class Xmb : AppCompatActivity() {
         }
 
         window.decorView.systemUiVisibility = flag
-
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -100,7 +108,7 @@ class Xmb : AppCompatActivity() {
                 vsh.showInstallPkgDialog(intent)
             }
             intent.action == Consts.ACTION_WAVE_SETTINGS_WIZARD -> {
-                vsh.showXMBLiveWallpaperWizard()
+                M.settings.display.wave.showXMBLiveWallpaperWizard()
             }
             intent.action == Consts.ACTION_UI_TEST_DIALOG -> {
                 xmbView.showDialog(UITestDialogView(xmbView))
@@ -113,6 +121,7 @@ class Xmb : AppCompatActivity() {
     private fun checkIsDefaultHomeIntent() {
         val i = Intent(Intent.ACTION_MAIN)
         i.addCategory(Intent.CATEGORY_HOME)
+        @Suppress("DEPRECATION") // Resolve Activity - before API 33
         val ri = if(sdkAtLeast(33))
             packageManager.resolveActivity(i, PackageManager.ResolveInfoFlags.of(0))
             else packageManager.resolveActivity(i, 0)
@@ -139,8 +148,12 @@ class Xmb : AppCompatActivity() {
     private fun sysBarTranslucent(){
         //if(Build.VERSION.SDK_INT >= 19){
             window.apply {
+                @Suppress("DEPRECATION") // Supports old Android Version
                 clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+
+                @Suppress("DEPRECATION") // Supports old Android Version
                 decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+
                 addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
                 if(Build.VERSION.SDK_INT >= 21){
                     addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -153,12 +166,13 @@ class Xmb : AppCompatActivity() {
         //}
     }
 
+    @Suppress("OVERRIDE_DEPRECATION") // We do not use compat library, not using this might cause error on old version
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when(requestCode){
             ACT_REQ_UNINSTALL -> {
                 if(resultCode == RESULT_OK){
                     vsh.postNotification(null, getString(R.string.app_uninstall),getString(R.string.app_refresh_due_to_uninstall))
-                    vsh.reloadAppList()
+                    vsh.M.apps.reloadAppList()
                 }
             }
             Vsh.ACT_REQ_INSTALL_PACKAGE -> {
@@ -176,25 +190,73 @@ class Xmb : AppCompatActivity() {
             }
             Vsh.ACT_REQ_MEDIA_LISTING -> {
                 if(resultCode == RESULT_OK){
-                    vsh.mediaListingStart()
+                    vsh.M.media.mediaListingStart()
+                }
+            }
+            AudioSubmodule.PICKER_REQ_ID -> {
+                if(resultCode == RESULT_OK && data != null){
+                    vsh.M.audio.loadPickedMenuBgm(data)
+                }
+            }
+            MediaListingSubmodule.RQI_PICK_PHOTO_DIR -> {
+                if(resultCode == RESULT_OK){
+                    if(data != null){
+                        vsh.M.media.onDirectoryPicked(data)
+                    }else{
+                        vsh.postNotification(
+                            R.drawable.ic_folder,
+                            getString(R.string.error_common_header),
+                            getString(R.string.custom_package_error_no_intent),
+                            3.0f)
+                    }
                 }
             }
         }
+
+        @Suppress("DEPRECATION") // For old version compatibility
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    val mediaDeletionActivityResult = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()
+    ) {
+        if(it.resultCode == RESULT_OK )  {
+            vsh.M.media.mediaListingStart()
+        }
+    }
+
+    override fun onDestroy() {
+        vsh.M.audio.destroyMenuBgmPlayer()
+        super.onDestroy()
+    }
+
     override fun onPause() {
+        // Safe from concurrent modification
+        onPauseCallbacks.copyList().forEach {
+            try {
+                it.invoke()
+            }catch(e:Exception){ e.printStackTrace() }
+        }
+
         M.audio.removeAudioSource()
         M.audio.preventPlayMedia = true
         xmbView.pauseRendering()
         vsh.doMemoryInfoGrab = false
+        vsh.M.audio.pauseMenuBgm()
         super.onPause()
     }
 
     override fun onResume() {
         vsh.xmbView = xmbView
+
+        onResumeCallbacks.copyList().forEach {
+            try {
+                it.invoke()
+            }catch(e:Exception){ e.printStackTrace() }
+        }
+
         xmbView.startDrawThread()
         vsh.doMemoryInfoGrab = true
+        vsh.M.audio.resumeMenuBgm()
         super.onResume()
     }
 
@@ -293,6 +355,8 @@ class Xmb : AppCompatActivity() {
         }else{
             true
         }
+
+        @Suppress("DEPRECATION") // Action Uninstall Package is deprecated on API > P
         if(permissionAllowed){
             val i = Intent(Intent.ACTION_UNINSTALL_PACKAGE).setData(Uri.parse("package:$pkgName"))
             startActivityForResult(i, ACT_REQ_UNINSTALL)

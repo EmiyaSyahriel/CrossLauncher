@@ -62,6 +62,8 @@ open class XmbItem(private val vsh: Vsh) {
     open val animatedIcon : XmbFrameAnimation get() = XmbItem.TRANSPARENT_ANIM_BITMAP
     open val backdrop : Bitmap get() = XmbItem.TRANSPARENT_BITMAP
     open val portraitBackdrop : Bitmap get() = XmbItem.TRANSPARENT_BITMAP
+    open val backdropOverlay : Bitmap get() = XmbItem.TRANSPARENT_BITMAP
+    open val portraitBackdropOverlay : Bitmap get() = XmbItem.TRANSPARENT_BITMAP
     open val backSound : File get() = SILENT_AUDIO
 
     open val menuItems : ArrayList<XmbMenuItem>? = null

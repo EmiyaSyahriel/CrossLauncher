@@ -3,6 +3,10 @@ Peluncur Aplikasi Android mirip XMB pada beberapa produk Sony, terutama XMB Play
 
 [Read in English](README.md)
 
+> [!WARNING]
+> Aplikasi sedang dalam fase alpha dan sedang dalam pengembangan besar, sehingga tidak terlalu stabil! Jika
+> anda mengalami crash atau bug sistem, silahkan merujuk [ke halaman ini (Bahasa Inggris)](https://github.com/EmiyaSyahriel/CrossLauncher/wiki/Error-Reporting)
+
 ## Fokus Utama
 Launcher ini tidak benar-benar ditujukan kepada perangkat Android layar sentuh, Tetapi untuk perangkat
 Android yang normalnya tidak memiliki antarmuka sentuh seperti TV, Komputer, Laptop atau Emulator.

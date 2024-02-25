@@ -1,35 +1,47 @@
 package id.psw.vshlauncher.submodules
 
+import android.content.Intent
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.SoundPool
 import id.psw.vshlauncher.Logger
 import id.psw.vshlauncher.PrefEntry
+import id.psw.vshlauncher.R
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.VshBaseDirs
+import id.psw.vshlauncher.lerpFactor
+import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.sdkAtLeast
 import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.xmb
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
-import java.lang.Exception
+import java.io.FileNotFoundException
+import kotlin.Exception
 
 class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
     companion object {
         private const val TAG = "vsh_audio"
+        const val PICKER_REQ_ID = 0x4FF + 0xCED
+        const val MENU_BGM_FADE_TIME = 1000.0f
     }
 
     enum class Channel {
         Master,
         Sfx,
         Bgm,
-        SystemBgm
+        SystemBgm,
+        MenuBgm
     }
 
     private var _master = 1.0f
     private var _sfx = 1.0f
     private var _bgm = 1.0f
     private var _systemBgm = 1.0f
+    private var _menuBgm = 0.2f
 
     var onVolumeChange : ((Channel, Float) -> Unit)? = null
     private val _pref get() = ctx.M.pref
@@ -39,20 +51,27 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
             Channel.Bgm -> _master * _bgm
             Channel.Sfx -> _master * _sfx
             Channel.SystemBgm -> _master * _systemBgm
+            Channel.MenuBgm -> _master * _menuBgm
             else -> _master
         })
+
+        if(channel == Channel.MenuBgm){
+            menuBgmPlayer.setVolume(_menuBgm * _master, _menuBgm * _master)
+        }
 
         _pref.set(
             when(channel){
                 Channel.Bgm -> PrefEntry.VOLUME_AUDIO_BGM
                 Channel.Sfx -> PrefEntry.VOLUME_AUDIO_SFX
                 Channel.SystemBgm -> PrefEntry.VOLUME_AUDIO_SYSBGM
+                Channel.MenuBgm -> PrefEntry.VOLUME_AUDIO_MENUBGM
                 else -> PrefEntry.VOLUME_AUDIO_MASTER
             },
             when(channel){
                 Channel.Bgm -> _bgm
                 Channel.Sfx -> _sfx
                 Channel.SystemBgm -> _systemBgm
+                Channel.MenuBgm -> _menuBgm
                 else -> _master
             }
         )
@@ -63,6 +82,7 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
         sfx = _pref.get(PrefEntry.VOLUME_AUDIO_SFX, 1.0f)
         bgm = _pref.get(PrefEntry.VOLUME_AUDIO_BGM, 1.0f)
         systemBgm = _pref.get(PrefEntry.VOLUME_AUDIO_SYSBGM, 1.0f)
+        menuBgm = _pref.get(PrefEntry.VOLUME_AUDIO_SYSBGM, 0.2f)
     }
 
     var master : Float
@@ -79,10 +99,14 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
     var systemBgm : Float
         get() = _systemBgm
         set(value) { _systemBgm = value; sendChange(Channel.SystemBgm) }
+    var menuBgm : Float
+        get() = _menuBgm
+        set(value) { _menuBgm = value; sendChange(Channel.MenuBgm) }
 
     var preventPlayMedia = true
     val bgmPlayer = MediaPlayer()
     val systemBgmPlayer = MediaPlayer()
+    var menuBgmPlayer = MediaPlayer()
     lateinit var bgmPlayerActiveSrc : File
     var bgmPlayerDoNotAutoPlay = false
     lateinit var sfxPlayer : SoundPool
@@ -103,6 +127,7 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
                 .setAudioAttributes(attr.build())
                 .build()
         }else{
+            @Suppress("DEPRECATION") // For old Android version
             sfxPlayer = SoundPool(6, AudioManager.STREAM_MUSIC, 0)
         }
 
@@ -123,6 +148,7 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
         sfxPlayer.release()
         bgmPlayer.release()
         systemBgmPlayer.release()
+        destroyMenuBgmPlayer()
     }
 
     fun preparePlaceholderAudio(){
@@ -162,6 +188,11 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
                 bgmPlayer.prepareAsync()
                 bgmPlayerDoNotAutoPlay = doNotStart
                 Logger.d(Vsh.TAG, "Changing BGM Player Source to ${newSrc.absolutePath}")
+
+                ctx.lifeScope.launch {
+                    turnDownVolumeAndPauseMenuBgm()
+                }
+
             }catch(e: Exception){
                 Logger.e(Vsh.TAG, "BGM Player Failed : ${e.message}")
                 e.printStackTrace()
@@ -169,17 +200,48 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
         }
     }
 
+    private suspend fun turnDownVolumeAndPauseMenuBgm(){
+        val begin = System.currentTimeMillis()
+        var now = begin
+        while(now - begin < MENU_BGM_FADE_TIME){
+            val t = (now - begin) / MENU_BGM_FADE_TIME
+            val v = t.lerpFactor(menuBgm, 0.0f)
+            menuBgmPlayer.setVolume(v,v)
+            now = System.currentTimeMillis()
+            delay(16L)
+        }
+        menuBgmPlayer.setVolume(0.0f, 0.0f)
+        pauseMenuBgm()
+    }
+
+    private suspend fun resumeAndTurnVolumeUpMenuBgm(){
+        val begin = System.currentTimeMillis()
+        var now = begin
+        resumeMenuBgm()
+        while(now - begin < MENU_BGM_FADE_TIME){
+            val t = (now - begin) / MENU_BGM_FADE_TIME
+            val v = t.lerpFactor(0.0f, menuBgm)
+            menuBgmPlayer.setVolume(v,v)
+            now = System.currentTimeMillis()
+            delay(16L)
+        }
+        menuBgmPlayer.setVolume(menuBgm, menuBgm)
+    }
+
     fun removeAudioSource(){
         if(bgmPlayerActiveSrc != XmbItem.SILENT_AUDIO){
             if(bgmPlayer.isPlaying) bgmPlayer.stop()
             bgmPlayer.reset()
             bgmPlayerActiveSrc = XmbItem.SILENT_AUDIO
+
+            // Continue menu BGM
+            ctx.lifeScope.launch {
+                resumeAndTurnVolumeUpMenuBgm()
+            }
         }
     }
 
     fun loadSfxData(attach : Boolean = true){
-        var that = this
-
         if(attach){
             sfxPlayer.setOnLoadCompleteListener { _, id, status ->
                 if(status != 0){
@@ -236,4 +298,137 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
             }
         }
     }
+
+    ///region Menu BGM Implementations
+
+    private var _menuBgmIsReady = false
+    private val _menuBgmFiles = arrayListOf<File>()
+    private var _isMenuStarted = false
+
+    fun openMenuBgmPicker(){
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        intent.type = "audio/*"
+        val picker = Intent.createChooser(intent, ctx.getString(R.string.picker_pick_bgm))
+        ctx.xmb.startActivityForResult(picker, PICKER_REQ_ID)
+    }
+
+    fun destroyMenuBgmPlayer(){
+        menuBgmPlayer.reset()
+        menuBgmPlayer.release()
+    }
+
+    fun initMenuBgm(){
+        _menuBgmFiles.addAll(FileQuery(VshBaseDirs.VSH_RESOURCES_DIR)
+            .withNames("menu_bgm")
+            .withExtensions("bin")
+            .onlyIncludeExists(false)
+            .execute(ctx)
+        )
+
+        menuBgmPlayer.isLooping = true
+        menuBgmPlayer.setOnPreparedListener {
+            _menuBgmIsReady = true
+            menuBgmPlayer.isLooping = true
+            if(_isMenuStarted){
+                menuBgmPlayer.start()
+            }
+        }
+        menuBgmPlayer.setOnErrorListener { _, _, _ -> _menuBgmIsReady = false; true }
+        menuBgmPlayer.setOnCompletionListener { _menuBgmIsReady = false }
+
+        for(file in _menuBgmFiles){
+            if(file.exists()){
+                menuBgmPlayer.setDataSource(file.path)
+                menuBgmPlayer.prepareAsync()
+                break
+            }
+        }
+
+    }
+
+    fun deleteMenuBgm(){
+        if(menuBgmPlayer.isPlaying){
+            menuBgmPlayer.reset()
+        }
+
+        for(file in _menuBgmFiles){
+            if(file.exists()){
+                try {
+                    file.delete()
+                }catch (_:Exception){}
+            }
+        }
+    }
+
+    fun pauseMenuBgm(){
+        if(_menuBgmIsReady && menuBgmPlayer.isPlaying){
+            menuBgmPlayer.pause()
+        }
+    }
+
+    fun resumeMenuBgm(){
+        if(_menuBgmIsReady && !menuBgmPlayer.isPlaying){
+            _isMenuStarted = true
+            menuBgmPlayer.start()
+        }
+    }
+
+    fun loadPickedMenuBgm(intent: Intent){
+        val path = intent.data
+        if(path == null){
+            ctx.postNotification(
+                R.drawable.ic_error,
+                ctx.getString(R.string.error_common_header),
+                ctx.getString(R.string.error_menubgm_load_nopath), 15.0f)
+            return
+        }
+
+        try {
+            val src = ctx.contentResolver.openInputStream(path)
+            if(src == null){
+                ctx.postNotification(
+                    R.drawable.ic_error,
+                    ctx.getString(R.string.error_common_header),
+                    ctx.getString(R.string.error_menubgm_source_null), 15.0f)
+                return
+            }
+
+            val f = _menuBgmFiles.firstOrNull()
+            if(f == null) {
+                ctx.postNotification(
+                    R.drawable.ic_error,
+                    ctx.getString(R.string.error_common_header),
+                    ctx.getString(R.string.error_menubgm_copy_empty), 15.0f)
+                return
+            }
+
+            if(!f.exists()){
+                f.parentFile?.mkdirs()
+                f.createNewFile()
+            }
+
+            val cOut = f.outputStream()
+            src.copyTo(cOut)
+
+            cOut.flush()
+            cOut.close()
+            src.close()
+
+            // Should be finished by now, lets load
+            if(menuBgmPlayer.isPlaying){
+                menuBgmPlayer.stop()
+            }
+            menuBgmPlayer.reset()
+            _isMenuStarted = true
+            menuBgmPlayer.setDataSource(f.absolutePath)
+            menuBgmPlayer.prepareAsync()
+        }catch (e: FileNotFoundException){
+            ctx.postNotification(
+                R.drawable.ic_error,
+                ctx.getString(R.string.error_common_header),
+                ctx.getString(R.string.error_menubgm_copy_source_not_found), 15.0f)
+        }
+    }
+
+    ///endregion
 }

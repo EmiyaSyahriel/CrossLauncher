@@ -40,6 +40,8 @@ class CifLoader {
     private val _animIconSync = Object()
     private val _backdropSync = Object()
     private val _portBackdropSync = Object()
+    private val _backdropOverlaySync = Object()
+    private val _portBackdropOverlaySync = Object()
     private val _backSoundSync = Object()
     private lateinit var vsh : Vsh
     private var root = ArrayList<File>()
@@ -119,7 +121,9 @@ class CifLoader {
     val hasAnimIconLoaded get() = _hasAnimIconLoaded
     val hasBackSoundLoaded get() = _backSound.exists()
     val hasBackdropLoaded get() = _backdrop.isLoaded
+    val hasBackdropOverlayLoaded get() = _backOverlay.isLoaded
     val hasPortBackdropLoaded get() = _portBackdrop.isLoaded
+    val hasPortBackdropOverlayLoaded get() = _portBackOverlay.isLoaded
     private fun <K> MutableMap<File, Ref<K>>.getOrMake(k:File, refDefVal:K) = getOrMake<File, Ref<K>>(k){ Ref<K>(refDefVal) }
     private fun ArrayList<File>.checkAnyExists() : Boolean = any { it.delayedExistenceCheck(ioc.getOrMake(it, 0), ios.getOrMake(it, false)) }
     val hasBackdrop : Boolean get() =                   !disableBackdrop && backdropFiles.checkAnyExists()
@@ -198,13 +202,47 @@ class CifLoader {
             val f = backdropFiles.find {
                 it.exists()
             }
-            if(f != null) BitmapFactory.decodeFile(f.absolutePath)else null
+            if(f != null) BitmapFactory.decodeFile(f.absolutePath) else null
+
+        })
+
+        _backOverlay = BitmapRef("${itemId}_backdropOverlay", {
+            val f = backdropOverlayFiles.find {
+                it.exists()
+            }
+
+            if(f != null) BitmapFactory.decodeFile(f.absolutePath) else null
+        })
+
+        _portBackdrop = BitmapRef("${itemId}_backdrop_p", {
+            val f = portraitBackdropFiles.find {
+                it.exists()
+            }
+            if(f != null) BitmapFactory.decodeFile(f.absolutePath) else null
+
+        })
+
+        _portBackOverlay = BitmapRef("${itemId}_backdropOverlay_p", {
+            val f = portraitBackdropOverlayFiles.find {
+                it.exists()
+            }
+
+            if(f != null) BitmapFactory.decodeFile(f.absolutePath) else null
         })
     }
 
     fun unloadBackdrop(){
         if(_backdrop.id != default_bitmap.id) _backdrop.release()
         _backdrop = default_bitmap
+
+        if(_portBackdrop.id != default_bitmap.id) _portBackdrop.release()
+        _portBackdrop = default_bitmap
+
+        if(_backOverlay.id != default_bitmap.id) _backOverlay.release()
+        _backOverlay = default_bitmap
+
+        if(_portBackOverlay.id != default_bitmap.id) _portBackOverlay.release()
+        _portBackOverlay = default_bitmap
     }
 
     fun loadSound(){

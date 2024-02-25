@@ -428,4 +428,45 @@
   <string name="updater_found_update_desc"><![CDATA[You can check and download the update at Settings > System Update\nor you can open the GitHub Release page and download from there]]></string>
   <string name="updater_download_failed_title">Failed to download update</string>
   <string name="updater_download_failed_unknown_error">Unknown error encountered</string>
+    <string name="settings_category_media_name">Media Settings</string>
+  <string name="settings_category_media_desc">Media listing and media item behaviour</string>
+  <string name="permission_granted">Permission Granted</string>
+  <string name="permission_not_granted">Permission not Granted</string>
+  <string name="settings_media_request_permission_name">Media Permission Status</string>
+  <string name="settings_media_request_permission_desc">Is launcher have permission to access media on device?</string>
+    <string name="error_menubgm_load_nopath">Failed to load requested system BGM</string>
+    <string name="picker_pick_bgm">Pick System BGM</string>
+  <string name="error_menubgm_copy_empty">Cannot find destination directory, this might be due to system error</string>
+  <string name="error_menubgm_source_null">Source file empty, either due to picker app\'s error or overly enforced system security</string>
+  <string name="error_menubgm_copy_source_not_found">App cannot find source file. This might be due to picker\'s fault or overly enforced system security</string>
+  <string name="settings_audio_menubgm_volume_name">Menu Music Volume</string>
+  <string name="settings_audio_menubgm_volume_desc">Music volumes for menu background (if loaded)</string>
+  <string name="settings_audio_menubgm_pick_name">Pick Menu Music File</string>
+  <string name="settings_audio_menubgm_pick_desc">Pick Audio file for menu music that is always playing in background</string>
+  <string name="settings_audio_menubgm_delete_name">Delete Menu Music File</string>
+  <string name="settings_audio_menubgm_delete_desc">Delete menu background music file</string>
+  <string name="media_open">Open</string>
+  <string name="media_open_with">Open with ...</string>
+  <string name="media_play">Play</string>
+  <string name="media_delete">Delete</string>
+  <string name="media_delete_confirmation">Would you like to delete \"%s\" ?\n\nThis operation cannot be undone.</string>
+  <string name="media_share">Share</string>
+  <string name="error_setting_not_found">Setting not Found</string>
+  <string name="error_setting_not_found_description">This launcher cannot open setting page for %s.
+\n
+\nReason : %s
+\n
+\nWould you like to open the main Settings page instead so you can access manually?</string>
+  <string name="android_dbg_setting_invalid_page_name">Open Invalid Setting Page</string>
+  <string name="android_dbg_setting_invalid_page_desc">Open non-existent Setting page, test for devices with incomplete settings</string>
+  <string name="common_loading">Loading…</string>
+  <string name="error_setting_wait_dialog_closing_msg">Now Closing…\n\nIf dialog not closing soon, press Confirm or Cancel</string>
+  <string name="android_dbg_setting_self_name">Open Xmb as Setting</string>
+  <string name="android_dbg_setting_self_desc">This should trigger same effect as when Android have settings entry but not the actual implementation.</string>
+    <string name="notification_listener_service_name">CrossLauncher System Notification Listener</string>
+    <string name="sysnotif_new">New Notification</string>
+  <string name="sysnotif_no_info">No Information is available</string>
+    <string name="settings_system_notification_enabled_name">System Notification</string>
+  <string name="settings_system_notification_enabled_desc">Is launcher allowed to access Android Notification</string>
+    <string name="error_sysnotif_no_settings">Failed to Grant Notification Access</string>
 </resources>

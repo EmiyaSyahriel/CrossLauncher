@@ -25,7 +25,6 @@ import id.psw.vshlauncher.types.*
 import id.psw.vshlauncher.types.Stack
 import id.psw.vshlauncher.types.items.XmbAppItem
 import id.psw.vshlauncher.types.items.XmbItemCategory
-import id.psw.vshlauncher.types.media.LinearMediaList
 import id.psw.vshlauncher.typography.FontCollections
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.filterBySearch
@@ -74,11 +73,8 @@ class Vsh : Application() {
     val haveXmbView get() = xmbView != null
     val safeXmbView get()= xmbView!!
 
-    var playAnimatedIcon = true
-    var mediaListingStarted = false
     lateinit var mainHandle : Handler
-
-    val linearMediaList = LinearMediaList()
+    var playAnimatedIcon = true
 
     val categories = arrayListOf<XmbItemCategory>()
     /** Return all item in current selected category or current active item, including the hidden ones */
@@ -167,6 +163,7 @@ class Vsh : Application() {
         isTv = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
         }else{
+            @Suppress("DEPRECATION") // TV Feature before Lollipop (IDK if there is exists)
             packageManager.hasSystemFeature(PackageManager.FEATURE_TELEVISION)
         }
 
@@ -176,9 +173,9 @@ class Vsh : Application() {
         // Fresco.initialize(this)
         notificationLastCheckTime = SystemClock.uptimeMillis()
         registerInternalCategory()
-        reloadAppList()
+        M.apps.reloadAppList()
         reloadShortcutList()
-        fillSettingsCategory()
+        M.settings.fillSettings()
         addHomeScreen()
         installBroadcastReceivers()
         super.onCreate()
@@ -189,7 +186,7 @@ class Vsh : Application() {
         registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 postNotification(null, "Updating database...","Device package list has been changed, updating list...")
-                reloadAppList()
+                M.apps.reloadAppList()
             }
         }, IntentFilter().apply {
             addAction(Intent.ACTION_PACKAGE_ADDED)
@@ -257,7 +254,7 @@ class Vsh : Application() {
     }
     fun loadTexture(@DrawableRes d : Int, whiteFallback:Boolean = false ) : Bitmap {
         val dwb =ResourcesCompat.getDrawable(resources, d, null)
-        return dwb?.toBitmap(dwb.intrinsicWidth, dwb.intrinsicHeight?: 1) ?: whiteFallback.select(XmbItem.WHITE_BITMAP, XmbItem.TRANSPARENT_BITMAP)
+        return dwb?.toBitmap(dwb.intrinsicWidth, dwb.intrinsicHeight) ?: whiteFallback.select(XmbItem.WHITE_BITMAP, XmbItem.TRANSPARENT_BITMAP)
     }
 
     val allAppEntries = arrayListOf<XmbAppItem>()
@@ -439,20 +436,35 @@ class Vsh : Application() {
         }
         return false
     }
-    fun openFileByDefaultApp(apk: File) {
+
+    fun openFileOnExternalApp(apk: File, chooser: Boolean = false, chooserTitle : String = "") {
         if(haveXmbView){
             val xmb =safeXmbView.context.xmb
             xmb.runOnUiThread {
                 val authority = BuildConfig.APPLICATION_ID + ".fileprovider"
                 val u = FileProvider.getUriForFile(xmb, authority, apk)
-                val i = Intent(Intent.ACTION_VIEW)
+                var i = Intent(Intent.ACTION_VIEW)
                 i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 i.setDataAndType(u, contentResolver.getType(u))
                 i.putExtra(Intent.EXTRA_STREAM, u)
                 i.data = u
+
+                if(chooser){
+                    i = Intent.createChooser(i, chooserTitle)
+                }
+
                 xmb.startActivity(i)
             }
         }
 
+    }
+
+
+    fun hasPermissionGranted(permission : String) : Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
     }
 }

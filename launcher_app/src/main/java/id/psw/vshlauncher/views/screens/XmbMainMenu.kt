@@ -19,6 +19,7 @@ import id.psw.vshlauncher.FColor
 import id.psw.vshlauncher.FittingMode
 import id.psw.vshlauncher.PrefEntry
 import id.psw.vshlauncher.R
+import id.psw.vshlauncher.copyList
 import id.psw.vshlauncher.lerpFactor
 import id.psw.vshlauncher.livewallpaper.NativeGL
 import id.psw.vshlauncher.livewallpaper.XMBWaveRenderer
@@ -158,37 +159,34 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
 
     private fun drawBackground(ctx:Canvas){
 
-        // statusFillPaint.color = FColor.setAlpha(Color.BLACK, 0.25f)
-        // ctx.drawRect(scaling.target, statusFillPaint)
-        if(verticalMenu.showBackdrop){
+        val isPortrait = scaling.screen.height() > scaling.screen.width()
+        val activeItem = vsh.items?.visibleItems?.find{it.id == context.vsh.selectedItemId}
+        var isChanged = false
+        val opa = dimOpacity / 10.0f
+
+        if(verticalMenu.showBackdrop && activeItem != null){
             try{
-                val activeItem = vsh.items?.visibleItems?.find{it.id == context.vsh.selectedItemId}
-                if(activeItem != null){
-                    context.vsh.itemBackdropAlphaTime =context.vsh.itemBackdropAlphaTime.coerceIn(0f, 1f)
-                    backgroundPaint.alpha = (context.vsh.itemBackdropAlphaTime * 255).roundToInt().coerceIn(0, 255)
-                    val opa = dimOpacity / 10.0f
-                    if((scaling.screen.height() > scaling.screen.width()) && activeItem.hasPortraitBackdrop){
-                        if(activeItem.isPortraitBackdropLoaded){
-                            ctx.drawBitmap(
-                                    activeItem.portraitBackdrop,
-                                    null,
-                                    scaling.viewport,
-                                    backgroundPaint,
-                                    FittingMode.FILL, 0.5f, 0.5f)
-                            ctx.drawARGB((context.vsh.itemBackdropAlphaTime * opa * 255).toInt(), 0,0,0)
-                            if(context.vsh.itemBackdropAlphaTime < 1.0f) context.vsh.itemBackdropAlphaTime += (time.deltaTime) * 2.0f
-                        }
-                    }else if(activeItem.hasBackdrop){
-                        if(activeItem.isBackdropLoaded){
-                            ctx.drawBitmap(
-                                    activeItem.backdrop,
-                                    null,
-                                    scaling.viewport,
-                                    backgroundPaint,
-                                    FittingMode.FILL, 0.5f, 0.5f)
-                            ctx.drawARGB((context.vsh.itemBackdropAlphaTime * opa * 255).toInt(), 0,0,0)
-                            if(context.vsh.itemBackdropAlphaTime < 1.0f) context.vsh.itemBackdropAlphaTime += (time.deltaTime) * 2.0f
-                        }
+                context.vsh.itemBackdropAlphaTime =context.vsh.itemBackdropAlphaTime.coerceIn(0f, 1f)
+                backgroundPaint.alpha = (context.vsh.itemBackdropAlphaTime * 255).roundToInt().coerceIn(0, 255)
+                if(isPortrait){
+                    if(activeItem.hasPortraitBackdrop && activeItem.isPortraitBackdropLoaded){
+                        ctx.drawBitmap(
+                            activeItem.portraitBackdrop,
+                            null,
+                            scaling.viewport,
+                            backgroundPaint,
+                            FittingMode.FILL, 0.5f, 0.5f)
+                        isChanged = true
+                    }
+                }else {
+                    if(activeItem.hasBackdrop && activeItem.isBackdropLoaded){
+                        ctx.drawBitmap(
+                            activeItem.backdrop,
+                            null,
+                            scaling.viewport,
+                            backgroundPaint,
+                            FittingMode.FILL, 0.5f, 0.5f)
+                        isChanged = true
                     }
                 }
             }catch(cme:ConcurrentModificationException){
@@ -199,6 +197,37 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
         val focusAlpha = widgets.sideMenu.showMenuDisplayFactor.toLerp(0f, 128f).toInt()
         ctx.drawARGB(focusAlpha, 0,0,0)
 
+        if(isChanged){
+            ctx.drawARGB((context.vsh.itemBackdropAlphaTime * opa * 255).toInt(), 0,0,0)
+            if(context.vsh.itemBackdropAlphaTime < 1.0f) context.vsh.itemBackdropAlphaTime += (time.deltaTime) * 2.0f
+        }
+
+        if(verticalMenu.showBackdrop && activeItem != null){
+            try{
+                if(isPortrait){
+                    if(activeItem.hasPortraitBackdropOverlay && activeItem.isPortraitBackdropOverlayLoaded){
+                        ctx.drawBitmap(
+                            activeItem.portraitBackdropOverlay,
+                            null,
+                            scaling.viewport,
+                            backgroundPaint,
+                            FittingMode.FIT, 0.5f, 0.5f)
+                    }
+                }else{
+                    if(activeItem.hasBackOverlay && activeItem.isBackdropOverlayLoaded) {
+                        ctx.drawBitmap(
+                            activeItem.backdropOverlay,
+                            null,
+                            scaling.viewport,
+                            backgroundPaint,
+                            FittingMode.FIT, 0.5f, 0.5f)
+                    }
+                }
+            }catch(cme:ConcurrentModificationException){
+                cme.printStackTrace()
+            }
+        }
+
     }
 
     private fun drawHorizontalMenu(ctx:Canvas) {
@@ -207,7 +236,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
         val xPos = (scaling.target.width() * center.x) + context.vsh.isInRoot.select(0f, isPSP.select(
                 pspSelectedIconSize, ps3SelectedIconSize).x * -0.75f)
         val yPos = scaling.target.height() * center.y
-        val notHidden = context.vsh.categories.visibleItems
+        val notHidden = context.vsh.categories.copyList().visibleItems
         val separation = (layoutMode == XmbLayoutType.PSP).select(pspIconSeparation, ps3IconSeparation).x
         val cursorX = context.vsh.itemCursorX
         for(wx in notHidden.indices){
@@ -269,7 +298,7 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     }
 
     private fun drawVerticalMenu(ctx:Canvas){
-        val items = vsh.items?.visibleItems?.filterBySearch(context.vsh)
+        val items = vsh.items?.copyList()?.visibleItems?.filterBySearch(context.vsh)
 
         val loadIcon = loadingIconBitmap
         val isPSP = layoutMode == XmbLayoutType.PSP

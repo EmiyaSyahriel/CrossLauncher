@@ -1,14 +1,20 @@
 package id.psw.vshlauncher.types.items
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
+import android.provider.Settings
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import id.psw.vshlauncher.R
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.views.dialogviews.ConfirmDialogView
+import id.psw.vshlauncher.views.dialogviews.WaitForAndroidSettingDialogView
+import id.psw.vshlauncher.xmb
 
 class XmbAndroidSettingShortcutItem(
     val vsh: Vsh,
@@ -37,24 +43,22 @@ class XmbAndroidSettingShortcutItem(
     override val isHidden: Boolean
         get() = !_isActivityExists
 
+    internal var useComponentInstead = false
+
     init {
         val i = Intent(intentLaunchId)
         i.flags = i.flags or Intent.FLAG_ACTIVITY_NEW_TASK
         _isActivityExists = i.resolveActivityInfo(vsh.packageManager, 0) != null
 
+        // For testing
         if(intentLaunchId.startsWith("id.psw.vshlauncher")){
             _isActivityExists = true
         }
     }
 
     private fun launchSetting(xmb:XmbItem){
-        try{
-            val i = Intent(intentLaunchId)
-            i.flags = i.flags or Intent.FLAG_ACTIVITY_NEW_TASK
-            vsh.startActivity(i)
-        }catch(e:Exception){
-            vsh.postNotification(null, e.javaClass.name, e.message ?: "Unknown cause", 10.0f)
-        }
+        val v =vsh.xmbView ?: return
+        v.showDialog(WaitForAndroidSettingDialogView(v, displayName, intentLaunchId, useComponentInstead))
     }
 
     override val onLaunch: (XmbItem) -> Unit

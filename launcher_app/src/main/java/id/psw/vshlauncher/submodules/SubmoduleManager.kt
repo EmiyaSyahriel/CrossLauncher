@@ -13,13 +13,19 @@ class SubmoduleManager(ctx: Vsh) {
     val gamepadUi= GamepadUISubmodule()
     val audio = AudioSubmodule(ctx)
     val updater = UpdateCheckSubmodule(ctx)
+    val media = MediaListingSubmodule(ctx)
+    val apps = AppListingSubmodule(ctx)
+    val settings = SettingsSubmodule(ctx)
 
     fun onCreate(){
         for(mod in arrayOf(
             pref,
             bmp,
+            media,
+            apps,
             customizer,
             audio,
+            settings,
             icons,
             network,
             gamepad,
@@ -37,14 +43,18 @@ class SubmoduleManager(ctx: Vsh) {
         for(mod in arrayOf(
             pref,
             bmp,
+            media,
+            apps,
             customizer,
             audio,
+            settings,
             icons,
             network,
             gamepad,
             gamepadUi,
             plugin,
-            updater
+            updater,
+            media
         )){
             if(mod is IVshSubmodule){
                 mod.onDestroy()
