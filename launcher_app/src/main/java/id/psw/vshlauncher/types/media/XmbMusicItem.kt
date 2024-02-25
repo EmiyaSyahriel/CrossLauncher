@@ -17,7 +17,6 @@ class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
         private var noAlbum : BitmapRef? = null
     }
 
-    override val id: String = "MUSIC_INTERNAL_${data.id}"
     override val displayName: String
         get() = data.title
 
@@ -38,10 +37,6 @@ class XmbMusicItem(private val vsh: Vsh, val data : MusicData) : XmbItem(vsh) {
     override val isIconLoaded: Boolean
         get() = _icon.isLoaded
 
-    private var _isIconLoaded = false
-
-    override val isIconLoaded: Boolean
-        get() = _isIconLoaded
     override val hasIcon: Boolean
         get() = true
     override val icon: Bitmap
