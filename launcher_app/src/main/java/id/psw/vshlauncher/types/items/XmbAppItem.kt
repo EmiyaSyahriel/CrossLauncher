@@ -82,19 +82,41 @@ class XmbAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XmbItem(vsh)
 
     private val cif = CifLoader(vsh, resInfo, FileQuery(VshBaseDirs.APPS_DIR).withNames(resInfo.uniqueActivityName).execute(vsh))
 
-    override val isIconLoaded: Boolean get()= cif.icon.isLoaded
-    override val isAnimatedIconLoaded: Boolean get() = cif.hasAnimIconLoaded
-    override val isBackSoundLoaded: Boolean get() = cif.hasBackSoundLoaded
-    override val isBackdropLoaded: Boolean get() = cif.hasBackdropLoaded
-    override val isPortraitBackdropLoaded: Boolean get() = cif.hasPortBackdropLoaded
-
+    // Icon
     override val hasIcon: Boolean get()= true
-    override val hasBackdrop: Boolean get() = cif.hasBackdrop
-    override val hasPortraitBackdrop: Boolean get() = cif.hasPortraitBackdrop
-    override val hasBackOverlay: Boolean get() = cif.hasBackOverlay
-    override val hasPortraitBackdropOverlay: Boolean get() = cif.hasPortraitBackdropOverlay
-    override val hasBackSound: Boolean get() = cif.hasBackSound
+    override val isIconLoaded: Boolean get()= cif.icon.isLoaded
+    override val icon: Bitmap get()= cif.icon.bitmap
+
+    // Animated Icon
     override val hasAnimatedIcon: Boolean get() = cif.hasAnimatedIcon
+    override val isAnimatedIconLoaded: Boolean get() = cif.hasAnimIconLoaded
+    override val animatedIcon: XmbFrameAnimation get() = synchronized(cif.animIcon) { cif.animIcon }
+
+    // BGM
+    override val hasBackSound: Boolean get() = cif.hasBackSound
+    override val isBackSoundLoaded: Boolean get() = cif.hasBackSoundLoaded
+    override val backSound: File get() = cif.backSound
+
+    // Backdrop
+    override val hasBackdrop: Boolean get() = cif.hasBackdrop
+    override val isBackdropLoaded: Boolean get() = cif.hasBackdropLoaded
+    override val backdrop: Bitmap get() = cif.backdrop.bitmap
+
+    // Backdrop Overlay
+    override val hasBackOverlay: Boolean get() = cif.hasBackOverlay
+    override val isBackdropOverlayLoaded: Boolean get() = cif.hasBackdropOverlayLoaded
+    override val backdropOverlay: Bitmap get() = cif.backOverlay.bitmap
+
+    // Backdrop Portrait
+    override val hasPortraitBackdrop: Boolean get() = cif.hasPortraitBackdrop
+    override val isPortraitBackdropLoaded: Boolean get() = cif.hasPortBackdropLoaded
+    override val portraitBackdrop: Bitmap get() = cif.portBackdrop.bitmap
+
+    // Backdrop Overlay Portrait
+    override val hasPortraitBackdropOverlay: Boolean get() = cif.hasPortraitBackdropOverlay
+    override val isPortraitBackdropOverlayLoaded: Boolean get() = cif.hasPortBackdropOverlayLoaded
+    override val portraitBackdropOverlay: Bitmap get() = cif.portBackOverlay.bitmap
+
     private var iniFile = IniFile()
 
     override val hasMenu: Boolean get() = true
@@ -133,10 +155,6 @@ class XmbAppItem(private val vsh: Vsh, val resInfo : ResolveInfo) : XmbItem(vsh)
     override val id: String get()= iconId
     override val description: String get()= displayedDescription
     override val displayName: String get()= _customAppLabel.isEmpty().select(appLabel, _customAppLabel)
-    override val icon: Bitmap get()= cif.icon.bitmap
-    override val backdrop: Bitmap get() = cif.backdrop.bitmap
-    override val backSound: File get() = cif.backSound
-    override val animatedIcon: XmbFrameAnimation get() = synchronized(cif.animIcon) { cif.animIcon }
     override val hasDescription: Boolean get() = description.isNotEmpty()
     override val menuItems: ArrayList<XmbMenuItem> = arrayListOf()
     private var apkFile : File? = null
