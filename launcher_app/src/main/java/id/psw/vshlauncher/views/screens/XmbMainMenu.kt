@@ -291,9 +291,9 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
     private fun shouldPlayVideo(item:XmbItem, isSelected : Boolean) : Boolean {
         val byIcon = item.hasAnimatedIcon && item.isAnimatedIconLoaded
         return when(CifLoader.videoIconMode){
-            VideoIconMode.Disabled -> false
             VideoIconMode.AllTime -> byIcon
             VideoIconMode.SelectedOnly -> byIcon && isSelected
+            VideoIconMode.Disabled -> false
         }
     }
 
@@ -818,7 +818,6 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
                 widgets.searchQuery.render(ctx)
                 widgets.statusBar.render(ctx)
                 drawSortHeaderDisplay(ctx)
-
             }catch(_:ConcurrentModificationException){}
         }
     }

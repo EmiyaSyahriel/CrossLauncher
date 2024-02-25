@@ -418,6 +418,16 @@ class Vsh : Application() {
         startActivity(i)
     }
 
+    fun hasPermission(vararg str : String) : Boolean {
+        if (sdkAtLeast(Build.VERSION_CODES.M)) {
+            for(s in str){
+                if(checkSelfPermission(s) != PackageManager.PERMISSION_GRANTED)
+                    return false
+            }
+        }
+        return true
+    }
+
     fun runtimeTriageCheck(id:String) : Boolean {
         if(!runtimeTriageList.contains(id))
         {
