@@ -68,7 +68,7 @@
             android:exported="true" />
         <activity
             android:name=".activities.Xmb"
-            android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
+            android:configChanges="keyboardHidden|keyboard|orientation|screenSize|uiMode|navigation"
             android:excludeFromRecents="false"
             android:description="@string/app_desc"
             android:exported="true"

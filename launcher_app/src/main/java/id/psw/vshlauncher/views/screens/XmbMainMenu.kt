@@ -810,7 +810,9 @@ class XmbMainMenu(view : XmbView) : XmbScreen(view)  {
             updateColdBootWaveAnimation()
         }
 
-        drawBackground(ctx)
+        try {
+            drawBackground(ctx)
+        }catch(_:ConcurrentModificationException){}
         ctx.withScale(menuScale, menuScale, scaling.target.centerX(), scaling.target.centerY()){
             try{
                 drawVerticalMenu(ctx)
