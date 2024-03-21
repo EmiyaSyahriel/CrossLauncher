@@ -15,6 +15,7 @@ import id.psw.vshlauncher.postNotification
 import id.psw.vshlauncher.sdkAtLeast
 import id.psw.vshlauncher.types.FileQuery
 import id.psw.vshlauncher.types.XmbItem
+import id.psw.vshlauncher.types.media.StatedMediaPlayer
 import id.psw.vshlauncher.xmb
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -104,9 +105,9 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
         set(value) { _menuBgm = value; sendChange(Channel.MenuBgm) }
 
     var preventPlayMedia = true
-    val bgmPlayer = MediaPlayer()
-    val systemBgmPlayer = MediaPlayer()
-    var menuBgmPlayer = MediaPlayer()
+    val bgmPlayer = StatedMediaPlayer("BGM")
+    val systemBgmPlayer = StatedMediaPlayer("System BGM")
+    var menuBgmPlayer = StatedMediaPlayer("Menu BGM")
     lateinit var bgmPlayerActiveSrc : File
     var bgmPlayerDoNotAutoPlay = false
     lateinit var sfxPlayer : SoundPool
@@ -313,7 +314,9 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
     }
 
     fun destroyMenuBgmPlayer(){
-        menuBgmPlayer.reset()
+        if(menuBgmPlayer.state != StatedMediaPlayer.State.Idle){
+            menuBgmPlayer.reset()
+        }
         menuBgmPlayer.release()
     }
 
@@ -325,7 +328,6 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
             .execute(ctx)
         )
 
-        menuBgmPlayer.isLooping = true
         menuBgmPlayer.setOnPreparedListener {
             _menuBgmIsReady = true
             menuBgmPlayer.isLooping = true
@@ -343,7 +345,6 @@ class AudioSubmodule(private val ctx : Vsh) : IVshSubmodule {
                 break
             }
         }
-
     }
 
     fun deleteMenuBgm(){
