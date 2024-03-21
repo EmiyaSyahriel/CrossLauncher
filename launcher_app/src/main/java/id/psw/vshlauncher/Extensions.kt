@@ -14,8 +14,11 @@ import id.psw.vshlauncher.activities.Xmb
 import id.psw.vshlauncher.types.Ref
 import id.psw.vshlauncher.types.XmbItem
 import id.psw.vshlauncher.views.XmbView
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.experimental.and
 
 /**
@@ -40,7 +43,16 @@ val Context.xmb : Xmb
 
 fun <T> Boolean.select(a:T, b:T) : T =  if(this) a else b
 
-val Iterable<XmbItem>.visibleItems get() = synchronized(this) { this.filter { !it.isHidden } }
+private var visibleItems_lock = Mutex(false)
+
+val <T: XmbItem> ArrayList<T>.visibleItems get() : ArrayList<XmbItem> {
+    val a = ArrayList<XmbItem>()
+    val sList = Collections.synchronizedList(this)
+    synchronized(visibleItems_lock){
+        a.addAll(sList.filter { !it.isHidden })
+    }
+    return a
+}
 
 infix fun Int.hasFlag(b:Int) : Boolean = this and b == b
 infix fun Byte.hasFlag(b:Byte) : Boolean = this and b == b
