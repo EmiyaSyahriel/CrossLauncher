@@ -198,6 +198,15 @@ class Xmb : AppCompatActivity() {
                     vsh.M.audio.loadPickedMenuBgm(data)
                 }
             }
+            Vsh.ACT_REQ_LOG_EXPORT ->
+            {
+                if(resultCode == RESULT_OK && data != null)
+                {
+                    data.data?.also {
+                        Logger.exportLog(this, it)
+                    }
+                }
+            }
             MediaListingSubmodule.RQI_PICK_PHOTO_DIR -> {
                 if(resultCode == RESULT_OK){
                     if(data != null){
