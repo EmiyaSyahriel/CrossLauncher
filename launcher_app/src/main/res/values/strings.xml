@@ -469,4 +469,8 @@
     <string name="settings_system_notification_enabled_name">System Notification</string>
   <string name="settings_system_notification_enabled_desc">Is launcher allowed to access Android Notification</string>
     <string name="error_sysnotif_no_settings">Failed to Grant Notification Access</string>
+  <string name="dbg_export_log_name">Export Log</string>
+  <string name="dbg_export_log_desc">Export log file to storage ( using Android Storage Scope )</string>
+  <string name="dbg_export_log_filesystem">via File System</string>
+  <string name="dbg_export_log_share">by Share</string>
 </resources>
