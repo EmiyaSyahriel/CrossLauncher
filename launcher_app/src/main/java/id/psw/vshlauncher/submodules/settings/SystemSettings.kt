@@ -25,6 +25,7 @@ import id.psw.vshlauncher.views.dialogviews.ArrangeCategoryDialogView
 import id.psw.vshlauncher.views.dialogviews.IconPriorityDialogView
 import id.psw.vshlauncher.views.dialogviews.LegacyIconBackgroundDialogView
 import id.psw.vshlauncher.views.dialogviews.LicenseDialogView
+import id.psw.vshlauncher.views.widgets.XmbSideMenu
 import id.psw.vshlauncher.xmb
 import java.util.Calendar
 
@@ -483,6 +484,42 @@ class SystemSettings(private val vsh: Vsh) : ISettingsCategories(vsh) {
         }
     }
 
+    private fun mkItemSideMenuNavi() : XmbSettingsItem {
+        val kItems = arrayOf(
+            R.string.settings_system_sidemenu_navi_mode_value_tap to XmbSideMenu.TouchInteractMode.Tap,
+            R.string.settings_system_sidemenu_navi_mode_value_gesture to XmbSideMenu.TouchInteractMode.Gesture
+        )
+
+        val menuItems = arrayListOf<XmbMenuItem>()
+        kItems.forEachIndexed { index, (str, sValue) ->
+            menuItems.add(XmbMenuItem.XmbMenuItemLambda({ vsh.getString(str) }, { false }, index){
+                vsh.xmbView?.widgets?.sideMenu?.interactionMode = sValue
+                vsh.xmb.xmbView.widgets.sideMenu.isDisplayed = false
+            })
+        }
+
+        val item = XmbSettingsItem(vsh, "settings_system_sidemenu_navi_mode",
+            R.string.settings_system_sidemenu_navi_mode_name,
+            R.string.settings_system_sidemenu_navi_mode_desc,
+            R.drawable.category_games,
+            {
+                when(vsh.xmbView?.widgets?.sideMenu?.interactionMode)
+                {
+                    XmbSideMenu.TouchInteractMode.Tap -> vsh.getString(R.string.settings_system_sidemenu_navi_mode_value_tap)
+                    XmbSideMenu.TouchInteractMode.Gesture -> vsh.getString(R.string.settings_system_sidemenu_navi_mode_value_gesture)
+                    else -> vsh.getString(R.string.unknown)
+                }
+            },
+        ){
+            vsh.xmbView?.showSideMenu(true)
+        }
+
+        item.hasMenu = true
+        item.menuItems = menuItems
+
+        return item
+    }
+
     override fun createCategory() : XmbSettingsCategory{
         return XmbSettingsCategory(vsh,
             SettingsSubmodule.CATEGORY_SETTINGS_SYSTEM,
@@ -500,6 +537,7 @@ class SystemSettings(private val vsh: Vsh) : ISettingsCategories(vsh) {
                 mkItemOrientation(),
                 mkItemAsianConsole(),
                 mkItemSystemNotification(),
+                mkItemSideMenuNavi(),
                 mkItemDisableSplashMessage(),
                 mkItemVideoIconMode(),
                 mkItemAppDesc(),

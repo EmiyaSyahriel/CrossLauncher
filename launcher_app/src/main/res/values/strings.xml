@@ -473,4 +473,8 @@
   <string name="dbg_export_log_desc">Export log file to storage ( using Android Storage Scope )</string>
   <string name="dbg_export_log_filesystem">via File System</string>
   <string name="dbg_export_log_share">by Share</string>
+  <string name="settings_system_sidemenu_navi_mode_value_gesture">Gesture</string>
+  <string name="settings_system_sidemenu_navi_mode_value_tap">Tap</string>
+  <string name="settings_system_sidemenu_navi_mode_desc">How side menu should be navigated on touch screen</string>
+  <string name="settings_system_sidemenu_navi_mode_name">Side Menu Touch Navigation Mode</string>
 </resources>

@@ -7,9 +7,11 @@ import android.graphics.Point
 import android.graphics.PointF
 import android.graphics.RectF
 import android.view.MotionEvent
+import androidx.core.graphics.minus
 import androidx.core.graphics.withRotation
 import androidx.core.graphics.withTranslation
 import id.psw.vshlauncher.FColor
+import id.psw.vshlauncher.PrefEntry
 import id.psw.vshlauncher.makeTextPaint
 import id.psw.vshlauncher.select
 import id.psw.vshlauncher.submodules.PadKey
@@ -20,6 +22,8 @@ import id.psw.vshlauncher.views.XmbLayoutType
 import id.psw.vshlauncher.views.XmbView
 import id.psw.vshlauncher.views.XmbWidget
 import id.psw.vshlauncher.views.drawText
+import kotlin.math.absoluteValue
+import kotlin.math.sin
 
 class XmbSideMenu(view: XmbView) : XmbWidget(view) {
     private val textPaint : Paint = vsh.makeTextPaint(10.0f)
@@ -27,6 +31,18 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
         strokeWidth = 3.0f
     }
     private val shapeFill : Paint = vsh.makeTextPaint(style= Paint.Style.FILL, color = FColor.setAlpha(Color.BLACK, 0.5f))
+
+    enum class TouchInteractMode
+    {
+        Tap,
+        Gesture;
+
+        fun toInt() = ordinal
+        companion object
+        {
+            fun fromInt(value: Int) = entries[value]
+        }
+    }
 
     var showMenuDisplayFactor = 0.0f
     var isDisplayed = false
@@ -37,6 +53,18 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
     val itemMenuRectF = RectF()
     val items = arrayListOf<XmbMenuItem>()
     var disableMenuExec = false
+
+    var interactionMode : TouchInteractMode
+        get()
+        {
+            val defVal = TouchInteractMode.Tap.toInt()
+            val saved = vsh.M.pref.get(PrefEntry.SIDEMENU_TOUCH_INTERACTION_MODE, defVal)
+            return TouchInteractMode.fromInt(saved)
+        }
+        set(value)
+        {
+            vsh.M.pref.set(PrefEntry.SIDEMENU_TOUCH_INTERACTION_MODE, value.toInt())
+        }
 
     fun show(items : ArrayList<XmbMenuItem>){
         this.items.clear()
@@ -79,6 +107,32 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
         }
     }
 
+    private val iconRectF = RectF(-12.0f, -12.0f, 12.0f, 12.0f)
+
+    private fun drawArrows(ctx:Canvas, menuRect: RectF)
+    {
+        if(!view.screens.mainMenu.arrowBitmapLoaded) return
+        val bmp = view.screens.mainMenu.arrowBitmap
+
+        val yPosOffset = sin((view.time.currentTime * 3.0f) % (Math.PI.toFloat() * 42.0f)) * 5.0f
+
+        val xCenter = menuRect.left + 200.0f - 12.0f
+
+        // Up arrow
+        ctx.withTranslation(xCenter, menuRect.top + 100.0f + yPosOffset) {
+            ctx.withRotation(90.0f) {
+                ctx.drawBitmap(bmp, null,iconRectF,null)
+            }
+        }
+
+        // Down arrow
+        ctx.withTranslation(xCenter, menuRect.bottom - 100.0f - yPosOffset) {
+            ctx.withRotation(-90.0f) {
+                ctx.drawBitmap(bmp, null,iconRectF,null)
+            }
+        }
+    }
+
     override fun render(ctx: Canvas) {
         showMenuDisplayFactor = (time.deltaTime * 10.0f).toLerp(showMenuDisplayFactor, isDisplayed.select(1.0f, 0.0f)).coerceIn(0.0f, 1.0f)
 
@@ -98,6 +152,8 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
 
         ctx.drawRect(itemMenuRectF, shapeFill)
         ctx.drawRect(itemMenuRectF, shapeOutline)
+
+        drawArrows(ctx, itemMenuRectF)
 
         val zeroIdx = itemMenuRectF.centerY()
         val textSize = textPaint.textSize * isPSP.select(1.5f, 1.25f)
@@ -156,6 +212,7 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
         {
             isDisplayed = false
         }
+
     }
 
     fun executeSelected(){
@@ -211,23 +268,60 @@ class XmbSideMenu(view: XmbView) : XmbWidget(view) {
         return false
     }
 
+    private var _hasCursorMoved = false
     fun onTouchScreen(start: PointF, current: PointF, action: Int)
     {
         when(action){
             MotionEvent.ACTION_DOWN ->{
-                // Is Up
-                if(current.x < scaling.target.right - 400.0f){
-                    widgets.sideMenu.isDisplayed = false
-                }else{
-                    if(current.y < 200.0f){
-                        view.widgets.sideMenu.moveCursor(false)
-                    }else if(current.y > scaling.target.bottom - 200.0f){
-                        view.widgets.sideMenu.moveCursor(true)
+                if(interactionMode == TouchInteractMode.Tap)
+                {
+                    // Is Up
+                    if(current.x < scaling.target.right - 400.0f){
+                        widgets.sideMenu.isDisplayed = false
                     }else{
-                        view.widgets.sideMenu.executeSelected()
+                        if(current.y < 200.0f){
+                            view.widgets.sideMenu.moveCursor(false)
+                        }else if(current.y > scaling.target.bottom - 200.0f){
+                            view.widgets.sideMenu.moveCursor(true)
+                        }else{
+                            view.widgets.sideMenu.executeSelected()
+                        }
                     }
                 }
                 start.set(current)
+                _hasCursorMoved = false
+            }
+            MotionEvent.ACTION_MOVE ->
+            {
+                if(interactionMode == TouchInteractMode.Gesture)
+                {
+                    val yDiff = current.y - start.y
+                    val absDiff = yDiff.absoluteValue
+                    if(absDiff > 50.0f)
+                    {
+                        view.widgets.sideMenu.moveCursor(yDiff > 0.0f)
+                        _hasCursorMoved = true
+                        start.set(current)
+                    }
+                }
+            }
+            MotionEvent.ACTION_UP ->
+            {
+                if(interactionMode == TouchInteractMode.Gesture)
+                {
+                    val len = (current - start).length()
+                    if(!_hasCursorMoved && len < 5.0f)
+                    {
+                        if(current.x < scaling.target.right - 400.0f)
+                        {
+                            widgets.sideMenu.isDisplayed = false
+                        }
+                        else
+                        {
+                            view.widgets.sideMenu.executeSelected()
+                        }
+                    }
+                }
             }
         }
     }

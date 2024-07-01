@@ -109,6 +109,12 @@ object PrefEntry{
     const val VOLUME_AUDIO_MENUBGM :String = "/crosslauncher/audio/volume/menumusic"
     /** Boolean */
     const val LAUNCHER_TV_INTENT_FIRST : String = "/crosslauncher/launcher/prioritizeTv"
+
+    /** Int, What kind of interaction should the side menu interact to
+     * - 0 = Tap
+     * - 1 = Gesture
+     */
+    const val SIDEMENU_TOUCH_INTERACTION_MODE : String = "/crosslauncher/sideMenu/touchInteractionMode"
 }
 
 enum class FittingMode {
