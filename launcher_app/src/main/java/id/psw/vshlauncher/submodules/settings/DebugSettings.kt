@@ -1,8 +1,10 @@
 package id.psw.vshlauncher.submodules.settings
 
+import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import id.psw.vshlauncher.BuildConfig
+import id.psw.vshlauncher.Logger
 import id.psw.vshlauncher.R
 import id.psw.vshlauncher.Vsh
 import id.psw.vshlauncher.activities.Xmb
@@ -18,6 +20,7 @@ import id.psw.vshlauncher.views.dialogviews.BitManDlgView
 import id.psw.vshlauncher.views.dialogviews.CustomResourceListDialogView
 import id.psw.vshlauncher.views.dialogviews.TestDialogView
 import id.psw.vshlauncher.views.dialogviews.UITestDialogView
+import id.psw.vshlauncher.xmb
 
 class DebugSettings(private val vsh: Vsh): ISettingsCategories(vsh) {
     private fun mkItemTestDialog(): XmbSettingsItem {
@@ -99,6 +102,37 @@ class DebugSettings(private val vsh: Vsh): ISettingsCategories(vsh) {
             .apply(menu)
     }
 
+    private fun mkItemExportLog() : XmbSettingsItem
+    {
+        val click : () -> Unit = {
+            vsh.xmbView?.showSideMenu(true)
+        }
+        val menu = { m : XmbSettingsItem ->
+            m.hasMenu = true
+            val dMenuItems = arrayListOf<XmbMenuItem>()
+
+            dMenuItems.add(XmbMenuItem.XmbMenuItemLambda(
+                { vsh.getString(R.string.dbg_export_log_filesystem) }, { false }, 0,
+            ){
+                @Suppress("DEPRECATION") // Must work on old Android version
+                vsh.xmb.startActivityForResult(Logger.createExportIntent(), Vsh.ACT_REQ_LOG_EXPORT)
+            })
+
+            dMenuItems.add(XmbMenuItem.XmbMenuItemLambda(
+                { vsh.getString(R.string.dbg_export_log_share) }, { false }, 1,
+            ){
+                Logger.shareLogIntent(vsh)
+            })
+
+            m.menuItems = dMenuItems
+        }
+        return XmbSettingsItem(vsh, "debug_export_log",
+            R.string.dbg_export_log_name,
+            R.string.dbg_export_log_desc,
+            R.drawable.icon_device_info, {""}, click
+            ).apply(menu)
+    }
+
     override fun createCategory(): XmbSettingsCategory {
         return XmbSettingsCategory(vsh,
             SettingsSubmodule.CATEGORY_SETTINGS_DEBUG,
@@ -117,9 +151,10 @@ class DebugSettings(private val vsh: Vsh): ISettingsCategories(vsh) {
             if(BuildConfig.DEBUG){
                 content.addAllV(
                     mkItemDebugThrows(),
+                    mkItemExportLog(),
                     mkItemOpenBitmapManager(),
                     mkItemOpenFakeSettings(),
-                    mkItemOpenSelfAsSettings()
+                    mkItemOpenSelfAsSettings(),
                 )
             }
 
