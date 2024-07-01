@@ -91,12 +91,6 @@
                 <category android:name="android.intent.category.LAUNCHER_APP" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="image/*" />
-            </intent-filter>
-
-            <intent-filter>
                 <action android:name="android.intent.action.INSTALL_PACKAGE"/>
                 <action android:name="android.intent.action.UNINSTALL_PACKAGE"/>
             </intent-filter>
@@ -123,6 +117,17 @@
                 <data android:pathPattern=".*..*..*..*..*..*..*..*..*..*..*.xpkg"/>
             </intent-filter>
         </activity>
+        <activity-alias
+            android:name=".activities.XmbWallpaperUse"
+            android:exported="true"
+            android:label="@string/dlg_set_wallpaper_title"
+            android:targetActivity=".activities.Xmb">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity-alias>
         <activity
             android:name=".test_activity.XmbWaveTestActivity"
             android:exported="true"
