@@ -54,6 +54,16 @@ android {
         }
         debug {
             isMinifyEnabled = false
+            sourceSets {
+                getByName("main") {
+                    java {
+                        srcDirs("src/debug/java")
+                    }
+                    res {
+                        srcDirs("debug/res")
+                    }
+                }
+            }
         }
 
         all {
@@ -150,6 +160,8 @@ dependencies {
     
     // JSON Parsing
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // Extension Library
     implementation(project(mapOf("path" to ":launcher_xlib")))
 
     // Test Implementation
