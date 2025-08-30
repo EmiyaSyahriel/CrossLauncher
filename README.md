@@ -1,3 +1,8 @@
+> [!WARNING]
+> This project is stale, I didn't have time to develop this project further nor maintaining it.
+> Keep in mind that you are allowed to create fork of this project and continue developing on your own,
+> but I can't continue developing this launcher for the time being.
+
 ![Cross Launcher Logo](readme_asset/logo_base.png)
 
 [Baca dalam Bahasa Indonesia](README_ID.md)
