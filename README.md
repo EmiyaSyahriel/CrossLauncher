@@ -2,6 +2,11 @@
 > This project is stale, I didn't have time to develop this project further nor maintaining it.
 > Keep in mind that you are allowed to create fork of this project and continue developing on your own,
 > but I can't continue developing this launcher for the time being.
+>
+> If you want a much more polished alternative and still actively maintained, see
+> [Wave Launcher](https://github.com/WaveLauncher/WaveLauncher).
+> It is not open source app, but you can get the functionalities you might want from CrossLauncher
+> while still getting supports.
 
 ![Cross Launcher Logo](readme_asset/logo_base.png)
 
